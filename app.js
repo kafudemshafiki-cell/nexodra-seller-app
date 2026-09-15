@@ -6493,13 +6493,11 @@ function getStoreSlug() {
  */
 
 function getGeneratedStoreLink() {
-
     return (
         window.location.origin +
-        '/store/' +
+        '/nexodra-seller-app/store/' +
         getStoreSlug()
     );
-
 }
 
 

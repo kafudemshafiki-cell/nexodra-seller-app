@@ -1,0 +1,4438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexodra — Manage. Sell. Grow.</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Cropper.js CSS -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"
+/>
+
+<link rel="manifest" href="manifest.json">
+  
+</head>
+<body>
+
+<!-- =========================================
+     CUSTOMER PUBLIC STORE
+     ========================================= -->
+
+<div id="publicStore" class="public-store" style="display: none;">
+
+    <!-- =========================================
+         STORE PREVIEW BANNER
+         ========================================= -->
+
+    <div
+        id="storePreviewBanner"
+        class="store-preview-banner"
+        style="display: none;"
+    >
+
+        <span>
+            <i class="fa-solid fa-eye"></i>
+            Preview mode
+        </span>
+
+        <button
+            type="button"
+            id="exitStorePreviewBtn"
+        >
+            Exit Preview
+        </button>
+
+    </div>
+
+
+    <header class="public-store-header">
+
+        <button
+            type="button"
+            class="public-icon-btn"
+            id="publicBackBtn"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <div class="public-store-title">
+            <strong>Nexodra Flagship Vendor</strong>
+            <span>Verified Store</span>
+        </div>
+
+        <button
+            type="button"
+            class="public-icon-btn"
+        >
+            <i class="fa-solid fa-share-nodes"></i>
+        </button>
+
+    </header>
+
+
+    <main class="public-store-body">
+
+        <!-- Store Profile -->
+<!-- STORE BANNER SECTION -->
+<div class="public-store-banner-wrapper">
+  <div id="publicStoreBanner" class="public-store-banner">
+    <!-- Cover Image renders via CSS background-image -->
+  </div>
+</div>
+
+<!-- =========================================
+     CUSTOMER STORE PROFILE
+     YOUTUBE-STYLE CHANNEL HEADER
+========================================= -->
+
+<div class="public-store-profile-bar">
+
+    <!-- STORE AVATAR -->
+
+    <div class="public-store-logo-wrapper">
+
+        <img
+            id="publicStoreLogo"
+            src="assets/default-logo.png"
+            alt="Store Logo"
+            class="public-store-logo"
+        >
+
+    </div>
+
+
+    <!-- STORE INFORMATION -->
+
+    <div class="public-store-details">
+
+        <!-- Store name -->
+
+        <div class="public-store-name-row">
+
+            <h1
+                id="storeDisplayName"
+                class="public-store-name"
+            >
+                Store Name
+            </h1>
+
+            <span
+                class="public-store-verified"
+                id="publicStoreVerified"
+            >
+                <i class="fa-solid fa-circle-check"></i>
+                Verified
+            </span>
+
+        </div>
+
+
+        <!-- Store metadata -->
+
+        <div class="public-store-meta">
+
+            <!-- Location -->
+
+            <span
+                id="publicStoreLocation"
+                class="public-store-meta-item"
+            >
+                <i class="fa-solid fa-location-dot"></i>
+                <span>Location</span>
+            </span>
+
+
+            <!-- Phone -->
+
+            <a
+                id="publicStorePhone"
+                class="public-store-meta-item public-store-contact"
+                href="#"
+            >
+                <i class="fa-solid fa-phone"></i>
+                <span>Contact</span>
+            </a>
+
+
+            <!-- Email -->
+
+            <a
+                id="publicStoreEmail"
+                class="public-store-meta-item public-store-contact"
+                href="#"
+            >
+                <i class="fa-solid fa-envelope"></i>
+                <span>Email</span>
+            </a>
+
+        </div>
+
+
+        <!-- Description -->
+
+        <p
+            id="publicStoreDescription"
+            class="public-store-description"
+        >
+            Store description goes here...
+        </p>
+
+    </div>
+
+</div>
+
+
+
+        <!-- Store Categories -->
+
+        <div class="public-section-heading">
+
+            <h2>Shop</h2>
+
+            <span>
+                <span id="publicProductCount">0</span>
+                products
+            </span>
+
+        </div>
+
+
+        <div class="public-categories">
+
+            <button
+                type="button"
+                class="public-category active"
+                data-category="All"
+            >
+                All
+            </button>
+
+            <button
+                type="button"
+                class="public-category"
+                data-category="Electronics"
+            >
+                Electronics
+            </button>
+
+            <button
+                type="button"
+                class="public-category"
+                data-category="Fashion"
+            >
+                Fashion
+            </button>
+
+            <button
+                type="button"
+                class="public-category"
+                data-category="Home"
+            >
+                Home
+            </button>
+
+            <button
+                type="button"
+                class="public-category"
+                data-category="Accessories"
+            >
+                Accessories
+            </button>
+
+        </div>
+
+
+        <!-- Customer Product Search -->
+
+        <div class="public-product-search">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="text"
+                id="publicProductSearch"
+                placeholder="Search products..."
+            >
+
+        </div>
+
+
+        <!-- Customer Products -->
+
+        <div
+            id="publicProductGrid"
+            class="public-product-grid"
+        >
+
+            <div class="public-empty-products">
+                <i class="fa-solid fa-box-open"></i>
+
+                <strong>No products available</strong>
+
+                <span>
+                    This store hasn't published any products yet.
+                </span>
+            </div>
+
+        </div>
+      <!-- =========================================
+     CUSTOMER PRODUCT DETAIL
+     ========================================= -->
+
+<div
+    id="publicProductDetail"
+    class="public-product-detail"
+    style="display: none;"
+>
+
+    <div class="public-detail-header">
+
+        <button
+            type="button"
+            id="closeProductDetail"
+            class="public-icon-btn"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <strong>Product Details</strong>
+
+        <button
+            type="button"
+            class="public-icon-btn"
+        >
+            <i class="fa-solid fa-share-nodes"></i>
+        </button>
+
+    </div>
+
+
+    <div class="public-detail-image" id="detailProductImage">
+        📦
+    </div>
+
+
+    <div class="public-detail-content">
+
+        <span
+            class="public-detail-category"
+            id="detailProductCategory"
+        >
+            Electronics
+        </span>
+
+        <h1 id="detailProductName">
+            Product Name
+        </h1>
+
+        <div class="public-detail-price">
+            $0.00
+        </div>
+
+        <div
+            class="public-detail-stock"
+            id="detailProductStock"
+        >
+            In Stock
+        </div>
+
+
+        <div class="public-detail-divider"></div>
+
+
+        <h3>About this product</h3>
+
+        <p id="detailProductDescription">
+            Product description will appear here.
+        </p>
+
+
+        <div
+            class="public-detail-barcode"
+            id="detailProductBarcode"
+        ></div>
+
+
+        <div class="public-detail-actions">
+
+            <button
+                type="button"
+                class="public-contact-btn"
+            >
+                <i class="fa-regular fa-comment"></i>
+                Contact Seller
+            </button>
+
+            <button
+                type="button"
+                class="public-cart-btn"
+                id="detailAddToCart"
+            >
+                <i class="fa-solid fa-bag-shopping"></i>
+                Add to Cart
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================================
+     CUSTOMER CART — C1A
+     ========================================= -->
+
+<div
+    id="publicCustomerCart"
+    class="public-customer-cart"
+    style="display: none;"
+>
+
+    <div class="public-cart-header">
+
+        <strong>My Cart</strong>
+
+    </div>
+
+
+    <div
+        id="publicCartItems"
+        class="public-cart-items"
+    >
+
+        <div class="public-cart-empty">
+
+            <i class="fa-solid fa-bag-shopping"></i>
+
+            <strong>Your cart is empty</strong>
+
+            <span>
+                Add products to your cart to see them here.
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="public-cart-summary">
+
+        <div class="public-cart-total-row">
+
+            <span>Total</span>
+
+            <strong id="publicCartTotal">
+                $0.00
+            </strong>
+
+        </div>
+
+        <button
+            type="button"
+            class="public-cart-checkout-btn"
+            id="publicCartCheckout"
+        >
+            Proceed to Checkout
+        </button>
+
+    </div>
+
+</div>
+
+
+
+
+      
+<!-- =========================================
+     CUSTOMER CHECKOUT — BRICK C2
+     ========================================= -->
+
+<div
+    id="publicCustomerCheckout"
+    class="public-customer-checkout"
+    style="display: none;"
+>
+
+    <!-- Checkout Header -->
+
+    <div class="public-checkout-header">
+
+        <button
+            type="button"
+            id="closeCustomerCheckout"
+            class="public-icon-btn"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <strong>Checkout</strong>
+
+        <span></span>
+
+    </div>
+
+
+    <!-- Checkout Content -->
+
+    <div class="public-checkout-content">
+
+        <h2>Delivery Information</h2>
+
+        <p class="public-checkout-subtitle">
+            Enter your details so the seller can process your order.
+        </p>
+
+
+        <!-- Customer Name -->
+
+        <div class="public-checkout-field">
+
+            <label for="checkoutCustomerName">
+                Full Name
+            </label>
+
+            <input
+                type="text"
+                id="checkoutCustomerName"
+                placeholder="Enter your full name"
+                autocomplete="name"
+            >
+
+        </div>
+
+
+        <!-- Phone -->
+
+        <div class="public-checkout-field">
+
+            <label for="checkoutCustomerPhone">
+                Phone Number
+            </label>
+
+            <input
+                type="tel"
+                id="checkoutCustomerPhone"
+                placeholder="Enter your phone number"
+                autocomplete="tel"
+            >
+
+        </div>
+
+
+        <!-- Address -->
+
+        <div class="public-checkout-field">
+
+            <label for="checkoutCustomerAddress">
+                Delivery Address
+            </label>
+
+            <textarea
+                id="checkoutCustomerAddress"
+                placeholder="Enter your delivery address"
+                rows="4"
+                autocomplete="street-address"
+            ></textarea>
+
+        </div>
+
+      <!-- CITY / AREA -->
+
+<div class="public-checkout-field">
+
+    <label for="checkoutCustomerCity">
+        City / Area
+    </label>
+
+    <input
+        type="text"
+        id="checkoutCustomerCity"
+        placeholder="Enter your city or area"
+        autocomplete="address-level2"
+    >
+
+</div>
+
+        <!-- Payment Method -->
+
+        <h2>Payment Method</h2>
+
+        <div class="public-payment-options">
+
+            <label class="public-payment-option">
+
+                <input
+                    type="radio"
+                    name="checkoutPaymentMethod"
+                    value="cash"
+                    checked
+                >
+
+                <span>
+                    <i class="fa-solid fa-money-bill-wave"></i>
+
+                    <span>
+                        <strong>Cash on Delivery</strong>
+
+                        <small>
+                            Pay when your order arrives
+                        </small>
+                    </span>
+                </span>
+
+            </label>
+
+
+            <label class="public-payment-option">
+
+                <input
+                    type="radio"
+                    name="checkoutPaymentMethod"
+                    value="online"
+                >
+
+                <span>
+                    <i class="fa-solid fa-credit-card"></i>
+
+                    <span>
+                        <strong>Online Payment</strong>
+
+                        <small>
+                            Payment integration coming soon
+                        </small>
+                    </span>
+                </span>
+
+            </label>
+
+        </div>
+
+
+        <!-- Order Summary -->
+
+        <div class="public-checkout-summary">
+
+            <h2>Order Summary</h2>
+
+            <div
+                id="publicCheckoutItems"
+                class="public-checkout-items"
+            ></div>
+
+
+            <div class="public-checkout-total-row">
+
+                <span>
+                    Total
+                </span>
+
+                <strong id="publicCheckoutTotal">
+                    $0.00
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- Checkout Message -->
+
+        <div
+            id="publicCheckoutMessage"
+            class="public-checkout-message"
+        ></div>
+
+
+        <!-- Place Order -->
+
+        <button
+            type="button"
+            id="publicPlaceOrderBtn"
+            class="public-place-order-btn"
+        >
+            <i class="fa-solid fa-check"></i>
+            Place Order
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     CUSTOMER CHAT — UI
+     ========================================= -->
+
+<section
+    id="publicCustomerMessage"
+    class="public-customer-message"
+    style="display: none;"
+>
+
+    <!-- CHAT HEADER -->
+    <header class="customer-chat-header">
+
+        <button
+            type="button"
+            class="customer-chat-back"
+            id="customerChatBackBtn"
+            aria-label="Back"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+
+        <div class="customer-chat-seller">
+
+            <div class="customer-chat-avatar">
+                <i class="fa-solid fa-store"></i>
+
+                <span class="customer-chat-online-dot"></span>
+            </div>
+
+
+            <div class="customer-chat-seller-info">
+
+                <strong id="customerChatSellerName">
+                    Store
+                </strong>
+
+                <span>
+                    <i class="fa-solid fa-circle"></i>
+                    Online
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="customer-chat-more"
+            aria-label="More options"
+        >
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+        </button>
+
+    </header>
+
+
+    <!-- CHAT BODY -->
+    <div
+        class="customer-chat-body"
+        id="customerChatMessages"
+    >
+
+        <!-- DATE DIVIDER -->
+
+        <div class="customer-chat-date">
+            <span>Today</span>
+        </div>
+
+
+        <!-- WELCOME MESSAGE -->
+
+        <div class="customer-chat-message seller-message">
+
+            <div class="customer-message-avatar">
+                <i class="fa-solid fa-store"></i>
+            </div>
+
+            <div class="customer-message-content">
+
+                <div class="customer-message-bubble">
+                    Hi! 👋 How can we help you today?
+                </div>
+
+                <span class="customer-message-time">
+                    Just now
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- CUSTOMER MESSAGE EXAMPLE -->
+
+        <!--
+        <div class="customer-chat-message customer-message">
+
+            <div class="customer-message-content">
+
+                <div class="customer-message-bubble">
+                    Hello, is this product still available?
+                </div>
+
+                <span class="customer-message-time">
+                    2:41 PM
+                    <i class="fa-solid fa-check-double"></i>
+                </span>
+
+            </div>
+
+        </div>
+        -->
+
+
+        <!-- EMPTY / START CONVERSATION AREA -->
+
+        <div
+            class="customer-chat-start"
+            id="customerChatStart"
+        >
+
+            <div class="customer-chat-start-icon">
+
+                <i class="fa-regular fa-comments"></i>
+
+            </div>
+
+            <strong>
+                Start a conversation
+            </strong>
+
+            <span>
+                Ask the seller about products,
+                delivery, availability or anything
+                else you need help with.
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- MESSAGE COMPOSER -->
+
+    <div class="customer-chat-composer">
+
+        <button
+            type="button"
+            class="customer-chat-attach"
+            aria-label="Attach file"
+        >
+            <i class="fa-solid fa-paperclip"></i>
+        </button>
+
+
+        <div class="customer-chat-input-wrapper">
+
+            <textarea
+                id="customerChatInput"
+                class="customer-chat-input"
+                rows="1"
+                maxlength="1000"
+                placeholder="Write a message..."
+            ></textarea>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="customer-chat-send"
+            id="customerChatSendBtn"
+            aria-label="Send message"
+        >
+            <i class="fa-solid fa-paper-plane"></i>
+        </button>
+
+    </div>
+
+
+    <!-- SMALL SECURITY / INFO NOTE -->
+
+    <div class="customer-chat-footer-note">
+
+        <i class="fa-solid fa-lock"></i>
+
+        Messages are private between you and this seller.
+
+    </div>
+
+</section>
+    
+      
+    </main>
+
+
+    <!-- Customer Bottom Bar -->
+
+    <div class="public-store-bottom">
+
+    <button
+        type="button"
+        class="public-bottom-btn"
+        id="publicStoreNav"
+    >
+        <i class="fa-solid fa-house"></i>
+        <span>Store</span>
+    </button>
+
+    <button
+        type="button"
+        class="public-bottom-btn"
+        id="publicCartNav"
+    >
+        <i class="fa-solid fa-bag-shopping"></i>
+        <span>Cart</span>
+    </button>
+
+    <button
+        type="button"
+        class="public-bottom-btn"
+        id="publicContactNav"
+    >
+        <i class="fa-regular fa-comment"></i>
+        <span>message</span>
+    </button>
+
+</div>
+
+</div>
+
+<!-- =========================================
+     NEXODRA AUTH SCREEN
+========================================= -->
+
+<section id="authScreen" class="auth-screen">
+
+    <div class="auth-card">
+
+        <!-- Logo -->
+        <div class="auth-logo">
+            <div class="auth-logo-icon">
+                <i class="fa-solid fa-store"></i>
+            </div>
+
+            <span>NEXODRA</span>
+        </div>
+
+
+        <!-- Login -->
+        <div
+            class="auth-panel active"
+            id="loginPanel"
+        >
+
+            <div class="auth-heading">
+
+                <span class="auth-eyebrow">
+                    STORE MANAGEMENT
+                </span>
+
+                <h1>Welcome back</h1>
+
+                <p>
+                    Sign in to manage your store,
+                    products and sales.
+                </p>
+
+            </div>
+
+
+            <form id="loginForm">
+
+                <!-- Email -->
+                <div class="auth-form-group">
+
+                    <label for="loginEmail">
+                        Email
+                    </label>
+
+                    <div class="auth-input-wrapper">
+
+                        <i class="fa-regular fa-envelope"></i>
+
+                        <input
+                            type="email"
+                            id="loginEmail"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Password -->
+                <div class="auth-form-group">
+
+                    <div class="auth-label-row">
+
+                        <label for="loginPassword">
+                            Password
+                        </label>
+
+                        <button
+                            type="button"
+                            class="forgot-password-btn"
+                            id="forgotPasswordBtn"
+                        >
+                            Forgot password?
+                        </button>
+
+                    </div>
+
+
+                    <div class="auth-input-wrapper">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        <input
+                            type="password"
+                            id="loginPassword"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="loginPasswordToggle"
+                            aria-label="Show password"
+                        >
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Error / Status -->
+                <div
+                    class="auth-message"
+                    id="loginMessage"
+                ></div>
+
+
+                <!-- Login -->
+                <button
+                    type="submit"
+                    class="auth-primary-btn"
+                    id="loginBtn"
+                >
+                    <span>Sign In</span>
+
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+            </form>
+
+
+            <!-- Create Account -->
+            <div class="auth-switch">
+
+                <span>
+                    Don't have an account?
+                </span>
+
+                <button
+                    type="button"
+                    id="showSignupBtn"
+                >
+                    Create account
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             SIGN UP
+        ====================================== -->
+
+        <div
+            class="auth-panel"
+            id="signupPanel"
+        >
+
+            <div class="auth-heading">
+
+                <span class="auth-eyebrow">
+                    GET STARTED
+                </span>
+
+                <h1>Create your account</h1>
+
+                <p>
+                    Set up your account and start
+                    managing your store.
+                </p>
+
+            </div>
+
+
+            <form id="signupForm">
+
+                <!-- Name -->
+                <div class="auth-form-group">
+
+                    <label for="signupName">
+                        Your Name
+                    </label>
+
+                    <div class="auth-input-wrapper">
+
+                        <i class="fa-regular fa-user"></i>
+
+                        <input
+                            type="text"
+                            id="signupName"
+                            placeholder="Your name"
+                            autocomplete="name"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Email -->
+                <div class="auth-form-group">
+
+                    <label for="signupEmail">
+                        Email
+                    </label>
+
+                    <div class="auth-input-wrapper">
+
+                        <i class="fa-regular fa-envelope"></i>
+
+                        <input
+                            type="email"
+                            id="signupEmail"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Password -->
+                <div class="auth-form-group">
+
+                    <label for="signupPassword">
+                        Password
+                    </label>
+
+                    <div class="auth-input-wrapper">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        <input
+                            type="password"
+                            id="signupPassword"
+                            placeholder="Create a password"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="signupPasswordToggle"
+                            aria-label="Show password"
+                        >
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+
+                    </div>
+
+                    <small>
+                        Use at least 6 characters.
+                    </small>
+
+                </div>
+
+
+                <!-- Status -->
+                <div
+                    class="auth-message"
+                    id="signupMessage"
+                ></div>
+
+
+                <!-- Create Account -->
+                <button
+                    type="submit"
+                    class="auth-primary-btn"
+                    id="signupBtn"
+                >
+                    <span>Create Account</span>
+
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+            </form>
+
+
+            <!-- Back to Login -->
+            <div class="auth-switch">
+
+                <span>
+                    Already have an account?
+                </span>
+
+                <button
+                    type="button"
+                    id="showLoginBtn"
+                >
+                    Sign in
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- Footer -->
+        <div class="auth-footer">
+
+            <span>
+                Secure store management
+            </span>
+
+            <i class="fa-solid fa-shield-halved"></i>
+
+        </div>
+
+    </div>
+
+</section>
+  
+    <div class="app-container">
+        
+        <!-- App Top Bar -->
+<header class="app-header">
+
+    <h1 id="screenTitle">Store</h1>
+
+    <div class="header-right">
+
+        <button class="icon-btn share-btn">
+    <i class="fa-solid fa-share-nodes"></i>
+</button>
+
+        <button class="icon-btn notification-btn">
+    <i class="fa-solid fa-bell"></i>
+    <span class="notification-badge">2</span>
+</button>
+
+    </div>
+
+</header>
+
+        <!-- Main Dynamic Screen Container -->
+        <main class="app-body">
+            
+            <!-- 1. STORE SCREEN (Matches the Mockup) -->
+            <section id="storeScreen" class="screen active">
+                <!-- Hero Promo Banner -->
+                <!-- Seller Store Header -->
+
+        <div class="store-avatar">
+        <i class="fa-solid fa-store"></i>
+      </div>
+
+       <div class="store-info">
+        <h2 id="storeDisplayName">
+    Loading store...
+</h2>
+
+        <div class="store-status">
+            <span class="status-dot"></span>
+            Active Store
+        </div>
+
+        <div class="store-rating">
+            <i class="fa-solid fa-star"></i>
+            <strong>4.8</strong>
+            <span>(320 reviews)</span>
+        </div>
+    </div>
+
+
+
+    <button
+    type="button"
+    class="store-action-btn"
+    id="previewStoreBtn"
+>
+    <i class="fa-solid fa-eye"></i>
+    Preview Store
+</button>
+
+    </>
+
+</>
+
+
+        <!-- STORE OVERVIEW -->
+<div class="store-overview">
+
+    <div class="section-header store-overview-header">
+        <div>
+            <h3>Store Overview</h3>
+            <span class="overview-subtitle">
+                Your store performance
+            </span>
+        </div>
+
+        <span class="overview-period">
+            This month 
+        </span>
+    </div>
+
+
+
+<!-- =========================================
+     SALES OVERVIEW — CLICKABLE
+     WITH STORE SALES GRAPH
+========================================= -->
+
+<div
+    class="sales-overview-card"
+    id="openSalesOverview"
+    role="button"
+    tabindex="0"
+    aria-label="Open sales overview"
+>
+
+    <!-- =====================================
+         CARD HEADER
+    ====================================== -->
+
+    <div class="sales-card-top">
+
+        <div class="sales-card-summary">
+
+            <span class="overview-card-label">
+                TOTAL SALES
+            </span>
+
+            <strong
+                class="sales-value"
+                id="overviewSales"
+            >
+                $0.00
+            </strong>
+
+        </div>
+
+
+        <!-- SALES GRAPH ICON -->
+
+        <div class="sales-icon-circle">
+
+            <i class="fa-solid fa-chart-line"></i>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         OPTIONAL SALES TREND
+         JavaScript can update this later
+    ====================================== -->
+
+    <div class="sales-trend">
+
+        <span
+            class="sales-trend-value"
+            id="salesTrend"
+        >
+          
+        </span>
+
+    </div>
+
+
+    <!-- =====================================
+         SALES GRAPH AREA
+    ====================================== -->
+
+    <div
+        class="sales-chart"
+        id="storeSalesChart"
+        aria-hidden="true"
+    >
+
+        <!-- SVG graph will be drawn here -->
+
+        <svg
+            class="store-sales-graph"
+            id="storeSalesGraph"
+            viewBox="0 0 1000 320"
+            preserveAspectRatio="none"
+        >
+
+            <!--
+                JavaScript will insert:
+
+                1. Gradient area
+                2. Green sales line
+                3. Dotted comparison line
+                4. Graph baseline
+            -->
+
+        </svg>
+
+
+        <!-- GRAPH TIME LABELS -->
+
+        <div class="store-sales-chart-labels">
+
+            <span id="storeSalesLabelStart">
+                Start
+            </span>
+
+            <span id="storeSalesLabelMiddle">
+                Middle
+            </span>
+
+            <span id="storeSalesLabelEnd">
+                End
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         CARD FOOTER
+    ====================================== -->
+
+    <div class="sales-card-bottom">
+
+        <span id="salesStatus">
+            No sales yet
+        </span>
+
+    </div>
+
+</div>
+  
+
+    
+
+
+  
+
+    <!-- PRODUCTS + ORDERS -->
+    <div class="overview-two-column">
+
+        <!-- PRODUCTS -->
+        <div class="overview-mini-card">
+
+            <div class="mini-card-top">
+
+                <div class="mini-icon products-icon">
+                    <i class="fa-solid fa-box"></i>
+                </div>
+
+                <span class="mini-card-label">
+                    PRODUCTS
+                </span>
+
+            </div>
+
+            <strong
+                class="mini-card-value"
+                id="overviewProducts"
+            >
+                0
+            </strong>
+
+            <span class="mini-card-description">
+                Products listed
+            </span>
+
+        </div>
+
+
+        <!-- ORDERS -->
+        <div class="overview-mini-card">
+
+            <div class="mini-card-top">
+
+                <div class="mini-icon orders-icon">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                </div>
+
+                <span class="mini-card-label">
+                    ORDERS
+                </span>
+
+            </div>
+
+            <strong
+                class="mini-card-value"
+                id="overviewOrders"
+            >
+                0
+            </strong>
+
+            <span class="mini-card-description">
+                Orders received
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- INVENTORY HEALTH -->
+    <div class="inventory-overview-card">
+
+        <div class="inventory-overview-header">
+
+            <div>
+
+                <span class="overview-card-label">
+                    INVENTORY HEALTH
+                </span>
+
+                <h4>
+                    Stock status
+                </h4>
+
+            </div>
+
+            <div class="inventory-box-icon">
+                <i class="fa-solid fa-warehouse"></i>
+            </div>
+
+        </div>
+
+
+        <!-- IN STOCK -->
+        <div class="inventory-row">
+
+            <div class="inventory-row-left">
+
+                <span class="inventory-status-dot in-stock-dot"></span>
+
+                <span>
+                    In Stock
+                </span>
+
+            </div>
+
+            <strong id="overviewInStock">
+                0
+            </strong>
+
+        </div>
+
+
+        <!-- LOW STOCK -->
+        <div class="inventory-row">
+
+            <div class="inventory-row-left">
+
+                <span class="inventory-status-dot low-stock-dot"></span>
+
+                <span>
+                    Low Stock
+                </span>
+
+            </div>
+
+            <strong id="overviewLowStock">
+                0
+            </strong>
+
+        </div>
+
+
+        <!-- OUT OF STOCK -->
+        <div class="inventory-row">
+
+            <div class="inventory-row-left">
+
+                <span class="inventory-status-dot out-stock-dot"></span>
+
+                <span>
+                    Out of Stock
+                </span>
+
+            </div>
+
+            <strong id="overviewOutOfStock">
+                0
+            </strong>
+
+        </div>
+
+
+        <!-- TOTAL UNITS -->
+        <div class="inventory-total">
+
+            <span>
+                Total stock units
+            </span>
+
+            <strong id="overviewStock">
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- VISITORS -->
+    <div class="visitors-overview-card">
+
+        <div class="visitors-card-content">
+
+            <div>
+
+                <span class="overview-card-label">
+                    STORE VISITORS
+                </span>
+
+                <strong
+                    class="visitors-value"
+                    id="overviewVisitors"
+                >
+                    0
+                </strong>
+
+                <span class="visitors-description">
+                    Visitors this month
+                </span>
+
+            </div>
+
+            <div class="visitors-icon-circle">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+                <!-- Categories Section -->
+                <div class="section-header">
+                    <h3>Categories</h3>
+                    <span class="see-all">See all</span>
+                </div>
+                <div class="categories-scroll">
+                    <div class="cat-item">
+                        <div class="cat-circle"><i class="fa-solid fa-headphones"></i></div>
+                        <span>Electronics</span>
+                    </div>
+                    <div class="cat-item">
+                        <div class="cat-circle"><i class="fa-solid fa-shirt"></i></div>
+                        <span>Fashion</span>
+                    </div>
+                    <div class="cat-item">
+                        <div class="cat-circle"><i class="fa-solid fa-couch"></i></div>
+                        <span>Home</span>
+                    </div>
+                    <div class="cat-item">
+                        <div class="cat-circle"><i class="fa-solid fa-clock"></i></div>
+                        <span>Accessories</span>
+                    </div>
+                </div>
+
+                <!-- Products / Inventory Section -->
+<div class="products-section">
+
+    <div class="section-header products-heading">
+        <div>
+            <h3>Your Products</h3>
+            <span class="products-count" id="productsCount">0 products</span>
+        </div>
+
+        <button class="add-product-small" data-target="postScreen">
+            <i class="fa-solid fa-plus"></i>
+            Add Product
+        </button>
+    </div>
+
+    <!-- Product Search -->
+    <div class="product-tools">
+
+        <div class="product-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+                type="text"
+                id="productSearch"
+                placeholder="Search your products..."
+            >
+        </div>
+
+        <button class="filter-btn" id="filterProductsBtn">
+            <i class="fa-solid fa-sliders"></i>
+        </button>
+
+    </div>
+
+    <!-- Inventory Status -->
+    <div class="inventory-status-row">
+
+        <button class="inventory-filter active" data-filter="all">
+            All
+        </button>
+
+        <button class="inventory-filter" data-filter="in-stock">
+            In Stock
+        </button>
+
+        <button class="inventory-filter" data-filter="low-stock">
+            Low Stock
+        </button>
+
+        <button class="inventory-filter" data-filter="out-of-stock">
+            Out of stock
+        </button>
+
+    </div>
+
+    <!-- Products -->
+    <div id="productGrid" class="product-grid">
+        <p class="empty-text">
+            No products posted yet. Use the (+) tab to add items!
+        </p>
+    </div>
+
+</div>
+
+            </section>
+          <!-- PRODUCT DETAILS OVERLAY -->
+<div id="productDetailsOverlay" class="product-details-overlay">
+
+    <div class="product-details-card">
+
+        <button
+            type="button"
+            class="product-details-close"
+            id="productDetailsClose"
+            aria-label="Close product details"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+
+        <div
+            id="productDetailsImage"
+            class="product-details-image"
+        ></div>
+
+
+        <div class="product-details-content">
+
+            <span
+                id="productDetailsCategory"
+                class="product-details-category"
+            ></span>
+
+
+            <h2 id="productDetailsTitle">
+                Product
+            </h2>
+
+
+            <div class="product-details-price">
+                $0.00
+            </div>
+
+
+            <div
+                id="productDetailsStock"
+                class="product-details-stock"
+            ></div>
+
+
+            <div class="product-details-divider"></div>
+
+
+            <h3>
+    Description
+</h3>
+
+<p id="productDetailsDescription">
+    No description added.
+</p>
+
+
+<!-- Product Variants -->
+<div
+    id="productDetailsVariants"
+    class="product-details-variants"
+    style="display: none;"
+>
+
+    <div class="product-details-divider"></div>
+
+    <h3>
+        Available Options
+    </h3>
+
+    <div id="productDetailsVariantOptions"></div>
+
+</div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================================
+     SELL / POS SCREEN
+========================================= -->
+
+<section id="sellScreen" class="screen">
+
+    <!-- Sell Header -->
+    <div class="sell-page-header">
+
+        <div>
+            <span class="sell-eyebrow">
+                POINT OF SALE
+            </span>
+
+            <h2>Sell</h2>
+
+            <p>
+                Sell products and update inventory instantly.
+            </p>
+        </div>
+
+        <div class="sell-online-status">
+            <span class="sell-status-dot"></span>
+            Online
+        </div>
+
+    </div>
+
+
+    <!-- Today's Summary -->
+    <div class="sell-summary">
+
+        <div class="sell-summary-card">
+
+            <span>Sale's Revenue</span>
+
+            <strong id="sellTodayRevenue">
+                €0.00
+            </strong>
+
+        </div>
+
+
+        <div class="sell-summary-card">
+
+            <span>Transactions</span>
+
+            <strong id="sellTodayTransactions">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="sell-summary-card">
+
+            <span>Items Sold</span>
+
+            <strong id="sellTodayItems">
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- Sell Mode -->
+    <div class="sell-mode-switch">
+
+        <button
+            type="button"
+            class="sell-mode-btn active"
+            data-sell-mode="manual"
+        >
+            <i class="fa-solid fa-grid-2"></i>
+            Manual Sell
+        </button>
+
+
+        <button
+            type="button"
+            class="sell-mode-btn"
+            data-sell-mode="live"
+        >
+            <i class="fa-solid fa-barcode"></i>
+            Live Sell
+        </button>
+
+    </div>
+
+
+    <!-- Search -->
+    <div class="sell-search-row">
+
+        <div class="sell-search-box">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="search"
+                id="sellProductSearch"
+                placeholder="Search products..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <button
+            type="button"
+            class="sell-scan-btn"
+            id="sellScanBtn"
+            aria-label="Scan barcode"
+        >
+            <i class="fa-solid fa-barcode"></i>
+        </button>
+
+    </div>
+
+
+    <!-- Categories -->
+    <div
+        class="sell-categories"
+        id="sellCategories"
+    >
+
+        <button
+            type="button"
+            class="sell-category-btn active"
+            data-category="all"
+        >
+            All
+        </button>
+
+        <button
+            type="button"
+            class="sell-category-btn"
+            data-category="Electronics"
+        >
+            Electronics
+        </button>
+
+        <button
+            type="button"
+            class="sell-category-btn"
+            data-category="Fashion"
+        >
+            Fashion
+        </button>
+
+        <button
+            type="button"
+            class="sell-category-btn"
+            data-category="Home"
+        >
+            Home
+        </button>
+
+        <button
+            type="button"
+            class="sell-category-btn"
+            data-category="Accessories"
+        >
+            Accessories
+        </button>
+
+    </div>
+
+
+    <!-- Live Sell Button -->
+    <button
+        type="button"
+        class="live-sell-launch"
+        id="liveSellLaunch"
+    >
+
+        <span class="live-sell-icon">
+            <i class="fa-solid fa-barcode"></i>
+        </span>
+
+        <span>
+            <strong>Live Sell</strong>
+            <small>Scan products with your camera</small>
+        </span>
+
+        <i class="fa-solid fa-chevron-right"></i>
+
+    </button>
+
+
+    <!-- POS Layout -->
+    <div class="sell-pos-layout">
+
+
+        <!-- PRODUCTS -->
+        <div class="sell-products-panel">
+
+            <div class="sell-section-heading">
+
+                <div>
+                    <h3>Products</h3>
+
+                    <span id="sellProductsCount">
+                        0 products
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div
+                class="sell-product-grid"
+                id="sellProductGrid"
+            >
+
+                <div class="sell-empty-state">
+
+                    <i class="fa-solid fa-box-open"></i>
+
+                    <strong>
+                        No products available
+                    </strong>
+
+                    <span>
+                        Add products to your store first.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CURRENT SALE -->
+<div class="current-sale-panel">
+
+    <div class="current-sale-header">
+
+        <div>
+
+            <span class="sell-eyebrow">
+                CURRENT SALE
+            </span>
+
+            <h3>
+                Current Sale
+            </h3>
+
+        </div>
+
+
+        <div class="current-sale-header-actions">
+
+            <button
+                type="button"
+                class="clear-sale-btn"
+                id="clearSaleBtn"
+            >
+                Clear
+            </button>
+
+
+            <button
+                type="button"
+                class="sell-cart-expand-btn"
+                id="sellCartExpandBtn"
+                aria-label="Expand current sale"
+                aria-expanded="true"
+            >
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+
+            <!-- Cart Items -->
+            <div
+                class="sell-cart-items"
+                id="sellCartItems"
+            >
+
+                <div class="sell-cart-empty">
+
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                    <strong>
+                        No products selected
+                    </strong>
+
+                    <span>
+                        Tap a product to add it to the sale.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- Customer -->
+            <button
+                type="button"
+                class="sell-customer-btn"
+                id="sellCustomerBtn"
+            >
+
+                <span class="sell-action-icon">
+                    <i class="fa-solid fa-user"></i>
+                </span>
+
+                <span>
+                    <strong id="sellCustomerName">
+                        Walk-in Customer
+                    </strong>
+
+                    <small>
+                        Add customer
+                    </small>
+                </span>
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </button>
+
+
+            <!-- Sale Actions -->
+            <div class="sell-actions-row">
+
+                <button
+                    type="button"
+                    id="sellDiscountBtn"
+                >
+                    <i class="fa-solid fa-percent"></i>
+                    Discount
+                </button>
+
+                <button
+                    type="button"
+                    id="sellNoteBtn"
+                >
+                    <i class="fa-solid fa-note-sticky"></i>
+                    Note
+                </button>
+
+                <button
+                    type="button"
+                    id="holdSaleBtn"
+                >
+                    <i class="fa-solid fa-pause"></i>
+                    Hold
+                </button>
+
+            </div>
+
+
+            <!-- Totals -->
+            <div class="sell-totals">
+
+                <div>
+                    <span>Items</span>
+                    <strong id="sellTotalItems">0</strong>
+                </div>
+
+                <div>
+                    <span>Subtotal</span>
+                    <strong id="sellSubtotal">€0.00</strong>
+                </div>
+
+                <div>
+                    <span>Discount</span>
+                    <strong id="sellDiscount">€0.00</strong>
+                </div>
+
+                <div>
+                    <span>Tax</span>
+                    <strong id="sellTax">€0.00</strong>
+                </div>
+
+                <div class="sell-grand-total">
+
+                    <span>Total</span>
+
+                    <strong id="sellGrandTotal">
+                        €0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- Pay -->
+            <button
+                type="button"
+                class="sell-pay-btn"
+                id="sellPayBtn"
+            >
+
+                <span>
+                    <i class="fa-solid fa-credit-card"></i>
+                    Pay
+                </span>
+
+                <strong id="sellPayAmount">
+                    €0.00
+                </strong>
+
+            </button>
+
+        </>
+
+    </div>
+
+</section>
+
+          <!-- =========================================
+     LIVE SELL SCREEN
+========================================= -->
+
+<section
+    id="liveSellScreen"
+    class="screen live-sell-screen"
+>
+
+    <!-- HEADER -->
+    <div class="live-sell-header">
+
+        <button
+            type="button"
+            class="live-sell-back-btn"
+            id="liveSellBackBtn"
+            aria-label="Back to Sell"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <div class="live-sell-title-area">
+
+            <span class="live-sell-eyebrow">
+                POINT OF SALE
+            </span>
+
+            <h1>
+                Live Sell
+            </h1>
+
+            <p>
+                Scan product barcodes and build a sale instantly.
+            </p>
+
+        </div>
+
+        <div class="live-sell-status">
+
+            <span class="live-status-dot"></span>
+
+            <span>
+                Ready
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- SCANNER ACTION -->
+    <div class="live-scanner-card">
+
+        <div class="live-scanner-icon">
+
+            <i class="fa-solid fa-barcode"></i>
+
+        </div>
+
+        <div class="live-scanner-content">
+
+            <span class="live-scanner-label">
+                BARCODE SCANNER
+            </span>
+
+            <strong>
+                Scan a product
+            </strong>
+
+            <p>
+                Point your camera at a product barcode.
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            id="liveSellScanBtn"
+            class="live-scan-action"
+        >
+
+            <i class="fa-solid fa-camera"></i>
+
+            Scan
+
+        </button>
+
+    </div>
+
+
+    <!-- LAST SCANNED -->
+    <div
+        class="live-last-scan"
+        id="liveLastScan"
+    >
+
+        <div class="live-last-scan-icon">
+
+            <i class="fa-solid fa-barcode"></i>
+
+        </div>
+
+        <div>
+
+            <span>
+                LAST SCANNED
+            </span>
+
+            <strong id="liveLastBarcode">
+                No product scanned yet
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- CURRENT SALE -->
+    <div class="live-sale-section">
+
+        <div class="live-section-header">
+
+            <div>
+
+                <span>
+                    CURRENT SALE
+                </span>
+
+                <h2>
+                    Sale items
+                </h2>
+
+            </div>
+
+            <button
+                type="button"
+                id="liveSellClearBtn"
+                class="live-clear-btn"
+            >
+                Clear
+            </button>
+
+        </div>
+
+
+        <!-- LIVE SALE ITEMS -->
+        <div
+            class="live-sale-items"
+            id="liveSellItems"
+        >
+
+            <div class="live-empty-sale">
+
+                <div class="live-empty-icon">
+
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                </div>
+
+                <strong>
+                    No products scanned
+                </strong>
+
+                <p>
+                    Scan a barcode to add a product to this sale.
+                </p>
+
+                <button
+                    type="button"
+                    id="liveEmptyScanBtn"
+                    class="live-empty-scan-btn"
+                >
+
+                    <i class="fa-solid fa-barcode"></i>
+
+                    Start scanning
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SALE SUMMARY -->
+    <div class="live-sale-summary">
+
+        <div class="live-summary-row">
+
+            <span>
+                Items
+            </span>
+
+            <strong id="liveSellItemCount">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="live-summary-row">
+
+            <span>
+                Subtotal
+            </span>
+
+            <strong id="liveSellSubtotal">
+                €0.00
+            </strong>
+
+        </div>
+
+
+        <div class="live-summary-row live-total-row">
+
+            <span>
+                Total
+            </span>
+
+            <strong id="liveSellTotal">
+                €0.00
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- COMPLETE SALE -->
+    <button
+        type="button"
+        id="liveSellCompleteBtn"
+        class="live-complete-btn"
+    >
+
+        <span>
+
+            <i class="fa-solid fa-check"></i>
+
+            Complete Sale
+
+        </span>
+
+        <strong id="liveSellPayAmount">
+            €0.00
+        </strong>
+
+    </button>
+
+</section>
+          
+                <!-- 2. POST SCREEN (+) -->
+<section id="postScreen" class="screen">
+
+    <div class="post-page-header">
+        <div>
+            <span class="post-eyebrow">STORE MANAGEMENT</span>
+            <h2>Add New Product</h2>
+            <p>Publish a product to your online store.</p>
+        </div>
+    </div>
+
+    <div class="form-card product-form-card">
+
+        <!-- Product Preview -->
+        <div class="product-preview">
+            <div class="product-preview-image" id="productPreviewImage">
+                <i class="fa-solid fa-image"></i>
+            </div>
+
+            <div class="product-preview-info">
+                <strong id="productPreviewName">Your Product</strong>
+                <span id="productPreviewPrice">$0.00</span>
+            </div>
+        </div>
+
+        <form id="productForm">
+
+            <!-- Product Name -->
+            <div class="form-group">
+                <label for="productTitle">Product Name</label>
+
+                <input
+                    type="text"
+                    id="productTitle"
+                    placeholder="e.g. Wireless Headphones"
+                    required
+                >
+            </div>
+
+            <!-- Category -->
+            <div class="form-group">
+                <label for="productCategory">Category</label>
+
+                <select id="productCategory">
+
+                    <option value="Electronics">
+                        Electronics
+                    </option>
+
+                    <option value="Fashion">
+                        Fashion
+                    </option>
+
+                    <option value="Home">
+                        Home
+                    </option>
+
+                    <option value="Accessories">
+                        Accessories
+                    </option>
+
+                </select>
+            </div>
+
+            <!-- Price + Stock -->
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="productPrice">
+                        Price ($)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="productPrice"
+                        placeholder="59.99"
+                        step="0.01"
+                        min="0"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="productStock">
+                        Stock Quantity
+                    </label>
+
+                    <input
+                        type="number"
+                        id="productStock"
+                        placeholder="10"
+                        min="0"
+                        required
+                    >
+                </div>
+
+            </div>
+
+            <!-- Barcode (Optional) -->
+<div class="form-group">
+    <label for="productBarcode">
+        Barcode <span class="optional-label">Optional</span>
+    </label>
+
+    <div class="barcode-input-row">
+        <input
+            type="text"
+            id="productBarcode"
+            placeholder="Tap scanner button to add barcode"
+            readonly
+        >
+
+        <button
+            type="button"
+            class="scan-barcode-btn"
+            id="scanProductBarcodeBtn"
+            aria-label="Scan Barcode"
+        >
+            <i class="fa-solid fa-barcode"></i>
+        </button>
+    </div>
+</div>
+
+
+            <!-- Description -->
+            <div class="form-group">
+                <label for="productDescription">
+                    Product Description
+                </label>
+
+                <textarea
+                    id="productDescription"
+                    rows="4"
+                    placeholder="Describe your product..."
+                ></textarea>
+            </div>
+
+          <!-- Product Variants -->
+<div class="product-variants-section">
+
+    <div class="variants-header">
+        <div>
+            <strong>Product Variants</strong>
+            <span class="form-help">
+                Add options such as size or color.
+            </span>
+        </div>
+    </div>
+
+
+    <!-- Size -->
+    <div class="variant-group">
+
+        <label for="variantSize">
+            Size
+            <span class="optional-label">Optional</span>
+        </label>
+
+        <input
+            type="text"
+            id="variantSize"
+            placeholder="e.g. Small, Medium, Large"
+        >
+
+        <small class="form-help">
+            Separate options with commas.
+        </small>
+
+    </div>
+
+
+    <!-- Color -->
+    <div class="variant-group">
+
+        <label for="variantColor">
+            Color
+            <span class="optional-label">Optional</span>
+        </label>
+
+        <input
+            type="text"
+            id="variantColor"
+            placeholder="e.g. Black, White, Blue"
+        >
+
+        <small class="form-help">
+            Separate options with commas.
+        </small>
+
+    </div>
+
+</div>
+            <!-- Product Image -->
+<div class="form-group">
+
+    <label>
+        Product Image
+    </label>
+
+    <div class="product-image-upload">
+
+        <!-- Image Preview -->
+        <div
+            class="product-upload-preview"
+            id="productUploadPreview"
+        >
+            <i class="fa-solid fa-image"></i>
+            <span>No image selected</span>
+        </div>
+
+        <!-- Buttons -->
+        <div class="product-image-actions">
+
+            <button
+                type="button"
+                class="image-action-btn"
+                id="importProductImageBtn"
+            >
+                <i class="fa-solid fa-images"></i>
+                Import
+            </button>
+
+            <button
+                type="button"
+                class="image-action-btn"
+                id="takeProductPhotoBtn"
+            >
+                <i class="fa-solid fa-camera"></i>
+                Camera
+            </button>
+
+        </div>
+
+        <!-- Hidden Gallery/File Input -->
+        <input
+            type="file"
+            id="productImageInput"
+            accept="image/*"
+            hidden
+        >
+
+        <!-- Hidden Camera Input -->
+        <input
+            type="file"
+            id="productCameraInput"
+            accept="image/*"
+            capture="environment"
+            hidden
+        >
+
+    </div>
+
+    <small class="form-help">
+        Import an image from your phone or take a new product photo.
+    </small>
+
+</div>
+
+            <!-- Publish Status -->
+            <div class="publish-setting">
+
+                <div>
+                    <strong>Publish to Store</strong>
+                    <span>Make this product visible in your store.</span>
+                </div>
+
+                <label class="toggle-switch">
+                    <input
+                        type="checkbox"
+                        id="productPublished"
+                        checked
+                    >
+
+                    <span class="toggle-slider"></span>
+                </label>
+
+            </div>
+
+            <button
+                type="submit"
+                class="primary-btn publish-product-btn"
+            >
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                Publish Product
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+            <!-- INBOX / NOTIFICATIONS SCREEN -->
+<section id="inboxScreen" class="screen">
+
+    <div class="inbox-page">
+
+        <!-- Header -->
+        <div class="inbox-header">
+
+            <div>
+                <span class="inbox-eyebrow">
+                    STORE ACTIVITY
+                </span>
+
+                <h2>Inbox</h2>
+
+                <p id="notificationUnreadText">
+                    No unread notifications
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="mark-notifications-read-btn"
+                id="markNotificationsReadBtn"
+            >
+                Mark all read
+            </button>
+
+        </div>
+
+
+        <!-- Tabs -->
+        <div class="inbox-tabs">
+
+            <button
+                type="button"
+                class="tab-btn"
+                data-notification-filter="chat"
+            >
+                Chat
+            </button>
+
+            <button
+                type="button"
+                class="tab-btn"
+                data-notification-filter="unread"
+            >
+                Unread
+            </button>
+
+            <button
+                type="button"
+                class="tab-btn"
+                data-notification-filter="orders"
+            >
+                Orders
+            </button>
+
+            <button
+                type="button"
+                class="tab-btn"
+                data-notification-filter="inventory"
+            >
+                Inventory
+            </button>
+
+        </div>
+
+
+        <!-- Real Notification Feed -->
+        <div
+            class="notification-list"
+            id="notificationList"
+        >
+
+            <div class="notification-empty">
+
+                <div class="notification-empty-icon">
+                    <i class="fa-regular fa-bell"></i>
+                </div>
+
+                <h3>No notifications yet</h3>
+
+                <p>
+                    Orders, sales, stock alerts and
+                    store activity will appear here.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+         
+  
+  <!-- =========================================
+     INBOX BRICK 2 - CHAT PANEL
+     ========================================= -->
+
+<div
+    id="chatPanel"
+    class="chat-panel"
+    style="display: none;"
+>
+
+    <!-- Chat Header -->
+    <div class="chat-header">
+
+        <button
+            type="button"
+            id="closeChatBtn"
+            class="chat-back-btn"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <div class="chat-customer-avatar" id="chatAvatar">
+            S
+        </div>
+
+        <div class="chat-customer-info">
+            <strong id="chatCustomerName">
+                Sarah
+            </strong>
+
+            <span id="chatCustomerStatus">
+                Customer
+            </span>
+        </div>
+
+        <button
+            type="button"
+            class="chat-more-btn"
+        >
+            <i class="fa-solid fa-ellipsis"></i>
+        </button>
+
+    </div>
+
+
+    <!-- Messages -->
+    <div
+        class="chat-messages"
+        id="chatMessages"
+    >
+
+        <div class="chat-date">
+            Today
+        </div>
+
+        <div class="message-row customer-message">
+
+            <div class="message-bubble">
+                Hi! Is the wireless headphone still available?
+            </div>
+
+            <span class="message-time">
+                10:40 AM
+            </span>
+
+        </div>
+
+
+        <div class="message-row seller-message">
+
+            <div class="message-bubble">
+                Yes, it's currently in stock.
+            </div>
+
+            <span class="message-time">
+                10:41 AM
+            </span>
+
+        </div>
+
+
+        <div class="message-row customer-message">
+
+            <div class="message-bubble">
+                Great! How much is it?
+            </div>
+
+            <span class="message-time">
+                10:42 AM
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- Message Composer -->
+    <div class="chat-composer">
+
+        <button
+            type="button"
+            class="chat-attachment-btn"
+        >
+            <i class="fa-solid fa-paperclip"></i>
+        </button>
+
+        <input
+            type="text"
+            id="chatMessageInput"
+            placeholder="Type a message..."
+            autocomplete="off"
+        >
+
+        <button
+            type="button"
+            id="sendChatMessage"
+            class="chat-send-btn"
+        >
+            <i class="fa-solid fa-paper-plane"></i>
+        </button>
+
+    </div>
+
+</div>
+
+</>
+
+            <!-- 4. PROFILE SCREEN -->
+            <section id="profileScreen" class="screen">
+
+
+    <!-- Profile Header -->
+    <div class="profile-header-card">
+
+        <div class="profile-avatar">
+            <i class="fa-solid fa-store"></i>
+        </div>
+
+        <div class="profile-main-info">
+            <div class="profile-name-row">
+                <h2>Nexodra Flagship Vendor</h2>
+                <span class="verified-badge">
+                    <i class="fa-solid fa-check"></i>
+                </span>
+            </div>
+
+            <p class="profile-status">
+                <span class="status-dot"></span>
+                Active Store
+            </p>
+
+            <div class="profile-rating">
+                <i class="fa-solid fa-star"></i>
+                <strong>4.8</strong>
+                <span>320 reviews</span>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Profile Actions -->
+    <div class="profile-actions">
+
+        <button class="profile-action-btn">
+            <i class="fa-solid fa-eye"></i>
+            <span>Preview Store</span>
+        </button>
+
+       <button
+    class="store-action-btn"
+    id="shareStoreBtn"
+    type="button"
+>
+    <i class="fa-solid fa-share-nodes"></i>
+    Share Store
+</button>
+
+      <!-- Public Store Share Panel -->
+<div
+    id="storeSharePanel"
+    class="store-share-panel"
+    style="display: none;"
+>
+
+    <div class="share-panel-header">
+        <div>
+            <span class="share-eyebrow">PUBLIC STORE</span>
+            <h3>Share Your Store</h3>
+        </div>
+
+        <button
+            type="button"
+            id="closeSharePanel"
+            class="share-close-btn"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <p class="share-description">
+        Send this link to customers so they can visit your public store.
+    </p>
+
+    <div class="store-link-box">
+
+        <i class="fa-solid fa-link"></i>
+
+        <input
+            type="text"
+            id="publicStoreLink"
+            readonly
+        >
+
+        <button
+            type="button"
+            id="copyStoreLinkBtn"
+            class="copy-link-btn"
+        >
+            Copy
+        </button>
+
+    </div>
+
+    <div class="social-share-row">
+
+        <button
+            type="button"
+            class="social-share-btn"
+            id="nativeShareBtn"
+        >
+            <i class="fa-solid fa-share-nodes"></i>
+            Share
+        </button>
+
+        <button
+            type="button"
+            class="social-share-btn"
+            id="whatsappShareBtn"
+        >
+            <i class="fa-brands fa-whatsapp"></i>
+            WhatsApp
+        </button>
+
+    </div>
+
+</div>
+    </div>
+
+
+    <!-- Business -->
+    <div class="profile-section">
+
+        <div class="profile-section-title">
+            <h3>Business</h3>
+        </div>
+
+        <div class="profile-menu">
+          
+
+
+            <button
+    class="profile-menu-item"
+    id="storeInformationBtn"
+    type="button"
+>
+    <div class="profile-menu-icon">
+        <i class="fa-solid fa-store"></i>
+    </div>
+
+    <div class="profile-menu-text">
+        <strong>Store Information</strong>
+        <span>Name, description and contact details</span>
+    </div>
+
+    <i class="fa-solid fa-chevron-right profile-arrow"></i>
+</button>
+
+
+            <button
+    class="profile-menu-item"
+    id="openAppearanceBtn"
+    type="button"
+>
+    <div class="profile-menu-icon">
+        <i class="fa-solid fa-palette"></i>
+    </div>
+
+    <div class="profile-menu-text">
+        <strong>Store Appearance</strong>
+        <span>Customize how your store looks</span>
+    </div>
+
+    <i class="fa-solid fa-chevron-right profile-arrow"></i>
+</button>
+
+        </div>
+
+    </div>
+
+
+    <!-- Selling -->
+    <div class="profile-section">
+
+        <div class="profile-section-title">
+            <h3>Selling</h3>
+        </div>
+
+        <div class="profile-menu">
+
+            <button class="profile-menu-item">
+                <div class="profile-menu-icon">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                </div>
+
+                <div class="profile-menu-text">
+                    <strong>Orders</strong>
+                    <span>Manage customer orders</span>
+                </div>
+
+                <span class="profile-count">48</span>
+
+                <i class="fa-solid fa-chevron-right profile-arrow"></i>
+            </button>
+
+
+            <button class="profile-menu-item">
+                <div class="profile-menu-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <div class="profile-menu-text">
+                    <strong>Customers</strong>
+                    <span>View your customers</span>
+                </div>
+
+                <i class="fa-solid fa-chevron-right profile-arrow"></i>
+            </button>
+
+
+            <button class="profile-menu-item">
+                <div class="profile-menu-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+
+                <div class="profile-menu-text">
+                    <strong>Payments & Payouts</strong>
+                    <span>Manage your earnings</span>
+                </div>
+
+                <i class="fa-solid fa-chevron-right profile-arrow"></i>
+            </button>
+
+
+            <button class="profile-menu-item">
+                <div class="profile-menu-icon">
+                    <i class="fa-solid fa-truck"></i>
+                </div>
+
+                <div class="profile-menu-text">
+                    <strong>Delivery & Shipping</strong>
+                    <span>Manage delivery settings</span>
+                </div>
+
+                <i class="fa-solid fa-chevron-right profile-arrow"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- Account Settings -->
+    <div class="profile-section">
+
+        <div class="profile-section-title">
+            <h3>Settings</h3>
+        </div>
+
+        <div class="profile-menu">
+
+            <button class="profile-menu-item">
+                <div class="profile-menu-icon">
+                    <i class="fa-regular fa-bell"></i>
+                </div>
+
+                <div class="profile-menu-text">
+                    <strong>Notifications</strong>
+                    <span>Manage your notifications</span>
+                </div>
+
+                <i class="fa-solid fa-chevron-right profile-arrow"></i>
+            </button>
+
+
+            <button class="profile-menu-item">
+                <div class="profile-menu-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+
+                <div class="profile-menu-text">
+                    <strong>Security</strong>
+                    <span>Password and account security</span>
+                </div>
+
+                <i class="fa-solid fa-chevron-right profile-arrow"></i>
+            </button>
+
+
+            <button class="profile-menu-item">
+                <div class="profile-menu-icon">
+                    <i class="fa-solid fa-language"></i>
+                </div>
+
+                <div class="profile-menu-text">
+                    <strong>Language & Currency</strong>
+                    <span>English · USD</span>
+                </div>
+
+                <i class="fa-solid fa-chevron-right profile-arrow"></i>
+            </button>
+
+
+            <button class="profile-menu-item">
+                <div class="profile-menu-icon">
+                    <i class="fa-regular fa-circle-question"></i>
+                </div>
+
+                <div class="profile-menu-text">
+                    <strong>Help & Support</strong>
+                    <span>Get help with your store</span>
+                </div>
+
+                <i class="fa-solid fa-chevron-right profile-arrow"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- Merchant Status -->
+    <div class="merchant-status-card">
+
+        <div class="merchant-status-icon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+
+        <div class="merchant-status-text">
+            <strong>Verified Merchant</strong>
+            <span>Your store is verified and currently active.</span>
+        </div>
+
+    </div>
+
+
+    <!-- Logout -->
+    <button class="logout-btn">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        Log Out
+    </button>
+       <!-- Logout Confirmation Modal -->
+<div
+    id="logoutModal"
+    class="logout-modal"
+>
+    <div class="logout-modal-card">
+
+        <div class="logout-modal-icon">
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </div>
+
+        <h3>Log Out?</h3>
+
+        <p>
+            Are you sure you want to log out of your Nexodra account?
+        </p>
+
+        <div class="logout-modal-actions">
+
+            <button
+                type="button"
+                id="cancelLogoutBtn"
+                class="logout-cancel-btn"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                id="confirmLogoutBtn"
+                class="logout-confirm-btn"
+            >
+                Log Out
+            </button>
+
+        </div>
+
+    </div>
+</div>       
+              <!-- Store Information Panel -->
+<div
+    id="storeInformationPanel"
+    class="store-information-panel"
+    style="display: none;"
+>
+
+    <div class="store-info-panel-header">
+
+        <button
+            type="button"
+            id="closeStoreInformation"
+            class="back-panel-btn"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <div>
+            <span class="post-eyebrow">BUSINESS</span>
+            <h2>Store Information</h2>
+            <p>Manage your store details.</p>
+        </div>
+
+    </div>
+
+
+    <div class="form-card store-info-form-card">
+
+        <div class="form-group">
+            <label for="storeName">
+                Store Name
+            </label>
+
+            <input
+                type="text"
+                id="storeName"
+                value="Nexodra Flagship Vendor"
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="storeOwner">
+                Owner Name
+            </label>
+
+            <input
+                type="text"
+                id="storeOwner"
+                placeholder="Enter owner name"
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="storePhone">
+                Phone Number
+            </label>
+
+            <input
+                type="tel"
+                id="storePhone"
+                placeholder="+000 000 000 000"
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="storeEmail">
+                Email Address
+            </label>
+
+            <input
+                type="email"
+                id="storeEmail"
+                placeholder="store@example.com"
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="storeLocation">
+                Store Location
+            </label>
+
+            <input
+                type="text"
+                id="storeLocation"
+                placeholder="City, Country"
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="storeDescription">
+                Store Description
+            </label>
+
+            <textarea
+                id="storeDescription"
+                rows="5"
+                placeholder="Tell buyers about your store..."
+            ></textarea>
+        </div>
+
+
+        <button
+            type="button"
+            class="primary-btn"
+            id="saveStoreInformation"
+        >
+            <i class="fa-solid fa-check"></i>
+            Save Store Information
+        </button>
+
+    </div>
+
+</div>
+
+</section>
+
+
+          
+<!-- =========================================
+     STORE APPEARANCE SCREEN
+========================================= -->
+
+<section id="appearanceScreen" class="screen">
+
+    <!-- HEADER -->
+
+    <div class="appearance-header">
+
+        <button
+            type="button"
+            id="closeAppearanceBtn"
+            class="appearance-back-btn"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <div>
+
+            <span class="appearance-eyebrow">
+                STORE SETTINGS
+            </span>
+
+            <h2>Store Appearance</h2>
+
+            <p>
+                Customize how your store looks to customers.
+            </p>
+
+        </div>
+
+    </div>
+
+<!-- =====================================
+         LIVE STORE PREVIEW
+    ====================================== -->
+
+<div class="appearance-preview">
+
+    <!-- Preview heading -->
+
+    <span class="preview-label">
+        CUSTOMER PREVIEW
+    </span>
+
+
+    <!-- =====================================
+         STORE BANNER
+    ====================================== -->
+
+    <div
+        class="appearance-preview-cover"
+        id="appearancePreviewCover"
+    >
+    </div>
+
+
+    <!-- =====================================
+         STORE PROFILE AREA
+
+         Logo and store information are now
+         BELOW the banner, matching the
+         reference structure.
+    ====================================== -->
+
+    <div class="appearance-preview-profile">
+
+
+        <!-- Store logo / picture -->
+
+        <div
+            class="preview-store-avatar"
+            id="appearancePreviewAvatar"
+        >
+
+            <i class="fa-solid fa-store"></i>
+
+        </div>
+
+
+        <!-- Store information -->
+
+        <div class="appearance-preview-content">
+
+            <h3 id="appearancePreviewName">
+                Your Store
+            </h3>
+
+            <p id="appearancePreviewDescription">
+                Your store description will appear here.
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+</div>    
+
+
+  
+
+    <!-- =====================================
+         STORE BRANDING
+    ====================================== -->
+
+    <div class="appearance-card">
+
+        <div class="appearance-card-title">
+
+            <i class="fa-solid fa-image"></i>
+
+            <div>
+
+                <strong>Store Branding</strong>
+
+                <span>
+                    Add a logo and cover image.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- STORE AVATAR -->
+
+        <div class="appearance-upload-row">
+
+            <div
+                class="appearance-upload-avatar"
+                id="appearanceAvatarPreview"
+            >
+
+                <i class="fa-solid fa-store"></i>
+
+            </div>
+
+            <div class="appearance-upload-info">
+
+                <strong>Store Logo</strong>
+
+                <span>
+                    Square image recommended
+                </span>
+
+                <div class="appearance-upload-actions">
+
+                    <button
+                        type="button"
+                        id="appearanceUploadAvatarBtn"
+                        class="appearance-secondary-btn"
+                    >
+                        <i class="fa-solid fa-upload"></i>
+                        Upload
+                    </button>
+
+                    <button
+                        type="button"
+                        id="appearanceRemoveAvatarBtn"
+                        class="appearance-icon-btn"
+                        aria-label="Remove store logo"
+                    >
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <input
+            type="file"
+            id="appearanceAvatarInput"
+            accept="image/*"
+            hidden
+        >
+
+
+        <!-- COVER -->
+
+        <div class="appearance-cover-upload">
+
+            <div class="appearance-cover-preview">
+
+                <span>
+                    <i class="fa-solid fa-panorama"></i>
+                    Store Cover
+                </span>
+
+            </div>
+
+            <button
+                type="button"
+                id="appearanceUploadCoverBtn"
+                class="appearance-secondary-btn"
+            >
+
+                <i class="fa-solid fa-image"></i>
+                Choose Cover
+
+            </button>
+
+        </div>
+
+        <input
+            type="file"
+            id="appearanceCoverInput"
+            accept="image/*"
+            hidden
+        >
+
+    </div>
+
+
+    <!-- =====================================
+         STORE THEME
+    ====================================== -->
+
+    <div class="appearance-card">
+
+        <div class="appearance-card-title">
+
+            <i class="fa-solid fa-palette"></i>
+
+            <div>
+
+                <strong>Store Theme</strong>
+
+                <span>
+                    Choose the visual style of your storefront.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="appearance-theme-grid">
+
+            <button
+                type="button"
+                class="appearance-theme-option active"
+                data-theme="default"
+            >
+                <span class="theme-preview theme-default"></span>
+                <strong>Classic</strong>
+            </button>
+
+
+            <button
+                type="button"
+                class="appearance-theme-option"
+                data-theme="dark"
+            >
+                <span class="theme-preview theme-dark"></span>
+                <strong>Dark</strong>
+            </button>
+
+
+            <button
+                type="button"
+                class="appearance-theme-option"
+                data-theme="warm"
+            >
+                <span class="theme-preview theme-warm"></span>
+                <strong>Warm</strong>
+            </button>
+
+
+            <button
+                type="button"
+                class="appearance-theme-option"
+                data-theme="fresh"
+            >
+                <span class="theme-preview theme-fresh"></span>
+                <strong>Fresh</strong>
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         PRODUCT DISPLAY
+    ====================================== -->
+
+    <div class="appearance-card">
+
+        <div class="appearance-card-title">
+
+            <i class="fa-solid fa-table-cells-large"></i>
+
+            <div>
+
+                <strong>Product Display</strong>
+
+                <span>
+                    Choose how products appear to customers.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="appearance-choice-list">
+
+            <label class="appearance-choice">
+
+                <input
+                    type="radio"
+                    name="appearanceProductLayout"
+                    value="grid"
+                    checked
+                >
+
+                <span class="appearance-choice-icon">
+                    <i class="fa-solid fa-grip"></i>
+                </span>
+
+                <span class="appearance-choice-text">
+
+                    <strong>Grid</strong>
+
+                    <small>
+                        Modern product cards with images.
+                    </small>
+
+                </span>
+
+            </label>
+
+
+            <label class="appearance-choice">
+
+                <input
+                    type="radio"
+                    name="appearanceProductLayout"
+                    value="compact"
+                >
+
+                <span class="appearance-choice-icon">
+                    <i class="fa-solid fa-list"></i>
+                </span>
+
+                <span class="appearance-choice-text">
+
+                    <strong>Compact</strong>
+
+                    <small>
+                        More products visible at once.
+                    </small>
+
+                </span>
+
+            </label>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         CUSTOMER VIEW
+    ====================================== -->
+
+    <div class="appearance-card">
+
+        <div class="appearance-card-title">
+
+            <i class="fa-solid fa-eye"></i>
+
+            <div>
+
+                <strong>Customer View</strong>
+
+                <span>
+                    Control useful storefront elements.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <label class="appearance-toggle-row">
+
+            <span>
+
+                <strong>Show Categories</strong>
+
+                <small>
+                    Display product categories in your store.
+                </small>
+
+            </span>
+
+            <input
+                type="checkbox"
+                id="appearanceShowCategories"
+                checked
+            >
+
+        </label>
+
+
+        <label class="appearance-toggle-row">
+
+            <span>
+
+                <strong>Show Stock Status</strong>
+
+                <small>
+                    Let customers see product availability.
+                </small>
+
+            </span>
+
+            <input
+                type="checkbox"
+                id="appearanceShowStock"
+                checked
+            >
+
+        </label>
+
+    </div>
+
+
+    <!-- =====================================
+         SAVE
+    ====================================== -->
+
+    <button
+        type="button"
+        id="saveAppearanceBtn"
+        class="primary-btn"
+    >
+
+        <i class="fa-solid fa-check"></i>
+
+        Save Appearance
+
+    </button>
+
+</section>
+         
+<!-- =========================================
+     SALES OVERVIEW SCREEN
+========================================= -->
+
+<section
+    id="salesOverviewScreen"
+    class="screen"
+>
+
+
+    <!-- Header -->
+
+    <div class="sales-overview-page-header">
+
+        <button
+            type="button"
+            id="closeSalesOverview"
+            class="sales-overview-back-btn"
+        >
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+        </button>
+
+
+        <div>
+
+            <span class="sell-eyebrow">
+                STORE PERFORMANCE
+            </span>
+
+            <h2>
+                Sales Overview
+            </h2>
+
+            <p>
+                Track your store performance.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Summary Cards -->
+
+    <div class="sales-overview-summary">
+
+
+        <div class="sales-stat-card">
+
+            <span>
+                REVENUE
+            </span>
+
+            <strong id="analyticsRevenue">
+                €0.00
+            </strong>
+
+        </div>
+
+
+
+        <div class="sales-stat-card">
+
+            <span>
+                TRANSACTIONS
+            </span>
+
+            <strong id="analyticsTransactions">
+                0
+            </strong>
+
+        </div>
+
+
+
+        <div class="sales-stat-card">
+
+            <span>
+                ITEMS SOLD
+            </span>
+
+            <strong id="analyticsItemsSold">
+                0
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- Period Selector -->
+
+    <div class="sales-period-switch">
+
+
+        <button
+            type="button"
+            class="sales-period-btn active"
+            data-period="today"
+        >
+            Today
+        </button>
+
+
+        <button
+            type="button"
+            class="sales-period-btn"
+            data-period="week"
+        >
+            Week
+        </button>
+
+
+        <button
+            type="button"
+            class="sales-period-btn"
+            data-period="month"
+        >
+            Month
+        </button>
+
+
+    </div>
+
+
+
+
+    <!-- Graph -->
+
+    <div class="sales-analytics-card">
+
+
+        <div class="sales-analytics-header">
+
+            <div>
+
+                <span>
+                    SALES PERFORMANCE
+                </span>
+
+                <h3>
+                    Revenue
+                </h3>
+
+            </div>
+
+
+            <strong id="analyticsGraphTotal">
+                €0.00
+            </strong>
+
+
+        </div>
+
+
+
+        <div
+            id="salesGraph"
+            class="sales-graph"
+        >
+
+        </div>
+
+
+    </div>
+
+<!-- =========================================
+     TOP SELLING PRODUCTS
+========================================= -->
+
+<div class="top-selling-card">
+
+
+    <div class="top-selling-header">
+
+        <div>
+
+            <span>
+                TOP SELLING PRODUCTS
+            </span>
+
+            <h3>
+                Best Performers
+            </h3>
+
+        </div>
+
+
+        <span class="overview-period">
+            This month
+        </span>
+
+
+    </div>
+
+
+
+    <div
+        id="topSellingProductsList"
+        class="top-selling-list"
+    >
+
+
+        <div class="top-selling-empty">
+
+
+            <i class="fa-solid fa-trophy"></i>
+
+
+            <strong>
+                No sales data yet
+            </strong>
+
+
+            <span>
+                Your best products will appear here.
+            </span>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+    <!-- Sales History -->
+
+    <div class="sales-history-card">
+
+
+        <div class="sales-history-header">
+
+            <span>
+                TRANSACTIONS
+            </span>
+
+
+            <h3>
+                Sales History
+            </h3>
+
+
+        </div>
+
+
+
+        <div
+            id="salesHistoryList"
+            class="sales-history-list"
+        >
+
+
+            <div class="sales-history-empty">
+
+
+                <i class="fa-solid fa-receipt"></i>
+
+
+                <strong>
+                    No sales yet
+                </strong>
+
+
+                <span>
+                    Completed sales will appear here.
+                </span>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</section>
+            
+        </main>
+
+        <!-- Bottom Navigation Bar -->
+<nav class="bottom-nav">
+
+    <!-- Store -->
+
+  
+    <button
+        class="nav-btn active"
+        data-target="storeScreen"
+        data-title="Nexodra"
+    >
+        <i class="fa-solid fa-house"></i>
+        <span>Store</span>
+    </button>
+
+
+    <!-- Sell -->
+    <button
+        class="nav-btn"
+        data-target="sellScreen"
+        data-title="Nexodra"
+    >
+        <i class="fa-solid fa-cash-register"></i>
+        <span>Sell</span>
+    </button>
+
+
+    <!-- Post -->
+    <button
+        class="nav-btn post-nav-btn"
+        data-target="postScreen"
+        data-title="Nexodra"
+    >
+        <div class="plus-circle">
+            <i class="fa-solid fa-plus"></i>
+        </div>
+
+        <span>Post</span>
+    </button>
+
+
+    <!-- Inbox -->
+    <button
+        class="nav-btn"
+        data-target="inboxScreen"
+        data-title="Nexodra"
+    >
+        <i class="fa-regular fa-comment"></i>
+        <span>Inbox</span>
+    </button>
+
+
+    <!-- Profile -->
+    <button
+        class="nav-btn"
+        data-target="profileScreen"
+        data-title="Nexodra"
+    >
+        <i class="fa-regular fa-user"></i>
+        <span>Profile</span>
+    </button>
+
+</nav>
+
+<!-- BARCODE SCANNER MODAL -->
+<div id="barcodeScannerModal" class="scanner-modal" style="display: none;">
+    <div class="scanner-overlay">
+        
+        <!-- Header Controls -->
+        <div class="scanner-header">
+            <span><i class="fa-solid fa-barcode"></i> Scan Barcode</span>
+            <button type="button" id="closeScannerModalBtn" class="scanner-close-btn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Camera Frame -->
+        <div class="scanner-viewport">
+            <div id="barcodeScannerReader"></div>
+            
+            <!-- Viewfinder Target Overlay -->
+            <div class="scanner-reticle">
+                <div class="laser-line"></div>
+                <span class="corner top-left"></span>
+                <span class="corner top-right"></span>
+                <span class="corner bottom-left"></span>
+                <span class="corner bottom-right"></span>
+            </div>
+        </div>
+
+        <!-- Footer Instructions -->
+        <div class="scanner-footer">
+
+    <p id="liveSellScannerStatus">
+        Center the product barcode inside the frame
+    </p>
+
+</div>
+
+    </div>
+</div>
+
+<!-- =========================================
+     IMAGE CROP MODAL
+========================================= -->
+
+<div
+    id="imageCropModal"
+    class="image-crop-modal"
+    aria-hidden="true"
+>
+    <div class="image-crop-modal-backdrop"></div>
+
+    <div
+        class="image-crop-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="imageCropTitle"
+    >
+
+        <!-- Header -->
+
+        <div class="image-crop-header">
+
+            <div>
+
+                <h3 id="imageCropTitle">
+                    Adjust Image
+                </h3>
+
+                <p id="imageCropSubtitle">
+                    Drag and zoom to choose the visible area.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- Crop Area -->
+
+        <div class="image-crop-container">
+
+            <img
+                id="imageCropTarget"
+                alt="Image to crop"
+            >
+
+        </div>
+
+
+        <!-- Controls -->
+
+        <div class="image-crop-controls">
+
+            <button
+                type="button"
+                id="cancelImageCropBtn"
+                class="image-crop-cancel-btn"
+            >
+                Cancel
+            </button>
+
+
+            <button
+                type="button"
+                id="confirmImageCropBtn"
+                class="image-crop-confirm-btn"
+            >
+                <i class="fa-solid fa-check"></i>
+                Confirm Crop
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+      
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    const SUPABASE_URL =
+        'https://iysidtzvxqnjfxzhbkxw.supabase.co';
+
+    const SUPABASE_PUBLISHABLE_KEY =
+        'sb_publishable_4cNfJ8bP1xj2BRB4AfM_yg_32k4GT6h';
+
+    const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+</script>
+
+<!-- Barcode / QR scanner -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
+      
+    <script src="app.js"></script>
+
+                    
+</body>
+</html>

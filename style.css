@@ -6139,878 +6139,6 @@ body {
     pointer-events: none;
 }
 
-/* =========================================
-   SALES OVERVIEW SCREEN
-========================================= */
-
-
-#salesOverviewScreen {
-
-    padding: 20px;
-
-    padding-bottom: 120px;
-
-}
-
-
-
-/* HEADER */
-
-.sales-overview-page-header {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 15px;
-
-    margin-bottom: 25px;
-
-}
-
-
-
-.sales-overview-back-btn {
-
-    width: 42px;
-
-    height: 42px;
-
-    border-radius: 50%;
-
-    border: none;
-
-    background: white;
-
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 18px;
-
-    cursor: pointer;
-
-}
-
-
-
-
-.sales-overview-page-header h2 {
-
-    margin: 4px 0;
-
-    font-size: 26px;
-
-}
-
-
-
-.sales-overview-page-header p {
-
-    margin: 0;
-
-    color: #777;
-
-    font-size: 14px;
-
-}
-
-
-
-/* SUMMARY CARDS */
-
-.sales-overview-summary {
-
-    display: grid;
-
-    grid-template-columns: repeat(3,1fr);
-
-    gap: 12px;
-
-    margin-bottom: 20px;
-
-}
-
-
-
-.sales-stat-card {
-
-    background: white;
-
-    border-radius: 20px;
-
-    padding: 18px 14px;
-
-    box-shadow:
-
-        0 8px 25px rgba(0,0,0,0.06);
-
-}
-
-
-
-.sales-stat-card span {
-
-    display: block;
-
-    font-size: 11px;
-
-    color: #888;
-
-    font-weight: 600;
-
-}
-
-
-
-.sales-stat-card strong {
-
-    display: block;
-
-    margin-top: 8px;
-
-    font-size: 20px;
-
-}
-
-
-
-
-
-/* PERIOD BUTTONS */
-
-.sales-period-switch {
-
-    display: flex;
-
-    background: white;
-
-    padding: 6px;
-
-    border-radius: 18px;
-
-    gap: 6px;
-
-    margin-bottom: 20px;
-
-}
-
-
-
-.sales-period-btn {
-
-    flex: 1;
-
-    border: none;
-
-    background: transparent;
-
-    padding: 10px;
-
-    border-radius: 14px;
-
-    color: #777;
-
-}
-
-
-
-.sales-period-btn.active {
-
-    background: #111;
-
-    color: white;
-
-}
-
-
-
-
-
-/* GRAPH CARD */
-
-.sales-analytics-card {
-
-
-    background: white;
-
-    border-radius: 25px;
-
-    padding: 20px;
-
-    margin-bottom: 20px;
-
-    box-shadow:
-
-        0 8px 25px rgba(0,0,0,0.06);
-
-
-}
-
-
-
-.sales-analytics-header {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-}
-
-
-
-.sales-analytics-header span {
-
-    font-size: 11px;
-
-    color: #888;
-
-}
-
-
-
-.sales-analytics-header h3 {
-
-    margin: 5px 0 0;
-
-}
-
-
-
-.sales-analytics-header strong {
-
-    font-size: 20px;
-
-}
-
-
-
-/* GRAPH PLACEHOLDER */
-
-.sales-graph {
-
-    height: 180px;
-
-    margin-top: 20px;
-
-    border-radius: 18px;
-
-    background:
-
-    linear-gradient(
-        180deg,
-        #f8f8f8,
-        #ffffff
-    );
-
-    position: relative;
-
-}
-
-
-
-
-
-/* HISTORY */
-
-.sales-history-card {
-
-    background:white;
-
-    border-radius:25px;
-
-    padding:20px;
-
-    box-shadow:
-
-        0 8px 25px rgba(0,0,0,0.06);
-
-}
-
-
-
-.sales-history-header span {
-
-    font-size:11px;
-
-    color:#888;
-
-}
-
-
-
-.sales-history-header h3 {
-
-    margin-top:6px;
-
-}
-
-
-
-.sales-history-empty {
-
-    height:180px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    align-items:center;
-
-    color:#888;
-
-    gap:8px;
-
-}
-
-
-
-.sales-history-empty i {
-
-    font-size:35px;
-
-}
-
-
-
-
-
-/* MOBILE */
-
-@media(max-width:600px){
-
-
-    .sales-overview-summary {
-
-        grid-template-columns:1fr;
-
-    }
-
-
-}
-
-/* =========================================
-   BRICK SALES OVERVIEW 5 — SALES HISTORY
-   ========================================= */
-
-.sales-history-section {
-    width: 100%;
-    margin-top: 22px;
-    padding: 0 16px 24px;
-}
-
-
-/* =========================================
-   HISTORY HEADER
-   ========================================= */
-
-.sales-history-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-}
-
-
-.sales-history-header h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: #172033;
-}
-
-
-.sales-history-header span {
-    font-size: 12px;
-    color: #8a93a3;
-}
-
-
-/* =========================================
-   HISTORY LIST
-   ========================================= */
-
-#salesHistoryList {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-
-/* =========================================
-   SALE HISTORY ITEM
-   ========================================= */
-
-.sales-history-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    width: 100%;
-    min-height: 72px;
-
-    padding: 14px 15px;
-
-    background: #ffffff;
-
-    border: 1px solid #edf0f4;
-    border-radius: 16px;
-
-    box-shadow:
-        0 4px 14px rgba(20, 32, 50, 0.05);
-}
-
-
-/* =========================================
-   SALE ICON
-   ========================================= */
-
-.sales-history-icon {
-    width: 42px;
-    height: 42px;
-
-    flex: 0 0 42px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 13px;
-
-    background: #eef4ff;
-
-    color: #315bea;
-
-    font-size: 17px;
-}
-
-
-/* =========================================
-   SALE INFORMATION
-   ========================================= */
-
-.sales-history-info {
-    min-width: 0;
-    flex: 1;
-
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-
-.sales-history-info strong {
-    font-size: 14px;
-    font-weight: 700;
-    color: #172033;
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-
-.sales-history-info span {
-    font-size: 12px;
-    color: #8a93a3;
-}
-
-
-/* =========================================
-   SALE AMOUNT
-   ========================================= */
-
-.sales-history-amount {
-    flex-shrink: 0;
-
-    text-align: right;
-
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-}
-
-
-.sales-history-amount strong {
-    font-size: 15px;
-    font-weight: 800;
-    color: #172033;
-}
-
-
-.sales-history-amount span {
-    font-size: 11px;
-    color: #8a93a3;
-}
-
-
-/* =========================================
-   EMPTY HISTORY
-   ========================================= */
-
-.sales-history-empty {
-    width: 100%;
-
-    padding: 30px 20px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    text-align: center;
-
-    background: #ffffff;
-
-    border: 1px solid #edf0f4;
-    border-radius: 18px;
-
-    box-shadow:
-        0 4px 14px rgba(20, 32, 50, 0.04);
-}
-
-
-.sales-history-empty i {
-    font-size: 28px;
-    color: #b8c0cc;
-
-    margin-bottom: 10px;
-}
-
-
-.sales-history-empty strong {
-    font-size: 14px;
-    color: #596273;
-
-    margin-bottom: 4px;
-}
-
-
-.sales-history-empty span {
-    font-size: 12px;
-    color: #9aa3b2;
-}
-
-
-/* =========================================
-   MOBILE
-   ========================================= */
-
-@media (max-width: 480px) {
-
-    .sales-history-section {
-        padding-left: 12px;
-        padding-right: 12px;
-    }
-
-
-    .sales-history-item {
-        min-height: 68px;
-        padding: 12px;
-        gap: 10px;
-        border-radius: 15px;
-    }
-
-
-    .sales-history-icon {
-        width: 38px;
-        height: 38px;
-        flex-basis: 38px;
-        border-radius: 11px;
-        font-size: 15px;
-    }
-
-
-    .sales-history-info strong {
-        font-size: 13px;
-    }
-
-
-    .sales-history-info span {
-        font-size: 11px;
-    }
-
-
-    .sales-history-amount strong {
-        font-size: 14px;
-    }
-
-}
-
-/* =========================================
-   TOP SELLING PRODUCTS
-========================================= */
-
-
-.top-selling-card {
-
-    background: white;
-
-    border-radius: 25px;
-
-    padding: 20px;
-
-    margin-bottom: 20px;
-
-    box-shadow:
-        0 8px 25px rgba(0,0,0,0.06);
-
-}
-
-
-
-.top-selling-header {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: flex-start;
-
-    margin-bottom: 18px;
-
-}
-
-
-
-.top-selling-header span:first-child {
-
-    font-size: 11px;
-
-    font-weight: 700;
-
-    color: #888;
-
-    letter-spacing: .5px;
-
-}
-
-
-
-.top-selling-header h3 {
-
-    margin: 6px 0 0;
-
-    font-size: 20px;
-
-}
-
-
-
-.top-selling-header .overview-period {
-
-    background: #f5f5f5;
-
-    padding: 7px 12px;
-
-    border-radius: 20px;
-
-    font-size: 12px;
-
-    color: #777;
-
-}
-
-
-
-
-/* PRODUCT LIST */
-
-.top-selling-list {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 12px;
-
-}
-
-
-
-/* PRODUCT ROW */
-
-.top-selling-item {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    padding: 12px;
-
-    background: #fafafa;
-
-    border-radius: 18px;
-
-}
-
-
-
-.top-selling-rank {
-
-    width: 34px;
-
-    height: 34px;
-
-    border-radius: 50%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 18px;
-
-}
-
-
-
-.top-selling-image {
-
-    width: 45px;
-
-    height: 45px;
-
-    border-radius: 14px;
-
-    overflow: hidden;
-
-    background: #f0f0f0;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-}
-
-
-
-.top-selling-image img {
-
-    width: 100%;
-
-    height: 100%;
-
-    object-fit: cover;
-
-}
-
-
-
-.top-selling-image span {
-
-    font-size: 24px;
-
-}
-
-
-
-
-.top-selling-info {
-
-    flex: 1;
-
-}
-
-
-
-.top-selling-info strong {
-
-    display: block;
-
-    font-size: 15px;
-
-}
-
-
-
-.top-selling-info small {
-
-    color: #777;
-
-    font-size: 12px;
-
-}
-
-
-
-
-.top-selling-revenue {
-
-    font-weight: 700;
-
-    font-size: 15px;
-
-}
-
-
-
-/* EMPTY STATE */
-
-.top-selling-empty {
-
-    height: 150px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: center;
-
-    align-items: center;
-
-    text-align: center;
-
-    color: #888;
-
-    gap: 8px;
-
-}
-
-
-
-.top-selling-empty i {
-
-    font-size: 35px;
-
-}
-
-
-
-.top-selling-empty strong {
-
-    color: #555;
-
-}
-
-
-
-
-/* MOBILE */
-
-@media(max-width:600px){
-
-    .top-selling-card {
-
-        border-radius: 22px;
-
-    }
-
-}
 
 /* =========================================
    BRICK SALES OVERVIEW 4 — REVENUE LINE GRAPH
@@ -11426,4 +10554,736 @@ body.store-theme-dark select {
 
     }
 
+}
+
+/* =========================================
+   SALES OVERVIEW
+========================================= */
+
+#salesOverviewScreen {
+    --sales-bg: #f6f7f9;
+    --sales-card: #ffffff;
+    --sales-border: #e7e9ee;
+    --sales-text: #17191d;
+    --sales-muted: #7b808a;
+    --sales-soft: #f1f3f6;
+    --sales-accent: #111827;
+    --sales-success: #16835b;
+
+    background: var(--sales-bg);
+    color: var(--sales-text);
+
+    padding: 24px;
+    padding-bottom: 40px;
+
+    max-width: 1180px;
+    margin: 0 auto;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================
+   PAGE HEADER
+========================================= */
+
+.sales-overview-page-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+
+    margin-bottom: 26px;
+}
+
+
+.sales-overview-back-btn {
+    width: 42px;
+    height: 42px;
+
+    flex: 0 0 42px;
+
+    border: 1px solid var(--sales-border);
+    border-radius: 12px;
+
+    background: var(--sales-card);
+    color: var(--sales-text);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition:
+        background .18s ease,
+        border-color .18s ease,
+        transform .18s ease;
+}
+
+
+.sales-overview-back-btn:hover {
+    background: var(--sales-soft);
+    border-color: #d9dce2;
+}
+
+
+.sales-overview-back-btn:active {
+    transform: scale(.96);
+}
+
+
+.sales-overview-page-header .sell-eyebrow {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--sales-muted);
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: .13em;
+}
+
+
+.sales-overview-page-header h2 {
+    margin: 0;
+
+    font-size: 28px;
+    line-height: 1.15;
+
+    font-weight: 800;
+
+    letter-spacing: -.035em;
+}
+
+
+.sales-overview-page-header p {
+    margin: 7px 0 0;
+
+    color: var(--sales-muted);
+
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+
+/* =========================================
+   SUMMARY CARDS
+========================================= */
+
+.sales-overview-summary {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 14px;
+
+    margin-bottom: 16px;
+}
+
+
+.sales-stat-card {
+    min-height: 112px;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    background: var(--sales-card);
+
+    border: 1px solid var(--sales-border);
+    border-radius: 16px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    box-shadow:
+        0 1px 2px rgba(16, 24, 40, .03);
+}
+
+
+.sales-stat-card span {
+    color: var(--sales-muted);
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: .12em;
+}
+
+
+.sales-stat-card strong {
+    display: block;
+
+    margin-top: 15px;
+
+    color: var(--sales-text);
+
+    font-size: 27px;
+    line-height: 1;
+
+    font-weight: 800;
+
+    letter-spacing: -.04em;
+}
+
+
+/* Make revenue the visual anchor */
+
+.sales-stat-card:first-child {
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #f8faf9 100%
+        );
+}
+
+
+.sales-stat-card:first-child strong {
+    color: var(--sales-success);
+}
+
+
+/* =========================================
+   PERIOD SWITCH
+========================================= */
+
+.sales-period-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+
+    padding: 4px;
+
+    margin-bottom: 16px;
+
+    background: var(--sales-soft);
+
+    border: 1px solid var(--sales-border);
+    border-radius: 11px;
+}
+
+
+.sales-period-btn {
+    min-width: 70px;
+
+    padding: 8px 13px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: var(--sales-muted);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background .18s ease,
+        color .18s ease,
+        box-shadow .18s ease;
+}
+
+
+.sales-period-btn:hover {
+    color: var(--sales-text);
+}
+
+
+.sales-period-btn.active {
+    background: var(--sales-card);
+
+    color: var(--sales-text);
+
+    box-shadow:
+        0 1px 3px rgba(16, 24, 40, .08);
+}
+
+
+/* =========================================
+   SHARED CARD
+========================================= */
+
+.sales-analytics-card,
+.top-selling-card,
+.sales-history-card {
+    background: var(--sales-card);
+
+    border: 1px solid var(--sales-border);
+    border-radius: 18px;
+
+    box-shadow:
+        0 1px 2px rgba(16, 24, 40, .025);
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================
+   ANALYTICS CARD
+========================================= */
+
+.sales-analytics-card {
+    padding: 22px;
+
+    margin-bottom: 16px;
+}
+
+
+.sales-analytics-header,
+.top-selling-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 20px;
+}
+
+
+.sales-analytics-header > div > span,
+.top-selling-header > div > span,
+.sales-history-header > span {
+    display: block;
+
+    color: var(--sales-muted);
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: .12em;
+}
+
+
+.sales-analytics-header h3,
+.top-selling-header h3,
+.sales-history-header h3 {
+    margin: 5px 0 0;
+
+    color: var(--sales-text);
+
+    font-size: 18px;
+    line-height: 1.2;
+
+    font-weight: 800;
+
+    letter-spacing: -.025em;
+}
+
+
+.sales-analytics-header > strong {
+    color: var(--sales-text);
+
+    font-size: 22px;
+    line-height: 1;
+
+    font-weight: 800;
+
+    letter-spacing: -.035em;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   GRAPH
+========================================= */
+
+.sales-graph {
+    width: 100%;
+    min-height: 260px;
+
+    position: relative;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(17, 24, 39, .045) 1px,
+            transparent 1px
+        );
+
+    background-size:
+        100% 52px;
+}
+
+
+/* =========================================
+   TOP SELLING PRODUCTS
+========================================= */
+
+.top-selling-card {
+    padding: 22px;
+
+    margin-bottom: 16px;
+}
+
+
+.overview-period {
+    display: inline-flex;
+    align-items: center;
+
+    min-height: 30px;
+
+    padding: 0 10px;
+
+    border-radius: 8px;
+
+    background: var(--sales-soft);
+
+    color: var(--sales-muted);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+.top-selling-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+/* Product rows created dynamically */
+
+.top-selling-list > * {
+    box-sizing: border-box;
+}
+
+
+/* Empty state */
+
+.top-selling-empty,
+.sales-history-empty {
+    min-height: 150px;
+
+    padding: 24px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    border: 1px dashed #dfe2e7;
+    border-radius: 13px;
+
+    background: #fafbfc;
+}
+
+
+.top-selling-empty i,
+.sales-history-empty i {
+    width: 42px;
+    height: 42px;
+
+    margin-bottom: 12px;
+
+    border-radius: 12px;
+
+    background: var(--sales-soft);
+
+    color: var(--sales-muted);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 16px;
+}
+
+
+.top-selling-empty strong,
+.sales-history-empty strong {
+    color: var(--sales-text);
+
+    font-size: 13px;
+    font-weight: 750;
+}
+
+
+.top-selling-empty span,
+.sales-history-empty span {
+    max-width: 280px;
+
+    margin-top: 5px;
+
+    color: var(--sales-muted);
+
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+
+/* =========================================
+   SALES HISTORY
+========================================= */
+
+.sales-history-card {
+    padding: 22px;
+}
+
+
+.sales-history-header {
+    margin-bottom: 18px;
+}
+
+
+.sales-history-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+/* =========================================
+   RESPONSIVE — TABLET
+========================================= */
+
+@media (max-width: 760px) {
+
+    #salesOverviewScreen {
+        padding: 18px;
+        padding-bottom: 30px;
+    }
+
+
+    .sales-overview-page-header {
+        margin-bottom: 20px;
+    }
+
+
+    .sales-overview-page-header h2 {
+        font-size: 24px;
+    }
+
+
+    .sales-overview-summary {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+        gap: 9px;
+    }
+
+
+    .sales-stat-card {
+        min-height: 100px;
+
+        padding: 15px;
+    }
+
+
+    .sales-stat-card strong {
+        font-size: 21px;
+    }
+
+
+    .sales-analytics-card,
+    .top-selling-card,
+    .sales-history-card {
+        padding: 17px;
+    }
+
+
+    .sales-graph {
+        min-height: 220px;
+    }
+}
+
+
+/* =========================================
+   RESPONSIVE — MOBILE
+========================================= */
+
+@media (max-width: 520px) {
+
+    #salesOverviewScreen {
+        padding: 14px;
+    }
+
+
+    .sales-overview-page-header {
+        gap: 12px;
+
+        margin-bottom: 18px;
+    }
+
+
+    .sales-overview-back-btn {
+        width: 38px;
+        height: 38px;
+
+        flex-basis: 38px;
+
+        border-radius: 10px;
+    }
+
+
+    .sales-overview-page-header .sell-eyebrow {
+        font-size: 9px;
+    }
+
+
+    .sales-overview-page-header h2 {
+        font-size: 22px;
+    }
+
+
+    .sales-overview-page-header p {
+        font-size: 12px;
+    }
+
+
+    /* Summary cards become a horizontal compact row */
+
+    .sales-overview-summary {
+        gap: 7px;
+    }
+
+
+    .sales-stat-card {
+        min-height: 88px;
+
+        padding: 12px;
+
+        border-radius: 13px;
+    }
+
+
+    .sales-stat-card span {
+        font-size: 8px;
+
+        letter-spacing: .08em;
+    }
+
+
+    .sales-stat-card strong {
+        margin-top: 11px;
+
+        font-size: 17px;
+    }
+
+
+    .sales-period-switch {
+        width: 100%;
+
+        box-sizing: border-box;
+
+        margin-bottom: 12px;
+    }
+
+
+    .sales-period-btn {
+        flex: 1;
+
+        min-width: 0;
+
+        padding: 8px 6px;
+    }
+
+
+    .sales-analytics-card,
+    .top-selling-card,
+    .sales-history-card {
+        border-radius: 15px;
+    }
+
+
+    .sales-analytics-card {
+        margin-bottom: 12px;
+    }
+
+
+    .top-selling-card {
+        margin-bottom: 12px;
+    }
+
+
+    .sales-analytics-header,
+    .top-selling-header {
+        margin-bottom: 16px;
+    }
+
+
+    .sales-analytics-header h3,
+    .top-selling-header h3,
+    .sales-history-header h3 {
+        font-size: 16px;
+    }
+
+
+    .sales-analytics-header > strong {
+        font-size: 18px;
+    }
+
+
+    .overview-period {
+        min-height: 27px;
+
+        padding: 0 8px;
+
+        font-size: 10px;
+    }
+
+
+    .sales-graph {
+        min-height: 190px;
+    }
+
+
+    .top-selling-empty,
+    .sales-history-empty {
+        min-height: 130px;
+
+        padding: 18px;
+    }
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 360px) {
+
+    #salesOverviewScreen {
+        padding: 11px;
+    }
+
+
+    .sales-stat-card {
+        padding: 10px;
+    }
+
+
+    .sales-stat-card strong {
+        font-size: 15px;
+    }
+
+
+    .sales-stat-card span {
+        font-size: 7px;
+    }
+
+
+    .sales-overview-page-header h2 {
+        font-size: 20px;
+    }
 }

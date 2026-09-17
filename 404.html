@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>Nexodra</title>
+</head>
+
+<body>
+
+<script>
+(function () {
+
+    /*
+     * NEXODRA — GITHUB PAGES SPA FALLBACK
+     * BRICK A
+     *
+     * GitHub Pages does not automatically route
+     * /store/odro back to index.html.
+     *
+     * Save the requested path and send the browser
+     * back to the Nexodra application entry point.
+     *
+     * Brick B will read this saved path and restore
+     * the Public Store route.
+     */
+
+    const requestedPath =
+        window.location.pathname +
+        window.location.search +
+        window.location.hash;
+
+    sessionStorage.setItem(
+        'nexodraPendingRoute',
+        requestedPath
+    );
+
+    const appRoot =
+        '/nexodra-seller-app/';
+
+    window.location.replace(
+        appRoot
+    );
+
+})();
+</script>
+
+</body>
+</html>

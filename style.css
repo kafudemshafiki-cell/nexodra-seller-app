@@ -9972,116 +9972,623 @@ body.store-theme-default {
 }
 
 
-/* =========================================
-   STORE THEME — DARK
-========================================= */
+/* =========================================================
+   NEXODRA DARK MODE — BRICK D1
+   Full dark visual system
+   ========================================================= */
 
 body.store-theme-dark {
 
-    background:
-        #111827;
+    --nx-dark-bg: #0f0f10;
+    --nx-dark-surface: #111827;
+    --nx-dark-surface-2: #17191d;
+    --nx-dark-surface-3: #1d2127;
 
-    color:
-        #f8fafc;
+    --nx-dark-border: #35383f;
+    --nx-dark-border-soft: #292d34;
 
+    --nx-dark-text: #f5f7fb;
+    --nx-dark-text-secondary: #aeb7c6;
+    --nx-dark-text-muted: #7f8999;
+
+    --nx-dark-blue: #9fb9e8;
+    --nx-dark-blue-deep: #0b1f4d;
+
+    --nx-dark-green: #22c55e;
+    --nx-dark-yellow: #f59e0b;
+    --nx-dark-red: #ef4444;
+
+    background: var(--nx-dark-bg) !important;
+    color: var(--nx-dark-text) !important;
 }
 
 
+/* =========================================================
+   APP FRAME
+   ========================================================= */
+
+body.store-theme-dark,
 body.store-theme-dark .app-container,
+body.store-theme-dark .app-body,
 body.store-theme-dark .screen {
 
-    background:
-        #111827;
-
+    background: var(--nx-dark-bg) !important;
+    color: var(--nx-dark-text) !important;
 }
 
+
+/* =========================================================
+   HEADER
+   ========================================================= */
 
 body.store-theme-dark .app-header {
 
-    background:
-        #111827;
+    background: #101113 !important;
 
-    border-color:
-        #374151;
+    border-bottom:
+        1px solid var(--nx-dark-border) !important;
 
+    color:
+        var(--nx-dark-text) !important;
 }
-
 
 body.store-theme-dark .app-header h1 {
 
     color:
-        #f9fafb;
+        var(--nx-dark-text) !important;
+}
 
+body.store-theme-dark .icon-btn {
+
+    color:
+        var(--nx-dark-text-secondary) !important;
 }
 
 
-/* Main cards */
+/* =========================================================
+   BOTTOM NAVIGATION
+   ========================================================= */
+
+body.store-theme-dark .bottom-nav {
+
+    background:
+        #101113 !important;
+
+    border-top:
+        1px solid var(--nx-dark-border) !important;
+}
+
+body.store-theme-dark .bottom-nav .nav-btn {
+
+    color:
+        var(--nx-dark-text-muted) !important;
+}
+
+body.store-theme-dark .bottom-nav .nav-btn.active {
+
+    color:
+        #ffffff !important;
+}
+
+
+/* =========================================================
+   GENERAL CARDS
+   ========================================================= */
 
 body.store-theme-dark .overview-mini-card,
 body.store-theme-dark .sales-overview-card,
 body.store-theme-dark .appearance-card,
-body.store-theme-dark .form-card {
+body.store-theme-dark .form-card,
+body.store-theme-dark .product-form-card,
+body.store-theme-dark .product-preview {
 
     background:
-        #1f2937;
+        var(--nx-dark-surface) !important;
 
     border-color:
-        #374151;
+        var(--nx-dark-border) !important;
 
+    color:
+        var(--nx-dark-text) !important;
 }
 
 
-/* Text */
+/* =========================================================
+   HEADINGS
+   ========================================================= */
 
 body.store-theme-dark h1,
 body.store-theme-dark h2,
 body.store-theme-dark h3,
+body.store-theme-dark h4,
+body.store-theme-dark h5,
 body.store-theme-dark strong {
 
     color:
-        #f9fafb;
-
+        var(--nx-dark-text) !important;
 }
 
+
+/* =========================================================
+   SECONDARY TEXT
+   ========================================================= */
 
 body.store-theme-dark p,
 body.store-theme-dark span,
 body.store-theme-dark small {
 
     color:
-        #cbd5e1;
-
+        var(--nx-dark-text-secondary) !important;
 }
 
 
-/* Bottom navigation */
+/* =========================================================
+   OVERVIEW TEXT
+   ========================================================= */
 
-body.store-theme-dark .bottom-nav {
+body.store-theme-dark .overview-label,
+body.store-theme-dark .products-count,
+body.store-theme-dark .product-stock-number,
+body.store-theme-dark .product-sku {
+
+    color:
+        var(--nx-dark-text-muted) !important;
+}
+
+body.store-theme-dark .overview-value {
+
+    color:
+        var(--nx-dark-text) !important;
+}
+
+
+/* =========================================================
+   PRODUCT CARDS
+   ========================================================= */
+
+body.store-theme-dark .product-card,
+body.store-theme-dark .preview-product-card,
+body.store-theme-dark .public-product-card,
+body.store-theme-dark .store-product-card {
 
     background:
-        #111827;
+        var(--nx-dark-surface) !important;
 
-    border-color:
-        #374151;
+    border:
+        1px solid var(--nx-dark-border) !important;
 
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.25) !important;
+
+    color:
+        var(--nx-dark-text) !important;
 }
 
 
-/* Inputs */
+/* Product image areas */
+
+body.store-theme-dark .product-img-box,
+body.store-theme-dark .preview-product-card .product-image,
+body.store-theme-dark .public-product-image,
+body.store-theme-dark .store-product-card .product-image,
+body.store-theme-dark .product-card .product-image {
+
+    background:
+        var(--nx-dark-surface-2) !important;
+}
+
+
+/* Product names */
+
+body.store-theme-dark .product-details h4,
+body.store-theme-dark .product-card h3,
+body.store-theme-dark .preview-product-card h3,
+body.store-theme-dark .public-product-card h3,
+body.store-theme-dark .store-product-card h3 {
+
+    color:
+        var(--nx-dark-text) !important;
+}
+
+
+/* Product prices */
+
+body.store-theme-dark .product-price,
+body.store-theme-dark .preview-product-card .product-price,
+body.store-theme-dark .public-product-price,
+body.store-theme-dark .store-product-card .product-price {
+
+    color:
+        #ffffff !important;
+}
+
+
+/* Product category */
+
+body.store-theme-dark .product-category-badge {
+
+    background:
+        rgba(20, 23, 28, .94) !important;
+
+    color:
+        var(--nx-dark-text-secondary) !important;
+}
+
+
+/* Product action buttons */
+
+body.store-theme-dark .product-edit-btn,
+body.store-theme-dark .product-delete-btn {
+
+    background:
+        #20242a !important;
+
+    color:
+        var(--nx-dark-text-secondary) !important;
+}
+
+
+/* =========================================================
+   INVENTORY / PRODUCT SEARCH
+   ========================================================= */
+
+body.store-theme-dark .product-search,
+body.store-theme-dark .public-product-search {
+
+    background:
+        var(--nx-dark-surface-2) !important;
+
+    border-color:
+        var(--nx-dark-border) !important;
+
+    color:
+        var(--nx-dark-text) !important;
+}
+
+body.store-theme-dark .product-search input,
+body.store-theme-dark .public-product-search input {
+
+    background:
+        transparent !important;
+
+    color:
+        var(--nx-dark-text) !important;
+}
+
+body.store-theme-dark .product-search input::placeholder,
+body.store-theme-dark .public-product-search input::placeholder {
+
+    color:
+        var(--nx-dark-text-muted) !important;
+}
+
+body.store-theme-dark .product-search i,
+body.store-theme-dark .public-product-search i {
+
+    color:
+        var(--nx-dark-text-muted) !important;
+}
+
+
+/* =========================================================
+   INVENTORY FILTERS
+   ========================================================= */
+
+body.store-theme-dark .filter-btn,
+body.store-theme-dark .inventory-filter {
+
+    background:
+        var(--nx-dark-surface-2) !important;
+
+    border-color:
+        var(--nx-dark-border) !important;
+
+    color:
+        var(--nx-dark-text-secondary) !important;
+}
+
+body.store-theme-dark .inventory-filter.active {
+
+    background:
+        var(--nx-dark-blue-deep) !important;
+
+    border-color:
+        var(--nx-dark-blue-deep) !important;
+
+    color:
+        #ffffff !important;
+}
+
+
+/* =========================================================
+   SELL PRODUCT CARDS
+   ========================================================= */
+
+body.store-theme-dark .sell-product-card {
+
+    background:
+        var(--nx-dark-surface) !important;
+
+    border-color:
+        var(--nx-dark-border) !important;
+
+    color:
+        var(--nx-dark-text) !important;
+}
+
+body.store-theme-dark .sell-product-image {
+
+    background:
+        var(--nx-dark-surface-2) !important;
+}
+
+body.store-theme-dark .sell-product-info strong,
+body.store-theme-dark .sell-product-info span {
+
+    color:
+        var(--nx-dark-text) !important;
+}
+
+body.store-theme-dark .sell-product-info small {
+
+    color:
+        var(--nx-dark-text-muted) !important;
+}
+
+
+/* =========================================================
+   STOCK STATUS
+   Keep semantic colors
+   ========================================================= */
+
+body.store-theme-dark .stock-in {
+
+    color:
+        var(--nx-dark-green) !important;
+}
+
+body.store-theme-dark .stock-low {
+
+    color:
+        var(--nx-dark-yellow) !important;
+}
+
+body.store-theme-dark .stock-out {
+
+    color:
+        var(--nx-dark-red) !important;
+}
+
+
+/* =========================================================
+   FORMS
+   ========================================================= */
 
 body.store-theme-dark input,
 body.store-theme-dark textarea,
 body.store-theme-dark select {
 
     background:
-        #1f2937;
-
-    color:
-        #f9fafb;
+        var(--nx-dark-surface-2) !important;
 
     border-color:
-        #475569;
+        var(--nx-dark-border) !important;
 
+    color:
+        var(--nx-dark-text) !important;
+}
+
+body.store-theme-dark input::placeholder,
+body.store-theme-dark textarea::placeholder {
+
+    color:
+        var(--nx-dark-text-muted) !important;
+}
+
+body.store-theme-dark label {
+
+    color:
+        var(--nx-dark-text-secondary) !important;
+}
+
+
+/* =========================================================
+   ADD / PRIMARY BUTTONS
+   ========================================================= */
+
+body.store-theme-dark .add-product-small,
+body.store-theme-dark .publish-product-btn,
+body.store-theme-dark .public-buy-btn {
+
+    background:
+        var(--nx-dark-blue-deep) !important;
+
+    color:
+        #ffffff !important;
+}
+
+
+/* =========================================================
+   CUSTOMER STORE PROFILE
+   ========================================================= */
+
+body.store-theme-dark .public-store-profile-bar {
+
+    background:
+        var(--nx-dark-bg) !important;
+
+    color:
+        var(--nx-dark-text) !important;
+}
+
+body.store-theme-dark .public-store-logo {
+
+    border-color:
+        var(--nx-dark-surface) !important;
+}
+
+body.store-theme-dark .public-store-name {
+
+    color:
+        var(--nx-dark-text) !important;
+}
+
+body.store-theme-dark .public-store-meta-item,
+body.store-theme-dark .public-store-meta-item i {
+
+    color:
+        var(--nx-dark-text-muted) !important;
+}
+
+body.store-theme-dark .public-store-description {
+
+    color:
+        var(--nx-dark-text-secondary) !important;
+}
+
+body.store-theme-dark .public-store-profile-share-btn {
+
+    background:
+        var(--nx-dark-surface-2) !important;
+
+    border-color:
+        var(--nx-dark-border) !important;
+
+    color:
+        var(--nx-dark-text) !important;
+}
+
+
+/* =========================================================
+   PUBLIC PRODUCT AREA
+   ========================================================= */
+
+body.store-theme-dark .public-product-card {
+
+    background:
+        var(--nx-dark-surface) !important;
+
+    border-color:
+        var(--nx-dark-border) !important;
+}
+
+body.store-theme-dark .public-product-category {
+
+    color:
+        var(--nx-dark-text-muted) !important;
+}
+
+
+/* =========================================================
+   SALES OVERVIEW
+   ========================================================= */
+
+body.store-theme-dark #salesOverviewScreen {
+
+    --sales-bg:
+        #0f0f10;
+
+    --sales-card:
+        #111827;
+
+    --sales-border:
+        #35383f;
+
+    --sales-text:
+        #f5f7fb;
+
+    --sales-muted:
+        #7f8999;
+
+    --sales-soft:
+        #17191d;
+}
+
+body.store-theme-dark .sales-stat-card:first-child {
+
+    background:
+        linear-gradient(
+            145deg,
+            #111827 0%,
+            #172033 100%
+        ) !important;
+}
+
+body.store-theme-dark .sales-stat-card:first-child strong {
+
+    color:
+        var(--nx-dark-green) !important;
+}
+
+
+/* =========================================================
+   LIVE SELL SCREEN
+   ========================================================= */
+
+body.store-theme-dark .live-sell-screen,
+body.store-theme-dark .live-scanner-card,
+body.store-theme-dark .live-last-scan,
+body.store-theme-dark .live-sale-item,
+body.store-theme-dark .live-sale-summary,
+body.store-theme-dark .live-empty-sale {
+
+    background:
+        var(--nx-dark-surface) !important;
+
+    border-color:
+        var(--nx-dark-border) !important;
+
+    color:
+        var(--nx-dark-text) !important;
+}
+
+
+/* =========================================================
+   MODALS / DIALOGS
+   ========================================================= */
+
+body.store-theme-dark .modal,
+body.store-theme-dark .modal-content,
+body.store-theme-dark .dialog,
+body.store-theme-dark .image-crop-dialog {
+
+    background:
+        var(--nx-dark-surface) !important;
+
+    color:
+        var(--nx-dark-text) !important;
+
+    border-color:
+        var(--nx-dark-border) !important;
+}
+
+
+/* =========================================================
+   KEEP IMPORTANT STATUS COLORS VISIBLE
+   ========================================================= */
+
+body.store-theme-dark .fa-star,
+body.store-theme-dark .rating,
+body.store-theme-dark .rating-star {
+
+    color:
+        var(--nx-dark-yellow) !important;
+}
+
+body.store-theme-dark .fa-circle-check,
+body.store-theme-dark .success,
+body.store-theme-dark .success-text {
+
+    color:
+        var(--nx-dark-green) !important;
+}
+
+body.store-theme-dark .error,
+body.store-theme-dark .error-text,
+body.store-theme-dark .danger {
+
+    color:
+        var(--nx-dark-red) !important;
 }
 
 
@@ -11287,3 +11794,1431 @@ body.store-theme-dark select {
         font-size: 20px;
     }
 }
+
+/* =========================================================
+   NEXODRA — FINAL DARK MODE
+   Applies AFTER every existing feature stylesheet
+   ========================================================= */
+
+body.store-theme-dark {
+
+    --nx-bg: #0f0f10;
+    --nx-surface: #151617;
+    --nx-surface-2: #1b1d20;
+    --nx-surface-3: #202328;
+
+    --nx-border: #3a3d43;
+    --nx-divider: #292c31;
+
+    --nx-text: #f5f7fb;
+    --nx-text-secondary: #aeb7c6;
+    --nx-text-muted: #7f8999;
+
+    --nx-blue: #9fb9e8;
+    --nx-blue-dark: #071d49;
+
+    --nx-green: #22c55e;
+    --nx-yellow: #f59e0b;
+    --nx-red: #ef4444;
+}
+
+
+/* =========================================================
+   1. GLOBAL APP
+   ========================================================= */
+
+body.store-theme-dark,
+body.store-theme-dark .app-container,
+body.store-theme-dark .app-body,
+body.store-theme-dark .screen {
+
+    background: var(--nx-bg) !important;
+    color: var(--nx-text) !important;
+}
+
+
+/* =========================================================
+   2. HEADER
+   ========================================================= */
+
+body.store-theme-dark .app-header {
+
+    background: #101112 !important;
+
+    border-bottom:
+        1px solid var(--nx-border) !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+body.store-theme-dark .app-header h1 {
+
+    color:
+        var(--nx-text) !important;
+}
+
+body.store-theme-dark .icon-btn {
+
+    color:
+        var(--nx-blue) !important;
+}
+
+
+/* =========================================================
+   3. STORE DASHBOARD
+   ========================================================= */
+
+body.store-theme-dark .sales-overview-card {
+
+    background:
+        #111827 !important;
+
+    color:
+        var(--nx-text) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+}
+
+
+body.store-theme-dark .overview-mini-card,
+body.store-theme-dark .inventory-overview-card,
+body.store-theme-dark .visitors-overview-card {
+
+    background:
+        var(--nx-surface) !important;
+
+    background-color:
+        var(--nx-surface) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    box-shadow:
+        none !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+/* Store dashboard text */
+
+body.store-theme-dark .overview-card-label,
+body.store-theme-dark .mini-card-label {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+body.store-theme-dark .mini-card-value,
+body.store-theme-dark .visitors-value {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .mini-card-description,
+body.store-theme-dark .visitors-description,
+body.store-theme-dark .overview-subtitle {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+/* =========================================================
+   4. STORE ICON BOXES
+   ========================================================= */
+
+body.store-theme-dark .products-icon,
+body.store-theme-dark .orders-icon,
+body.store-theme-dark .inventory-box-icon,
+body.store-theme-dark .visitors-icon-circle {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        var(--nx-blue) !important;
+
+    border:
+        none !important;
+}
+
+
+/* =========================================================
+   5. INVENTORY
+   ========================================================= */
+
+body.store-theme-dark .inventory-row {
+
+    border-bottom:
+        1px solid var(--nx-divider) !important;
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+body.store-theme-dark .inventory-row-left {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+body.store-theme-dark .inventory-row strong {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .inventory-total {
+
+    color:
+        var(--nx-text-secondary) !important;
+
+    border-color:
+        var(--nx-divider) !important;
+}
+
+
+body.store-theme-dark .inventory-total strong {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+/* Status dots */
+
+body.store-theme-dark .in-stock-dot,
+body.store-theme-dark .stock-in {
+
+    background-color:
+        var(--nx-green) !important;
+
+    color:
+        var(--nx-green) !important;
+}
+
+
+body.store-theme-dark .low-stock-dot,
+body.store-theme-dark .stock-low {
+
+    background-color:
+        var(--nx-yellow) !important;
+
+    color:
+        var(--nx-yellow) !important;
+}
+
+
+body.store-theme-dark .out-stock-dot,
+body.store-theme-dark .stock-out {
+
+    background-color:
+        var(--nx-red) !important;
+
+    color:
+        var(--nx-red) !important;
+}
+
+
+/* =========================================================
+   6. SELL SCREEN — IMPORTANT
+   ========================================================= */
+
+body.store-theme-dark #sellScreen {
+
+    background:
+        var(--nx-bg) !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+/* Sell summary */
+
+body.store-theme-dark .sell-summary-card {
+
+    background:
+        var(--nx-surface) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    box-shadow:
+        none !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .sell-summary-card span {
+
+    color:
+        var(--nx-text-muted) !important;
+}
+
+
+/* Sell mode tabs */
+
+body.store-theme-dark .sell-mode-switch {
+
+    background:
+        var(--nx-surface-2) !important;
+
+    border:
+        1px solid var(--nx-border-soft, #292c31) !important;
+}
+
+
+body.store-theme-dark .sell-mode-btn {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+body.store-theme-dark .sell-mode-btn.active {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        var(--nx-text) !important;
+
+    box-shadow:
+        none !important;
+}
+
+
+/* Sell search */
+
+body.store-theme-dark .sell-search-box {
+
+    background:
+        var(--nx-surface) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .sell-search-box input {
+
+    background:
+        transparent !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .sell-search-box input::placeholder {
+
+    color:
+        var(--nx-text-muted) !important;
+}
+
+
+/* Sell categories */
+
+body.store-theme-dark .sell-category-btn {
+
+    background:
+        var(--nx-surface) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+body.store-theme-dark .sell-category-btn.active {
+
+    background:
+        var(--nx-blue-dark) !important;
+
+    color:
+        #ffffff !important;
+
+    border-color:
+        var(--nx-blue-dark) !important;
+}
+
+
+/* Product cards */
+
+body.store-theme-dark .sell-product-card {
+
+    background:
+        var(--nx-surface) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    box-shadow:
+        none !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .sell-product-image {
+
+    background:
+        var(--nx-surface-2) !important;
+}
+
+
+body.store-theme-dark .sell-product-info strong {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .sell-product-info span {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+body.store-theme-dark .sell-product-info small {
+
+    color:
+        var(--nx-text-muted) !important;
+}
+
+
+/* =========================================================
+   7. CURRENT SALE
+   ========================================================= */
+
+body.store-theme-dark .current-sale-panel {
+
+    background:
+        var(--nx-surface) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    box-shadow:
+        none !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .current-sale-header h3 {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .clear-sale-btn {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+/* Cart items */
+
+body.store-theme-dark .sell-cart-item {
+
+    background:
+        var(--nx-surface-2) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    box-shadow:
+        none !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .sell-cart-item-image {
+
+    background:
+        var(--nx-surface-3) !important;
+}
+
+
+body.store-theme-dark .sell-cart-item-info strong,
+body.store-theme-dark .sell-cart-item-total {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .sell-cart-item-info small {
+
+    color:
+        var(--nx-text-muted) !important;
+}
+
+
+/* Customer selector */
+
+body.store-theme-dark .sell-customer-btn {
+
+    background:
+        var(--nx-surface-2) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .sell-action-icon {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        var(--nx-blue) !important;
+}
+
+
+/* Discount / Note / Hold */
+
+body.store-theme-dark .sell-actions-row button {
+
+    background:
+        var(--nx-surface-2) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+/* Totals */
+
+body.store-theme-dark .sell-totals {
+
+    border-top:
+        1px solid var(--nx-divider) !important;
+}
+
+
+body.store-theme-dark .sell-grand-total {
+
+    border-top:
+        1px solid var(--nx-divider) !important;
+}
+
+
+body.store-theme-dark .sell-totals span {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+body.store-theme-dark .sell-grand-total strong {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+/* Pay */
+
+body.store-theme-dark .sell-pay-btn {
+
+    background:
+        var(--nx-blue-dark) !important;
+
+    color:
+        #ffffff !important;
+}
+
+
+/* =========================================================
+   8. INBOX
+   ========================================================= */
+
+body.store-theme-dark #inboxScreen {
+
+    background:
+        var(--nx-bg) !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .inbox-header h2 {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .inbox-header p,
+body.store-theme-dark .inbox-eyebrow {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+/* Inbox tabs */
+
+body.store-theme-dark .inbox-tabs {
+
+    background:
+        var(--nx-surface-2) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+}
+
+
+body.store-theme-dark .inbox-tabs .tab-btn {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+body.store-theme-dark .inbox-tabs .tab-btn.active,
+body.store-theme-dark .tab-btn.active {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        #ffffff !important;
+}
+
+
+/* Notification cards */
+
+body.store-theme-dark .notification-item,
+body.store-theme-dark .notification-item.unread {
+
+    background:
+        var(--nx-surface) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    color:
+        var(--nx-text) !important;
+
+    box-shadow:
+        none !important;
+}
+
+
+body.store-theme-dark .notification-icon,
+body.store-theme-dark .notification-item.unread .notification-icon {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        var(--nx-blue) !important;
+}
+
+
+body.store-theme-dark .notification-content strong {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .notification-content p {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+body.store-theme-dark .notification-time {
+
+    color:
+        var(--nx-text-muted) !important;
+}
+
+
+body.store-theme-dark .notification-unread-dot {
+
+    background:
+        var(--nx-blue) !important;
+}
+
+
+body.store-theme-dark .notification-empty {
+
+    background:
+        var(--nx-surface) !important;
+
+    border:
+        1px dashed var(--nx-border) !important;
+}
+
+
+body.store-theme-dark .notification-empty-icon {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        var(--nx-blue) !important;
+}
+
+
+body.store-theme-dark .notification-empty h3 {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .notification-empty p {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+/* =========================================================
+   9. PROFILE
+   ========================================================= */
+
+body.store-theme-dark .profile-header-card {
+
+    background:
+        var(--nx-surface) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+}
+
+
+body.store-theme-dark .profile-name-row h2,
+body.store-theme-dark .profile-section-title h3 {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .profile-status,
+body.store-theme-dark .profile-rating {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+body.store-theme-dark .profile-rating strong {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .profile-action-btn {
+
+    background:
+        var(--nx-surface) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .profile-menu {
+
+    background:
+        var(--nx-surface) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+}
+
+
+body.store-theme-dark .profile-menu-item {
+
+    background:
+        var(--nx-surface) !important;
+
+    border-bottom:
+        1px solid var(--nx-divider) !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .profile-menu-icon {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        var(--nx-blue) !important;
+}
+
+
+body.store-theme-dark .profile-menu-text strong {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .profile-menu-text span {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+body.store-theme-dark .profile-arrow {
+
+    color:
+        var(--nx-text-muted) !important;
+}
+
+
+body.store-theme-dark .profile-count {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+/* =========================================================
+   10. CHAT / INBOX CONVERSATION
+   ========================================================= */
+
+body.store-theme-dark .chat-panel {
+
+    background:
+        var(--nx-bg) !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .chat-header {
+
+    border-bottom:
+        1px solid var(--nx-divider) !important;
+}
+
+
+body.store-theme-dark .chat-customer-info strong {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .chat-customer-info span {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+body.store-theme-dark .chat-messages {
+
+    background:
+        var(--nx-bg) !important;
+}
+
+
+body.store-theme-dark .chat-date {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        var(--nx-text-muted) !important;
+}
+
+
+body.store-theme-dark .customer-message .message-bubble {
+
+    background:
+        var(--nx-surface-2) !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .chat-composer {
+
+    background:
+        var(--nx-surface) !important;
+
+    border-top:
+        1px solid var(--nx-border) !important;
+}
+
+
+body.store-theme-dark .chat-composer input {
+
+    background:
+        var(--nx-surface-2) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .chat-attachment-btn {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        var(--nx-blue) !important;
+}
+
+
+/* =========================================================
+   11. CUSTOMER CHAT COMPONENTS
+   ========================================================= */
+
+body.store-theme-dark .customer-chat-body {
+
+    background:
+        var(--nx-bg) !important;
+}
+
+
+body.store-theme-dark .customer-chat-seller-info strong,
+body.store-theme-dark .customer-chat-start strong {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .customer-chat-seller-info span,
+body.store-theme-dark .customer-chat-start span {
+
+    color:
+        var(--nx-text-secondary) !important;
+}
+
+
+body.store-theme-dark .customer-chat-date span {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        var(--nx-text-muted) !important;
+}
+
+
+body.store-theme-dark .seller-message .customer-message-bubble {
+
+    background:
+        var(--nx-surface-2) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    color:
+        var(--nx-text) !important;
+
+    box-shadow:
+        none !important;
+}
+
+
+body.store-theme-dark .customer-chat-composer {
+
+    background:
+        var(--nx-surface) !important;
+
+    border-top:
+        1px solid var(--nx-border) !important;
+}
+
+
+body.store-theme-dark .customer-chat-attach {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        var(--nx-blue) !important;
+}
+
+
+body.store-theme-dark .customer-chat-input-wrapper {
+
+    background:
+        var(--nx-surface-2) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+}
+
+
+body.store-theme-dark .customer-chat-input-wrapper:focus-within {
+
+    background:
+        var(--nx-surface-2) !important;
+
+    border-color:
+        var(--nx-blue) !important;
+}
+
+
+body.store-theme-dark .customer-chat-input {
+
+    color:
+        var(--nx-text) !important;
+}
+
+
+body.store-theme-dark .customer-chat-input::placeholder {
+
+    color:
+        var(--nx-text-muted) !important;
+}
+
+
+body.store-theme-dark .customer-chat-footer-note {
+
+    background:
+        var(--nx-surface) !important;
+
+    color:
+        var(--nx-text-muted) !important;
+}
+
+
+/* =========================================================
+   12. MODALS / DIALOGS
+   ========================================================= */
+
+body.store-theme-dark .modal,
+body.store-theme-dark .modal-content,
+body.store-theme-dark .dialog,
+body.store-theme-dark .image-crop-dialog,
+body.store-theme-dark .product-details-card {
+
+    background:
+        var(--nx-surface) !important;
+
+    color:
+        var(--nx-text) !important;
+
+    border-color:
+        var(--nx-border) !important;
+}
+
+
+/* =========================================================
+   13. FORMS
+   ========================================================= */
+
+body.store-theme-dark input,
+body.store-theme-dark textarea,
+body.store-theme-dark select {
+
+    background:
+        var(--nx-surface-2) !important;
+
+    color:
+        var(--nx-text) !important;
+
+    border-color:
+        var(--nx-border) !important;
+}
+
+
+body.store-theme-dark input::placeholder,
+body.store-theme-dark textarea::placeholder {
+
+    color:
+        var(--nx-text-muted) !important;
+}
+
+
+/* =========================================================
+   14. BOTTOM NAVIGATION
+   ========================================================= */
+
+body.store-theme-dark .bottom-nav {
+
+    background:
+        #101112 !important;
+
+    border-top:
+        1px solid var(--nx-border) !important;
+}
+
+
+body.store-theme-dark .bottom-nav .nav-btn {
+
+    background:
+        transparent !important;
+
+    color:
+        var(--nx-text-muted) !important;
+}
+
+
+body.store-theme-dark .bottom-nav .nav-btn.active {
+
+    color:
+        #ffffff !important;
+}
+
+
+body.store-theme-dark .bottom-nav .post-nav-btn {
+
+    background:
+        #071d49 !important;
+
+    color:
+        #ffffff !important;
+}
+
+
+/* =========================================================
+   15. GENERIC WHITE SURFACE CATCHER
+   ========================================================= */
+
+/*
+   Only applies inside dark mode.
+   This catches future cards that were written with
+   hard-coded white backgrounds.
+*/
+
+body.store-theme-dark .card,
+body.store-theme-dark .panel,
+body.store-theme-dark .section-card {
+
+    background:
+        var(--nx-surface) !important;
+
+    color:
+        var(--nx-text) !important;
+
+    border-color:
+        var(--nx-border) !important;
+}
+
+
+/* =========================================================
+   END FINAL DARK MODE
+   ========================================================= */
+
+/* =========================================================
+   NEXODRA — DARK MODE FIX
+   BRICK D2
+   Fix remaining light components
+   ========================================================= */
+
+body.store-theme-dark {
+
+    --nx-bg: #0f0f10;
+    --nx-surface: #151617;
+    --nx-surface-2: #1b1d20;
+    --nx-surface-3: #202328;
+
+    --nx-border: #3a3d43;
+    --nx-divider: #292c31;
+
+    --nx-text: #f5f7fb;
+    --nx-text-secondary: #aeb7c6;
+    --nx-text-muted: #7f8999;
+
+    --nx-blue: #9fb9e8;
+}
+
+
+/* =========================================================
+   CATEGORIES
+   ========================================================= */
+
+body.store-theme-dark .cat-circle {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        var(--nx-blue) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+}
+
+
+body.store-theme-dark .cat-item {
+
+    color:
+        var(--nx-text-secondary) !important;
+
+}
+
+
+body.store-theme-dark .cat-item span {
+
+    color:
+        var(--nx-text-secondary) !important;
+
+}
+
+
+/* =========================================================
+   STORE ACTION BUTTONS
+   Preview Store / Share Store
+   ========================================================= */
+
+body.store-theme-dark #storeScreen > .store-action-btn,
+body.store-theme-dark #shareStoreBtn {
+
+    background:
+        var(--nx-surface) !important;
+
+    background-color:
+        var(--nx-surface) !important;
+
+    color:
+        var(--nx-text) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    box-shadow:
+        none !important;
+
+}
+
+
+body.store-theme-dark #storeScreen > .store-action-btn i,
+body.store-theme-dark #shareStoreBtn i {
+
+    color:
+        var(--nx-blue) !important;
+
+}
+
+
+/* =========================================================
+   PROFILE ACTION BUTTONS
+   Preview Store
+   ========================================================= */
+
+body.store-theme-dark .profile-action-btn {
+
+    background:
+        var(--nx-surface) !important;
+
+    color:
+        var(--nx-text) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    box-shadow:
+        none !important;
+
+}
+
+
+/* =========================================================
+   VERIFIED MERCHANT
+   ========================================================= */
+
+body.store-theme-dark .merchant-status-card {
+
+    background:
+        var(--nx-surface) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    color:
+        var(--nx-text) !important;
+
+    box-shadow:
+        none !important;
+
+}
+
+
+body.store-theme-dark .merchant-status-icon {
+
+    color:
+        var(--nx-green, #22c55e) !important;
+
+}
+
+
+body.store-theme-dark .merchant-status-text strong {
+
+    color:
+        var(--nx-text) !important;
+
+}
+
+
+body.store-theme-dark .merchant-status-text span {
+
+    color:
+        var(--nx-text-secondary) !important;
+
+}
+
+
+/* =========================================================
+   LOG OUT
+   ========================================================= */
+
+body.store-theme-dark .logout-btn {
+
+    background:
+        var(--nx-surface) !important;
+
+    background-color:
+        var(--nx-surface) !important;
+
+    color:
+        #ff5b5b !important;
+
+    border:
+        1px solid #4a3030 !important;
+
+    box-shadow:
+        none !important;
+
+}
+
+
+body.store-theme-dark .logout-btn i {
+
+    color:
+        #ff5b5b !important;
+
+}
+
+
+/* =========================================================
+   PROFILE MENU — MAKE SURE LIGHT BUTTON DEFAULTS
+   CANNOT LEAK THROUGH
+   ========================================================= */
+
+body.store-theme-dark .profile-menu,
+body.store-theme-dark .profile-menu-item {
+
+    background:
+        var(--nx-surface) !important;
+
+}
+
+
+body.store-theme-dark .profile-menu-item {
+
+    border-bottom:
+        1px solid var(--nx-divider) !important;
+
+}
+
+
+body.store-theme-dark .profile-menu-icon {
+
+    background:
+        var(--nx-surface-3) !important;
+
+    color:
+        var(--nx-blue) !important;
+
+}
+
+
+/* =========================================================
+   PRODUCT CARDS
+   ========================================================= */
+
+body.store-theme-dark .product-card,
+body.store-theme-dark .sell-product-card {
+
+    background:
+        var(--nx-surface) !important;
+
+    border:
+        1px solid var(--nx-border) !important;
+
+    color:
+        var(--nx-text) !important;
+
+}
+
+
+/* =========================================================
+   HARD-CODED LIGHT SURFACE SAFETY NET
+   ONLY FOR KNOWN NEXODRA COMPONENTS
+   ========================================================= */
+
+body.store-theme-dark .store-action-btn,
+body.store-theme-dark .profile-action-btn,
+body.store-theme-dark .merchant-status-card,
+body.store-theme-dark .logout-btn,
+body.store-theme-dark .cat-circle {
+
+    box-shadow:
+        none !important;
+
+}
+
+
+/* =========================================================
+   END BRICK D2
+   ========================================================= */

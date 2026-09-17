@@ -9436,11 +9436,93 @@ if (publicProductSearch) {
  * Detect public-store mode.
  */
 
-const currentPath =
+/* =========================================
+   NEXODRA — GITHUB PAGES ROUTE RESTORE
+   BRICK B
+========================================= */
+
+const pendingRoute =
+    sessionStorage.getItem(
+        'nexodraPendingRoute'
+    );
+
+if (pendingRoute) {
+
+    sessionStorage.removeItem(
+        'nexodraPendingRoute'
+    );
+
+    try {
+
+        const restoredUrl =
+            new URL(
+                pendingRoute,
+                window.location.origin
+            );
+
+        window.history.replaceState(
+            null,
+            '',
+            restoredUrl.pathname +
+            restoredUrl.search +
+            restoredUrl.hash
+        );
+
+        console.log(
+            'PUBLIC STORE — Restored pending route:',
+            restoredUrl.pathname
+        );
+
+    } catch (error) {
+
+        console.error(
+            'PUBLIC STORE — Failed to restore route:',
+            error
+        );
+
+    }
+}
+
+
+/*
+ * GitHub Pages Project Pages uses:
+ *
+ * /nexodra-seller-app/
+ *
+ * Internally the Nexodra router works with:
+ *
+ * /
+ * /store/odro
+ *
+ * Therefore remove the project prefix before
+ * the existing route detection runs.
+ */
+
+const APP_BASE_PATH =
+    '/nexodra-seller-app';
+
+const browserPath =
     window.location.pathname;
+
+const currentPath =
+    browserPath === APP_BASE_PATH
+        ? '/'
+        : browserPath.startsWith(
+            APP_BASE_PATH + '/'
+        )
+            ? browserPath.slice(
+                APP_BASE_PATH.length
+            )
+            : browserPath;
+
 console.log(
-    'ROUTING TEST — pathname:',
-    window.location.pathname
+    'ROUTING TEST — browser pathname:',
+    browserPath
+);
+
+console.log(
+    'ROUTING TEST — normalized pathname:',
+    currentPath
 );
 
 console.log(

@@ -12895,6 +12895,72 @@ setTimeout(() => {
 
 document.addEventListener('DOMContentLoaded', async () => {
 
+    /*
+     * =========================================
+     * NEXODRA — PUBLIC STORE AUTH BYPASS
+     * BRICK A
+     * =========================================
+     *
+     * A customer opening a shared public-store
+     * link must NOT enter the seller application
+     * or be required to sign in just to view the
+     * store.
+     *
+     * Example:
+     *
+     * /store/odro
+     *
+     * must open the public storefront directly.
+     */
+
+    const publicStorePath =
+        window.location.pathname;
+
+    if (
+        publicStorePath.startsWith('/store/')
+    ) {
+
+        console.log(
+            'BRICK A — Public store detected. Bypassing authentication.'
+        );
+
+        /*
+         * Make absolutely sure this is NOT
+         * treated as seller preview mode.
+         */
+
+        isStorePreviewMode = false;
+
+        /*
+         * Restore the public store directly.
+         */
+
+        if (
+            typeof showPublicStore ===
+            'function'
+        ) {
+
+            showPublicStore();
+
+        } else {
+
+            console.error(
+                'BRICK A — showPublicStore() is not available.'
+            );
+
+        }
+
+        /*
+         * IMPORTANT:
+         *
+         * Do NOT run the normal authentication
+         * restoration below.
+         */
+
+        return;
+
+    }
+
 
     try {
 

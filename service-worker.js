@@ -1,9 +1,9 @@
 // =========================================
-// BRICK 1J — NEXODRA SERVICE WORKER
+// BRICK C — NEXODRA SERVICE WORKER
 // =========================================
 
 const NEXODRA_CACHE =
-    'nexodra-app-v3';
+    'nexodra-app-v4';
 
 
 const NEXODRA_APP_FILES = [
@@ -26,7 +26,7 @@ self.addEventListener(
     event => {
 
         console.log(
-            'BRICK 1K-D1 — Service worker installing.'
+            'BRICK C — Service worker installing.'
         );
 
         event.waitUntil(
@@ -37,7 +37,8 @@ self.addEventListener(
                 cache => {
 
                     console.log(
-                        'BRICK 1K-D1 — cache opened.'
+                        'BRICK C — Opening new cache:',
+                        NEXODRA_CACHE
                     );
 
                     return cache.addAll(
@@ -49,7 +50,7 @@ self.addEventListener(
                 () => {
 
                     console.log(
-                        'BRICK 1K-D1 — install cache SUCCESS.'
+                        'BRICK C — New app files cached.'
                     );
 
                 }
@@ -57,7 +58,7 @@ self.addEventListener(
                 error => {
 
                     console.error(
-                        'BRICK 1K-D1 — install cache FAILED:',
+                        'BRICK C — Cache install FAILED:',
                         error
                     );
 
@@ -68,7 +69,12 @@ self.addEventListener(
 
         );
 
+        /*
+         * Activate the new worker immediately.
+         */
+
         self.skipWaiting();
+
     }
 );
 
@@ -82,7 +88,7 @@ self.addEventListener(
     event => {
 
         console.log(
-            'BRICK 1J — Service worker activating.'
+            'BRICK C — Service worker activating.'
         );
 
         event.waitUntil(
@@ -99,10 +105,18 @@ self.addEventListener(
                                     NEXODRA_CACHE
                             )
                             .map(
-                                cacheName =>
-                                    caches.delete(
+                                cacheName => {
+
+                                    console.log(
+                                        'BRICK C — Deleting old cache:',
                                         cacheName
-                                    )
+                                    );
+
+                                    return caches.delete(
+                                        cacheName
+                                    );
+
+                                }
                             )
 
                     );
@@ -110,11 +124,19 @@ self.addEventListener(
                 }
 
             ).then(
-                () =>
-                    self.clients.claim()
+                () => {
+
+                    console.log(
+                        'BRICK C — Old caches removed.'
+                    );
+
+                    return self.clients.claim();
+
+                }
             )
 
         );
+
     }
 );
 
@@ -161,31 +183,128 @@ self.addEventListener(
 
 
         // -------------------------------------
-        // CACHE FIRST
+        // APP FILES
+        // NETWORK FIRST
+        // -------------------------------------
+
+        const isAppFile =
+            requestUrl.pathname.endsWith(
+                '/index.html'
+            ) ||
+            requestUrl.pathname.endsWith(
+                '/app.js'
+            ) ||
+            requestUrl.pathname.endsWith(
+                '/style.css'
+            ) ||
+            requestUrl.pathname.endsWith(
+                '/manifest.json'
+            );
+
+
+        if (isAppFile) {
+
+            event.respondWith(
+
+                fetch(request)
+                    .then(
+                        networkResponse => {
+
+                            /*
+                             * Save the newest successful
+                             * application file.
+                             */
+
+                            if (
+                                networkResponse.ok
+                            ) {
+
+                                const responseClone =
+                                    networkResponse.clone();
+
+                                caches.open(
+                                    NEXODRA_CACHE
+                                ).then(
+                                    cache => {
+
+                                        cache.put(
+                                            request,
+                                            responseClone
+                                        );
+
+                                    }
+                                );
+
+                            }
+
+                            return networkResponse;
+
+                        }
+                    )
+                    .catch(
+                        () => {
+
+                            /*
+                             * If the network is unavailable,
+                             * fall back to the cached version.
+                             */
+
+                            return caches.match(
+                                request
+                            );
+
+                        }
+                    )
+
+            );
+
+            return;
+
+        }
+
+
+        // -------------------------------------
+        // OTHER SAME-ORIGIN REQUESTS
+        // -------------------------------------
+        //
+        // Do NOT cache these automatically.
+        //
+        // This is important for routes such as:
+        //
+        // /store/odro
+        //
+        // and prevents a 404 or route response from
+        // becoming permanently cached.
         // -------------------------------------
 
         event.respondWith(
 
-            caches.match(
-                request
-            ).then(
-                cachedResponse => {
+            fetch(request)
+                .catch(
+                    () => {
 
-                    if (
-                        cachedResponse
-                    ) {
-                        return cachedResponse;
+                        /*
+                         * For navigation requests,
+                         * fall back to the app shell.
+                         */
+
+                        if (
+                            request.mode ===
+                            'navigate'
+                        ) {
+
+                            return caches.match(
+                                './index.html'
+                            );
+
+                        }
+
+                        return Response.error();
+
                     }
-
-                    return fetch(
-                        request
-                    );
-
-                }
-            )
+                )
 
         );
 
     }
 );
-

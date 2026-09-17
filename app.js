@@ -12913,53 +12913,74 @@ document.addEventListener('DOMContentLoaded', async () => {
      * must open the public storefront directly.
      */
 
-    const publicStorePath =
-        window.location.pathname;
+    /*
+ * =========================================
+ * NEXODRA — PUBLIC STORE AUTH BYPASS
+ * BRICK A — CORRECTED
+ * =========================================
+ *
+ * GitHub Pages uses:
+ *
+ * /nexodra-seller-app/store/odro
+ *
+ * Brick B normalizes that route to:
+ *
+ * /store/odro
+ *
+ * Therefore this check MUST use
+ * currentPath instead of
+ * window.location.pathname.
+ */
 
-    if (
-        publicStorePath.startsWith('/store/')
-    ) {
+if (
+    currentPath.startsWith('/store/')
+) {
 
-        console.log(
-            'BRICK A — Public store detected. Bypassing authentication.'
+    console.log(
+        'BRICK A — Public store detected.'
+    );
+
+    /*
+     * Public shared-store links are NOT
+     * seller preview mode.
+     */
+
+    isStorePreviewMode = false;
+
+    /*
+     * Hide authentication screen.
+     */
+
+    const publicAuthScreen =
+        document.getElementById(
+            'authScreen'
         );
 
-        /*
-         * Make absolutely sure this is NOT
-         * treated as seller preview mode.
-         */
+    if (publicAuthScreen) {
 
-        isStorePreviewMode = false;
-
-        /*
-         * Restore the public store directly.
-         */
-
-        if (
-            typeof showPublicStore ===
-            'function'
-        ) {
-
-            showPublicStore();
-
-        } else {
-
-            console.error(
-                'BRICK A — showPublicStore() is not available.'
-            );
-
-        }
-
-        /*
-         * IMPORTANT:
-         *
-         * Do NOT run the normal authentication
-         * restoration below.
-         */
-
-        return;
+        publicAuthScreen.style.display =
+            'none';
 
     }
+
+    /*
+     * IMPORTANT:
+     *
+     * The public-store route handler
+     * earlier in app.js is responsible
+     * for calling showPublicStore().
+     *
+     * We only stop the normal login
+     * restoration here.
+     */
+
+    console.log(
+        'BRICK A — Authentication restoration skipped for public store.'
+    );
+
+    return;
+
+}  
 
 
     try {

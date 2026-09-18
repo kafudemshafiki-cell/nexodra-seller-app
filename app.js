@@ -8480,18 +8480,62 @@ const publicStoreRecord =
 
 
 /*
- * Show seller dashboard again
+ * =========================================
+ * BRICK D — PUBLIC STORE NAVIGATION ISOLATION
+ * =========================================
+ *
+ * Shared customers must NEVER be able to
+ * return to the seller dashboard.
+ *
+ * Seller preview may return to the seller
+ * dashboard because preview was opened from
+ * the authenticated seller side.
  */
 
 if (publicBackBtn) {
 
-    publicBackBtn.addEventListener('click', () => {
+    /*
+     * Customer/shared-store mode:
+     *
+     * Hide the seller-style back button.
+     */
+    if (!isStorePreviewMode) {
 
-        publicStore.style.display = 'none';
+        publicBackBtn.style.display =
+            'none';
 
-        sellerDashboard.style.display = '';
+        console.log(
+            'BRICK D — Customer public store: seller back button hidden.'
+        );
 
-    });
+    } else {
+
+        /*
+         * Seller preview mode:
+         *
+         * Keep the back button available.
+         */
+        publicBackBtn.style.display =
+            'inline-flex';
+
+        publicBackBtn.addEventListener(
+            'click',
+            () => {
+
+                publicStore.style.display =
+                    'none';
+
+                sellerDashboard.style.display =
+                    '';
+
+                console.log(
+                    'BRICK D — Seller preview exited to dashboard.'
+                );
+
+            }
+        );
+
+    }
 
 }
 
@@ -9045,13 +9089,69 @@ async function loadPublicProductsFromSupabase() {
 
     if (publicProductError) {
 
-        console.error(
-            'BRICK 3G — Could not load public products:',
-            publicProductError
-        );
+    console.error(
+        'BRICK D — PUBLIC PRODUCT LOAD FAILED:',
+        publicProductError
+    );
 
-        return;
+    console.error(
+        'BRICK D — Product query details:',
+        {
+            owner_id:
+                currentStoreOwnerId,
+
+            published:
+                true,
+
+            error_code:
+                publicProductError.code,
+
+            error_message:
+                publicProductError.message,
+
+            error_details:
+                publicProductError.details,
+
+            error_hint:
+                publicProductError.hint
+        }
+    );
+
+    /*
+     * Keep the storefront usable while making
+     * the real database problem visible.
+     */
+    publicProducts = [];
+
+    if (publicProductCount) {
+
+        publicProductCount.textContent =
+            '0';
+
     }
+
+    if (publicProductGrid) {
+
+        publicProductGrid.innerHTML = `
+            <div class="public-empty-products">
+
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+                <strong>
+                    Products could not be loaded
+                </strong>
+
+                <span>
+                    Please try again shortly.
+                </span>
+
+            </div>
+        `;
+
+    }
+
+    return;
+}
 
 
     console.log(
@@ -9096,9 +9196,11 @@ function renderPublicProducts() {
                 product.category === publicStoreCategory;
 
             const matchesSearch =
-                product.title
-                    .toLowerCase()
-                    .includes(searchTerm);
+    String(
+        product.title || ''
+    )
+        .toLowerCase()
+        .includes(searchTerm);
 
             return (
                 published &&

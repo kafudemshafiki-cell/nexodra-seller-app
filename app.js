@@ -4831,6 +4831,101 @@ console.log(
     storeInformation
 );
 
+  // =========================================
+// BRICK G — RESOLVE STORE SLUG BEFORE SAVE
+// =========================================
+
+let slugToSave =
+    storeSlug;
+
+
+if (!slugToSave) {
+
+    /*
+     * Check Supabase in case the store loader
+     * has not finished yet.
+     *
+     * This prevents an existing store's
+     * permanent slug from accidentally being
+     * replaced by a newly generated slug.
+     */
+
+    const {
+        data: existingStore,
+        error: existingStoreError
+    } = await supabaseClient
+        .from('stores')
+        .select('slug')
+        .eq(
+            'owner_id',
+            user.id
+        )
+        .maybeSingle();
+
+
+    if (existingStoreError) {
+
+        console.error(
+            'BRICK G — Could not resolve existing store slug:',
+            existingStoreError
+        );
+
+        throw existingStoreError;
+
+    }
+
+
+    if (
+        existingStore &&
+        existingStore.slug
+    ) {
+
+        slugToSave =
+            existingStore.slug;
+
+    }
+
+}
+
+
+/*
+ * Brand-new store:
+ *
+ * Generate its slug once.
+ */
+
+if (!slugToSave) {
+
+    slugToSave =
+        createStoreSlug(
+            storeInformation.name
+        );
+
+}
+
+
+if (!slugToSave) {
+
+    throw new Error(
+        'BRICK G — Could not create a valid store slug.'
+    );
+
+}
+
+
+/*
+ * Keep the global persistent slug
+ * synchronized with what will be saved.
+ */
+
+storeSlug =
+    slugToSave;
+
+
+console.log(
+    'BRICK G — Store slug prepared for save:',
+    storeSlug
+);        
 
 const {
     data: savedStore,
@@ -4840,10 +4935,13 @@ const {
     .upsert(
         {
             owner_id:
-                user.id,
+                   user.id,
+
+            slug:
+               slugToSave,
 
             name:
-                storeInformation.name,
+               storeInformation.name,
 
             phone:
                 storeInformation.phone,
@@ -5170,15 +5268,39 @@ async function loadStoreInformationFromSupabase() {
 
 
     const store =
-        stores[0];
+    stores[0];
 
-  // Remember which user owns this store
-     currentStoreOwnerId =
+
+// =========================================
+// BRICK G — RESTORE PERSISTENT STORE SLUG
+// =========================================
+//
+// The database is now the source of truth
+// for the public store URL.
+// =========================================
+
+currentStoreOwnerId =
     store.owner_id;
 
-// Use the real store name from Supabase
+
+storeSlug =
+    store.slug || '';
+
+
 storeName =
     store.name || '';
+
+
+console.log(
+    'BRICK G — Persistent store slug loaded:',
+    storeSlug
+);
+
+
+console.log(
+    'BRICK G — storeName assigned:',
+    storeName
+);
 
   console.log(
     'BRICK 3C — storeName assigned:',
@@ -5669,6 +5791,9 @@ function renderSellerConversations(conversations) {
 
         conversationCard.dataset.conversationId =
             conversation.id;
+
+      conversationCard.dataset.buyerId =
+    conversation.buyer_id;
 
 
         conversationCard.innerHTML = `
@@ -6197,222 +6322,680 @@ async function createNotification({
     return true;
 }
 
-
 // =========================================
-// INBOX BRICK 2 - CHAT SYSTEM
+// BRICK H — PERSISTENT SELLER CHAT
+// =========================================
+//
+// Uses existing Supabase tables:
+//
+// conversations
+// messages
+//
+// messages columns:
+//
+// id
+// conversation_id
+// sender_id
+// receiver_id
+// message
+// read
+// created_at
 // =========================================
 
 const chatPanel =
-    document.getElementById('chatPanel');
+    document.getElementById(
+        'chatPanel'
+    );
 
 const closeChatBtn =
-    document.getElementById('closeChatBtn');
+    document.getElementById(
+        'closeChatBtn'
+    );
 
 const chatCustomerName =
-    document.getElementById('chatCustomerName');
+    document.getElementById(
+        'chatCustomerName'
+    );
 
 const chatAvatar =
-    document.getElementById('chatAvatar');
+    document.getElementById(
+        'chatAvatar'
+    );
 
 const chatMessages =
-    document.getElementById('chatMessages');
+    document.getElementById(
+        'chatMessages'
+    );
 
 const chatMessageInput =
-    document.getElementById('chatMessageInput');
+    document.getElementById(
+        'chatMessageInput'
+    );
 
 const sendChatMessage =
-    document.getElementById('sendChatMessage');
+    document.getElementById(
+        'sendChatMessage'
+    );
+
+const sellerChatList =
+    document.getElementById(
+        'notificationList'
+    );
 
 
-const inboxConversationList =
-    document.getElementById('conversationList');
+// =========================================
+// CURRENT SELLER CONVERSATION
+// =========================================
+
+let currentSellerConversationId =
+    null;
+
+let currentSellerConversationBuyerId =
+    null;
 
 
-/*
- * Open conversation
- */
+// =========================================
+// LOAD MESSAGES
+// =========================================
 
-if (inboxConversationList) {
+async function loadSellerMessages(
+    conversationId
+) {
 
-    inboxConversationList
-        .querySelectorAll('.conversation-card')
-        .forEach(card => {
-
-            card.addEventListener('click', () => {
-
-                const name =
-                    card.querySelector(
-                        '.conversation-top strong'
-                    )?.textContent.trim();
-
-                const avatar =
-                    card.querySelector(
-                        '.conversation-avatar'
-                    )?.textContent.trim();
-
-                if (chatCustomerName) {
-                    chatCustomerName.textContent =
-                        name || 'Customer';
-                }
-
-                if (chatAvatar) {
-                    chatAvatar.textContent =
-                        avatar || '?';
-                }
-
-                /*
-                 * Hide the inbox list
-                 */
-
-                const inboxHeader =
-                    document.querySelector(
-                        '.inbox-page-header'
-                    );
-
-                const inboxSearchBox =
-                    document.querySelector(
-                        '.inbox-search'
-                    );
-
-                const inboxFilterBar =
-                    document.querySelector(
-                        '.inbox-filters'
-                    );
-
-                if (inboxHeader) {
-                    inboxHeader.style.display = 'none';
-                }
-
-                if (inboxSearchBox) {
-                    inboxSearchBox.style.display = 'none';
-                }
-
-                if (inboxFilterBar) {
-                    inboxFilterBar.style.display = 'none';
-                }
-
-                if (inboxConversationList) {
-                    inboxConversationList.style.display =
-                        'none';
-                }
-
-                /*
-                 * Show chat
-                 */
-
-                if (chatPanel) {
-                    chatPanel.style.display = 'block';
-                }
-
-                /*
-                 * Remove unread state
-                 */
-
-                card.classList.remove('unread');
-
-                const unreadBadge =
-                    card.querySelector(
-                        '.message-unread-count'
-                    );
-
-                if (unreadBadge) {
-                    unreadBadge.remove();
-                }
-
-            });
-
-        });
-
-}
-
-
-/*
- * Close conversation
- */
-
-if (closeChatBtn) {
-
-    closeChatBtn.addEventListener('click', () => {
-
-        if (chatPanel) {
-            chatPanel.style.display = 'none';
-        }
-
-        const inboxHeader =
-            document.querySelector(
-                '.inbox-page-header'
-            );
-
-        const inboxSearchBox =
-            document.querySelector(
-                '.inbox-search'
-            );
-
-        const inboxFilterBar =
-            document.querySelector(
-                '.inbox-filters'
-            );
-
-        if (inboxHeader) {
-            inboxHeader.style.display = '';
-        }
-
-        if (inboxSearchBox) {
-            inboxSearchBox.style.display = '';
-        }
-
-        if (inboxFilterBar) {
-            inboxFilterBar.style.display = '';
-        }
-
-        if (inboxConversationList) {
-            inboxConversationList.style.display = '';
-        }
-
-    });
-
-}
-
-
-/*
- * Send message
- */
-
-function sendMessage() {
-
-    if (!chatMessageInput || !chatMessages) {
+    if (
+        !conversationId ||
+        !chatMessages
+    ) {
         return;
     }
 
+
+    console.log(
+        'BRICK H — Loading seller messages:',
+        conversationId
+    );
+
+
+    const {
+        data: {
+            user
+        },
+        error: userError
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (
+        userError ||
+        !user
+    ) {
+
+        console.error(
+            'BRICK H — Seller authentication failed:',
+            userError
+        );
+
+        return;
+    }
+
+
+    const {
+        data: messages,
+        error
+    } =
+        await supabaseClient
+            .from('messages')
+            .select(`
+                id,
+                conversation_id,
+                sender_id,
+                receiver_id,
+                message,
+                read,
+                created_at
+            `)
+            .eq(
+                'conversation_id',
+                conversationId
+            )
+            .order(
+                'created_at',
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            'BRICK H — Seller messages load failed:',
+            error
+        );
+
+        return;
+    }
+
+
+    // Clear current messages.
+    chatMessages.innerHTML = '';
+
+
+    if (
+        !messages ||
+        messages.length === 0
+    ) {
+
+        const emptyMessage =
+            document.createElement(
+                'div'
+            );
+
+        emptyMessage.className =
+            'chat-date';
+
+        emptyMessage.textContent =
+            'Start of conversation';
+
+        chatMessages.appendChild(
+            emptyMessage
+        );
+
+        return;
+    }
+
+
+    messages.forEach(
+        messageRecord => {
+
+            const row =
+                document.createElement(
+                    'div'
+                );
+
+
+            const isSeller =
+                String(
+                    messageRecord.sender_id
+                ) ===
+                String(
+                    user.id
+                );
+
+
+            row.className =
+                isSeller
+                    ? 'message-row seller-message'
+                    : 'message-row customer-message';
+
+
+            const bubble =
+                document.createElement(
+                    'div'
+                );
+
+            bubble.className =
+                'message-bubble';
+
+            bubble.textContent =
+                messageRecord.message || '';
+
+
+            const time =
+                document.createElement(
+                    'span'
+                );
+
+            time.className =
+                'message-time';
+
+            time.textContent =
+                messageRecord.created_at
+                    ? new Date(
+                        messageRecord.created_at
+                    ).toLocaleTimeString(
+                        [],
+                        {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }
+                    )
+                    : '';
+
+
+            row.appendChild(
+                bubble
+            );
+
+            row.appendChild(
+                time
+            );
+
+            chatMessages.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    // Mark incoming messages as read.
+    const unreadMessages =
+        messages.filter(
+            messageRecord =>
+                String(
+                    messageRecord.receiver_id
+                ) ===
+                String(
+                    user.id
+                ) &&
+                messageRecord.read === false
+        );
+
+
+    for (
+        const messageRecord
+        of unreadMessages
+    ) {
+
+        const {
+            error: readError
+        } =
+            await supabaseClient
+                .from('messages')
+                .update({
+                    read: true
+                })
+                .eq(
+                    'id',
+                    messageRecord.id
+                )
+                .eq(
+                    'receiver_id',
+                    user.id
+                );
+
+
+        if (readError) {
+
+            console.warn(
+                'BRICK H — Could not mark message as read:',
+                readError
+            );
+
+        }
+
+    }
+
+
+    chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+
+
+    console.log(
+        'BRICK H — Seller messages loaded:',
+        messages.length
+    );
+
+}
+
+
+// =========================================
+// OPEN SELLER CONVERSATION
+// =========================================
+
+async function openSellerConversation(
+    conversationId,
+    buyerId
+) {
+
+    if (!conversationId) {
+        return;
+    }
+
+
+    currentSellerConversationId =
+        conversationId;
+
+    currentSellerConversationBuyerId =
+        buyerId || null;
+
+
+    console.log(
+        'BRICK H — Opening seller conversation:',
+        {
+            conversationId,
+            buyerId
+        }
+    );
+
+
+    // Hide inbox list.
+    const inboxHeader =
+        document.querySelector(
+            '.inbox-header'
+        );
+
+    const inboxSearchBox =
+        document.querySelector(
+            '.inbox-search'
+        );
+
+    const inboxFilterBar =
+        document.querySelector(
+            '.inbox-filters'
+        );
+
+
+    if (inboxHeader) {
+        inboxHeader.style.display =
+            'none';
+    }
+
+    if (inboxSearchBox) {
+        inboxSearchBox.style.display =
+            'none';
+    }
+
+    if (inboxFilterBar) {
+        inboxFilterBar.style.display =
+            'none';
+    }
+
+
+    if (sellerChatList) {
+
+        sellerChatList.style.display =
+            'none';
+
+    }
+
+
+    // Show chat.
+    if (chatPanel) {
+
+        chatPanel.style.display =
+            'block';
+
+    }
+
+
+    if (chatCustomerName) {
+
+        chatCustomerName.textContent =
+            'Customer';
+
+    }
+
+
+    if (chatAvatar) {
+
+        chatAvatar.textContent =
+            'C';
+
+    }
+
+
+    await loadSellerMessages(
+        conversationId
+    );
+
+}
+
+
+// =========================================
+// CLOSE SELLER CONVERSATION
+// =========================================
+
+if (closeChatBtn) {
+
+    closeChatBtn.addEventListener(
+        'click',
+        () => {
+
+            currentSellerConversationId =
+                null;
+
+            currentSellerConversationBuyerId =
+                null;
+
+
+            if (chatPanel) {
+
+                chatPanel.style.display =
+                    'none';
+
+            }
+
+
+            if (sellerChatList) {
+
+                sellerChatList.style.display =
+                    '';
+
+            }
+
+
+            const inboxHeader =
+                document.querySelector(
+                    '.inbox-header'
+                );
+
+            const inboxSearchBox =
+                document.querySelector(
+                    '.inbox-search'
+                );
+
+            const inboxFilterBar =
+                document.querySelector(
+                    '.inbox-filters'
+                );
+
+
+            if (inboxHeader) {
+                inboxHeader.style.display =
+                    '';
+            }
+
+            if (inboxSearchBox) {
+                inboxSearchBox.style.display =
+                    '';
+            }
+
+            if (inboxFilterBar) {
+                inboxFilterBar.style.display =
+                    '';
+            }
+
+        }
+    );
+
+}
+
+
+// =========================================
+// SELLER SEND MESSAGE
+// =========================================
+
+async function sendSellerMessage() {
+
+    if (
+        !chatMessageInput ||
+        !chatMessages ||
+        !currentSellerConversationId
+    ) {
+
+        return;
+
+    }
+
+
     const message =
         chatMessageInput.value.trim();
+
 
     if (!message) {
         return;
     }
 
-    const messageRow =
-        document.createElement('div');
 
-    messageRow.className =
-        'message-row er-message';
+    const {
+        data: {
+            user
+        },
+        error: userError
+    } =
+        await supabaseClient.auth.getUser();
 
-    messageRow.innerHTML = `
-        <div class="message-bubble">
-            ${message}
-        </div>
 
-        <span class="message-time">
-            Just now
-        </span>
-    `;
+    if (
+        userError ||
+        !user
+    ) {
 
-    chatMessages.appendChild(messageRow);
+        console.error(
+            'BRICK H — Seller authentication failed:',
+            userError
+        );
 
-    chatMessageInput.value = '';
+        alert(
+            'Your session has expired. Please sign in again.'
+        );
 
-    chatMessages.scrollTop =
-        chatMessages.scrollHeight;
+        return;
+    }
+
+
+    if (
+        !currentSellerConversationBuyerId
+    ) {
+
+        console.error(
+            'BRICK H — No buyer ID for current conversation.'
+        );
+
+        return;
+    }
+
+
+    if (
+        String(user.id) ===
+        String(currentSellerConversationBuyerId)
+    ) {
+
+        console.error(
+            'BRICK H — Seller and buyer IDs are identical.'
+        );
+
+        return;
+    }
+
+
+    if (sendChatMessage) {
+
+        sendChatMessage.disabled =
+            true;
+
+    }
+
+
+    try {
+
+        const {
+            data: insertedMessage,
+            error
+        } =
+            await supabaseClient
+                .from('messages')
+                .insert({
+                    conversation_id:
+                        currentSellerConversationId,
+
+                    sender_id:
+                        user.id,
+
+                    receiver_id:
+                        currentSellerConversationBuyerId,
+
+                    message:
+                        message,
+
+                    read:
+                        false
+                })
+                .select()
+                .single();
+
+
+        if (error) {
+
+            console.error(
+                'BRICK H — Seller message insert failed:',
+                error
+            );
+
+            alert(
+                'Message could not be sent.\n\n' +
+                error.message
+            );
+
+            return;
+        }
+
+
+        // Update conversation activity.
+        const {
+            error: conversationUpdateError
+        } =
+            await supabaseClient
+                .from('conversations')
+                .update({
+                    updated_at:
+                        new Date().toISOString()
+                })
+                .eq(
+                    'id',
+                    currentSellerConversationId
+                );
+
+
+        if (conversationUpdateError) {
+
+            console.warn(
+                'BRICK H — Conversation timestamp update failed:',
+                conversationUpdateError
+            );
+
+        }
+
+
+        // Clear input.
+        chatMessageInput.value =
+            '';
+
+
+        // Reload from database.
+        await loadSellerMessages(
+            currentSellerConversationId
+        );
+
+
+        console.log(
+            'BRICK H — Seller message sent:',
+            insertedMessage
+        );
+
+
+    } finally {
+
+        if (sendChatMessage) {
+
+            sendChatMessage.disabled =
+                false;
+
+        }
+
+    }
 
 }
 
@@ -6421,7 +7004,7 @@ if (sendChatMessage) {
 
     sendChatMessage.addEventListener(
         'click',
-        sendMessage
+        sendSellerMessage
     );
 
 }
@@ -6433,11 +7016,14 @@ if (chatMessageInput) {
         'keydown',
         event => {
 
-            if (event.key === 'Enter') {
+            if (
+                event.key === 'Enter' &&
+                !event.shiftKey
+            ) {
 
                 event.preventDefault();
 
-                sendMessage();
+                sendSellerMessage();
 
             }
 
@@ -6445,6 +7031,61 @@ if (chatMessageInput) {
     );
 
 }
+
+
+// =========================================
+// SELLER CONVERSATION CARD CLICK
+// =========================================
+//
+// renderSellerConversations()
+// creates .chat-conversation-card
+// dynamically, so use event delegation.
+// =========================================
+
+if (sellerChatList) {
+
+    sellerChatList.addEventListener(
+        'click',
+        event => {
+
+            const card =
+                event.target.closest(
+                    '.chat-conversation-card'
+                );
+
+
+            if (!card) {
+                return;
+            }
+
+
+            const conversationId =
+                card.dataset.conversationId;
+
+
+            const buyerId =
+                card.dataset.buyerId;
+
+
+            if (!conversationId) {
+
+                return;
+
+            }
+
+
+            openSellerConversation(
+                conversationId,
+                buyerId
+            );
+
+        }
+    );
+
+}
+
+
+
 // =========================================
 // PUBLIC STORE SHARE - BRICK 1
 // =========================================
@@ -6467,6 +7108,8 @@ const copyStoreLinkBtn =
 const nativeShareBtn =
     document.getElementById('nativeShareBtn');
 
+let generatedStoreLink = '';
+
 const whatsappShareBtn =
     document.getElementById('whatsappShareBtn');
 
@@ -6475,14 +7118,74 @@ const whatsappShareBtn =
  * Create the er's public store ID.
  */
 
+// =========================================
+// BRICK G — PERSISTENT STORE SLUG
+// =========================================
+//
+// storeName = display name
+//
+// storeSlug = permanent public URL slug
+//
+// IMPORTANT:
+// storeSlug comes from Supabase once a store
+// already exists. It must NOT be regenerated
+// every time the store name changes.
+// =========================================
+
 let storeName = '';
+
+let storeSlug = '';
+
+
+function createStoreSlug(
+    name
+) {
+
+    return String(
+        name || ''
+    )
+        .toLowerCase()
+        .trim()
+        .replace(
+            /[^a-z0-9]+/g,
+            '-'
+        )
+        .replace(
+            /^-+|-+$/g,
+            ''
+        );
+
+}
+
 
 function getStoreSlug() {
 
-    return storeName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
+    /*
+     * Existing store:
+     *
+     * Use the persistent Supabase slug.
+     */
+
+    if (storeSlug) {
+
+        return storeSlug;
+
+    }
+
+
+    /*
+     * New store:
+     *
+     * Generate a slug from the current
+     * store name.
+     *
+     * This value will be saved to Supabase
+     * by the Store Save operation.
+     */
+
+    return createStoreSlug(
+        storeName
+    );
 
 }
 
@@ -6493,11 +7196,28 @@ function getStoreSlug() {
  */
 
 function getGeneratedStoreLink() {
+
+    const persistentSlug =
+        getStoreSlug();
+
+
+    if (!persistentSlug) {
+
+        console.warn(
+            'BRICK G — Cannot generate store link because no store slug exists.'
+        );
+
+        return '';
+
+    }
+
+
     return (
         window.location.origin +
         '/nexodra-seller-app/store/' +
-        getStoreSlug()
+        persistentSlug
     );
+
 }
 
 
@@ -6512,17 +7232,29 @@ if (shareStoreBtn) {
         if (publicStoreLink) {
 
           console.log(
-    'SHARE STORE — Current storeName:',
+    'BRICK G — Share storeName:',
     storeName
 );
 
+
 console.log(
-    'SHARE STORE — Generated slug:',
-    getStoreSlug()
+    'BRICK G — Persistent store slug:',
+    storeSlug
 );
-          
-          publicStoreLink.value =
+
+
+generatedStoreLink =
     getGeneratedStoreLink();
+
+
+console.log(
+    'BRICK G — Generated public store link:',
+    generatedStoreLink
+);
+
+
+publicStoreLink.value =
+    generatedStoreLink;
           
         }
 
@@ -14203,6 +14935,774 @@ if (publicMessageBackBtn) {
     );
 
 }
+
+// =========================================
+// BRICK H — CUSTOMER PERSISTENT MESSAGING
+// =========================================
+//
+// Customer public-store chat.
+//
+// Uses:
+//
+// conversations
+// messages
+//
+// No new tables.
+// =========================================
+
+
+// =========================================
+// CUSTOMER CHAT ELEMENTS
+// =========================================
+
+const customerChatMessages =
+    document.getElementById(
+        'customerChatMessages'
+    );
+
+const customerChatInput =
+    document.getElementById(
+        'customerChatInput'
+    );
+
+const customerChatSendBtn =
+    document.getElementById(
+        'customerChatSendBtn'
+    );
+
+
+// =========================================
+// CURRENT CUSTOMER CONVERSATION
+// =========================================
+
+let currentCustomerConversationId =
+    null;
+
+let currentCustomerBuyerId =
+    null;
+
+
+// =========================================
+// ENSURE CUSTOMER IDENTITY
+// =========================================
+//
+// Public store customers may not already
+// have a Supabase session.
+//
+// We use an anonymous Supabase identity
+// so sender_id can still be a UUID.
+//
+// IMPORTANT:
+// Supabase Anonymous Sign-Ins must be
+// enabled in the Supabase project.
+// =========================================
+
+async function ensureCustomerMessageUser() {
+
+    const {
+        data: {
+            user
+        },
+        error: userError
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (
+        !userError &&
+        user
+    ) {
+
+        return user;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.signInAnonymously();
+
+
+    if (error) {
+
+        console.error(
+            'BRICK H — Anonymous customer sign-in failed:',
+            error
+        );
+
+        return null;
+
+    }
+
+
+    console.log(
+        'BRICK H — Anonymous customer identity created:',
+        data?.user?.id
+    );
+
+
+    return data?.user || null;
+
+}
+
+
+// =========================================
+// FIND OR CREATE CONVERSATION
+// =========================================
+
+async function getCustomerConversation() {
+
+    if (
+        !currentStoreOwnerId
+    ) {
+
+        console.error(
+            'BRICK H — Seller ID is missing.'
+        );
+
+        return null;
+
+    }
+
+
+    const buyer =
+        await ensureCustomerMessageUser();
+
+
+    if (!buyer) {
+
+        return null;
+
+    }
+
+
+    currentCustomerBuyerId =
+        buyer.id;
+
+
+    // =====================================
+    // FIND EXISTING CONVERSATION
+    // =====================================
+
+    const {
+        data: existingConversation,
+        error: findError
+    } =
+        await supabaseClient
+            .from('conversations')
+            .select(`
+                id,
+                buyer_id,
+                seller_id,
+                created_at,
+                updated_at
+            `)
+            .eq(
+                'buyer_id',
+                buyer.id
+            )
+            .eq(
+                'seller_id',
+                currentStoreOwnerId
+            )
+            .limit(1)
+            .maybeSingle();
+
+
+    if (findError) {
+
+        console.error(
+            'BRICK H — Conversation lookup failed:',
+            findError
+        );
+
+        return null;
+
+    }
+
+
+    if (existingConversation) {
+
+        currentCustomerConversationId =
+            existingConversation.id;
+
+
+        console.log(
+            'BRICK H — Existing conversation found:',
+            existingConversation.id
+        );
+
+
+        return existingConversation;
+
+    }
+
+
+    // =====================================
+    // CREATE NEW CONVERSATION
+    // =====================================
+
+    const {
+        data: newConversation,
+        error: createError
+    } =
+        await supabaseClient
+            .from('conversations')
+            .insert({
+                buyer_id:
+                    buyer.id,
+
+                seller_id:
+                    currentStoreOwnerId
+            })
+            .select(`
+                id,
+                buyer_id,
+                seller_id,
+                created_at,
+                updated_at
+            `)
+            .single();
+
+
+    if (createError) {
+
+        console.error(
+            'BRICK H — Conversation creation failed:',
+            createError
+        );
+
+        return null;
+
+    }
+
+
+    currentCustomerConversationId =
+        newConversation.id;
+
+
+    console.log(
+        'BRICK H — New conversation created:',
+        newConversation
+    );
+
+
+    return newConversation;
+
+}
+
+
+// =========================================
+// LOAD CUSTOMER MESSAGE HISTORY
+// =========================================
+
+async function loadCustomerMessages() {
+
+    if (
+        !customerChatMessages
+    ) {
+
+        return;
+
+    }
+
+
+    const conversation =
+        await getCustomerConversation();
+
+
+    if (!conversation) {
+
+        return;
+
+    }
+
+
+    const {
+        data: messages,
+        error
+    } =
+        await supabaseClient
+            .from('messages')
+            .select(`
+                id,
+                conversation_id,
+                sender_id,
+                receiver_id,
+                message,
+                read,
+                created_at
+            `)
+            .eq(
+                'conversation_id',
+                conversation.id
+            )
+            .order(
+                'created_at',
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            'BRICK H — Customer messages load failed:',
+            error
+        );
+
+        return;
+
+    }
+
+
+    customerChatMessages.innerHTML =
+        '';
+
+
+    if (
+        !messages ||
+        messages.length === 0
+    ) {
+
+        const start =
+            document.createElement(
+                'div'
+            );
+
+        start.className =
+            'customer-chat-start';
+
+        start.id =
+            'customerChatStart';
+
+
+        start.innerHTML = `
+            <div class="customer-chat-start-icon">
+                <i class="fa-regular fa-comments"></i>
+            </div>
+
+            <strong>
+                Start a conversation
+            </strong>
+
+            <span>
+                Ask the seller about products,
+                delivery, availability or anything
+                else you need help with.
+            </span>
+        `;
+
+
+        customerChatMessages.appendChild(
+            start
+        );
+
+
+        return;
+
+    }
+
+
+    messages.forEach(
+        messageRecord => {
+
+            const isCustomer =
+                String(
+                    messageRecord.sender_id
+                ) ===
+                String(
+                    currentCustomerBuyerId
+                );
+
+
+            const row =
+                document.createElement(
+                    'div'
+                );
+
+
+            row.className =
+                isCustomer
+                    ? 'customer-chat-message customer-message'
+                    : 'customer-chat-message seller-message';
+
+
+            const content =
+                document.createElement(
+                    'div'
+                );
+
+            content.className =
+                'customer-message-content';
+
+
+            const bubble =
+                document.createElement(
+                    'div'
+                );
+
+            bubble.className =
+                'customer-message-bubble';
+
+            bubble.textContent =
+                messageRecord.message || '';
+
+
+            const time =
+                document.createElement(
+                    'span'
+                );
+
+            time.className =
+                'customer-message-time';
+
+            time.textContent =
+                messageRecord.created_at
+                    ? new Date(
+                        messageRecord.created_at
+                    ).toLocaleTimeString(
+                        [],
+                        {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }
+                    )
+                    : '';
+
+
+            content.appendChild(
+                bubble
+            );
+
+            content.appendChild(
+                time
+            );
+
+            row.appendChild(
+                content
+            );
+
+            customerChatMessages.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    // Mark seller messages as read.
+    const unreadMessages =
+        messages.filter(
+            messageRecord =>
+                String(
+                    messageRecord.receiver_id
+                ) ===
+                String(
+                    currentCustomerBuyerId
+                ) &&
+                messageRecord.read === false
+        );
+
+
+    for (
+        const messageRecord
+        of unreadMessages
+    ) {
+
+        const {
+            error: readError
+        } =
+            await supabaseClient
+                .from('messages')
+                .update({
+                    read: true
+                })
+                .eq(
+                    'id',
+                    messageRecord.id
+                )
+                .eq(
+                    'receiver_id',
+                    currentCustomerBuyerId
+                );
+
+
+        if (readError) {
+
+            console.warn(
+                'BRICK H — Customer could not mark message read:',
+                readError
+            );
+
+        }
+
+    }
+
+
+    customerChatMessages.scrollTop =
+        customerChatMessages.scrollHeight;
+
+
+    console.log(
+        'BRICK H — Customer message history loaded:',
+        messages.length
+    );
+
+}
+
+
+// =========================================
+// CUSTOMER SEND MESSAGE
+// =========================================
+
+async function sendCustomerMessage() {
+
+    if (
+        !customerChatInput ||
+        !customerChatSendBtn
+    ) {
+
+        return;
+
+    }
+
+
+    const message =
+        customerChatInput.value.trim();
+
+
+    if (!message) {
+
+        return;
+
+    }
+
+
+    if (
+        !currentStoreOwnerId
+    ) {
+
+        console.error(
+            'BRICK H — Cannot send message without seller ID.'
+        );
+
+        return;
+
+    }
+
+
+    customerChatSendBtn.disabled =
+        true;
+
+
+    try {
+
+        const conversation =
+            await getCustomerConversation();
+
+
+        if (!conversation) {
+
+            alert(
+                'The conversation could not be started.'
+            );
+
+            return;
+
+        }
+
+
+        const {
+            data: buyer
+        } =
+            await supabaseClient.auth.getUser();
+
+
+        if (!buyer?.user) {
+
+            alert(
+                'Customer identity could not be created.'
+            );
+
+            return;
+
+        }
+
+
+        const buyerId =
+            buyer.user.id;
+
+
+        const {
+            data: insertedMessage,
+            error
+        } =
+            await supabaseClient
+                .from('messages')
+                .insert({
+                    conversation_id:
+                        conversation.id,
+
+                    sender_id:
+                        buyerId,
+
+                    receiver_id:
+                        currentStoreOwnerId,
+
+                    message:
+                        message,
+
+                    read:
+                        false
+                })
+                .select()
+                .single();
+
+
+        if (error) {
+
+            console.error(
+                'BRICK H — Customer message insert failed:',
+                error
+            );
+
+            alert(
+                'Message could not be sent.\n\n' +
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        // Update conversation activity.
+        const {
+            error: conversationUpdateError
+        } =
+            await supabaseClient
+                .from('conversations')
+                .update({
+                    updated_at:
+                        new Date().toISOString()
+                })
+                .eq(
+                    'id',
+                    conversation.id
+                );
+
+
+        if (conversationUpdateError) {
+
+            console.warn(
+                'BRICK H — Customer conversation timestamp update failed:',
+                conversationUpdateError
+            );
+
+        }
+
+
+        customerChatInput.value =
+            '';
+
+
+        await loadCustomerMessages();
+
+
+        console.log(
+            'BRICK H — Customer message sent:',
+            insertedMessage
+        );
+
+
+    } finally {
+
+        customerChatSendBtn.disabled =
+            false;
+
+    }
+
+}
+
+
+// =========================================
+// CUSTOMER SEND BUTTON
+// =========================================
+
+if (customerChatSendBtn) {
+
+    customerChatSendBtn.addEventListener(
+        'click',
+        sendCustomerMessage
+    );
+
+}
+
+
+// =========================================
+// CUSTOMER ENTER TO SEND
+// =========================================
+
+if (customerChatInput) {
+
+    customerChatInput.addEventListener(
+        'keydown',
+        event => {
+
+            if (
+                event.key === 'Enter' &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendCustomerMessage();
+
+            }
+
+        }
+    );
+
+}
+
+
+// =========================================
+// LOAD CUSTOMER CHAT WHEN OPENED
+// =========================================
+//
+// Existing C4-A already opens the
+// public customer message screen.
+//
+// We add the database history load
+// without replacing that navigation.
+// =========================================
+
+if (
+    publicContactNav &&
+    publicCustomerMessage
+) {
+
+    publicContactNav.addEventListener(
+        'click',
+        async () => {
+
+            // Give the existing navigation
+            // a moment to display the screen.
+            await loadCustomerMessages();
+
+        }
+    );
+
+}
+
+
+console.log(
+    'BRICK H — Persistent messaging system ready.'
+);
 
 // =========================================
 // BRICK LIVE SELL 1 — LIVE SELL SCREEN

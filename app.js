@@ -8468,13 +8468,35 @@ const publicStoreRecord =
 
 
     console.log(
-        'PUBLIC STORE — Store owner:',
-        currentStoreOwnerId
-    );
+    'PUBLIC STORE — Store owner:',
+    currentStoreOwnerId
+);
 
 
-    // Now load this store's published products
-    await loadPublicProductsFromSupabase();
+// =========================================
+// BRICK E — APPLY PUBLIC STORE PROFILE
+// =========================================
+//
+// The store record has now been loaded from
+// Supabase. Pass that exact record into the
+// public storefront profile renderer.
+//
+// This populates:
+// - Store name
+// - Logo
+// - Location
+// - Phone
+// - Email
+// - Description
+// =========================================
+
+applyPublicStoreProfile(
+    publicStoreRecord
+);
+
+
+// Now load this store's published products
+await loadPublicProductsFromSupabase();
 
 }
 

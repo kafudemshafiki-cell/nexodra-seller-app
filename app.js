@@ -8085,6 +8085,64 @@ function applyPublicStoreProfile(
 
     }
 
+  // =====================================
+// BRICK F — PUBLIC STORE COVER IMAGE
+// =====================================
+//
+// The seller's cover image is stored in:
+//
+// store.cover_image_url
+//
+// The public storefront uses:
+//
+// #publicStoreBanner
+//
+// This is separate from
+// appearancePreviewCover, which belongs
+// to the seller Appearance screen.
+// =====================================
+
+const publicStoreBanner =
+    document.getElementById(
+        'publicStoreBanner'
+    );
+
+
+if (publicStoreBanner) {
+
+    if (
+        store.cover_image_url
+    ) {
+
+        publicStoreBanner.style.backgroundImage =
+            `url("${store.cover_image_url}")`;
+
+        publicStoreBanner.style.backgroundRepeat =
+            'no-repeat';
+
+        publicStoreBanner.style.backgroundPosition =
+            'center center';
+
+        publicStoreBanner.style.backgroundSize =
+            'cover';
+
+        console.log(
+            'BRICK F — Public store cover applied:',
+            store.cover_image_url
+        );
+
+    } else {
+
+        publicStoreBanner.style.backgroundImage =
+            '';
+
+        console.warn(
+            'BRICK F — Public store has no cover_image_url.'
+        );
+
+    }
+
+}
 
     // =====================================
     // STORE NAME

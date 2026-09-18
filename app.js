@@ -15008,9 +15008,16 @@ async function ensureCustomerMessageUser() {
         await supabaseClient.auth.getUser();
 
 
+    /*
+     * If a Supabase user is already signed in,
+     * only reuse that identity when it is NOT
+     * the seller who owns this public store.
+     */
     if (
         !userError &&
-        user
+        user &&
+        String(user.id) !==
+            String(currentStoreOwnerId)
     ) {
 
         return user;
@@ -15018,6 +15025,12 @@ async function ensureCustomerMessageUser() {
     }
 
 
+    /*
+     * The current session belongs to the seller
+     * or there is no usable customer session.
+     *
+     * Create an anonymous customer identity.
+     */
     const {
         data,
         error

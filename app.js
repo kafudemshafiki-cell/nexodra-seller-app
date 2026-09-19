@@ -3108,40 +3108,246 @@ function compressProductImage(file, maxWidth = 800, quality = 0.7) {
 // =========================================
 // NAVIGATION
 // =========================================
+// BRICK C — PRESERVE OPEN SELLER CHAT
+// =========================================
 
 navButtons.forEach(button => {
 
     button.addEventListener('click', () => {
 
         const targetScreenId =
-            button.getAttribute('data-target');
+            button.getAttribute(
+                'data-target'
+            );
 
         const newTitle =
-            button.getAttribute('data-title');
+            button.getAttribute(
+                'data-title'
+            );
 
+
+        // =====================================
+        // NORMAL NAVIGATION
+        // =====================================
 
         navButtons.forEach(btn => {
-            btn.classList.remove('active');
+
+            btn.classList.remove(
+                'active'
+            );
+
         });
 
-        button.classList.add('active');
+        button.classList.add(
+            'active'
+        );
 
 
         screens.forEach(screen => {
-            screen.classList.remove('active');
+
+            screen.classList.remove(
+                'active'
+            );
+
         });
 
 
         const targetScreen =
-            document.getElementById(targetScreenId);
+            document.getElementById(
+                targetScreenId
+            );
+
 
         if (targetScreen) {
-            targetScreen.classList.add('active');
+
+            targetScreen.classList.add(
+                'active'
+            );
+
         }
 
 
         if (screenTitle) {
-            screenTitle.textContent = newTitle;
+
+            screenTitle.textContent =
+                newTitle;
+
+        }
+
+
+        // =====================================
+        // BRICK C — PRESERVE SELLER CHAT
+        // =====================================
+
+        /*
+         * If the seller leaves Inbox while a
+         * conversation is open:
+         *
+         * - hide the chat visually
+         * - DO NOT clear the conversation
+         * - DO NOT clear the buyer ID
+         *
+         * This preserves the exact chat state.
+         */
+
+        if (
+            targetScreenId !==
+                'inboxScreen' &&
+            currentSellerConversationId
+        ) {
+
+            if (chatPanel) {
+
+                chatPanel.style.display =
+                    'none';
+
+            }
+
+          if (appBody) {
+
+    appBody.classList.remove(
+        'chat-open'
+    );
+
+}
+
+            console.log(
+                'BRICK C — Seller chat preserved:',
+                currentSellerConversationId
+            );
+
+        }
+
+
+        // =====================================
+        // RETURN TO INBOX
+        // =====================================
+
+        /*
+         * If the seller returns to Inbox and
+         * there is still an active conversation,
+         * restore that exact chat.
+         */
+
+        if (
+            targetScreenId ===
+                'inboxScreen' &&
+            currentSellerConversationId
+        ) {
+
+            /*
+             * Hide the conversation list.
+             */
+
+            if (sellerChatList) {
+
+                sellerChatList.style.display =
+                    'none';
+
+            }
+
+
+            /*
+             * Hide Inbox header.
+             */
+
+            const inboxHeader =
+                document.querySelector(
+                    '.inbox-header'
+                );
+
+            if (inboxHeader) {
+
+                inboxHeader.style.display =
+                    'none';
+
+            }
+
+
+            /*
+             * Hide Inbox search.
+             */
+
+            const inboxSearchBox =
+                document.querySelector(
+                    '.inbox-search'
+                );
+
+            if (inboxSearchBox) {
+
+                inboxSearchBox.style.display =
+                    'none';
+
+            }
+
+
+            /*
+             * Hide Inbox filters.
+             */
+
+            const inboxFilterBar =
+                document.querySelector(
+                    '.inbox-filters'
+                );
+
+            if (inboxFilterBar) {
+
+    inboxFilterBar.style.display =
+        'none';
+
+}
+
+
+/* =====================================
+   BRICK D — HIDE INBOX TABS
+===================================== */
+
+const inboxTabs =
+    document.querySelector(
+        '.inbox-tabs'
+    );
+
+if (inboxTabs) {
+
+    inboxTabs.style.display =
+        'none';
+
+}
+
+
+if (sellerChatList) {
+
+    sellerChatList.style.display =
+        'none';
+
+}
+
+
+/*
+ * BRICK E — Restore exact chat position.
+ */
+
+if (chatPanel) {
+
+    chatPanel.style.display =
+        'flex';
+
+}
+
+if (appBody) {
+
+    appBody.classList.add(
+        'chat-open'
+    );
+
+}
+
+
+            console.log(
+                'BRICK C — Returning to preserved seller chat:',
+                currentSellerConversationId
+            );
+
         }
 
     });
@@ -6382,6 +6588,11 @@ const sellerChatList =
         'notificationList'
     );
 
+const appBody =
+    document.querySelector(
+        '.app-body'
+    );
+
 
 // =========================================
 // CURRENT SELLER CONVERSATION
@@ -6698,26 +6909,53 @@ async function openSellerConversation(
     }
 
     if (inboxFilterBar) {
-        inboxFilterBar.style.display =
-            'none';
-    }
+
+    inboxFilterBar.style.display =
+        'none';
+
+}
 
 
-    if (sellerChatList) {
+/* =====================================
+   BRICK D — HIDE INBOX TABS
+===================================== */
 
-        sellerChatList.style.display =
-            'none';
+const inboxTabs =
+    document.querySelector(
+        '.inbox-tabs'
+    );
 
-    }
+if (inboxTabs) {
+
+    inboxTabs.style.display =
+        'none';
+
+}
 
 
-    // Show chat.
-    if (chatPanel) {
+if (sellerChatList) {
 
-        chatPanel.style.display =
-            'block';
+    sellerChatList.style.display =
+        'none';
 
-    }
+}
+
+
+// Show chat.
+if (chatPanel) {
+
+    chatPanel.style.display =
+        'flex';
+
+}
+
+  if (appBody) {
+
+    appBody.classList.add(
+        'chat-open'
+    );
+
+}
 
 
     if (chatCustomerName) {
@@ -6767,6 +7005,14 @@ if (closeChatBtn) {
 
             }
 
+          if (appBody) {
+
+    appBody.classList.remove(
+        'chat-open'
+    );
+
+}
+
 
             if (sellerChatList) {
 
@@ -6806,6 +7052,22 @@ if (closeChatBtn) {
                 inboxFilterBar.style.display =
                     '';
             }
+
+          /* =====================================
+   BRICK D — RESTORE INBOX TABS
+===================================== */
+
+const inboxTabs =
+    document.querySelector(
+        '.inbox-tabs'
+    );
+
+if (inboxTabs) {
+
+    inboxTabs.style.display =
+        '';
+
+}
 
         }
     );

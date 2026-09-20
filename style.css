@@ -14250,3 +14250,26 @@ body.store-theme-dark .cat-circle {
     margin: 14px auto 0;
     text-align: center;
 }
+
+/* =========================================
+   NEXODRA — RESPONSIVE DESKTOP SHELL
+   BRICK R3 — STEP 1
+========================================= */
+
+@media (min-width: 1024px) {
+
+    body {
+        justify-content: center;
+        align-items: stretch;
+        min-height: 100vh;
+    }
+
+    .app-container {
+        width: min(100%, 1440px);
+        max-width: 1440px;
+        height: 100vh;
+        max-height: none;
+        margin: 0 auto;
+        border-radius: 0;
+    }
+}

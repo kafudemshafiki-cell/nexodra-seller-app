@@ -92,97 +92,118 @@
 
 <div class="public-store-profile-bar">
 
-    <!-- STORE AVATAR -->
 
-    <div class="public-store-logo-wrapper">
+    <!-- TOP PROFILE ROW -->
 
-        <img
-            id="publicStoreLogo"
-            src="assets/default-logo.png"
-            alt="Store Logo"
-            class="public-store-logo"
-        >
-
-    </div>
+    <div class="public-store-top-row">
 
 
-    <!-- STORE INFORMATION -->
+        <!-- STORE AVATAR -->
 
-    <div class="public-store-details">
+        <div class="public-store-logo-wrapper">
 
-        <!-- Store name -->
-
-        <div class="public-store-name-row">
-
-            <h1
-                id="storeDisplayName"
-                class="public-store-name"
+            <img
+                id="publicStoreLogo"
+                src="assets/default-logo.png"
+                alt="Store Logo"
+                class="public-store-logo"
             >
-                Store Name
-            </h1>
-
-            <span
-                class="public-store-verified"
-                id="publicStoreVerified"
-            >
-                <i class="fa-solid fa-circle-check"></i>
-                Verified
-            </span>
 
         </div>
 
 
-        <!-- Store metadata -->
 
-        <div class="public-store-meta">
+        <!-- STORE INFORMATION -->
 
-            <!-- Location -->
-
-            <span
-                id="publicStoreLocation"
-                class="public-store-meta-item"
-            >
-                <i class="fa-solid fa-location-dot"></i>
-                <span>Location</span>
-            </span>
+        <div class="public-store-details">
 
 
-            <!-- Phone -->
+            <!-- Store name -->
 
-            <a
-                id="publicStorePhone"
-                class="public-store-meta-item public-store-contact"
-                href="#"
-            >
-                <i class="fa-solid fa-phone"></i>
-                <span>Contact</span>
-            </a>
+            <div class="public-store-name-row">
+
+                <h1
+                    id="storeDisplayName"
+                    class="public-store-name"
+                >
+                    Store Name
+                </h1>
 
 
-            <!-- Email -->
+                <span
+                    class="public-store-verified"
+                    id="publicStoreVerified"
+                >
+                    <i class="fa-solid fa-circle-check"></i>
+                    Verified
+                </span>
 
-            <a
-                id="publicStoreEmail"
-                class="public-store-meta-item public-store-contact"
-                href="#"
-            >
-                <i class="fa-solid fa-envelope"></i>
-                <span>Email</span>
-            </a>
+            </div>
+
+
+
+            <!-- Store metadata -->
+
+            <div class="public-store-meta">
+
+
+                <!-- Location -->
+
+                <span
+                    id="publicStoreLocation"
+                    class="public-store-meta-item"
+                >
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Location</span>
+                </span>
+
+
+
+                <!-- Phone -->
+
+                <a
+                    id="publicStorePhone"
+                    class="public-store-meta-item public-store-contact"
+                    href="#"
+                >
+                    <i class="fa-solid fa-phone"></i>
+                    <span>Contact</span>
+                </a>
+
+
+
+                <!-- Email -->
+
+                <a
+                    id="publicStoreEmail"
+                    class="public-store-meta-item public-store-contact"
+                    href="#"
+                >
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>Email</span>
+                </a>
+
+
+            </div>
+
 
         </div>
 
 
-        <!-- Description -->
-
-        <p
-            id="publicStoreDescription"
-            class="public-store-description"
-        >
-            Store description goes here...
-        </p>
-
     </div>
+
+
+
+
+    <!-- DESCRIPTION -->
+
+    <p
+        id="publicStoreDescription"
+        class="public-store-description"
+    >
+        Store description goes here...
+    </p>
+
 
 </div>
 
@@ -1180,9 +1201,13 @@
     <i class="fa-solid fa-share-nodes"></i>
 </button>
 
-        <button class="icon-btn notification-btn">
-    <i class="fa-solid fa-bell"></i>
-    <span class="notification-badge">2</span>
+        <button
+    type="button"
+    class="icon-btn"
+    id="openNotificationsBtn"
+    aria-label="Notifications"
+>
+    <i class="fa-regular fa-bell"></i>
 </button>
 
     </div>
@@ -1420,7 +1445,12 @@
 
 
         <!-- ORDERS -->
-        <div class="overview-mini-card">
+        <div
+    class="overview-mini-card"
+    id="openOrdersCard"
+    role="button"
+    tabindex="0"
+>
 
             <div class="mini-card-top">
 
@@ -2747,42 +2777,42 @@
         </div>
 
 
-        <!-- Tabs -->
-        <div class="inbox-tabs">
+        <!-- INBOX CATEGORIES -->
+<div class="inbox-tabs">
 
-            <button
-                type="button"
-                class="tab-btn"
-                data-notification-filter="chat"
-            >
-                Chat
-            </button>
+    <button
+        type="button"
+        class="tab-btn"
+        data-notification-filter="chat"
+    >
+        Chat
+    </button>
 
-            <button
-                type="button"
-                class="tab-btn"
-                data-notification-filter="unread"
-            >
-                Unread
-            </button>
+    <button
+        type="button"
+        class="tab-btn"
+        data-notification-filter="unread"
+    >
+        Unread
+    </button>
 
-            <button
-                type="button"
-                class="tab-btn"
-                data-notification-filter="orders"
-            >
-                Orders
-            </button>
+    <button
+        type="button"
+        class="tab-btn"
+        data-notification-filter="pending"
+    >
+        Pending
+    </button>
 
-            <button
-                type="button"
-                class="tab-btn"
-                data-notification-filter="inventory"
-            >
-                Inventory
-            </button>
+    <button
+        type="button"
+        class="tab-btn"
+        data-notification-filter="fulfilled"
+    >
+        Fulfilled
+    </button>
 
-        </div>
+</div>
 
 
         <!-- Real Notification Feed -->
@@ -2812,7 +2842,236 @@
 
 </section>
 
-         
+
+<!-- =========================================
+     NEXODRA — NOTIFICATIONS CENTER
+     BRICK F2 — SCREEN UI
+========================================= -->
+
+<section
+    id="notificationsScreen"
+    class="screen"
+>
+
+    <div class="notifications-page">
+
+        <!-- Header -->
+        <div class="notifications-header">
+
+            <div>
+
+                <span class="notifications-eyebrow">
+                    STORE ACTIVITY
+                </span>
+
+                <h2>
+                    Notifications
+                </h2>
+
+                <p id="notificationsUnreadText">
+                    No unread notifications
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="mark-notifications-read-btn"
+                id="markCenterNotificationsReadBtn"
+            >
+                Mark all read
+            </button>
+
+        </div>
+
+
+        <!-- Categories -->
+        <div class="notifications-categories">
+
+            <button
+                type="button"
+                class="notification-category-btn active"
+                data-notification-category="all"
+            >
+                All
+            </button>
+
+            <button
+                type="button"
+                class="notification-category-btn"
+                data-notification-category="inventory"
+            >
+                Inventory
+            </button>
+
+            <button
+                type="button"
+                class="notification-category-btn"
+                data-notification-category="account"
+            >
+                Account
+            </button>
+
+            <button
+                type="button"
+                class="notification-category-btn"
+                data-notification-category="orders"
+            >
+                Orders
+            </button>
+
+            <button
+                type="button"
+                class="notification-category-btn"
+                data-notification-category="messages"
+            >
+                Messages
+            </button>
+
+            <button
+                type="button"
+                class="notification-category-btn"
+                data-notification-category="sales"
+            >
+                Sales
+            </button>
+
+            <button
+                type="button"
+                class="notification-category-btn"
+                data-notification-category="store"
+            >
+                Store
+            </button>
+
+            <button
+                type="button"
+                class="notification-category-btn"
+                data-notification-category="system"
+            >
+                System
+            </button>
+
+        </div>
+
+
+        <!-- Notification Feed -->
+        <div
+            class="notifications-center-list"
+            id="notificationsCenterList"
+        >
+
+            <div class="notifications-center-empty">
+
+                <div class="notifications-center-empty-icon">
+                    <i class="fa-regular fa-bell"></i>
+                </div>
+
+                <h3>
+                    No notifications yet
+                </h3>
+
+                <p>
+                    Important store activity,
+                    account alerts, orders,
+                    messages and system updates
+                    will appear here.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+   <!-- =========================================
+     NEXODRA — ORDERS SCREEN
+     BRICK F3-A
+========================================= -->
+
+<section
+    id="ordersScreen"
+    class="screen"
+>
+
+    <div class="orders-page">
+
+        <div class="orders-header">
+
+            <div>
+
+                <span class="orders-eyebrow">
+                    STORE ACTIVITY
+                </span>
+
+                <h2>
+                    Orders
+                </h2>
+
+                <p>
+                    Orders received from customers
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="orders-tabs">
+
+            <button
+                type="button"
+                class="order-tab-btn active"
+                data-order-filter="all"
+            >
+                All
+            </button>
+
+            <button
+                type="button"
+                class="order-tab-btn"
+                data-order-filter="pending"
+            >
+                Pending
+            </button>
+
+            <button
+                type="button"
+                class="order-tab-btn"
+                data-order-filter="fulfilled"
+            >
+                Fulfilled
+            </button>
+
+        </div>
+
+        <div
+            class="orders-list"
+            id="ordersList"
+        >
+
+            <div class="orders-empty">
+
+                <div class="orders-empty-icon">
+                    <i class="fa-regular fa-clipboard"></i>
+                </div>
+
+                <h3>
+                    No orders yet
+                </h3>
+
+                <p>
+                    Customer orders will appear here.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>       
   
   <!-- =========================================
      INBOX BRICK 2 - CHAT PANEL

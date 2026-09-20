@@ -13500,3 +13500,753 @@ body.store-theme-dark .cat-circle {
 /* =========================================================
    END BRICK A
    ========================================================= */
+
+/* =========================================
+   CUSTOMER PRODUCT DETAILS
+   PRODUCT DISPLAY — BRICK DESIGN
+========================================= */
+
+.public-product-detail {
+    width: 100%;
+    min-height: 100vh;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    color: #182238;
+
+    overflow-x: hidden;
+}
+
+
+/* =========================================
+   DETAIL HEADER
+========================================= */
+
+.public-detail-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+
+    width: 100%;
+    height: 70px;
+
+    padding: 0 16px;
+
+    box-sizing: border-box;
+
+    display: grid;
+    grid-template-columns: 44px 1fr 44px;
+
+    align-items: center;
+    gap: 10px;
+
+    background: rgba(255, 255, 255, .96);
+
+    border-bottom: 1px solid #edf0f4;
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+
+.public-detail-header strong {
+    text-align: center;
+
+    color: #182238;
+
+    font-size: 17px;
+    font-weight: 800;
+
+    letter-spacing: -.02em;
+}
+
+
+/* Header buttons */
+
+.public-detail-header .public-icon-btn {
+    width: 44px;
+    height: 44px;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #f1f4f8;
+
+    color: #182238;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 17px;
+
+    cursor: pointer;
+}
+
+
+/* =========================================
+   PRODUCT IMAGE AREA
+========================================= */
+
+.public-detail-image {
+    width: 100%;
+
+    height: 310px;
+
+    box-sizing: border-box;
+
+    padding: 24px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f7f8fa 0%,
+            #eef1f5 100%
+        );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    position: relative;
+}
+
+
+/*
+ * THIS IS THE IMPORTANT FIX.
+ *
+ * The complete product image stays visible.
+ */
+
+.public-detail-image img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    max-width: 520px;
+    max-height: 270px;
+
+    object-fit: contain;
+
+    object-position: center;
+
+    border-radius: 14px;
+
+    mix-blend-mode: multiply;
+}
+
+
+/* Emoji / fallback product */
+
+.public-detail-image:not(:has(img)) {
+    color: #667085;
+
+    font-size: 70px;
+}
+
+
+/* =========================================
+   PRODUCT INFORMATION
+========================================= */
+
+.public-detail-content {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 24px 20px 110px;
+
+    background: #ffffff;
+}
+
+
+/* Category */
+
+.public-detail-category {
+    display: inline-block;
+
+    margin-bottom: 8px;
+
+    color: #6d7f9b;
+
+    font-size: 13px;
+    font-weight: 750;
+}
+
+
+/* Product name */
+
+.public-detail-content h1 {
+    margin: 0;
+
+    color: #182238;
+
+    font-size: 30px;
+    line-height: 1.12;
+
+    font-weight: 800;
+
+    letter-spacing: -.035em;
+
+    word-break: break-word;
+}
+
+
+/* Price */
+
+.public-detail-price {
+    margin-top: 10px;
+
+    color: #10182b;
+
+    font-size: 26px;
+    line-height: 1;
+
+    font-weight: 800;
+
+    letter-spacing: -.03em;
+}
+
+
+/* Stock */
+
+.public-detail-stock {
+    display: inline-flex;
+    align-items: center;
+
+    min-height: 32px;
+
+    margin-top: 14px;
+
+    padding: 0 12px;
+
+    box-sizing: border-box;
+
+    border-radius: 999px;
+
+    background: #f0f7f3;
+
+    color: #287253;
+
+    font-size: 12px;
+    font-weight: 750;
+}
+
+
+/* =========================================
+   DIVIDER
+========================================= */
+
+.public-detail-divider {
+    height: 1px;
+
+    margin: 24px 0;
+
+    background: #edf0f4;
+}
+
+
+/* =========================================
+   DESCRIPTION
+========================================= */
+
+.public-detail-content h3 {
+    margin: 0 0 8px;
+
+    color: #182238;
+
+    font-size: 17px;
+    line-height: 1.3;
+
+    font-weight: 800;
+
+    letter-spacing: -.015em;
+}
+
+
+.public-detail-content p {
+    margin: 0;
+
+    color: #71809a;
+
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+
+/* =========================================
+   BARCODE
+========================================= */
+
+.public-detail-barcode {
+    margin-top: 18px;
+
+    color: #98a1af;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: .08em;
+}
+
+
+/* =========================================
+   ACTION BAR
+========================================= */
+
+.public-detail-actions {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    z-index: 30;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+    padding: 12px 16px;
+
+    padding-bottom:
+        calc(
+            12px + env(safe-area-inset-bottom)
+        );
+
+    box-sizing: border-box;
+
+    background: rgba(255, 255, 255, .96);
+
+    border-top: 1px solid #edf0f4;
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+
+.public-contact-btn,
+.public-cart-btn {
+    min-height: 56px;
+
+    border: 0;
+    border-radius: 15px;
+
+    padding: 0 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        transform .15s ease,
+        opacity .15s ease;
+}
+
+
+.public-contact-btn:active,
+.public-cart-btn:active {
+    transform: scale(.98);
+}
+
+
+/* Contact */
+
+.public-contact-btn {
+    background: #f1f4f8;
+
+    color: #34435c;
+}
+
+
+/* Cart */
+
+.public-cart-btn {
+    background: #10182b;
+
+    color: #ffffff;
+}
+
+
+.public-cart-btn:disabled {
+    opacity: .45;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 520px) {
+
+    .public-detail-header {
+        height: 68px;
+
+        padding: 0 14px;
+    }
+
+
+    .public-detail-image {
+        height: 290px;
+
+        padding: 20px;
+    }
+
+
+    .public-detail-image img {
+        max-height: 250px;
+
+        border-radius: 12px;
+    }
+
+
+    .public-detail-content {
+        padding:
+            22px
+            18px
+            115px;
+    }
+
+
+    .public-detail-content h1 {
+        font-size: 28px;
+    }
+
+
+    .public-detail-price {
+        font-size: 24px;
+    }
+
+
+    .public-detail-actions {
+        gap: 8px;
+
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+
+    .public-contact-btn,
+    .public-cart-btn {
+        min-height: 54px;
+
+        border-radius: 14px;
+
+        font-size: 13px;
+    }
+
+}
+
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 360px) {
+
+    .public-detail-image {
+        height: 250px;
+
+        padding: 16px;
+    }
+
+
+    .public-detail-image img {
+        max-height: 220px;
+    }
+
+
+    .public-detail-content {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+
+    .public-detail-content h1 {
+        font-size: 25px;
+    }
+
+
+    .public-contact-btn,
+    .public-cart-btn {
+        min-height: 52px;
+
+        padding-left: 8px;
+        padding-right: 8px;
+
+        font-size: 12px;
+    }
+
+}
+
+/* =========================================
+   NEXODRA — NOTIFICATIONS CENTER
+   BRICK F2-A
+========================================= */
+
+.notifications-page {
+    width: 100%;
+    min-height: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+}
+
+.notifications-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.notifications-eyebrow {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.notifications-header h2 {
+    margin: 0;
+}
+
+.notifications-header p {
+    margin: 5px 0 0;
+    font-size: 13px;
+}
+
+.notifications-categories {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    scrollbar-width: none;
+}
+
+.notifications-categories::-webkit-scrollbar {
+    display: none;
+}
+
+.notification-category-btn {
+    flex: 0 0 auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    background: #ffffff;
+    padding: 8px 13px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.notification-category-btn.active {
+    background: #111827;
+    color: #ffffff;
+    border-color: #111827;
+}
+
+.notifications-center-list {
+    width: 100%;
+    min-height: 220px;
+}
+
+.notifications-center-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 260px;
+    padding: 30px 20px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.notifications-center-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    margin-bottom: 14px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    font-size: 22px;
+}
+
+.notifications-center-empty h3 {
+    margin: 0 0 7px;
+}
+
+.notifications-center-empty p {
+    max-width: 330px;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* =========================================
+   NEXODRA — ORDERS SCREEN
+   BRICK F3-A
+========================================= */
+
+.orders-page {
+    width: 100%;
+    min-height: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+}
+
+.orders-header {
+    margin-bottom: 18px;
+}
+
+.orders-eyebrow {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.orders-header h2 {
+    margin: 0;
+}
+
+.orders-header p {
+    margin: 5px 0 0;
+    font-size: 13px;
+}
+
+.orders-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    scrollbar-width: none;
+}
+
+.orders-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.order-tab-btn {
+    flex: 0 0 auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    background: #ffffff;
+    padding: 8px 13px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.order-tab-btn.active {
+    background: #111827;
+    color: #ffffff;
+    border-color: #111827;
+}
+
+.orders-list {
+    width: 100%;
+    min-height: 220px;
+}
+
+.orders-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 260px;
+    padding: 30px 20px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.orders-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    margin-bottom: 14px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    font-size: 22px;
+}
+
+.orders-empty h3 {
+    margin: 0 0 7px;
+}
+
+.orders-empty p {
+    max-width: 330px;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* =========================================
+   BRICK — CENTER PUBLIC STORE DESCRIPTION
+========================================= */
+
+.public-store-description {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* =========================================
+   BRICK — PUBLIC STORE PROFILE ROW FIX
+========================================= */
+
+.public-store-profile-bar {
+    display: block;
+    width: 100%;
+    padding: 22px 18px 12px;
+}
+
+
+.public-store-top-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    width: 100%;
+}
+
+
+.public-store-logo-wrapper {
+    flex: 0 0 auto;
+}
+
+
+.public-store-details {
+    flex: 1;
+    min-width: 0;
+}
+
+
+.public-store-description {
+    width: 100%;
+    max-width: 680px;
+    margin: 14px auto 0;
+    text-align: center;
+}

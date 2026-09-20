@@ -3354,6 +3354,142 @@ if (appBody) {
 
 });
 
+/* =========================================
+   NEXODRA — NOTIFICATIONS CENTER
+   BRICK F2-B
+   Bell → Notifications Screen
+========================================= */
+
+const openNotificationsBtn =
+    document.getElementById(
+        'openNotificationsBtn'
+    );
+
+if (openNotificationsBtn) {
+
+    openNotificationsBtn.addEventListener(
+        'click',
+        () => {
+
+            const notificationsScreen =
+                document.getElementById(
+                    'notificationsScreen'
+                );
+
+            if (!notificationsScreen) {
+                console.error(
+                    'BRICK F2-B — Notifications screen not found.'
+                );
+                return;
+            }
+
+            screens.forEach(screen => {
+                screen.classList.remove(
+                    'active'
+                );
+            });
+
+            notificationsScreen.classList.add(
+                'active'
+            );
+
+            if (screenTitle) {
+                screenTitle.textContent =
+                    'Notifications';
+            }
+
+            navButtons.forEach(button => {
+                button.classList.remove(
+                    'active'
+                );
+            });
+
+            console.log(
+                'BRICK F2-B — Notifications screen opened.'
+            );
+        }
+    );
+
+}
+
+/* =========================================
+   NEXODRA — ORDERS SCREEN
+   BRICK F3-B
+   Orders received card → Orders screen
+========================================= */
+
+const openOrdersCard =
+    document.getElementById(
+        'openOrdersCard'
+    );
+
+if (openOrdersCard) {
+
+    const openOrdersScreen = () => {
+
+        const ordersScreen =
+            document.getElementById(
+                'ordersScreen'
+            );
+
+        if (!ordersScreen) {
+            console.error(
+                'BRICK F3-B — Orders screen not found.'
+            );
+            return;
+        }
+
+        screens.forEach(screen => {
+            screen.classList.remove(
+                'active'
+            );
+        });
+
+        ordersScreen.classList.add(
+            'active'
+        );
+
+        if (screenTitle) {
+            screenTitle.textContent =
+                'Orders';
+        }
+
+        navButtons.forEach(button => {
+            button.classList.remove(
+                'active'
+            );
+        });
+
+        console.log(
+            'BRICK F3-B — Orders screen opened.'
+        );
+    };
+
+    openOrdersCard.addEventListener(
+        'click',
+        openOrdersScreen
+    );
+
+    openOrdersCard.addEventListener(
+        'keydown',
+        event => {
+
+            if (
+                event.key === 'Enter' ||
+                event.key === ' '
+            ) {
+
+                event.preventDefault();
+
+                openOrdersScreen();
+
+            }
+
+        }
+    );
+
+}
+
 // =========================================
 // STORE SALES OVERVIEW — OPEN
 // =========================================
@@ -6098,25 +6234,26 @@ function filterNotifications(
 
 
 
-    if (filter === 'orders') {
+    if (filter === 'pending') {
 
-        return notifications.filter(
-            notification =>
-                notification.type === 'order'
-        );
+    return notifications.filter(
+        notification =>
+            notification.status === 'pending' ||
+            notification.type === 'pending'
+    );
 
-    }
+}
 
 
+if (filter === 'fulfilled') {
 
-    if (filter === 'inventory') {
+    return notifications.filter(
+        notification =>
+            notification.status === 'fulfilled' ||
+            notification.type === 'fulfilled'
+    );
 
-        return notifications.filter(
-            notification =>
-                notification.type === 'stock'
-        );
-
-    }
+}
 
 
 

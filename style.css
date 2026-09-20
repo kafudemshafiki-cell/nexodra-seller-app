@@ -14252,11 +14252,11 @@ body.store-theme-dark .cat-circle {
 }
 
 /* =========================================
-   NEXODRA — RESPONSIVE DESKTOP SHELL
-   BRICK R3 — STEP 1
+   NEXODRA — RESPONSIVE DESKTOP/TABLET SHELL
+   BRICK R3 — STEP 3
 ========================================= */
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
 
     body {
         justify-content: center;
@@ -14265,7 +14265,7 @@ body.store-theme-dark .cat-circle {
     }
 
     .app-container {
-        width: min(100%, 1440px);
+        width: 100%;
         max-width: 1440px;
         height: 100vh;
         max-height: none;

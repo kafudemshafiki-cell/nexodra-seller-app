@@ -14299,3 +14299,182 @@ body.store-theme-dark .cat-circle {
         gap: 20px;
     }
 }
+
+/* =========================================
+   NEXODRA PUBLIC STORE
+   RESPONSIVE CUSTOMER FRONT PAGE
+   ========================================= */
+
+
+/* -----------------------------------------
+   LANDSCAPE PHONES / SMALL TABLETS
+   ----------------------------------------- */
+
+@media (min-width: 600px) {
+
+    .public-store {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .public-store-body {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+
+        padding:
+            24px
+            24px
+            100px;
+
+        box-sizing: border-box;
+    }
+
+    .public-store-banner {
+        height: 190px;
+    }
+
+    .public-product-grid {
+        grid-template-columns:
+            repeat(
+                auto-fill,
+                minmax(190px, 1fr)
+            );
+
+        gap: 18px;
+    }
+
+}
+
+
+/* -----------------------------------------
+   TABLETS
+   ----------------------------------------- */
+
+@media (min-width: 768px) {
+
+    .public-store-body {
+        max-width: 1200px;
+
+        padding:
+            28px
+            32px
+            110px;
+    }
+
+    .public-store-banner {
+        height: 230px;
+    }
+
+    .public-store-profile-bar {
+        padding:
+            28px
+            24px
+            30px;
+    }
+
+    .public-store-logo-wrapper,
+    .public-store-logo {
+        width: 110px;
+        height: 110px;
+    }
+
+    .public-store-name {
+        font-size: 1.8rem;
+    }
+
+    .public-product-grid {
+        grid-template-columns:
+            repeat(
+                auto-fill,
+                minmax(210px, 1fr)
+            );
+
+        gap: 20px;
+    }
+
+}
+
+
+/* -----------------------------------------
+   LAPTOP / DESKTOP
+   ----------------------------------------- */
+
+@media (min-width: 1024px) {
+
+    .public-store-body {
+        max-width: 1320px;
+
+        padding:
+            32px
+            40px
+            120px;
+    }
+
+    .public-store-banner {
+        height: 280px;
+    }
+
+    .public-store-profile-bar {
+        padding:
+            32px
+            30px
+            34px;
+    }
+
+    .public-store-logo-wrapper,
+    .public-store-logo {
+        width: 120px;
+        height: 120px;
+    }
+
+    .public-store-name {
+        font-size: 2rem;
+    }
+
+    .public-store-description {
+        max-width: 820px;
+        font-size: 1rem;
+    }
+
+    .public-product-grid {
+        grid-template-columns:
+            repeat(
+                auto-fill,
+                minmax(230px, 1fr)
+            );
+
+        gap: 22px;
+    }
+
+}
+
+
+/* -----------------------------------------
+   LARGE LAPTOP / DESKTOP
+   ----------------------------------------- */
+
+@media (min-width: 1280px) {
+
+    .public-store-body {
+        max-width: 1440px;
+
+        padding-left: 48px;
+        padding-right: 48px;
+    }
+
+    .public-store-banner {
+        height: 320px;
+    }
+
+    .public-product-grid {
+        grid-template-columns:
+            repeat(
+                auto-fill,
+                minmax(240px, 1fr)
+            );
+
+        gap: 24px;
+    }
+
+}

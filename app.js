@@ -693,11 +693,10 @@ function renderSellProducts() {
 
         }).join('');
 
-
     console.log(
-        'BRICK SELL 2 — Products rendered:',
-        visibleProducts
-    );
+    'BRICK SELL 3 — Products rendered:',
+    sellProducts.length
+);
 
 }
 
@@ -2415,29 +2414,54 @@ function renderSalesGraph(sales) {
         );
 
 
-    // =====================================
-    // LINE POINTS
-    // =====================================
-
-    const linePoints =
-        points
-            .map(
-                point =>
-                    `${point.x},${point.y}`
-            )
-            .join(' ');
-
-
-    // =====================================
-    // AREA UNDER LINE
+        // =====================================
+    // SMOOTH LINE PATH
     // =====================================
 
-    const areaPoints =
-        [
-            `${points[0].x},${height - paddingBottom}`,
-            linePoints,
-            `${points[points.length - 1].x},${height - paddingBottom}`
-        ].join(' ');
+    let linePath = '';
+
+    points.forEach(
+        (point, index) => {
+
+            if (index === 0) {
+
+                linePath +=
+                    `M ${point.x} ${point.y}`;
+
+                return;
+
+            }
+
+
+            const previous =
+                points[index - 1];
+
+
+            const controlX =
+                (
+                    previous.x +
+                    point.x
+                ) / 2;
+
+
+            linePath +=
+                ` C ${controlX} ${previous.y},
+                  ${controlX} ${point.y},
+                  ${point.x} ${point.y}`;
+
+        }
+    );
+
+
+    // =====================================
+    // SMOOTH AREA UNDER LINE
+    // =====================================
+
+    const areaPath =
+        linePath +
+        ` L ${points[points.length - 1].x} ${height - paddingBottom}` +
+        ` L ${points[0].x} ${height - paddingBottom}` +
+        ` Z`;
 
 
     // =====================================
@@ -2506,10 +2530,10 @@ function renderSalesGraph(sales) {
 
                 <!-- Area -->
 
-                <polygon
-                    points="${areaPoints}"
-                    class="sales-graph-area"
-                ></polygon>
+              <path
+               d="${areaPath}"
+              class="sales-graph-area"
+               ></path>
 
 
                 <!-- Baseline -->
@@ -2525,16 +2549,11 @@ function renderSalesGraph(sales) {
 
                 <!-- Revenue line -->
 
-                <polyline
-                    points="${linePoints}"
+                     <path
+                       d="${linePath}"
                     class="sales-graph-line"
-                    fill="none"
-                ></polyline>
-
-
-                <!-- Points -->
-
-                ${circles}
+                     fill="none"
+                      ></path>
 
 
                 <!-- Day labels -->
@@ -3104,6 +3123,856 @@ function compressProductImage(file, maxWidth = 800, quality = 0.7) {
     });
 }
 
+// =========================================
+// CALCULATOR NAVIGATION
+// BRICK CALC 3
+// =========================================
+
+const calculatorScreen =
+    document.getElementById(
+        'calculatorScreen'
+    );
+
+const calculatorBackBtn =
+    document.getElementById(
+        'calculatorBackBtn'
+    );
+
+
+// =========================================
+// OPEN CALCULATOR
+// =========================================
+
+const calculatorBtn =
+    document.getElementById(
+        'calculatorBtn'
+    );
+
+
+if (calculatorBtn) {
+
+    calculatorBtn.addEventListener(
+        'click',
+        () => {
+
+            if (!calculatorScreen) {
+
+                console.error(
+                    'BRICK CALC 3 — Calculator screen not found.'
+                );
+
+                return;
+
+            }
+
+
+            // Hide all normal screens
+
+            screens.forEach(screen => {
+
+                screen.classList.remove(
+                    'active'
+                );
+
+            });
+
+
+            // Show calculator
+
+            calculatorScreen.classList.add(
+                'active'
+            );
+
+
+            // Remove bottom-nav active state
+
+            navButtons.forEach(button => {
+
+                button.classList.remove(
+                    'active'
+                );
+
+            });
+
+
+            if (screenTitle) {
+
+                screenTitle.textContent =
+                    'Calculator';
+
+            }
+
+
+            console.log(
+                'BRICK CALC 3 — Calculator opened.'
+            );
+
+        }
+    );
+
+}
+
+
+// =========================================
+// BACK TO STORE
+// =========================================
+
+if (calculatorBackBtn) {
+
+    calculatorBackBtn.addEventListener(
+        'click',
+        () => {
+
+            if (!calculatorScreen) {
+                return;
+            }
+
+
+            // Hide calculator
+
+            calculatorScreen.classList.remove(
+                'active'
+            );
+
+
+            // Hide all screens first
+
+            screens.forEach(screen => {
+
+                screen.classList.remove(
+                    'active'
+                );
+
+            });
+
+
+            // Show Store
+
+            const storeScreen =
+                document.getElementById(
+                    'storeScreen'
+                );
+
+
+            if (storeScreen) {
+
+                storeScreen.classList.add(
+                    'active'
+                );
+
+            }
+
+
+            // Restore Store navigation
+
+            navButtons.forEach(button => {
+
+                button.classList.remove(
+                    'active'
+                );
+
+            });
+
+
+            const storeNav =
+                document.querySelector(
+                    '.nav-btn[data-target="storeScreen"]'
+                );
+
+
+            if (storeNav) {
+
+                storeNav.classList.add(
+                    'active'
+                );
+
+            }
+
+
+            if (screenTitle) {
+
+                screenTitle.textContent =
+                    'Store';
+
+            }
+
+
+            console.log(
+                'BRICK CALC 3 — Returned to Store.'
+            );
+
+        }
+    );
+
+}
+
+// =========================================
+// CALCULATOR LOGIC
+// BRICK CALC 4
+// =========================================
+
+const calculatorExpression =
+    document.getElementById(
+        'calculatorExpression'
+    );
+
+const calculatorResult =
+    document.getElementById(
+        'calculatorResult'
+    );
+
+const calculatorKeys =
+    document.querySelectorAll(
+        '.calculator-key'
+    );
+
+
+let calculatorCurrentValue = '0';
+let calculatorStoredValue = null;
+let calculatorOperator = null;
+let calculatorWaitingForValue = false;
+let calculatorJustCalculated = false;
+
+
+// =========================================
+// UPDATE DISPLAY
+// =========================================
+
+function updateCalculatorDisplay() {
+
+    if (calculatorExpression) {
+
+        calculatorExpression.textContent =
+            calculatorOperator
+                ? `${calculatorStoredValue ?? calculatorCurrentValue} ${calculatorOperator}`
+                : calculatorCurrentValue;
+
+    }
+
+
+    if (calculatorResult) {
+
+        calculatorResult.textContent =
+            calculatorCurrentValue;
+
+    }
+
+}
+
+
+// =========================================
+// INPUT NUMBER
+// =========================================
+
+function calculatorInputNumber(value) {
+
+    if (calculatorWaitingForValue || calculatorJustCalculated) {
+
+        calculatorCurrentValue =
+            value === '.'
+                ? '0.'
+                : value;
+
+        calculatorWaitingForValue = false;
+        calculatorJustCalculated = false;
+
+        updateCalculatorDisplay();
+
+        return;
+
+    }
+
+
+    if (value === '.') {
+
+        if (
+            calculatorCurrentValue
+                .includes('.')
+        ) {
+            return;
+        }
+
+        calculatorCurrentValue += '.';
+
+    } else {
+
+        if (
+            calculatorCurrentValue === '0'
+        ) {
+
+            calculatorCurrentValue =
+                value;
+
+        } else {
+
+            calculatorCurrentValue += value;
+
+        }
+
+    }
+
+
+    updateCalculatorDisplay();
+
+}
+
+
+// =========================================
+// CHOOSE OPERATOR
+// =========================================
+
+function calculatorChooseOperator(
+    operator
+) {
+
+    const current =
+        Number(
+            calculatorCurrentValue
+        );
+
+
+    if (
+        calculatorStoredValue !== null &&
+        calculatorOperator &&
+        !calculatorWaitingForValue
+    ) {
+
+        const result =
+            calculateCalculatorResult(
+                calculatorStoredValue,
+                current,
+                calculatorOperator
+            );
+
+        calculatorStoredValue =
+            result;
+
+        calculatorCurrentValue =
+            String(result);
+
+    } else {
+
+        calculatorStoredValue =
+            current;
+
+    }
+
+
+    calculatorOperator =
+        operator;
+
+    calculatorWaitingForValue =
+        true;
+
+    calculatorJustCalculated =
+        false;
+
+    updateCalculatorDisplay();
+
+}
+
+
+// =========================================
+// CALCULATE
+// =========================================
+
+function calculateCalculatorResult(
+    first,
+    second,
+    operator
+) {
+
+    switch (operator) {
+
+        case '+':
+            return first + second;
+
+        case '-':
+            return first - second;
+
+        case '*':
+            return first * second;
+
+        case '/':
+            if (second === 0) {
+                return null;
+            }
+
+            return first / second;
+
+        default:
+            return second;
+
+    }
+
+}
+
+
+// =========================================
+// EQUALS
+// =========================================
+
+function calculatorEquals() {
+
+    if (
+        calculatorStoredValue === null ||
+        !calculatorOperator
+    ) {
+        return;
+    }
+
+
+    const first =
+        Number(
+            calculatorStoredValue
+        );
+
+    const second =
+        Number(
+            calculatorCurrentValue
+        );
+
+
+    const result =
+        calculateCalculatorResult(
+            first,
+            second,
+            calculatorOperator
+        );
+
+
+    if (result === null) {
+
+        calculatorCurrentValue =
+            'Error';
+
+        calculatorStoredValue =
+            null;
+
+        calculatorOperator =
+            null;
+
+        calculatorWaitingForValue =
+            true;
+
+        calculatorJustCalculated =
+            true;
+
+        updateCalculatorDisplay();
+
+        return;
+
+    }
+
+
+    calculatorCurrentValue =
+        String(result);
+
+    calculatorStoredValue =
+        null;
+
+    calculatorOperator =
+        null;
+
+    calculatorWaitingForValue =
+        false;
+
+    calculatorJustCalculated =
+        true;
+
+    updateCalculatorDisplay();
+
+}
+
+
+// =========================================
+// CLEAR
+// =========================================
+
+function calculatorClear() {
+
+    calculatorCurrentValue =
+        '0';
+
+    calculatorStoredValue =
+        null;
+
+    calculatorOperator =
+        null;
+
+    calculatorWaitingForValue =
+        false;
+
+    calculatorJustCalculated =
+        false;
+
+    updateCalculatorDisplay();
+
+}
+
+
+// =========================================
+// DELETE LAST DIGIT
+// =========================================
+
+function calculatorDelete() {
+
+    if (
+        calculatorWaitingForValue ||
+        calculatorJustCalculated
+    ) {
+        return;
+    }
+
+
+    if (
+        calculatorCurrentValue.length <= 1
+    ) {
+
+        calculatorCurrentValue =
+            '0';
+
+    } else {
+
+        calculatorCurrentValue =
+            calculatorCurrentValue.slice(
+                0,
+                -1
+            );
+
+    }
+
+
+    updateCalculatorDisplay();
+
+}
+
+
+// =========================================
+// PERCENT
+// =========================================
+
+function calculatorPercent() {
+
+    const value =
+        Number(
+            calculatorCurrentValue
+        );
+
+
+    if (!Number.isFinite(value)) {
+        return;
+    }
+
+
+    calculatorCurrentValue =
+        String(value / 100);
+
+    updateCalculatorDisplay();
+
+}
+
+
+// =========================================
+// BUTTON EVENTS
+// =========================================
+
+calculatorKeys.forEach(
+    button => {
+
+        button.addEventListener(
+            'click',
+            () => {
+
+                const value =
+                    button.getAttribute(
+                        'data-calculator-value'
+                    );
+
+                const action =
+                    button.getAttribute(
+                        'data-calculator-action'
+                    );
+
+
+                if (value !== null) {
+
+                    if (
+                        value === '+' ||
+                        value === '-' ||
+                        value === '*' ||
+                        value === '/'
+                    ) {
+
+                        calculatorChooseOperator(
+                            value
+                        );
+
+                    } else {
+
+                        calculatorInputNumber(
+                            value
+                        );
+
+                    }
+
+                    return;
+
+                }
+
+
+                switch (action) {
+
+                    case 'clear':
+                        calculatorClear();
+                        break;
+
+                    case 'delete':
+                        calculatorDelete();
+                        break;
+
+                    case 'percent':
+                        calculatorPercent();
+                        break;
+
+                    case 'equals':
+                        calculatorEquals();
+                        break;
+
+                }
+
+            }
+        );
+
+    }
+);
+
+
+// =========================================
+// INITIAL DISPLAY
+// =========================================
+
+updateCalculatorDisplay();
+
+// =========================================
+// STORE QR SCREEN
+// BRICK STORE QR 1
+// =========================================
+
+// =========================================
+// STORE QR SCREEN
+// BRICK STORE QR 1
+// =========================================
+
+const storeQrScreen =
+    document.getElementById(
+        'storeQrScreen'
+    );
+
+
+// =========================================
+// STORE QR DOM RELOCATION
+// BRICK STORE QR 2
+// =========================================
+//
+// The Store QR screen was originally placed
+// inside #publicStore.
+//
+// #publicStore uses:
+// display: none;
+//
+// Therefore the QR screen becomes invisible
+// even when .active is added.
+//
+// Move it into the seller app's .app-body.
+// =========================================
+
+const sellerAppBody =
+    document.querySelector(
+        '.app-container .app-body'
+    );
+
+if (
+    storeQrScreen &&
+    sellerAppBody
+) {
+
+    sellerAppBody.appendChild(
+        storeQrScreen
+    );
+
+    console.log(
+        'BRICK STORE QR 2 — Store QR moved into seller app body.'
+    );
+
+} else {
+
+    console.error(
+        'BRICK STORE QR 2 — Could not relocate Store QR screen.'
+    );
+
+}
+
+
+const storeQrBackBtn =
+    document.getElementById(
+        'storeQrBackBtn'
+    );
+
+const openStoreQrBtn =
+    document.getElementById(
+        'openStoreQrBtn'
+    );
+
+
+if (openStoreQrBtn) {
+
+    openStoreQrBtn.addEventListener(
+        'click',
+        () => {
+
+            if (!storeQrScreen) {
+
+                console.error(
+                    'BRICK STORE QR 1 — Store QR screen not found.'
+                );
+
+                return;
+
+            }
+
+
+            screens.forEach(
+                screen => {
+
+                    screen.classList.remove(
+                        'active'
+                    );
+
+                }
+            );
+
+
+            storeQrScreen.classList.add(
+                'active'
+            );
+
+          generateStoreQrCode();
+
+
+            navButtons.forEach(
+                button => {
+
+                    button.classList.remove(
+                        'active'
+                    );
+
+                }
+            );
+
+
+            if (screenTitle) {
+
+                screenTitle.textContent =
+                    'Store QR';
+
+            }
+
+
+            console.log(
+                'BRICK STORE QR 1 — Store QR opened.'
+            );
+
+        }
+    );
+
+}
+
+
+if (storeQrBackBtn) {
+
+    storeQrBackBtn.addEventListener(
+        'click',
+        () => {
+
+            if (!storeQrScreen) {
+                return;
+            }
+
+
+            storeQrScreen.classList.remove(
+                'active'
+            );
+
+
+            screens.forEach(
+                screen => {
+
+                    screen.classList.remove(
+                        'active'
+                    );
+
+                }
+            );
+
+
+            const storeScreen =
+                document.getElementById(
+                    'storeScreen'
+                );
+
+
+            if (storeScreen) {
+
+                storeScreen.classList.add(
+                    'active'
+                );
+
+            }
+
+
+            navButtons.forEach(
+                button => {
+
+                    button.classList.remove(
+                        'active'
+                    );
+
+                }
+            );
+
+
+            const storeNav =
+                document.querySelector(
+                    '.nav-btn[data-target="storeScreen"]'
+                );
+
+
+            if (storeNav) {
+
+                storeNav.classList.add(
+                    'active'
+                );
+
+            }
+
+
+            if (screenTitle) {
+
+                screenTitle.textContent =
+                    'Store';
+
+            }
+
+
+            console.log(
+                'BRICK STORE QR 1 — Returned to Store.'
+            );
+
+        }
+    );
+
+}
 
 // =========================================
 // NAVIGATION
@@ -3412,6 +4281,177 @@ if (openNotificationsBtn) {
 
 }
 
+// =========================================
+// C4-A — LOAD SELLER ORDERS
+// =========================================
+
+async function loadSellerOrders() {
+
+    console.log(
+        'BRICK ORDERS C4-A — Loading seller orders.'
+    );
+
+    try {
+
+        // =====================================
+        // GET CURRENT SELLER
+        // =====================================
+
+        const {
+            data: {
+                user
+            },
+            error: userError
+        } =
+            await supabaseClient.auth.getUser();
+
+
+        if (userError || !user) {
+
+            console.error(
+                'BRICK ORDERS C4-A — Seller authentication failed:',
+                userError
+            );
+
+            return [];
+
+        }
+
+
+        console.log(
+            'BRICK ORDERS C4-A — Seller:',
+            user.id
+        );
+
+
+        // =====================================
+        // FIND SELLER STORE
+        // =====================================
+
+        const {
+            data: sellerStore,
+            error: storeError
+        } =
+            await supabaseClient
+                .from('stores')
+                .select('id, owner_id')
+                .eq(
+                    'owner_id',
+                    user.id
+                )
+                .maybeSingle();
+
+
+        if (storeError) {
+
+            console.error(
+                'BRICK ORDERS C4-A — Store lookup failed:',
+                storeError
+            );
+
+            return [];
+
+        }
+
+
+        if (!sellerStore) {
+
+            console.warn(
+                'BRICK ORDERS C4-A — Seller store not found.'
+            );
+
+            return [];
+
+        }
+
+
+        console.log(
+            'BRICK ORDERS C4-A — Seller store:',
+            sellerStore
+        );
+
+      console.log(
+           'BRICK ORDERS C4-A — Store ID used for order query:',
+          sellerStore.id
+        );
+
+
+        // =====================================
+        // LOAD ORDERS
+        // =====================================
+
+        const {
+            data: orders,
+            error: ordersError
+        } =
+            await supabaseClient
+                .from('orders')
+                .select(`
+                    id,
+                    store_id,
+                    customer_id,
+                    customer_name,
+                    customer_phone,
+                    delivery_address,
+                    city,
+                    customer_notes,
+                    payment_method,
+                    total_amount,
+                    status,
+                    created_at,
+                    updated_at
+                `)
+                .eq(
+                    'store_id',
+                    sellerStore.id
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (ordersError) {
+
+            console.error(
+                'BRICK ORDERS C4-A — Orders query failed:',
+                ordersError
+            );
+
+            return [];
+
+        }
+
+
+        console.log(
+            'BRICK ORDERS C4-A — Orders loaded successfully:',
+            orders
+        );
+
+      console.log(
+            'BRICK ORDERS C4-A — Raw orders query result:',
+            orders
+        );
+
+
+        return orders || [];
+
+
+    } catch (error) {
+
+        console.error(
+            'BRICK ORDERS C4-A — Unexpected error:',
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
 /* =========================================
    NEXODRA — ORDERS SCREEN
    BRICK F3-B
@@ -3425,7 +4465,7 @@ const openOrdersCard =
 
 if (openOrdersCard) {
 
-    const openOrdersScreen = () => {
+    const openOrdersScreen = async () => {
 
         const ordersScreen =
             document.getElementById(
@@ -3453,6 +4493,804 @@ if (openOrdersCard) {
             screenTitle.textContent =
                 'Orders';
         }
+
+      const sellerOrders =
+    await loadSellerOrders();
+
+console.log(
+    'BRICK ORDERS C4-A — Orders available for screen:',
+    sellerOrders
+);
+
+      // =========================================
+// C4-B — RENDER SELLER ORDERS
+// =========================================
+
+const ordersList =
+    document.getElementById('ordersList');
+
+if (!ordersList) {
+
+    console.error(
+        'BRICK ORDERS C4-B — ordersList not found.'
+    );
+
+} else if (
+    !sellerOrders ||
+    sellerOrders.length === 0
+) {
+
+    ordersList.innerHTML = `
+        <div class="orders-empty">
+
+            <div class="orders-empty-icon">
+                <i class="fa-regular fa-clipboard"></i>
+            </div>
+
+            <h3>
+                No orders yet
+            </h3>
+
+            <p>
+                Customer orders will appear here.
+            </p>
+
+        </div>
+    `;
+
+    console.log(
+        'BRICK ORDERS C4-B — No orders to render.'
+    );
+
+} else {
+
+    ordersList.innerHTML =
+        sellerOrders.map(order => {
+
+            const customerName =
+                order.customer_name ||
+                'Customer';
+
+            const totalAmount =
+                Number(order.total_amount) || 0;
+
+            const status =
+                String(
+                    order.status || 'pending'
+                )
+                .trim()
+                .toLowerCase();
+
+            const createdAt =
+                order.created_at
+                    ? new Date(
+                        order.created_at
+                    ).toLocaleString()
+                    : '';
+
+            return `
+                <div
+                  class="order-card"
+                   data-order-id="${order.id}"
+                  data-order-status="${status}"
+                   tabindex="0"
+                   role="button"
+                >
+
+                    <div class="order-card-header">
+
+                        <div>
+                            <strong>
+                                ${customerName}
+                            </strong>
+
+                            <span>
+                                ${createdAt}
+                            </span>
+                        </div>
+
+                        <span class="order-status">
+                            ${status}
+                        </span>
+
+                    </div>
+
+                    <div class="order-card-body">
+
+                        <p>
+                            <strong>
+                                Total:
+                            </strong>
+                            ${totalAmount}
+                        </p>
+
+                        <p>
+                            <strong>
+                                Phone:
+                            </strong>
+                            ${order.customer_phone || ''}
+                        </p>
+
+                        <p>
+                            <strong>
+                                Delivery:
+                            </strong>
+                            ${order.delivery_address || ''}
+                        </p>
+
+                        <p>
+                            <strong>
+                                City:
+                            </strong>
+                            ${order.city || ''}
+                        </p>
+
+                    </div>
+
+                </div>
+            `;
+
+        }).join('');
+
+    console.log(
+        'BRICK ORDERS C4-B — Orders rendered:',
+        sellerOrders.length
+    );
+
+  // =========================================
+// C4-C — ORDER CARD CLICK
+// =========================================
+
+document
+    .querySelectorAll('.order-card')
+    .forEach(orderCard => {
+
+        orderCard.addEventListener(
+            'click',
+            async () => {
+
+                const orderId =
+                    orderCard.dataset.orderId;
+
+                const selectedOrder =
+                    sellerOrders.find(
+                        order =>
+                            String(order.id) ===
+                            String(orderId)
+                    );
+
+              window.currentOrderForAction = selectedOrder;
+
+                console.log(
+                    'BRICK ORDERS C4-C — Order selected:',
+                    selectedOrder
+                );
+
+              // =========================================
+// C4-D — OPEN ORDER DETAIL
+// =========================================
+
+const orderDetailOverlay =
+    document.getElementById('orderDetailOverlay');
+
+const orderDetailTitle =
+    document.getElementById('orderDetailTitle');
+
+const orderDetailCustomerName =
+    document.getElementById('orderDetailCustomerName');
+
+const orderDetailCustomerPhone =
+    document.getElementById('orderDetailCustomerPhone');
+
+const orderDetailAddress =
+    document.getElementById('orderDetailAddress');
+
+const orderDetailCity =
+    document.getElementById('orderDetailCity');
+
+const orderDetailStatus =
+    document.getElementById('orderDetailStatus');
+
+const orderDetailPayment =
+    document.getElementById('orderDetailPayment');
+
+const orderDetailTotal =
+    document.getElementById('orderDetailTotal');
+
+if (
+    !orderDetailOverlay ||
+    !selectedOrder
+) {
+    console.error(
+        'BRICK ORDERS C4-D — Detail overlay or order not found.'
+    );
+    return;
+}
+
+orderDetailTitle.textContent =
+    `Order #${String(selectedOrder.id).slice(0, 8)}`;
+
+orderDetailCustomerName.textContent =
+    selectedOrder.customer_name || '—';
+
+orderDetailCustomerPhone.textContent =
+    selectedOrder.customer_phone || '—';
+
+orderDetailAddress.textContent =
+    selectedOrder.delivery_address || '—';
+
+orderDetailCity.textContent =
+    selectedOrder.city || '—';
+
+orderDetailStatus.textContent =
+    selectedOrder.status || '—';
+
+orderDetailPayment.textContent =
+    selectedOrder.payment_method || '—';
+
+orderDetailTotal.textContent =
+    `${Number(selectedOrder.total_amount || 0).toFixed(2)}`;
+
+// =========================================
+// C4-E — LOAD ORDER PRODUCTS
+// =========================================
+
+const orderDetailProducts =
+    document.getElementById('orderDetailProducts');
+
+if (orderDetailProducts) {
+
+    orderDetailProducts.innerHTML = `
+        <p class="order-detail-placeholder">
+            Loading products...
+        </p>
+    `;
+
+    try {
+
+        console.log(
+            'BRICK ORDERS C4-E — Loading order items:',
+            selectedOrder.id
+        );
+
+        const {
+            data: orderItems,
+            error: orderItemsError
+        } = await supabaseClient
+            .from('order_items')
+            .select(`
+                id,
+                order_id,
+                product_id,
+                product_name,
+                price,
+                quantity,
+                subtotal,
+                created_at
+            `)
+            .eq('order_id', selectedOrder.id)
+            .order('created_at', {
+                ascending: true
+            });
+
+        if (orderItemsError) {
+
+    console.error(
+        'BRICK ORDERS C4-E — Order items load failed:',
+        orderItemsError
+    );
+
+    orderDetailProducts.innerHTML = `
+        <p class="order-detail-placeholder">
+            Could not load ordered products.
+        </p>
+    `;
+
+} else if (!orderItems || orderItems.length === 0) {
+
+    orderDetailProducts.innerHTML = `
+        <p class="order-detail-placeholder">
+            No products found for this order.
+        </p>
+    `;
+
+} else {
+
+    orderDetailProducts.innerHTML =
+        orderItems.map(item => {
+
+                const quantity =
+                    Number(item.quantity) || 1;
+
+                const price =
+                    Number(item.price) || 0;
+
+                const subtotal =
+                    Number(item.subtotal) ||
+                    (price * quantity);
+
+                return `
+                    <div class="order-product-row">
+
+                        <div class="order-product-info">
+
+                            <strong>
+                                ${item.product_name || 'Product'}
+                            </strong>
+
+                            <span>
+                                ${quantity} × ${price.toFixed(2)}
+                            </span>
+
+                        </div>
+
+                        <strong class="order-product-subtotal">
+                            ${subtotal.toFixed(2)}
+                        </strong>
+
+                    </div>
+                `;
+
+            }).join('');
+
+        console.log(
+            'BRICK ORDERS C4-E — Products rendered:',
+            orderItems.length
+        );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            'BRICK ORDERS C4-E — Unexpected product load error:',
+            error
+        );
+
+        orderDetailProducts.innerHTML = `
+            <p class="order-detail-placeholder">
+                Could not load ordered products.
+            </p>
+        `;
+    }
+}
+              
+orderDetailOverlay.classList.add('active');
+
+orderDetailOverlay.setAttribute(
+    'aria-hidden',
+    'false'
+);
+
+console.log(
+    'BRICK ORDERS C4-D — Order detail opened:',
+    selectedOrder.id
+);
+
+            }
+        );
+
+        orderCard.addEventListener(
+            'keydown',
+            event => {
+
+                if (
+                    event.key === 'Enter' ||
+                    event.key === ' '
+                ) {
+
+                    event.preventDefault();
+
+                    orderCard.click();
+
+                }
+
+            }
+        );
+
+    });
+
+console.log(
+    'BRICK ORDERS C4-C — Order cards are clickable.'
+);
+
+  // =========================================
+// C4-D — CLOSE ORDER DETAIL
+// =========================================
+
+const orderDetailCloseBtn =
+    document.getElementById('orderDetailCloseBtn');
+
+const orderDetailBackdrop =
+    document.getElementById('orderDetailBackdrop');
+
+function closeOrderDetail() {
+
+    if (!orderDetailOverlay) {
+        return;
+    }
+
+    orderDetailOverlay.classList.remove('active');
+
+    orderDetailOverlay.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    console.log(
+        'BRICK ORDERS C4-D — Order detail closed.'
+    );
+}
+
+  // =========================================
+// C4-F-B — PROCEED ORDER
+// =========================================
+
+const orderProceedBtn =
+    document.getElementById('orderProceedBtn');
+
+if (orderProceedBtn && !orderProceedBtn.dataset.proceedReady) {
+
+    orderProceedBtn.dataset.proceedReady = 'true';
+
+    orderProceedBtn.addEventListener(
+        'click',
+        async () => {
+
+            const selectedOrder =
+                window.currentOrderForAction;
+
+            if (!selectedOrder) {
+
+                console.error(
+                    'BRICK ORDERS C4-F-B — No selected order.'
+                );
+
+                return;
+            }
+
+            orderProceedBtn.disabled = true;
+
+            orderProceedBtn.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Processing...
+            `;
+
+            try {
+
+                console.log(
+                    'BRICK ORDERS C4-F-B — Proceeding order:',
+                    selectedOrder.id
+                );
+
+                // =====================================
+                // LOAD ORDER ITEMS
+                // =====================================
+
+                const {
+                    data: orderItems,
+                    error: orderItemsError
+                } = await supabaseClient
+                    .from('order_items')
+                    .select(`
+                        product_id,
+                        product_name,
+                        price,
+                        quantity,
+                        subtotal
+                    `)
+                    .eq(
+                        'order_id',
+                        selectedOrder.id
+                    )
+                    .order(
+                        'created_at',
+                        {
+                            ascending: true
+                        }
+                    );
+
+                if (orderItemsError) {
+
+                    console.error(
+                        'BRICK ORDERS C4-F-B — Could not load order items:',
+                        orderItemsError
+                    );
+
+                    alert(
+                        'The order could not be processed.\n\n' +
+                        orderItemsError.message
+                    );
+
+                    return;
+                }
+
+                if (
+                    !orderItems ||
+                    orderItems.length === 0
+                ) {
+
+                    console.error(
+                        'BRICK ORDERS C4-F-B — Order has no items.'
+                    );
+
+                    alert(
+                        'This order has no products to complete.'
+                    );
+
+                    return;
+                }
+
+                // =====================================
+                // CONVERT ORDER ITEMS
+                // TO EXISTING SALE FORMAT
+                // =====================================
+
+                const saleItems =
+                    orderItems.map(
+                        item => ({
+                            productId:
+                                item.product_id,
+
+                            title:
+                                item.product_name ||
+                                'Product',
+
+                            price:
+                                Number(
+                                    item.price || 0
+                                ),
+
+                            image:
+                                '',
+
+                            emoji:
+                                '📦',
+
+                            quantity:
+                                Number(
+                                    item.quantity || 1
+                                )
+                        })
+                    );
+
+                const totalItems =
+                    saleItems.reduce(
+                        (
+                            total,
+                            item
+                        ) =>
+                            total +
+                            Number(
+                                item.quantity || 0
+                            ),
+                        0
+                    );
+
+                const grandTotal =
+                    Number(
+                        selectedOrder.total_amount || 0
+                    );
+
+                console.log(
+                    'BRICK ORDERS C4-F-B — Completing sale:',
+                    {
+                        orderId:
+                            selectedOrder.id,
+
+                        items:
+                            saleItems,
+
+                        totalItems:
+                            totalItems,
+
+                        total:
+                            grandTotal
+                    }
+                );
+
+                // =====================================
+                // RECORD SALE
+                // =====================================
+
+                const {
+                    data: saleId,
+                    error: saleError
+                } =
+                    await supabaseClient.rpc(
+                        'complete_sale',
+                        {
+
+                            p_items:
+                                saleItems,
+
+                            p_items_count:
+                                totalItems,
+
+                            p_subtotal:
+                                grandTotal,
+
+                            p_discount:
+                                0,
+
+                            p_tax:
+                                0,
+
+                            p_total:
+                                grandTotal,
+
+                            p_customer_name:
+                                selectedOrder.customer_name ||
+                                'Customer',
+
+                            p_note:
+                                selectedOrder.customer_notes ||
+                                '',
+
+                            p_payment_method:
+                                'cash'
+
+                        }
+                    );
+
+                if (saleError) {
+
+                    console.error(
+                        'BRICK ORDERS C4-F-B — Sale failed:',
+                        saleError
+                    );
+
+                    alert(
+                        'The sale could not be completed.\n\n' +
+                        saleError.message
+                    );
+
+                    return;
+                }
+
+                console.log(
+                    'BRICK ORDERS C4-F-B — Sale recorded:',
+                    saleId
+                );
+
+                // =====================================
+                // MARK ORDER AS FULFILLED
+                // =====================================
+
+                const {
+                    data: updatedOrder,
+                    error: updateOrderError
+                } =
+                    await supabaseClient
+                        .from('orders')
+                        .update({
+                            status:
+                                'fulfilled',
+
+                            updated_at:
+                                new Date().toISOString()
+                        })
+                        .eq(
+                            'id',
+                            selectedOrder.id
+                        )
+                        .select()
+                        .single();
+
+                if (updateOrderError) {
+
+                    console.error(
+                        'BRICK ORDERS C4-F-B — Order status update failed:',
+                        updateOrderError
+                    );
+
+                    alert(
+                        'The sale was recorded, but the order could not be marked as fulfilled.\n\n' +
+                        updateOrderError.message
+                    );
+
+                    return;
+                }
+
+                console.log(
+                    'BRICK ORDERS C4-F-B — Order fulfilled:',
+                    updatedOrder
+                );
+
+                // =====================================
+                // UPDATE CURRENT ORDER
+                // =====================================
+
+                selectedOrder.status =
+                    'fulfilled';
+
+                // =====================================
+                // CLOSE DETAIL
+                // =====================================
+
+                closeOrderDetail();
+
+                // =====================================
+                // UPDATE CARD VISUALLY
+                // =====================================
+
+                const orderCard =
+                    document.querySelector(
+                        `.order-card[data-order-id="${selectedOrder.id}"]`
+                    );
+
+                if (orderCard) {
+
+                    orderCard.dataset.orderStatus =
+                        'fulfilled';
+
+                    const statusElement =
+                        orderCard.querySelector(
+                            '.order-status'
+                        );
+
+                    if (statusElement) {
+
+                        statusElement.textContent =
+                            'fulfilled';
+
+                    }
+                }
+
+                alert(
+                    'Order completed successfully.\n\n' +
+                    `Sale recorded: ${saleId}`
+                );
+
+                console.log(
+                    'BRICK ORDERS C4-F-B — Proceed complete.'
+                );
+
+            } catch (error) {
+
+                console.error(
+                    'BRICK ORDERS C4-F-B — Unexpected error:',
+                    error
+                );
+
+                alert(
+                    'An unexpected error occurred while completing the order.\n\n' +
+                    (error?.message || error)
+                );
+
+            } finally {
+
+                orderProceedBtn.disabled = false;
+
+                orderProceedBtn.innerHTML = `
+                    <i class="fa-solid fa-check"></i>
+                    Proceed
+                `;
+
+            }
+        }
+    );
+}
+
+if (orderDetailCloseBtn) {
+    orderDetailCloseBtn.addEventListener(
+        'click',
+        closeOrderDetail
+    );
+}
+
+if (orderDetailBackdrop) {
+    orderDetailBackdrop.addEventListener(
+        'click',
+        closeOrderDetail
+    );
+}
+
+console.log(
+    'BRICK ORDERS C4-D — Close behavior ready.'
+);
+
+}
 
         navButtons.forEach(button => {
             button.classList.remove(
@@ -5654,6 +7492,94 @@ console.log(
         store
     );
 
+  // =========================================
+// STORE QR — LOAD SELLER INFORMATION
+// BRICK STORE QR 2
+// =========================================
+
+const storeQrBusinessName =
+    document.getElementById(
+        'storeQrBusinessName'
+    );
+
+const storeQrPhone =
+    document.getElementById(
+        'storeQrPhone'
+    );
+
+const storeQrLocation =
+    document.getElementById(
+        'storeQrLocation'
+    );
+
+const storeQrEmail =
+    document.getElementById(
+        'storeQrEmail'
+    );
+
+
+// =========================================
+// BUSINESS NAME
+// =========================================
+
+if (storeQrBusinessName) {
+
+    storeQrBusinessName.textContent =
+        store.name ||
+        'Your Store';
+
+}
+
+
+// =========================================
+// PHONE
+// =========================================
+
+if (storeQrPhone) {
+
+    storeQrPhone.textContent =
+        store.phone ||
+        '—';
+
+}
+
+
+// =========================================
+// LOCATION
+// =========================================
+
+if (storeQrLocation) {
+
+    storeQrLocation.textContent =
+        store.location ||
+        '—';
+
+}
+
+
+// =========================================
+// EMAIL
+// =========================================
+
+if (storeQrEmail) {
+
+    storeQrEmail.textContent =
+        store.email ||
+        '—';
+
+}
+
+
+console.log(
+    'BRICK STORE QR 2 — Seller information applied:',
+    {
+        name: store.name,
+        phone: store.phone,
+        location: store.location,
+        email: store.email
+    }
+);
+
 // =========================================
 // BRICK C5-B
 // APPLY SAVED STORE LOGO
@@ -5827,9 +7753,9 @@ async function loadNotifications() {
 window.notifications = data || [];
 
 const filtered =
-    filterNotifications(
+    filterNotificationCategories(
         window.notifications,
-        activeNotificationFilter
+        activeNotificationCategory
     );
 
 renderNotifications(
@@ -5848,9 +7774,9 @@ updateNotificationUnreadCount(
 function renderNotifications(notifications) {
 
     const notificationList =
-        document.getElementById(
-            'notificationList'
-        );
+    document.getElementById(
+        'notificationsCenterList'
+    );
 
 
     if (!notificationList) {
@@ -6203,7 +8129,7 @@ function renderSellerConversations(conversations) {
 // BRICK INBOX 8 — CATEGORY FILTERS
 // =========================================
 
-let activeNotificationFilter = 'chat';
+let activeNotificationFilter = 'all';
 
 
 function filterNotifications(
@@ -6211,7 +8137,12 @@ function filterNotifications(
     filter
 ) {
 
+        if (filter === 'all') {
 
+        return notifications;
+
+    }
+  
     if (filter === 'unread') {
 
         return notifications.filter(
@@ -6326,7 +8257,149 @@ document.querySelectorAll(
 
 });
 
+// =========================================
+// NOTIFICATION CENTER CATEGORY FILTERS
+// BRICK NOTIFICATION 1
+// =========================================
 
+let activeNotificationCategory = 'all';
+
+
+function filterNotificationCategories(
+    notifications,
+    category
+) {
+
+    if (
+        category === 'all'
+    ) {
+
+        return notifications;
+
+    }
+
+
+    return notifications.filter(
+        notification => {
+
+            const type =
+                String(
+                    notification.type || ''
+                ).toLowerCase();
+
+
+            switch (category) {
+
+                case 'inventory':
+
+                    return type === 'inventory';
+
+
+                case 'sales':
+
+                    return (
+                        type === 'sale' ||
+                        type === 'sales'
+                    );
+
+
+                case 'account':
+
+                    return type === 'account';
+
+
+                case 'store':
+
+                    return type === 'store';
+
+
+                case 'system':
+
+                    return (
+                        type === 'system' ||
+                        type === 'general'
+                    );
+
+
+                default:
+
+                    return false;
+
+            }
+
+        }
+    );
+
+}
+
+
+// =========================================
+// CATEGORY BUTTON EVENTS
+// =========================================
+
+document.querySelectorAll(
+    '[data-notification-category]'
+)
+.forEach(button => {
+
+    button.addEventListener(
+        'click',
+        () => {
+
+            // Remove active state
+            // from notification categories
+
+            document.querySelectorAll(
+                '[data-notification-category]'
+            )
+            .forEach(categoryButton => {
+
+                categoryButton.classList.remove(
+                    'active'
+                );
+
+            });
+
+
+            // Activate clicked category
+
+            button.classList.add(
+                'active'
+            );
+
+
+            // Save selected category
+
+            activeNotificationCategory =
+                button.dataset.notificationCategory;
+
+
+            // Filter current notifications
+
+            const filtered =
+                filterNotificationCategories(
+                    window.notifications || [],
+                    activeNotificationCategory
+                );
+
+
+            // Render filtered notifications
+
+            renderNotifications(
+                filtered
+            );
+
+
+            console.log(
+                'BRICK NOTIFICATION 1 — Category applied:',
+                activeNotificationCategory,
+                filtered
+            );
+
+        }
+    );
+
+});
 
 
 // =========================================
@@ -7619,6 +9692,654 @@ function getGeneratedStoreLink() {
 
 }
 
+// =========================================
+// STORE QR CODE GENERATOR
+// BRICK STORE QR 3
+// =========================================
+
+let storeQrLibraryPromise = null;
+
+
+// =========================================
+// LOAD QR GENERATOR LIBRARY
+// =========================================
+
+function loadStoreQrLibrary() {
+
+    if (window.QRCode) {
+
+        return Promise.resolve();
+
+    }
+
+
+    if (storeQrLibraryPromise) {
+
+        return storeQrLibraryPromise;
+
+    }
+
+
+    storeQrLibraryPromise =
+        new Promise((resolve, reject) => {
+
+            const existingScript =
+                document.querySelector(
+                    'script[data-nexodra-qr-generator]'
+                );
+
+
+            if (existingScript) {
+
+                existingScript.addEventListener(
+                    'load',
+                    resolve,
+                    { once: true }
+                );
+
+                existingScript.addEventListener(
+                    'error',
+                    reject,
+                    { once: true }
+                );
+
+                return;
+
+            }
+
+
+            const script =
+                document.createElement('script');
+
+            script.src =
+                'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+
+            script.async = true;
+
+            script.dataset.nexodraQrGenerator =
+                'true';
+
+
+            script.onload = () => {
+
+                console.log(
+                    'BRICK STORE QR 3 — QR generator loaded.'
+                );
+
+                resolve();
+
+            };
+
+
+            script.onerror = () => {
+
+                console.error(
+                    'BRICK STORE QR 3 — Failed to load QR generator.'
+                );
+
+                reject(
+                    new Error(
+                        'QR generator could not be loaded.'
+                    )
+                );
+
+            };
+
+
+            document.head.appendChild(
+                script
+            );
+
+        });
+
+
+    return storeQrLibraryPromise;
+
+}
+
+
+// =========================================
+// GENERATE STORE QR
+// =========================================
+
+async function generateStoreQrCode() {
+
+    const qrContainer =
+        document.getElementById(
+            'storeQrCode'
+        );
+
+
+    if (!qrContainer) {
+
+        console.error(
+            'BRICK STORE QR 3 — QR container not found.'
+        );
+
+        return;
+
+    }
+
+
+    const storeLink =
+        getGeneratedStoreLink();
+
+
+    if (!storeLink) {
+
+        console.warn(
+            'BRICK STORE QR 3 — No store link available.'
+        );
+
+        qrContainer.innerHTML = `
+            <i class="fa-solid fa-link-slash"></i>
+        `;
+
+        return;
+
+    }
+
+
+    try {
+
+        await loadStoreQrLibrary();
+
+
+        if (!window.QRCode) {
+
+            throw new Error(
+                'QRCode library is unavailable.'
+            );
+
+        }
+
+
+        qrContainer.innerHTML = '';
+
+
+        new QRCode(
+            qrContainer,
+            {
+                text: storeLink,
+
+                width: 250,
+
+                height: 250,
+
+                colorDark: '#111214',
+
+                colorLight: '#ffffff',
+
+                correctLevel:
+                    QRCode.CorrectLevel.H
+            }
+        );
+
+
+        console.log(
+            'BRICK STORE QR 3 — QR generated successfully:',
+            storeLink
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            'BRICK STORE QR 3 — QR generation failed:',
+            error
+        );
+
+
+        qrContainer.innerHTML = `
+            <div
+                style="
+                    display:flex;
+                    flex-direction:column;
+                    align-items:center;
+                    justify-content:center;
+                    gap:8px;
+                    text-align:center;
+                    padding:20px;
+                "
+            >
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+                <span>
+                    QR unavailable
+                </span>
+            </div>
+        `;
+
+    }
+
+}
+
+
+// =========================================
+// STORE QR DOWNLOAD
+// BRICK STORE QR 4
+// =========================================
+
+const downloadStoreQrBtn =
+    document.getElementById(
+        'downloadStoreQrBtn'
+    );
+
+
+if (downloadStoreQrBtn) {
+
+    downloadStoreQrBtn.addEventListener(
+        'click',
+        async () => {
+
+            const qrContainer =
+                document.getElementById(
+                    'storeQrCode'
+                );
+
+
+            if (!qrContainer) {
+
+                console.error(
+                    'BRICK STORE QR 4 — QR container not found.'
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * QRCode.js may create either
+             * a canvas or an image.
+             */
+
+            const qrCanvas =
+                qrContainer.querySelector(
+                    'canvas'
+                );
+
+            const qrImage =
+                qrContainer.querySelector(
+                    'img'
+                );
+
+
+            let downloadUrl = '';
+
+
+            // =====================================
+            // CANVAS QR
+            // =====================================
+
+            if (qrCanvas) {
+
+                const exportCanvas =
+                    document.createElement(
+                        'canvas'
+                    );
+
+                const padding = 24;
+
+                exportCanvas.width =
+                    qrCanvas.width +
+                    padding * 2;
+
+                exportCanvas.height =
+                    qrCanvas.height +
+                    padding * 2;
+
+
+                const context =
+                    exportCanvas.getContext(
+                        '2d'
+                    );
+
+
+                context.fillStyle =
+                    '#ffffff';
+
+                context.fillRect(
+                    0,
+                    0,
+                    exportCanvas.width,
+                    exportCanvas.height
+                );
+
+
+                context.drawImage(
+                    qrCanvas,
+                    padding,
+                    padding
+                );
+
+
+                downloadUrl =
+                    exportCanvas.toDataURL(
+                        'image/png'
+                    );
+
+            }
+
+
+            // =====================================
+            // IMAGE QR
+            // =====================================
+
+            else if (qrImage) {
+
+                const exportCanvas =
+                    document.createElement(
+                        'canvas'
+                    );
+
+                const padding = 24;
+
+                exportCanvas.width =
+                    qrImage.naturalWidth +
+                    padding * 2;
+
+                exportCanvas.height =
+                    qrImage.naturalHeight +
+                    padding * 2;
+
+
+                const context =
+                    exportCanvas.getContext(
+                        '2d'
+                    );
+
+
+                context.fillStyle =
+                    '#ffffff';
+
+                context.fillRect(
+                    0,
+                    0,
+                    exportCanvas.width,
+                    exportCanvas.height
+                );
+
+
+                context.drawImage(
+                    qrImage,
+                    padding,
+                    padding
+                );
+
+
+                downloadUrl =
+                    exportCanvas.toDataURL(
+                        'image/png'
+                    );
+
+            }
+
+
+            if (!downloadUrl) {
+
+                console.error(
+                    'BRICK STORE QR 4 — No generated QR found.'
+                );
+
+                alert(
+                    'Please wait for the QR code to finish generating.'
+                );
+
+                return;
+
+            }
+
+
+            // =====================================
+            // FILE NAME
+            // =====================================
+
+            const storeName =
+                (
+                    document.getElementById(
+                        'storeQrBusinessName'
+                    )?.textContent ||
+                    'Nexodra-Store'
+                )
+                .trim()
+                .replace(
+                    /[^a-z0-9]+/gi,
+                    '-'
+                )
+                .replace(
+                    /^-+|-+$/g,
+                    ''
+                );
+
+
+            const fileName =
+                `${storeName || 'Nexodra-Store'}-QR.png`;
+
+        // =====================================
+// NATIVE QR SHARE / SAVE
+// BRICK STORE QR 4 — FINAL EXPORT
+// =====================================
+
+if (!downloadUrl) {
+
+    alert(
+        'Please wait for the QR code to finish generating.'
+    );
+
+    return;
+
+}
+
+
+try {
+
+    // Convert the QR data URL into a Blob.
+    const response =
+        await fetch(downloadUrl);
+
+    const qrBlob =
+        await response.blob();
+
+
+    const qrFile =
+        new File(
+            [qrBlob],
+            fileName,
+            {
+                type: 'image/png'
+            }
+        );
+
+
+    // =====================================
+    // USE NATIVE SHARE WHEN AVAILABLE
+    // =====================================
+
+    if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare({
+            files: [qrFile]
+        })
+    ) {
+
+        await navigator.share({
+
+            title: 'Nexodra Store QR',
+
+            text:
+                'Scan this QR code to visit my Nexodra store.',
+
+            files: [qrFile]
+
+        });
+
+
+        console.log(
+            'BRICK STORE QR 4 — QR shared successfully:',
+            fileName
+        );
+
+        return;
+
+    }
+
+
+    // =====================================
+    // FALLBACK — OPEN IMAGE IN SAME PAGE
+    // =====================================
+
+    const qrImage =
+        document.createElement('img');
+
+    qrImage.src =
+        downloadUrl;
+
+    qrImage.alt =
+        'Nexodra Store QR Code';
+
+    qrImage.style.maxWidth =
+        '100%';
+
+    qrImage.style.height =
+        'auto';
+
+
+    const qrPreview =
+        document.createElement('div');
+
+    qrPreview.style.position =
+        'fixed';
+
+    qrPreview.style.inset =
+        '0';
+
+    qrPreview.style.zIndex =
+        '99999';
+
+    qrPreview.style.background =
+        '#ffffff';
+
+    qrPreview.style.display =
+        'flex';
+
+    qrPreview.style.flexDirection =
+        'column';
+
+    qrPreview.style.alignItems =
+        'center';
+
+    qrPreview.style.justifyContent =
+        'center';
+
+    qrPreview.style.padding =
+        '24px';
+
+    qrPreview.style.boxSizing =
+        'border-box';
+
+
+    const title =
+        document.createElement('div');
+
+    title.textContent =
+        'Your Store QR';
+
+    title.style.fontSize =
+        '22px';
+
+    title.style.fontWeight =
+        '700';
+
+    title.style.marginBottom =
+        '24px';
+
+
+    const closeButton =
+        document.createElement('button');
+
+    closeButton.textContent =
+        'Close';
+
+    closeButton.style.marginTop =
+        '24px';
+
+    closeButton.style.padding =
+        '12px 24px';
+
+    closeButton.style.border =
+        'none';
+
+    closeButton.style.borderRadius =
+        '10px';
+
+    closeButton.style.background =
+        '#111214';
+
+    closeButton.style.color =
+        '#ffffff';
+
+    closeButton.style.fontSize =
+        '15px';
+
+    closeButton.style.fontWeight =
+        '600';
+
+
+    closeButton.addEventListener(
+        'click',
+        () => {
+
+            qrPreview.remove();
+
+        }
+    );
+
+
+    qrPreview.appendChild(
+        title
+    );
+
+    qrPreview.appendChild(
+        qrImage
+    );
+
+    qrPreview.appendChild(
+        closeButton
+    );
+
+
+    document.body.appendChild(
+        qrPreview
+    );
+
+
+    console.log(
+        'BRICK STORE QR 4 — QR preview opened:',
+        fileName
+    );
+
+
+} catch (error) {
+
+    console.error(
+        'BRICK STORE QR 4 — Export failed:',
+        error
+    );
+
+
+    alert(
+        'Unable to share the QR code on this device.'
+    );
+
+}
+
+          
+        }
+    );
+
+}
 
 if (shareStoreBtn) {
 
@@ -8388,7 +11109,7 @@ if (publicPlaceOrderBtn) {
 
     publicPlaceOrderBtn.addEventListener(
         'click',
-        () => {
+async () => {
 
             console.log(
                 'BRICK CUSTOMER CHECKOUT C3-A — Place Order clicked'
@@ -8655,25 +11376,238 @@ if (publicPlaceOrderBtn) {
 
 
             // =====================================
-            // C3-A ENDS HERE
-            //
-            // C3-B will create the actual
-            // Supabase order.
-            // =====================================
+// C3-B — CREATE SUPABASE ORDER
+// =====================================
 
-            setTimeout(() => {
+try {
+    console.log(
+        'BRICK CUSTOMER CHECKOUT C3-B — Creating order.'
+    );
 
-                publicPlaceOrderBtn.disabled =
-                    false;
+    if (!currentStoreOwnerId) {
+        throw new Error(
+            'The store could not be identified.'
+        );
+    }
 
-                publicPlaceOrderBtn.innerHTML =
-                    publicPlaceOrderBtn.dataset.originalText ||
-                    `
-                        <i class="fa-solid fa-check"></i>
-                        Place Order
-                    `;
+    const {
+        data: orderStores,
+        error: orderStoreError
+    } = await supabaseClient
+        .from('stores')
+        .select('id, owner_id')
+        .eq(
+            'owner_id',
+            currentStoreOwnerId
+        )
+        .limit(1);
 
-            }, 800);
+    if (orderStoreError) {
+        throw orderStoreError;
+    }
+
+    if (
+        !orderStores ||
+        orderStores.length === 0
+    ) {
+        throw new Error(
+            'The store could not be found.'
+        );
+    }
+
+    const orderStore =
+        orderStores[0];
+
+    const orderTotal =
+        cart.reduce(
+            (total, item) =>
+                total +
+                (
+                    (Number(item.price) || 0) *
+                    (Number(item.quantity) || 1)
+                ),
+            0
+        );
+
+  const orderCustomer =
+    await ensureCustomerMessageUser();
+
+if (!orderCustomer) {
+    throw new Error(
+        'Customer identity could not be created.'
+    );
+}
+
+console.log(
+    'BRICK CUSTOMER CHECKOUT C3-B — Customer identity:',
+    orderCustomer.id
+);
+
+    const {
+        data: createdOrder,
+        error: orderInsertError
+    } = await supabaseClient
+        .from('orders')
+        .insert([{
+            store_id:
+                orderStore.id,
+
+            customer_id:
+    orderCustomer.id,
+
+            customer_name:
+                customerName,
+
+            customer_phone:
+                customerPhone,
+
+            delivery_address:
+                customerAddress,
+
+            city:
+                customerCity,
+
+            customer_notes:
+                customerNotes || null,
+
+            payment_method:
+    String(paymentMethod || 'cash_on_delivery')
+        .trim()
+        .toLowerCase(),
+
+            total_amount:
+                orderTotal,
+
+            status:
+                'pending'
+        }])
+        .select()
+        .single();
+
+    if (orderInsertError) {
+        throw orderInsertError;
+    }
+
+    if (!createdOrder) {
+        throw new Error(
+            'The order was not created.'
+        );
+    }
+
+    console.log(
+        'BRICK CUSTOMER CHECKOUT C3-B — Order created successfully:',
+        createdOrder
+    );
+
+  // =====================================
+// C3-C — CREATE ORDER ITEMS
+// =====================================
+
+console.log(
+    'BRICK CUSTOMER CHECKOUT C3-C — Creating order items.'
+);
+
+console.log(
+    'BRICK CUSTOMER CHECKOUT C3-C — CART BEFORE INSERT:',
+    cart
+);
+  
+const orderItems = cart.map(item => {
+    const itemPrice =
+        Number(item.price) || 0;
+
+    const itemQuantity =
+        Number(item.quantity) || 1;
+
+    return {
+        order_id:
+            createdOrder.id,
+
+        product_id:
+    item.productId || item.id || null,
+
+        product_name:
+            item.title || 'Product',
+
+        price:
+            itemPrice,
+
+        quantity:
+            itemQuantity,
+
+        subtotal:
+            itemPrice * itemQuantity
+    };
+});
+
+const {
+    data: createdOrderItems,
+    error: orderItemsInsertError
+} = await supabaseClient
+    .from('order_items')
+    .insert(orderItems)
+    .select();
+
+if (orderItemsInsertError) {
+    throw orderItemsInsertError;
+}
+
+if (
+    !createdOrderItems ||
+    createdOrderItems.length === 0
+) {
+    throw new Error(
+        'The order was created, but its items could not be created.'
+    );
+}
+
+console.log(
+    'BRICK CUSTOMER CHECKOUT C3-C — Order items created successfully:',
+    createdOrderItems
+);
+
+  // =====================================
+// C3-D — COMPLETE CUSTOMER CHECKOUT
+// =====================================
+
+window.odropCart = [];
+
+renderCustomerCart();
+
+console.log(
+    'BRICK CUSTOMER CHECKOUT C3-D — Customer cart cleared.'
+);
+
+publicPlaceOrderBtn.innerHTML = `
+    <i class="fa-solid fa-check"></i>
+    Order Created
+`;
+
+    publicPlaceOrderBtn.innerHTML = `
+        <i class="fa-solid fa-check"></i>
+        Order Created
+    `;
+} catch (error) {
+    console.error(
+        'BRICK CUSTOMER CHECKOUT C3-B — Order creation failed:',
+        error
+    );
+
+    alert(
+        'Your order could not be submitted.\n\n' +
+        (error?.message || error)
+    );
+
+    publicPlaceOrderBtn.disabled =
+        false;
+
+    publicPlaceOrderBtn.innerHTML =
+        publicPlaceOrderBtn.dataset.originalText ||
+        `
+            <i class="fa-solid fa-check"></i>
+            Place Order
+        `;
+}
 
         }
     );

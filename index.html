@@ -590,7 +590,7 @@
                 <input
                     type="radio"
                     name="checkoutPaymentMethod"
-                    value="cash"
+                    value="cash_on_delivery"
                     checked
                 >
 
@@ -828,7 +828,6 @@
     </div>
 
 </section>
-    
       
     </main>
 
@@ -1197,9 +1196,14 @@
 
     <div class="header-right">
 
-        <button class="icon-btn share-btn">
-    <i class="fa-solid fa-share-nodes"></i>
-</button>
+        <button
+    id="calculatorBtn"
+    class="icon-btn calc-btn"
+    aria-label="Open Calculator"
+>
+    <i class="fa-solid fa-calculator"></i>
+</>
+
 
         <button
     type="button"
@@ -1216,6 +1220,185 @@
 
         <!-- Main Dynamic Screen Container -->
         <main class="app-body">
+
+          <!-- =========================================
+     STORE QR SCREEN
+     BRICK STORE QR 1
+========================================= -->
+
+<section
+    id="storeQrScreen"
+    class="screen"
+>
+
+    <div class="store-qr-screen">
+
+        <!-- QR HEADER -->
+
+        <div class="store-qr-header">
+
+            <button
+                type="button"
+                class="store-qr-back-btn"
+                id="storeQrBackBtn"
+                aria-label="Back to Profile"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+
+            <div class="store-qr-title">
+
+                <span>STORE TOOLS</span>
+
+                <h2>Store QR</h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- QR CARD -->
+
+        <div class="store-qr-card">
+
+            <!-- LEFT: QR AREA -->
+
+            <div class="store-qr-card-left">
+
+                <div class="store-qr-scan-label">
+                    SCAN ME
+                </div>
+
+                <div class="store-qr-code-box">
+
+                    <div
+                        id="storeQrCode"
+                        class="store-qr-code"
+                    >
+                        <i class="fa-solid fa-qrcode"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT: BUSINESS INFORMATION -->
+
+            <div class="store-qr-card-right">
+
+                <!-- NEXODRA BRAND -->
+
+                <div class="store-qr-brand">
+
+                    <strong>Nexodra</strong>
+
+                    <span class="store-qr-brand-mark">
+                        ◈
+                    </span>
+
+                </div>
+
+
+                <!-- STORE NAME -->
+
+                <div class="store-qr-business">
+
+                    <h3 id="storeQrBusinessName">
+                        Your Store
+                    </h3>
+
+                    <span>
+                        online store
+                    </span>
+
+                </div>
+
+
+                <!-- STORE INFORMATION -->
+
+                <div class="store-qr-contact-list">
+
+                    <div class="store-qr-contact-item">
+
+                        <i class="fa-solid fa-phone"></i>
+
+                        <span id="storeQrPhone">
+                            —
+                        </span>
+
+                    </div>
+
+
+                    <div class="store-qr-contact-item">
+
+                        <i class="fa-solid fa-location-dot"></i>
+
+                        <span id="storeQrLocation">
+                            —
+                        </span>
+
+                    </div>
+
+
+                    <div class="store-qr-contact-item">
+
+                        <i class="fa-solid fa-globe"></i>
+
+                        <span>
+                            www.nexodra.com
+                        </span>
+
+                    </div>
+
+
+                    <div class="store-qr-contact-item">
+
+                        <i class="fa-solid fa-envelope"></i>
+
+                        <span id="storeQrEmail">
+                            —
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="store-qr-actions">
+
+            <button
+                type="button"
+                class="store-qr-action-btn"
+                id="downloadStoreQrBtn"
+            >
+                <i class="fa-solid fa-download"></i>
+                Download QR
+            </button>
+
+            <button
+                type="button"
+                class="store-qr-action-btn"
+                id="shareStoreQrBtn"
+            >
+                <i class="fa-solid fa-share-nodes"></i>
+                Share Store
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- 1. STORE SCREEN (Matches the Mockup) -->
             
             <!-- 1. STORE SCREEN (Matches the Mockup) -->
             <section id="storeScreen" class="screen active">
@@ -2915,22 +3098,6 @@
             <button
                 type="button"
                 class="notification-category-btn"
-                data-notification-category="orders"
-            >
-                Orders
-            </button>
-
-            <button
-                type="button"
-                class="notification-category-btn"
-                data-notification-category="messages"
-            >
-                Messages
-            </button>
-
-            <button
-                type="button"
-                class="notification-category-btn"
                 data-notification-category="sales"
             >
                 Sales
@@ -3072,7 +3239,148 @@
     </div>
 
 </section>       
-  
+
+<!-- =========================================
+     C4-D — ORDER DETAIL OVERLAY
+========================================= -->
+
+<div
+    id="orderDetailOverlay"
+    class="order-detail-overlay"
+    aria-hidden="true"
+>
+
+    <div
+        class="order-detail-backdrop"
+        id="orderDetailBackdrop"
+    ></div>
+
+    <div
+        class="order-detail-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="orderDetailTitle"
+    >
+
+        <div class="order-detail-header">
+
+            <div>
+                <span class="order-detail-label">
+                    Order Details
+                </span>
+
+                <h2 id="orderDetailTitle">
+                    Order
+                </h2>
+            </div>
+
+            <button
+                type="button"
+                class="order-detail-close"
+                id="orderDetailCloseBtn"
+                aria-label="Close order details"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+        <div
+            class="order-detail-content"
+            id="orderDetailContent"
+        >
+
+            <div class="order-detail-section">
+                <h3>Customer</h3>
+
+                <div class="order-detail-info">
+                    <p>
+                        <strong>Name:</strong>
+                        <span id="orderDetailCustomerName">—</span>
+                    </p>
+
+                    <p>
+                        <strong>Phone:</strong>
+                        <span id="orderDetailCustomerPhone">—</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="order-detail-section">
+                <h3>Delivery</h3>
+
+                <div class="order-detail-info">
+                    <p>
+                        <strong>Address:</strong>
+                        <span id="orderDetailAddress">—</span>
+                    </p>
+
+                    <p>
+                        <strong>City:</strong>
+                        <span id="orderDetailCity">—</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="order-detail-section">
+                <h3>Order</h3>
+
+                <div class="order-detail-info">
+                    <p>
+                        <strong>Status:</strong>
+                        <span id="orderDetailStatus">—</span>
+                    </p>
+
+                    <p>
+                        <strong>Payment:</strong>
+                        <span id="orderDetailPayment">—</span>
+                    </p>
+
+                    <p>
+                        <strong>Total:</strong>
+                        <span id="orderDetailTotal">—</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="order-detail-section">
+                <h3>Products</h3>
+
+                <div id="orderDetailProducts">
+                    <p class="order-detail-placeholder">
+                        Products will appear here.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="order-detail-actions">
+
+            <button
+                type="button"
+                id="orderRejectBtn"
+                class="order-detail-action reject"
+            >
+                <i class="fa-solid fa-xmark"></i>
+                Reject
+            </button>
+
+            <button
+                type="button"
+                id="orderProceedBtn"
+                class="order-detail-action proceed"
+            >
+                <i class="fa-solid fa-check"></i>
+                Proceed
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+          
   <!-- =========================================
      INBOX BRICK 2 - CHAT PANEL
      ========================================= -->
@@ -3194,10 +3502,14 @@
     <!-- Profile Actions -->
     <div class="profile-actions">
 
-        <button class="profile-action-btn">
-            <i class="fa-solid fa-eye"></i>
-            <span>Preview Store</span>
-        </button>
+        <button
+    type="button"
+    class="profile-action-btn"
+    id="openStoreQrBtn"
+>
+    <i class="fa-solid fa-qrcode"></i>
+    <span>Store QR</span>
+</button>
 
        <button
     class="store-action-btn"
@@ -4390,6 +4702,228 @@
 
     </div>
 
+
+</section>
+
+          <!-- =========================================
+     CALCULATOR SCREEN
+     ========================================= -->
+
+<section
+    id="calculatorScreen"
+    class="screen"
+>
+
+    <div class="calculator-screen">
+
+        <!-- Calculator Header -->
+
+        <div class="calculator-header">
+
+            <button
+                type="button"
+                class="calculator-back-btn"
+                id="calculatorBackBtn"
+                aria-label="Back to Store"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+
+            <div class="calculator-title">
+
+                <span>TOOLS</span>
+
+                <h2>Calculator</h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- Calculator Display -->
+
+        <div class="calculator-display">
+
+            <div
+                class="calculator-expression"
+                id="calculatorExpression"
+            >
+                0
+            </div>
+
+            <div
+                class="calculator-result"
+                id="calculatorResult"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <!-- Calculator Keypad -->
+
+        <div class="calculator-keypad">
+
+            <button
+                type="button"
+                class="calculator-key calculator-action"
+                data-calculator-action="clear"
+            >
+                AC
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key calculator-action"
+                data-calculator-action="delete"
+            >
+                <i class="fa-solid fa-delete-left"></i>
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key calculator-action"
+                data-calculator-action="percent"
+            >
+                %
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key calculator-operator"
+                data-calculator-value="/"
+            >
+                ÷
+            </button>
+
+
+            <button
+                type="button"
+                class="calculator-key"
+                data-calculator-value="7"
+            >
+                7
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key"
+                data-calculator-value="8"
+            >
+                8
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key"
+                data-calculator-value="9"
+            >
+                9
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key calculator-operator"
+                data-calculator-value="*"
+            >
+                ×
+            </button>
+
+
+            <button
+                type="button"
+                class="calculator-key"
+                data-calculator-value="4"
+            >
+                4
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key"
+                data-calculator-value="5"
+            >
+                5
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key"
+                data-calculator-value="6"
+            >
+                6
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key calculator-operator"
+                data-calculator-value="-"
+            >
+                −
+            </button>
+
+
+            <button
+                type="button"
+                class="calculator-key"
+                data-calculator-value="1"
+            >
+                1
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key"
+                data-calculator-value="2"
+            >
+                2
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key"
+                data-calculator-value="3"
+            >
+                3
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key calculator-operator"
+                data-calculator-value="+"
+            >
+                +
+            </button>
+
+
+            <button
+                type="button"
+                class="calculator-key calculator-zero"
+                data-calculator-value="0"
+            >
+                0
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key"
+                data-calculator-value="."
+            >
+                .
+            </button>
+
+            <button
+                type="button"
+                class="calculator-key calculator-equals"
+                data-calculator-action="equals"
+            >
+                =
+            </button>
+
+        </div>
+
+    </div>
 
 </section>
             

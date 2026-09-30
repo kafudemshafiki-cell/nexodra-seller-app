@@ -3265,6 +3265,24 @@ body {
     object-fit: cover;
 }
 
+/* =========================================
+   C5-C — VIDEO COVER ACTION
+========================================= */
+
+.appearance-cover-action-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.appearance-video-cover-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
 
 /* =========================================
    THEMES
@@ -6220,6 +6238,40 @@ body {
 .sales-overview-card .sales-chart,
 .sales-overview-card .store-sales-graph {
     pointer-events: none;
+}
+
+/* =========================================
+   NEXODRA SALES GRAPH — LIVING PULSE
+   Only affects the store-card SVG graph.
+   ========================================= */
+
+.sales-overview-card .store-sales-line,
+.sales-overview-card .store-sales-line-glow {
+    vector-effect: non-scaling-stroke;
+    transform-box: fill-box;
+    transform-origin: center;
+    will-change: opacity;
+}
+
+.sales-overview-card .store-sales-line {
+    position: relative;
+}
+
+.sales-overview-card .store-sales-line-glow {
+    pointer-events: none;
+}
+
+.sales-overview-card .store-sales-pulse {
+    pointer-events: none;
+    will-change: transform;
+}
+
+.sales-overview-card .store-sales-pulse circle {
+    vector-effect: non-scaling-stroke;
+}
+
+.sales-overview-card .store-sales-point {
+    vector-effect: non-scaling-stroke;
 }
 
 
@@ -15714,3 +15766,4 @@ body.store-theme-dark .cat-circle {
     font-weight: 700;
     color: #111827;
 }
+

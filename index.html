@@ -3841,7 +3841,8 @@
         </div>
 
     </div>
-</div>       
+</div>     
+              
               <!-- Store Information Panel -->
 <div
     id="storeInformationPanel"
@@ -4161,16 +4162,27 @@
 
             </div>
 
-            <button
-                type="button"
-                id="appearanceUploadCoverBtn"
-                class="appearance-secondary-btn"
-            >
+             <div class="appearance-cover-action-row">
 
-                <i class="fa-solid fa-image"></i>
-                Choose Cover
+    <button
+        type="button"
+        id="appearanceUploadCoverBtn"
+        class="appearance-secondary-btn"
+    >
+        <i class="fa-solid fa-image"></i>
+        Choose Cover
+    </button>
 
-            </button>
+    <button
+        type="button"
+        id="appearanceUploadVideoCoverBtn"
+        class="appearance-secondary-btn appearance-video-cover-btn"
+    >
+        <i class="fa-solid fa-video"></i>
+        Video Cover
+    </button>
+
+</div>
 
         </div>
 
@@ -4180,6 +4192,13 @@
             accept="image/*"
             hidden
         >
+
+      <input
+    type="file"
+    id="appearanceVideoCoverInput"
+    accept="video/*"
+    hidden
+>
 
     </div>
 
@@ -5106,6 +5125,58 @@
 
     </div>
 
+</div>
+
+      <!-- Reject Order Modal -->
+<div
+    id="rejectOrderModal"
+    class="logout-modal"
+>
+    <div class="logout-modal-card">
+
+        <div class="logout-modal-icon">
+            <i class="fa-solid fa-circle-xmark"></i>
+        </div>
+
+        <h3>Reject Order?</h3>
+
+        <p>
+            Please provide a reason for rejecting this order.
+        </p>
+
+        <div class="form-group">
+            <label for="rejectionReasonInput">
+                Rejection Reason
+            </label>
+
+            <textarea
+                id="rejectionReasonInput"
+                rows="4"
+                placeholder="Enter the reason for rejecting this order..."
+            ></textarea>
+        </div>
+
+        <div class="logout-modal-actions">
+
+            <button
+                type="button"
+                id="cancelRejectOrderBtn"
+                class="logout-cancel-btn"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                id="confirmRejectOrderBtn"
+                class="logout-confirm-btn"
+            >
+                Reject Order
+            </button>
+
+        </div>
+
+    </div>
 </div>
       
 <!-- Supabase -->

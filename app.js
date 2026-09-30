@@ -4403,8 +4403,12 @@ async function loadSellerOrders() {
                 `)
                 .eq(
                     'store_id',
-                    sellerStore.id
-                )
+                     sellerStore.id
+                 )
+                .neq(
+                    'status',
+                   'cancelled'
+                 )
                 .order(
                     'created_at',
                     {
@@ -4921,7 +4925,345 @@ function closeOrderDetail() {
         'BRICK ORDERS C4-D — Order detail closed.'
     );
 }
+  
+// =========================================
+// C4-F-C — REJECT ORDER MODAL
+// =========================================
 
+const orderRejectBtn =
+    document.getElementById('orderRejectBtn');
+
+const rejectOrderModal =
+    document.getElementById('rejectOrderModal');
+
+const rejectionReasonInput =
+    document.getElementById('rejectionReasonInput');
+
+const cancelRejectOrderBtn =
+    document.getElementById('cancelRejectOrderBtn');
+
+const confirmRejectOrderBtn =
+    document.getElementById('confirmRejectOrderBtn');
+
+
+if (
+    orderRejectBtn &&
+    rejectOrderModal &&
+    !orderRejectBtn.dataset.rejectReady
+) {
+
+    orderRejectBtn.dataset.rejectReady =
+        'true';
+
+
+    // Open rejection modal
+
+    orderRejectBtn.addEventListener(
+        'click',
+        () => {
+
+            const selectedOrder =
+                window.currentOrderForAction;
+
+     console.log(
+    'BRICK C4-F-C DIAGNOSTIC — Reject button clicked.',
+    {
+        orderRejectBtn,
+        rejectOrderModal,
+        selectedOrder
+    }
+);
+
+          console.log(
+    'BRICK C4-F-C MODAL STATE — Before opening:',
+    {
+        modalExists: !!rejectOrderModal,
+        modalClass: rejectOrderModal?.className,
+        modalDisplay: rejectOrderModal
+            ? getComputedStyle(rejectOrderModal).display
+            : 'NO MODAL',
+        modalParent: rejectOrderModal?.parentElement?.id || 'NO PARENT'
+    }
+);
+          
+            if (!selectedOrder) {
+
+                console.error(
+                    'BRICK ORDERS C4-F-C — No selected order.'
+                );
+
+                return;
+            }
+
+
+            if (rejectionReasonInput) {
+
+                rejectionReasonInput.value =
+                    '';
+
+            }
+
+
+            rejectOrderModal.classList.add(
+                'active'
+            );
+
+          console.log(
+    'BRICK C4-F-C MODAL STATE — After opening:',
+    {
+        modalClass: rejectOrderModal.className,
+        modalDisplay: getComputedStyle(
+            rejectOrderModal
+        ).display,
+        hasActiveClass:
+            rejectOrderModal.classList.contains(
+                'active'
+            )
+    }
+);
+
+          console.log(
+    'BRICK C4-F-C MODAL GEOMETRY:',
+    {
+        rect: rejectOrderModal.getBoundingClientRect(),
+        zIndex: getComputedStyle(
+            rejectOrderModal
+        ).zIndex,
+        position: getComputedStyle(
+            rejectOrderModal
+        ).position,
+        opacity: getComputedStyle(
+            rejectOrderModal
+        ).opacity,
+        visibility: getComputedStyle(
+            rejectOrderModal
+        ).visibility
+    }
+);
+
+          console.log(
+    'BRICK C4-F-C MODAL SIZE:',
+    {
+        width: rejectOrderModal.offsetWidth,
+        height: rejectOrderModal.offsetHeight,
+        clientWidth: rejectOrderModal.clientWidth,
+        clientHeight: rejectOrderModal.clientHeight,
+        parentWidth:
+            rejectOrderModal.parentElement?.offsetWidth,
+        parentHeight:
+            rejectOrderModal.parentElement?.offsetHeight
+    }
+);
+
+          console.log(
+    'BRICK C4-F-C PARENT CHAIN:',
+    {
+        modal: rejectOrderModal.parentElement?.id,
+        parentParent:
+            rejectOrderModal.parentElement?.parentElement?.id,
+        parentDisplay:
+            rejectOrderModal.parentElement
+                ? getComputedStyle(
+                    rejectOrderModal.parentElement
+                ).display
+                : 'NO PARENT',
+        parentVisibility:
+            rejectOrderModal.parentElement
+                ? getComputedStyle(
+                    rejectOrderModal.parentElement
+                ).visibility
+                : 'NO PARENT',
+        parentPosition:
+            rejectOrderModal.parentElement
+                ? getComputedStyle(
+                    rejectOrderModal.parentElement
+                ).position
+                : 'NO PARENT'
+    }
+);
+
+
+            if (rejectionReasonInput) {
+
+                setTimeout(() => {
+
+                    rejectionReasonInput.focus();
+
+                }, 100);
+
+            }
+
+        }
+    );
+
+
+    // Cancel rejection
+
+    if (cancelRejectOrderBtn) {
+
+        cancelRejectOrderBtn.addEventListener(
+            'click',
+            () => {
+
+                rejectOrderModal.classList.remove(
+                    'active'
+                );
+
+            }
+        );
+
+    }
+
+
+    // Confirm rejection
+
+    if (confirmRejectOrderBtn) {
+
+        confirmRejectOrderBtn.addEventListener(
+            'click',
+            async () => {
+
+                const selectedOrder =
+                    window.currentOrderForAction;
+
+                if (!selectedOrder) {
+
+                    console.error(
+                        'BRICK ORDERS C4-F-C — No selected order.'
+                    );
+
+                    return;
+                }
+
+
+                const trimmedReason =
+                    rejectionReasonInput
+                        ?.value
+                        .trim() || '';
+
+
+                if (!trimmedReason) {
+
+                    alert(
+                        'Please enter a rejection reason.'
+                    );
+
+                    rejectionReasonInput?.focus();
+
+                    return;
+
+                }
+
+
+                confirmRejectOrderBtn.disabled =
+                    true;
+
+                confirmRejectOrderBtn.innerHTML = `
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    Rejecting...
+                `;
+
+
+                try {
+
+                    console.log(
+                        'BRICK ORDERS C4-F-C — Rejecting order:',
+                        selectedOrder.id
+                    );
+
+
+                    const {
+                        data: updatedOrder,
+                        error: updateError
+                    } = await supabaseClient
+                        .from('orders')
+                        .update({
+                            status: 'cancelled',
+                            rejection_reason:
+                                trimmedReason,
+                            updated_at:
+                                new Date().toISOString()
+                        })
+                        .eq(
+                            'id',
+                            selectedOrder.id
+                        )
+                        .select()
+                        .single();
+
+
+                    if (updateError) {
+
+                        console.error(
+                            'BRICK ORDERS C4-F-C — Reject failed:',
+                            updateError
+                        );
+
+                        alert(
+                            'The order could not be rejected.\n\n' +
+                            updateError.message
+                        );
+
+                        return;
+
+                    }
+
+
+                    console.log(
+                        'BRICK ORDERS C4-F-C — Order rejected:',
+                        updatedOrder
+                    );
+
+
+                    selectedOrder.status =
+                        'cancelled';
+
+                    selectedOrder.rejection_reason =
+                        trimmedReason;
+
+
+                    rejectOrderModal.classList.remove(
+                        'active'
+                    );
+
+
+                    closeOrderDetail();
+
+
+                    alert(
+                        'Order rejected successfully.'
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        'BRICK ORDERS C4-F-C — Unexpected rejection error:',
+                        error
+                    );
+
+                    alert(
+                        'The order could not be rejected.'
+                    );
+
+                } finally {
+
+                    confirmRejectOrderBtn.disabled =
+                        false;
+
+                    confirmRejectOrderBtn.innerHTML = `
+                        Reject Order
+                    `;
+
+                }
+
+            }
+        );
+
+    }
+
+}           
+  
   // =========================================
 // C4-F-B — PROCEED ORDER
 // =========================================
@@ -5165,7 +5507,7 @@ if (orderProceedBtn && !orderProceedBtn.dataset.proceedReady) {
                         .from('orders')
                         .update({
                             status:
-                                'fulfilled',
+                                'delivered',
 
                             updated_at:
                                 new Date().toISOString()
@@ -5202,7 +5544,7 @@ if (orderProceedBtn && !orderProceedBtn.dataset.proceedReady) {
                 // =====================================
 
                 selectedOrder.status =
-                    'fulfilled';
+                    'delivered';
 
                 // =====================================
                 // CLOSE DETAIL
@@ -7643,6 +7985,143 @@ if (storeBannerElem && store.cover_image_url) {
     storeBannerElem.style.backgroundImage = `url('${store.cover_image_url}')`;
 }
 
+  // =========================================
+// C5-G — PUBLIC CUSTOMER BANNER VIDEO
+// =========================================
+
+if (
+    storeBannerElem &&
+    store.cover_video_url
+) {
+
+    console.log(
+        'BRICK C5-G — Public banner video found:',
+        store.cover_video_url
+    );
+
+    // Keep the existing cover image underneath
+    // as the fallback.
+    storeBannerElem.style.position =
+        'relative';
+
+    storeBannerElem.style.overflow =
+        'hidden';
+
+    // Remove an older injected video if one exists.
+    const existingPublicVideo =
+        storeBannerElem.querySelector(
+            '.public-store-banner-video'
+        );
+
+    if (existingPublicVideo) {
+        existingPublicVideo.pause();
+        existingPublicVideo.remove();
+    }
+
+    // Create public banner video.
+    const publicBannerVideo =
+        document.createElement('video');
+
+    publicBannerVideo.className =
+        'public-store-banner-video';
+
+    publicBannerVideo.src =
+        store.cover_video_url;
+
+    publicBannerVideo.autoplay =
+        true;
+
+    publicBannerVideo.muted =
+        true;
+
+    publicBannerVideo.loop =
+        true;
+
+    publicBannerVideo.playsInline =
+        true;
+
+    publicBannerVideo.controls =
+        false;
+
+    publicBannerVideo.preload =
+        'auto';
+
+    // Fill the EXISTING banner.
+    // Do not create or resize another banner.
+    publicBannerVideo.style.position =
+        'absolute';
+
+    publicBannerVideo.style.inset =
+        '0';
+
+    publicBannerVideo.style.width =
+        '100%';
+
+    publicBannerVideo.style.height =
+        '100%';
+
+    publicBannerVideo.style.objectFit =
+        'cover';
+
+    publicBannerVideo.style.display =
+        'block';
+
+    publicBannerVideo.style.zIndex =
+        '1';
+
+    publicBannerVideo.style.pointerEvents =
+        'none';
+
+    // Put video inside the existing banner.
+    storeBannerElem.appendChild(
+        publicBannerVideo
+    );
+
+    publicBannerVideo.addEventListener(
+        'loadeddata',
+        () => {
+
+            console.log(
+                'BRICK C5-G — Public banner video loaded successfully.'
+            );
+
+            publicBannerVideo
+                .play()
+                .catch(
+                    error => {
+
+                        console.warn(
+                            'BRICK C5-G — Video play failed:',
+                            error
+                        );
+
+                    }
+                );
+
+        },
+        {
+            once: true
+        }
+    );
+
+    publicBannerVideo.addEventListener(
+        'error',
+        error => {
+
+            console.warn(
+                'BRICK C5-G — Public banner video failed. Existing cover image remains as fallback.',
+                error
+            );
+
+            publicBannerVideo.remove();
+
+        },
+        {
+            once: true
+        }
+    );
+
+}
 
 // Set Description
 if (storeDescElem && store.description) {
@@ -14575,6 +15054,111 @@ const appearanceCoverInput =
     );
 
 // =========================================
+// C5-C — VIDEO COVER INPUT
+// =========================================
+
+const appearanceUploadVideoCoverBtn =
+    document.getElementById(
+        'appearanceUploadVideoCoverBtn'
+    );
+
+const appearanceVideoCoverInput =
+    document.getElementById(
+        'appearanceVideoCoverInput'
+    );
+
+// =========================================
+// C5-F — APPLY SAVED VIDEO COVER
+// =========================================
+
+function applyStoreVideoCoverUrl(
+    url
+) {
+
+    if (!appearancePreviewCover) {
+        console.warn(
+            'BRICK C5-F — Cover preview container not found.'
+        );
+        return;
+    }
+
+    const existingVideo =
+        appearancePreviewCover.querySelector(
+            '.store-video-cover-preview'
+        );
+
+    if (existingVideo) {
+        existingVideo.pause();
+        existingVideo.remove();
+    }
+
+    if (!url) {
+        return;
+    }
+
+    const video =
+        document.createElement('video');
+
+    video.className =
+        'store-video-cover-preview';
+
+    video.src = url;
+
+    video.autoplay = true;
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.controls = false;
+    video.preload = 'metadata';
+
+    // Preserve the existing cover frame.
+    // Do not alter its dimensions.
+    video.style.width = '100%';
+    video.style.height = '100%';
+    video.style.objectFit = 'cover';
+    video.style.display = 'block';
+    video.style.borderRadius = 'inherit';
+
+    appearancePreviewCover
+        .style
+        .backgroundImage = '';
+
+    appearancePreviewCover
+        .classList
+        .add('has-image');
+
+    const placeholder =
+        appearancePreviewCover.querySelector(
+            'span'
+        );
+
+    if (placeholder) {
+        placeholder.style.display =
+            'none';
+    }
+
+    appearancePreviewCover.appendChild(
+        video
+    );
+
+    console.log(
+        'BRICK C5-F — Saved video cover applied:',
+        url
+    );
+
+    video.play().catch(
+        error => {
+
+            console.warn(
+                'BRICK C5-F — Saved video autoplay did not start:',
+                error
+            );
+
+        }
+    );
+}
+
+// =========================================
 // STORE THEME ELEMENTS
 // =========================================
 
@@ -14732,9 +15316,19 @@ let selectedStoreProfileImage = null;
 
 let selectedStoreCoverImage = null;
 
+// =========================================
+// C5-D — TEMPORARY VIDEO COVER STATE
+// =========================================
+
+let selectedStoreVideoCover = null;
+
+let selectedStoreVideoCoverPreviewUrl = '';
+
 let currentStoreProfileImageUrl = '';
 
 let currentStoreCoverImageUrl = '';
+
+let currentStoreVideoCoverUrl = '';
 
 
 // =========================================
@@ -14845,7 +15439,7 @@ async function loadStoreAppearance() {
             await supabaseClient
                 .from('stores')
                 .select(
-                    'id, owner_id, name, description, profile_image_url, cover_image_url'
+                    'id, owner_id, name, description, profile_image_url, cover_image_url, cover_video_url'
                 )
                 .eq(
                     'owner_id',
@@ -14891,6 +15485,17 @@ async function loadStoreAppearance() {
         currentStoreCoverImageUrl =
             store.cover_image_url || '';
 
+         // =========================================
+// C5-F — RESTORE SAVED VIDEO COVER
+// =========================================
+
+currentStoreVideoCoverUrl =
+    store.cover_video_url || '';
+
+console.log(
+    'BRICK C5-F — Saved video cover URL:',
+    currentStoreVideoCoverUrl
+);
 
         // =====================================
         // APPLY PROFILE IMAGE
@@ -14908,6 +15513,16 @@ async function loadStoreAppearance() {
         applyStoreCoverImage(
             currentStoreCoverImageUrl
         );
+
+      if (
+    currentStoreVideoCoverUrl
+) {
+
+    applyStoreVideoCoverUrl(
+        currentStoreVideoCoverUrl
+    );
+
+}
 
 
         console.log(
@@ -15234,6 +15849,27 @@ if (appearanceUploadCoverBtn) {
 }
 
 // =========================================
+// C5-C — CHOOSE VIDEO COVER
+// =========================================
+
+if (appearanceUploadVideoCoverBtn) {
+
+    appearanceUploadVideoCoverBtn.addEventListener(
+        'click',
+        () => {
+
+            if (appearanceVideoCoverInput) {
+
+                appearanceVideoCoverInput.click();
+
+            }
+
+        }
+    );
+
+}
+
+// =========================================
 // HANDLE CROPPED STORE COVER
 // =========================================
 
@@ -15319,6 +15955,202 @@ if (appearanceCoverInput) {
 
 }
 
+// =========================================
+// C5-C — VIDEO COVER SELECTED
+// =========================================
+
+if (appearanceVideoCoverInput) {
+
+    appearanceVideoCoverInput.addEventListener(
+        'change',
+        event => {
+
+            const file =
+                event.target.files?.[0];
+
+            if (!file) {
+                return;
+            }
+
+            console.log(
+                'BRICK C5-C — Video cover selected:',
+                {
+                    name: file.name,
+                    type: file.type,
+                    size: file.size
+                }
+            );
+
+          applyStoreVideoCoverPreview(
+    file
+);
+
+            // Allow selecting the same video again.
+            appearanceVideoCoverInput.value =
+                '';
+
+        }
+    );
+
+}
+
+// =========================================
+// C5-D — VIDEO COVER PREVIEW
+// =========================================
+
+function applyStoreVideoCoverPreview(
+    file
+) {
+
+    if (!file) {
+        return;
+    }
+
+    if (
+        !file.type.startsWith(
+            'video/'
+        )
+    ) {
+
+        alert(
+            'Please select a video file.'
+        );
+
+        return;
+    }
+
+    if (!appearancePreviewCover) {
+        console.error(
+            'BRICK C5-D — Cover preview container not found.'
+        );
+
+        return;
+    }
+
+    // Remove previous video preview
+    const existingVideo =
+        appearancePreviewCover.querySelector(
+            '.store-video-cover-preview'
+        );
+
+    if (existingVideo) {
+
+        existingVideo.pause();
+
+        existingVideo.remove();
+
+    }
+
+    // Revoke previous temporary URL
+    if (
+        selectedStoreVideoCoverPreviewUrl
+    ) {
+
+        URL.revokeObjectURL(
+            selectedStoreVideoCoverPreviewUrl
+        );
+
+    }
+
+    selectedStoreVideoCover =
+        file;
+
+    selectedStoreVideoCoverPreviewUrl =
+        URL.createObjectURL(
+            file
+        );
+
+    const video =
+        document.createElement(
+            'video'
+        );
+
+    video.className =
+        'store-video-cover-preview';
+
+    video.src =
+        selectedStoreVideoCoverPreviewUrl;
+
+    video.autoplay =
+        true;
+
+    video.muted =
+        true;
+
+    video.loop =
+        true;
+
+    video.playsInline =
+        true;
+
+    video.controls =
+        false;
+
+    video.preload =
+        'metadata';
+
+    video.style.width =
+        '100%';
+
+    video.style.height =
+        '100%';
+
+    video.style.objectFit =
+        'cover';
+
+    video.style.display =
+        'block';
+
+    video.style.borderRadius =
+        'inherit';
+
+    appearancePreviewCover
+        .style.backgroundImage =
+        '';
+
+    appearancePreviewCover
+        .classList.add(
+            'has-image'
+        );
+
+    const placeholder =
+        appearancePreviewCover.querySelector(
+            'span'
+        );
+
+    if (placeholder) {
+
+        placeholder.style.display =
+            'none';
+
+    }
+
+    appearancePreviewCover.appendChild(
+        video
+    );
+
+    console.log(
+        'BRICK C5-D — Video cover preview applied:',
+        {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            previewUrl:
+                selectedStoreVideoCoverPreviewUrl
+        }
+    );
+
+    video.play().catch(
+        error => {
+
+            console.warn(
+                'BRICK C5-D — Video autoplay did not start:',
+                error
+            );
+
+        }
+    );
+}
 
 // =========================================
 // UPLOAD IMAGE TO SUPABASE STORAGE
@@ -15433,6 +16265,119 @@ async function uploadStoreImage(
 
 }
 
+// =========================================
+// C5-E — UPLOAD VIDEO COVER
+// =========================================
+
+async function uploadStoreVideoCover(
+    file
+) {
+
+    if (!file) {
+        return null;
+    }
+
+    const {
+        data: {
+            user
+        },
+        error: userError
+    } =
+        await supabaseClient
+            .auth
+            .getUser();
+
+    if (userError) {
+        throw userError;
+    }
+
+    if (!user) {
+        throw new Error(
+            'No authenticated user.'
+        );
+    }
+
+    if (
+        !file.type.startsWith(
+            'video/'
+        )
+    ) {
+        throw new Error(
+            'Selected file is not a video.'
+        );
+    }
+
+    const extension =
+        file.name
+            .split('.')
+            .pop()
+            .toLowerCase();
+
+    const filePath =
+        `${user.id}/video-cover-${Date.now()}.${extension}`;
+
+    console.log(
+        'BRICK C5-E — Uploading video cover:',
+        {
+            filePath,
+            name: file.name,
+            type: file.type,
+            size: file.size
+        }
+    );
+
+    const {
+        error: uploadError
+    } =
+        await supabaseClient
+            .storage
+            .from(
+                STORE_IMAGE_BUCKET
+            )
+            .upload(
+                filePath,
+                file,
+                {
+                    cacheControl:
+                        '3600',
+
+                    upsert:
+                        false,
+
+                    contentType:
+                        file.type
+                }
+            );
+
+    if (uploadError) {
+        throw uploadError;
+    }
+
+    const {
+        data
+    } =
+        supabaseClient
+            .storage
+            .from(
+                STORE_IMAGE_BUCKET
+            )
+            .getPublicUrl(
+                filePath
+            );
+
+    if (!data?.publicUrl) {
+        throw new Error(
+            'Could not create public video URL.'
+        );
+    }
+
+    console.log(
+        'BRICK C5-E — Video cover uploaded:',
+        data.publicUrl
+    );
+
+    return data.publicUrl;
+}
 
 // =========================================
 // SAVE APPEARANCE
@@ -15521,6 +16466,21 @@ if (saveAppearanceBtn) {
 
                 }
 
+              // =====================================
+             // C5-E — UPLOAD VIDEO COVER
+            // =====================================
+
+                if (
+                    selectedStoreVideoCover
+              ) {
+
+                  currentStoreVideoCoverUrl =
+                  await uploadStoreVideoCover(
+                       selectedStoreVideoCover
+                 );
+
+              }
+
 
                 // =================================
                 // UPDATE SUPABASE STORE
@@ -15533,22 +16493,25 @@ if (saveAppearanceBtn) {
                     await supabaseClient
                         .from('stores')
                         .update({
+                          
+                         profile_image_url:
+                         currentStoreProfileImageUrl ||
+                         null,
 
-                            profile_image_url:
-                                currentStoreProfileImageUrl ||
-                                null,
+                         cover_image_url:
+                           currentStoreCoverImageUrl ||
+                         null,
 
-                            cover_image_url:
-                                currentStoreCoverImageUrl ||
-                                null
-
-                        })
+                         cover_video_url:
+                           currentStoreVideoCoverUrl ||
+                        null
+                     })
                         .eq(
                             'owner_id',
                             user.id
                         )
                         .select(
-                            'id, owner_id, profile_image_url, cover_image_url'
+                              'id, owner_id, profile_image_url, cover_image_url, cover_video_url'
                         )
                         .maybeSingle();
 
@@ -17899,6 +18862,62 @@ async function updateStoreCardSalesGraph() {
         gradient
     );
 
+  /* =========================================
+   SOFT GRAPH GLOW FILTER
+   ========================================= */
+
+const glowFilter =
+    document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'filter'
+    );
+
+glowFilter.setAttribute(
+    'id',
+    'storeSalesGraphGlow'
+);
+
+glowFilter.setAttribute(
+    'x',
+    '-50%'
+);
+
+glowFilter.setAttribute(
+    'y',
+    '-100%'
+);
+
+glowFilter.setAttribute(
+    'width',
+    '200%'
+);
+
+glowFilter.setAttribute(
+    'height',
+    '300%'
+);
+
+
+const blur =
+    document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'feGaussianBlur'
+    );
+
+blur.setAttribute(
+    'stdDeviation',
+    '3.5'
+);
+
+
+glowFilter.appendChild(
+    blur
+);
+
+defs.appendChild(
+    glowFilter
+);
+
     svg.appendChild(
         defs
     );
@@ -17975,6 +18994,356 @@ async function updateStoreCardSalesGraph() {
         line
     );
 
+  /* =========================================
+   SOFT ALWAYS-ON LINE GLOW
+   ========================================= */
+
+const glowLine = line.cloneNode(true);
+
+glowLine.setAttribute(
+    'class',
+    'store-sales-line-glow'
+);
+
+glowLine.setAttribute(
+    'filter',
+    'url(#storeSalesGraphGlow)'
+);
+
+glowLine.setAttribute(
+    'stroke-width',
+    '7'
+);
+
+glowLine.setAttribute(
+    'opacity',
+    '0.22'
+);
+
+svg.insertBefore(glowLine, line);
+
+
+/* =========================================
+   GRAPH POINTS
+   ========================================= */
+
+points.forEach(point => {
+    const circle =
+        document.createElementNS(
+            'http://www.w3.org/2000/svg',
+            'circle'
+        );
+
+    circle.setAttribute('cx', point.x);
+    circle.setAttribute('cy', point.y);
+    circle.setAttribute('r', '3');
+    circle.setAttribute('fill', '#4ade80');
+
+    circle.setAttribute(
+        'class',
+        'store-sales-point'
+    );
+
+    svg.appendChild(circle);
+});
+
+
+/* =========================================
+   MOVING SALES PULSE
+   Follows the EXACT EXISTING LINE PATH
+   ========================================= */
+
+const pulseGroup =
+    document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'g'
+    );
+
+pulseGroup.setAttribute(
+    'class',
+    'store-sales-pulse'
+);
+
+const pulseHalo =
+    document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'circle'
+    );
+
+pulseHalo.setAttribute('r', '10');
+pulseHalo.setAttribute('fill', '#4ade80');
+pulseHalo.setAttribute('opacity', '0.18');
+
+pulseHalo.setAttribute(
+    'filter',
+    'url(#storeSalesGraphGlow)'
+);
+
+const pulseCore =
+    document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'circle'
+    );
+
+pulseCore.setAttribute(
+    'r',
+    '3.2'
+);
+
+pulseCore.setAttribute(
+    'fill',
+    '#ffffff'
+);
+
+pulseGroup.appendChild(pulseHalo);
+pulseGroup.appendChild(pulseCore);
+
+svg.appendChild(pulseGroup);
+
+
+/* =========================================
+   ANIMATION ENGINE
+   ========================================= */
+
+if (
+    window.__nexodraSalesGraphAnimationFrame
+) {
+    cancelAnimationFrame(
+        window.__nexodraSalesGraphAnimationFrame
+    );
+}
+
+const pathLength =
+    line.getTotalLength();
+
+const pointLengths =
+    points.map(point => {
+
+        let bestLength = 0;
+        let bestDistance = Infinity;
+
+        const samples = 240;
+
+        for (
+            let i = 0;
+            i <= samples;
+            i++
+        ) {
+
+            const length =
+                pathLength *
+                (i / samples);
+
+            const pathPoint =
+                line.getPointAtLength(
+                    length
+                );
+
+            const dx =
+                pathPoint.x -
+                point.x;
+
+            const dy =
+                pathPoint.y -
+                point.y;
+
+            const distance =
+                (dx * dx) +
+                (dy * dy);
+
+            if (
+                distance <
+                bestDistance
+            ) {
+
+                bestDistance =
+                    distance;
+
+                bestLength =
+                    length;
+            }
+        }
+
+        return bestLength;
+    });
+
+
+const cycleDuration = 6200;
+
+const startTime =
+    performance.now();
+
+
+function animateSalesPulse(now) {
+
+    const elapsed =
+        (now - startTime) %
+        cycleDuration;
+
+    const progress =
+        elapsed /
+        cycleDuration;
+
+
+    const currentLength =
+        progress *
+        pathLength;
+
+
+    const position =
+        line.getPointAtLength(
+            currentLength
+        );
+
+
+    pulseGroup.setAttribute(
+        'transform',
+        `translate(${position.x} ${position.y})`
+    );
+
+
+    let nearestDistance =
+        Infinity;
+
+
+    pointLengths.forEach(length => {
+
+        const distance =
+            Math.abs(
+                currentLength -
+                length
+            );
+
+        if (
+            distance <
+            nearestDistance
+        ) {
+
+            nearestDistance =
+                distance;
+        }
+
+    });
+
+
+    const pointZone =
+        pathLength *
+        0.025;
+
+
+    const atPoint =
+        nearestDistance <
+        pointZone;
+
+
+    let pulseStrength =
+        0.45;
+
+
+    if (atPoint) {
+
+        const pulseProgress =
+            1 -
+            (
+                nearestDistance /
+                pointZone
+            );
+
+        pulseStrength =
+            0.45 +
+            (
+                pulseProgress *
+                0.55
+            );
+    }
+
+
+    const pulseWave =
+    (Math.sin(
+        progress *
+        Math.PI *
+        4
+    ) + 1) / 2;
+
+
+/*
+    Never goes to zero.
+
+    Normal:
+    0.50
+
+    Strongest:
+    0.70
+*/
+const glowLevel =
+    0.50 +
+    (
+        pulseWave *
+        0.20
+    );
+
+
+    pulseHalo.setAttribute(
+        'opacity',
+        String(
+            0.14 +
+            (
+                pulseStrength *
+                0.18
+            )
+        )
+    );
+
+
+    pulseHalo.setAttribute(
+        'r',
+        String(
+            8 +
+            (
+                pulseStrength *
+                5
+            )
+        )
+    );
+
+
+    pulseCore.setAttribute(
+        'r',
+        String(
+            2.8 +
+            (
+                pulseStrength *
+                1.1
+            )
+        )
+    );
+
+
+    glowLine.setAttribute(
+    'opacity',
+    String(
+        0.40 +
+        (
+            glowLevel -
+            0.80
+        ) *
+        pulseStrength
+    )
+);
+
+
+    window.__nexodraSalesGraphAnimationFrame =
+        requestAnimationFrame(
+            animateSalesPulse
+        );
+}
+
+
+window.__nexodraSalesGraphAnimationFrame =
+    requestAnimationFrame(
+        animateSalesPulse
+    );
+
 
     /* =========================================
        GRAPH POINTS
@@ -18033,6 +19402,7 @@ document.addEventListener(
 
     }
 );
+
 
 
 // =========================================

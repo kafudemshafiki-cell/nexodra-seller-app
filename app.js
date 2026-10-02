@@ -655,7 +655,7 @@ function renderSellProducts() {
 
 
                         <span>
-                            €${price.toFixed(2)}
+                            ${formatCurrency(price)}
                         </span>
 
 
@@ -1015,19 +1015,17 @@ function renderSellCart() {
                         </strong>
 
                         <small>
-                            €${Number(item.price).toFixed(2)}
-                            ×
-                            ${item.quantity}
-                        </small>
+    ${formatCurrency(Number(item.price))}
+    ×
+    ${item.quantity}
+</small>
 
                     </div>
 
 
                     <strong class="sell-cart-item-total">
-
-                        €${lineTotal.toFixed(2)}
-
-                    </strong>
+    ${formatCurrency(lineTotal)}
+</strong>
 
                 </div>
 
@@ -1139,7 +1137,7 @@ function updateSellTotals() {
     if (sellSubtotal) {
 
         sellSubtotal.textContent =
-            `€${subtotal.toFixed(2)}`;
+    formatCurrency(subtotal);
 
     }
 
@@ -1151,7 +1149,7 @@ function updateSellTotals() {
     if (sellDiscount) {
 
         sellDiscount.textContent =
-            `€${discount.toFixed(2)}`;
+    formatCurrency(discount);
 
     }
 
@@ -1163,7 +1161,7 @@ function updateSellTotals() {
     if (sellTax) {
 
         sellTax.textContent =
-            `€${tax.toFixed(2)}`;
+    formatCurrency(tax);
 
     }
 
@@ -1175,7 +1173,7 @@ function updateSellTotals() {
     if (sellGrandTotal) {
 
         sellGrandTotal.textContent =
-            `€${grandTotal.toFixed(2)}`;
+    formatCurrency(grandTotal);
 
     }
 
@@ -1187,7 +1185,7 @@ function updateSellTotals() {
     if (sellPayAmount) {
 
         sellPayAmount.textContent =
-            `€${grandTotal.toFixed(2)}`;
+    formatCurrency(grandTotal);
 
     }
 
@@ -1303,7 +1301,7 @@ if (sellPayBtn) {
                 confirm(
                     `Complete this sale?\n\n` +
                     `Items: ${totalItems}\n` +
-                    `Total: €${grandTotal.toFixed(2)}`
+                    `Total: ${formatCurrency(grandTotal)}`
                 );
 
 
@@ -1555,7 +1553,7 @@ try {
             'Sale completed',
 
         message:
-            `A sale of €${Number(grandTotal).toFixed(2)} was completed successfully.`,
+            `A sale of ${formatCurrency(Number(grandTotal))} was completed successfully.`,
 
         icon:
             'fa-solid fa-circle-check'
@@ -1621,7 +1619,7 @@ await loadSellTodaySummary();
                 alert(
                     `Sale completed successfully!\n\n` +
                     `Items sold: ${totalItems}\n` +
-                    `Revenue: €${grandTotal.toFixed(2)}`
+                    `Revenue: ${formatCurrency(grandTotal)}`
                 );
 
 
@@ -1845,7 +1843,7 @@ async function updateStoreSalesCard() {
     // =====================================
 
     salesElement.textContent =
-        `€${revenue.toFixed(2)}`;
+    formatCurrency(revenue);
 
 
     if (statusElement) {
@@ -1973,7 +1971,7 @@ async function loadSalesOverview() {
     if (revenueElement) {
 
         revenueElement.textContent =
-            `€${revenue.toFixed(2)}`;
+    formatCurrency(revenue);
 
     }
 
@@ -2009,7 +2007,7 @@ async function loadSalesOverview() {
     if (graphTotalElement) {
 
         graphTotalElement.textContent =
-            `€${revenue.toFixed(2)}`;
+    formatCurrency(revenue);
 
     }
 
@@ -2198,10 +2196,8 @@ function renderSalesHistory(sales) {
 
 
                     <strong class="sales-history-total">
-
-                        €${saleTotal.toFixed(2)}
-
-                    </strong>
+    ${formatCurrency(saleTotal)}
+</strong>
 
                 </div>
 
@@ -2503,8 +2499,8 @@ function renderSalesGraph(sales) {
                         class="sales-graph-point"
                     >
                         <title>
-                            ${point.label}: €${point.revenue.toFixed(2)}
-                        </title>
+    ${point.label}: ${formatCurrency(point.revenue)}
+</title>
                     </circle>
                 `;
 
@@ -2748,7 +2744,7 @@ async function loadSellTodaySummary() {
     // =====================================
 
     revenueElement.textContent =
-        `€${revenue.toFixed(2)}`;
+    formatCurrency(revenue);
 
 
     transactionsElement.textContent =
@@ -4282,6 +4278,800 @@ if (openNotificationsBtn) {
 }
 
 // =========================================
+// C6-A — LANGUAGE & CURRENCY NAVIGATION
+// =========================================
+
+const languageCurrencyBtn =
+    Array.from(
+        document.querySelectorAll(
+            '.profile-menu-item'
+        )
+    ).find(
+        button =>
+            button
+                .querySelector(
+                    '.profile-menu-text strong'
+                )
+                ?.textContent
+                ?.trim() ===
+            'Language & Currency'
+    );
+
+const languageCurrencyScreen =
+    document.getElementById(
+        'languageCurrencyScreen'
+    );
+
+const closeLanguageCurrencyBtn =
+    document.getElementById(
+        'closeLanguageCurrencyBtn'
+    );
+
+const languageCurrencyLanguage =
+    document.getElementById(
+        'languageCurrencyLanguage'
+    );
+
+const languageCurrencyCurrency =
+    document.getElementById(
+        'languageCurrencyCurrency'
+    );
+
+const languageCurrencyCurrentLanguage =
+    document.getElementById(
+        'languageCurrencyCurrentLanguage'
+    );
+
+const languageCurrencyCurrentCurrency =
+    document.getElementById(
+        'languageCurrencyCurrentCurrency'
+    );
+
+
+/*
+ * OPEN LANGUAGE & CURRENCY
+ */
+
+if (
+    languageCurrencyBtn &&
+    languageCurrencyScreen
+) {
+
+    languageCurrencyBtn.addEventListener(
+        'click',
+        () => {
+
+            console.log(
+                'BRICK C6-A — Language & Currency opened.'
+            );
+
+            screens.forEach(
+                screen => {
+                    screen.classList.remove(
+                        'active'
+                    );
+                }
+            );
+
+            languageCurrencyScreen.classList.add(
+                'active'
+            );
+
+            navButtons.forEach(
+                button => {
+                    button.classList.remove(
+                        'active'
+                    );
+                }
+            );
+
+            if (screenTitle) {
+
+                screenTitle.textContent =
+                    'Language & Currency';
+
+            }
+
+        }
+    );
+
+}
+
+
+/*
+ * LIVE LANGUAGE PREVIEW
+ */
+
+if (
+    languageCurrencyLanguage &&
+    languageCurrencyCurrentLanguage
+) {
+
+    languageCurrencyLanguage.addEventListener(
+        'change',
+        () => {
+
+            const selected =
+                languageCurrencyLanguage
+                    .selectedOptions[0]
+                    ?.textContent
+                    ?.trim() ||
+                'English';
+
+            languageCurrencyCurrentLanguage
+                .textContent =
+                selected;
+
+        }
+    );
+
+}
+
+
+/*
+ * LIVE CURRENCY PREVIEW
+ */
+
+if (
+    languageCurrencyCurrency &&
+    languageCurrencyCurrentCurrency
+) {
+
+    languageCurrencyCurrency.addEventListener(
+        'change',
+        () => {
+
+            const selected =
+                languageCurrencyCurrency
+                    .selectedOptions[0]
+                    ?.textContent
+                    ?.trim() ||
+                'USD — US Dollar ($)';
+
+            languageCurrencyCurrentCurrency
+                .textContent =
+                selected;
+
+        }
+    );
+
+}
+
+
+/*
+ * BACK TO PROFILE
+ */
+
+if (closeLanguageCurrencyBtn) {
+
+    closeLanguageCurrencyBtn.addEventListener(
+        'click',
+        () => {
+
+            console.log(
+                'BRICK C6-A — Returning to Profile.'
+            );
+
+            const profileNav =
+                document.querySelector(
+                    '.nav-btn[data-target="profileScreen"]'
+                );
+
+            if (profileNav) {
+
+                profileNav.click();
+
+            } else {
+
+                screens.forEach(
+                    screen => {
+                        screen.classList.remove(
+                            'active'
+                        );
+                    }
+                );
+
+                const profileScreen =
+                    document.getElementById(
+                        'profileScreen'
+                    );
+
+                if (profileScreen) {
+
+                    profileScreen.classList.add(
+                        'active'
+                    );
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+// =========================================
+// C6-B — SAVE LANGUAGE & CURRENCY
+// =========================================
+
+const saveLanguageCurrencyBtn =
+    document.getElementById(
+        'saveLanguageCurrencyBtn'
+    );
+
+
+if (saveLanguageCurrencyBtn) {
+
+    saveLanguageCurrencyBtn.addEventListener(
+        'click',
+        async () => {
+
+            console.log(
+                'BRICK C6-B — Saving language & currency.'
+            );
+
+
+            saveLanguageCurrencyBtn.disabled =
+                true;
+
+
+            const originalText =
+                saveLanguageCurrencyBtn.innerHTML;
+
+
+            saveLanguageCurrencyBtn.innerHTML =
+                '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+
+            try {
+
+                // =====================================
+                // GET AUTHENTICATED USER
+                // =====================================
+
+                const {
+                    data: {
+                        user
+                    },
+                    error: userError
+                } =
+                    await supabaseClient
+                        .auth
+                        .getUser();
+
+
+                if (userError) {
+
+                    throw userError;
+
+                }
+
+
+                if (!user) {
+
+                    throw new Error(
+                        'No authenticated user.'
+                    );
+
+                }
+
+
+                // =====================================
+                // READ SELECTED VALUES
+                // =====================================
+
+                const languageCode =
+                    languageCurrencyLanguage
+                        ?.value ||
+                    'en';
+
+
+                const currencyCode =
+                    languageCurrencyCurrency
+                        ?.value ||
+                    'USD';
+
+
+                console.log(
+                    'BRICK C6-B — Selected settings:',
+                    {
+                        languageCode,
+                        currencyCode
+                    }
+                );
+
+
+                // =====================================
+                // UPDATE STORE SETTINGS
+                // =====================================
+
+                const {
+                    data: updatedStore,
+                    error: updateError
+                } =
+                    await supabaseClient
+                        .from('stores')
+                        .update({
+
+                            language_code:
+                                languageCode,
+
+                            currency_code:
+                                currencyCode
+
+                        })
+                        .eq(
+                            'owner_id',
+                            user.id
+                        )
+                        .select(
+                            'id, owner_id, language_code, currency_code'
+                        )
+                        .maybeSingle();
+
+
+                if (updateError) {
+
+                    throw updateError;
+
+                }
+
+
+                if (!updatedStore) {
+
+                    throw new Error(
+                        'No store row was updated.'
+                    );
+
+                }
+
+
+                console.log(
+                    'BRICK C6-B — Language & currency saved:',
+                    updatedStore
+                );
+
+
+                // =====================================
+                // UPDATE PROFILE SUBTITLE
+                // =====================================
+
+                const languageLabel =
+                    languageCurrencyLanguage
+                        ?.selectedOptions[0]
+                        ?.textContent
+                        ?.trim() ||
+                    'English';
+
+
+                const currencyLabel =
+                    currencyCode;
+
+
+                const profileLanguageCurrencyText =
+                    Array.from(
+                        document.querySelectorAll(
+                            '.profile-menu-item'
+                        )
+                    )
+                    .find(
+                        item =>
+                            item
+                                .querySelector(
+                                    '.profile-menu-text strong'
+                                )
+                                ?.textContent
+                                ?.trim() ===
+                            'Language & Currency'
+                    )
+                    ?.querySelector(
+                        '.profile-menu-text span'
+                    );
+
+
+                if (
+                    profileLanguageCurrencyText
+                ) {
+
+                    profileLanguageCurrencyText
+                        .textContent =
+                        `${languageLabel} · ${currencyLabel}`;
+
+                }
+
+
+                // =====================================
+                // SUCCESS
+                // =====================================
+
+                console.log(
+                    'BRICK C6-B — Language & currency saved successfully.'
+                );
+
+
+                alert(
+                    'Language & currency saved successfully.'
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    'BRICK C6-B — Save failed:',
+                    error
+                );
+
+
+                alert(
+                    'Could not save language & currency.\n\n' +
+                    (
+                        error?.message ||
+                        'Please try again.'
+                    )
+                );
+
+
+            } finally {
+
+                saveLanguageCurrencyBtn.disabled =
+                    false;
+
+
+                saveLanguageCurrencyBtn.innerHTML =
+                    originalText;
+
+            }
+
+        }
+    );
+
+}
+
+// =========================================
+// C6-C — LOAD SAVED LANGUAGE & CURRENCY
+// =========================================
+
+let currentLanguageCode =
+    'en';
+
+let currentCurrencyCode =
+    'USD';
+
+
+async function loadLanguageCurrencySettings() {
+
+    console.log(
+        'BRICK C6-C — Loading saved language & currency.'
+    );
+
+
+    try {
+
+        // =====================================
+        // GET AUTHENTICATED USER
+        // =====================================
+
+        const {
+            data: {
+                user
+            },
+            error: userError
+        } =
+            await supabaseClient
+                .auth
+                .getUser();
+
+
+        if (userError) {
+
+            throw userError;
+
+        }
+
+
+        if (!user) {
+
+            console.warn(
+                'BRICK C6-C — No authenticated user.'
+            );
+
+            return;
+
+        }
+
+
+        // =====================================
+        // LOAD STORE SETTINGS
+        // =====================================
+
+        const {
+            data: store,
+            error: storeError
+        } =
+            await supabaseClient
+                .from('stores')
+                .select(
+                    'id, owner_id, language_code, currency_code'
+                )
+                .eq(
+                    'owner_id',
+                    user.id
+                )
+                .maybeSingle();
+
+
+        if (storeError) {
+
+            throw storeError;
+
+        }
+
+
+        if (!store) {
+
+            console.warn(
+                'BRICK C6-C — Store not found.'
+            );
+
+            return;
+
+        }
+
+
+        // =====================================
+        // RESTORE SAVED VALUES
+        // =====================================
+
+        currentLanguageCode =
+            store.language_code ||
+            'en';
+
+
+        currentCurrencyCode =
+            store.currency_code ||
+            'USD';
+
+
+        console.log(
+            'BRICK C6-C — Saved settings loaded:',
+            {
+                languageCode:
+                    currentLanguageCode,
+
+                currencyCode:
+                    currentCurrencyCode
+            }
+        );
+
+
+        // =====================================
+        // RESTORE LANGUAGE SELECT
+        // =====================================
+
+        if (
+            languageCurrencyLanguage
+        ) {
+
+            languageCurrencyLanguage.value =
+                currentLanguageCode;
+
+        }
+
+
+        // =====================================
+        // RESTORE CURRENCY SELECT
+        // =====================================
+
+        if (
+            languageCurrencyCurrency
+        ) {
+
+            languageCurrencyCurrency.value =
+                currentCurrencyCode;
+
+        }
+
+
+        // =====================================
+        // UPDATE PROFILE SUBTITLE
+        // =====================================
+
+        const languageCurrencyProfileItem =
+            Array.from(
+                document.querySelectorAll(
+                    '.profile-menu-item'
+                )
+            ).find(
+                item =>
+                    item
+                        .querySelector(
+                            '.profile-menu-text strong'
+                        )
+                        ?.textContent
+                        ?.trim() ===
+                    'Language & Currency'
+            );
+
+
+        if (
+            languageCurrencyProfileItem
+        ) {
+
+            const subtitle =
+                languageCurrencyProfileItem
+                    .querySelector(
+                        '.profile-menu-text span'
+                    );
+
+
+            const languageLabel =
+                languageCurrencyLanguage
+                    ?.selectedOptions?.[0]
+                    ?.textContent
+                    ?.trim() ||
+                'English';
+
+
+            if (subtitle) {
+
+                subtitle.textContent =
+                    `${languageLabel} · ${currentCurrencyCode}`;
+
+            }
+
+        }
+
+
+        console.log(
+            'BRICK C6-C — Language & currency restored successfully.'
+        );
+
+      // =========================================
+// C6-D-1 — VERIFY FORMATTER AFTER LOAD
+// =========================================
+
+console.log(
+    'BRICK C6-D-1 — Formatter after settings load:',
+    {
+        currency:
+            currentCurrencyCode,
+
+        testAmount:
+            1234.56,
+
+        formatted:
+            formatCurrency(
+                1234.56
+            )
+    }
+);
+
+
+    } catch (error) {
+
+        console.error(
+            'BRICK C6-C — Load failed:',
+            error
+        );
+
+    }
+
+}
+
+
+// =========================================
+// INITIAL LOAD
+// =========================================
+
+loadLanguageCurrencySettings();
+
+// =========================================
+// C6-D — CENTRAL CURRENCY FORMATTER
+// =========================================
+
+function formatCurrency(
+    amount,
+    currencyCode = currentCurrencyCode
+) {
+
+    // =====================================
+    // NORMALIZE AMOUNT
+    // =====================================
+
+    const numericAmount =
+        Number(amount);
+
+
+    const safeAmount =
+        Number.isFinite(
+            numericAmount
+        )
+            ? numericAmount
+            : 0;
+
+
+    // =====================================
+    // NORMALIZE CURRENCY
+    // =====================================
+
+    const safeCurrency =
+        String(
+            currencyCode ||
+            'USD'
+        )
+            .trim()
+            .toUpperCase();
+
+
+    // =====================================
+    // FORMAT CURRENCY
+    // =====================================
+
+    try {
+
+        const formatter =
+            new Intl.NumberFormat(
+                currentLanguageCode || 'en',
+                {
+                    style:
+                        'currency',
+
+                    currency:
+                        safeCurrency
+                }
+            );
+
+
+        return formatter.format(
+            safeAmount
+        );
+
+
+    } catch (error) {
+
+        console.warn(
+            'BRICK C6-D — Currency formatter fallback:',
+            error
+        );
+
+
+        // =================================
+        // SAFE FALLBACK
+        // =================================
+
+        return (
+            safeCurrency +
+            ' ' +
+            safeAmount.toFixed(2)
+        );
+
+    }
+
+}
+
+
+// =========================================
+// BRICK C6-D — FORMATTER TEST
+// =========================================
+
+console.log(
+    'BRICK C6-D — Currency formatter ready:',
+    {
+        currency:
+            currentCurrencyCode,
+
+        testAmount:
+            1234.56,
+
+        formatted:
+            formatCurrency(
+                1234.56
+            )
+    }
+);
+
+// =========================================
 // C4-A — LOAD SELLER ORDERS
 // =========================================
 
@@ -4556,7 +5346,9 @@ if (!ordersList) {
                 'Customer';
 
             const totalAmount =
-                Number(order.total_amount) || 0;
+    formatCurrency(
+        Number(order.total_amount) || 0
+    );
 
             const status =
                 String(
@@ -4733,7 +5525,9 @@ orderDetailPayment.textContent =
     selectedOrder.payment_method || '—';
 
 orderDetailTotal.textContent =
-    `${Number(selectedOrder.total_amount || 0).toFixed(2)}`;
+    formatCurrency(
+        Number(selectedOrder.total_amount || 0)
+    );
 
 // =========================================
 // C4-E — LOAD ORDER PRODUCTS
@@ -4823,14 +5617,14 @@ if (orderDetailProducts) {
                             </strong>
 
                             <span>
-                                ${quantity} × ${price.toFixed(2)}
-                            </span>
+    ${quantity} × ${formatCurrency(price)}
+</span>
 
                         </div>
 
                         <strong class="order-product-subtotal">
-                            ${subtotal.toFixed(2)}
-                        </strong>
+    ${formatCurrency(subtotal)}
+</strong>
 
                     </div>
                 `;
@@ -6123,8 +6917,8 @@ function renderProducts() {
                 <div class="product-meta">
 
                     <span class="product-price">
-                        $${Number(product.price).toFixed(2)}
-                    </span>
+    ${formatCurrency(Number(product.price))}
+</span>
 
 
                     <span
@@ -6252,8 +7046,9 @@ const variantOptionsBox =
         product.title || 'Untitled Product';
 
     priceBox.textContent =
-        '$' +
-        Number(product.price || 0).toFixed(2);
+    formatCurrency(
+        Number(product.price || 0)
+    );
 
     stockBox.textContent =
         Number(product.stock || 0) +
@@ -7148,11 +7943,17 @@ if (
 
 
         previewPrice.textContent =
-            price > 0
-            ? `$${price.toFixed(2)}`
-            : '$0.00';
+            formatCurrency(
+                price > 0
+                    ? price
+                    : 0
+            );
 
     });
+
+    // C6-E-1 — INITIAL PRODUCT PREVIEW PRICE
+    previewPrice.textContent =
+        formatCurrency(0);
 
 }
 
@@ -12163,7 +12964,7 @@ if (publicCartCheckoutBtn) {
             if (publicCheckoutTotal) {
 
                 publicCheckoutTotal.textContent =
-                    `$${totalPrice.toFixed(2)}`;
+    formatCurrency(totalPrice);
 
             }
 
@@ -12238,11 +13039,9 @@ function renderCustomerCart() {
 
 
         if (publicCartTotal) {
-
-            publicCartTotal.textContent =
-                '$0.00';
-
-        }
+    publicCartTotal.textContent =
+        formatCurrency(0);
+}
 
         return;
     }
@@ -12328,8 +13127,8 @@ function renderCustomerCart() {
 
 
                 <span class="public-cart-item-price">
-                    $${price.toFixed(2)}
-                </span>
+    ${formatCurrency(price)}
+</span>
 
 
                 <div class="public-cart-item-controls">
@@ -12368,8 +13167,8 @@ function renderCustomerCart() {
             <div class="public-cart-item-right">
 
                 <strong class="public-cart-line-total">
-                    $${lineTotal.toFixed(2)}
-                </strong>
+    ${formatCurrency(lineTotal)}
+</strong>
 
 
                 <button
@@ -12400,7 +13199,7 @@ function renderCustomerCart() {
     if (publicCartTotal) {
 
         publicCartTotal.textContent =
-            '$' + cartTotal.toFixed(2);
+    formatCurrency(cartTotal);
 
     }
 
@@ -13911,8 +14710,8 @@ card.setAttribute(
     <div class="public-product-bottom">
 
         <span class="public-product-price">
-            $${Number(product.price || 0).toFixed(2)}
-        </span>
+    ${formatCurrency(Number(product.price || 0))}
+</span>
 
         <button
             type="button"
@@ -14546,8 +15345,9 @@ storefrontSections.forEach(section => {
     if (priceElement) {
 
         priceElement.textContent =
-            '$' +
-            Number(product.price).toFixed(2);
+    formatCurrency(
+        Number(product.price)
+    );
 
     }
 
@@ -21795,10 +22595,10 @@ function renderLiveSellItems() {
                             </strong>
 
                             <span>
-                                €${price.toFixed(2)}
-                                ·
-                                Qty ${quantity}
-                            </span>
+    ${formatCurrency(price)}
+    ·
+    Qty ${quantity}
+</span>
 
                         </div>
 
@@ -21806,8 +22606,8 @@ function renderLiveSellItems() {
                         <div class="live-sale-item-total">
 
                             <strong>
-                                €${total.toFixed(2)}
-                            </strong>
+    ${formatCurrency(total)}
+</strong>
 
                             <span>
                                 ${quantity} item${quantity === 1 ? '' : 's'}
@@ -22102,7 +22902,7 @@ function updateLiveSellTotals() {
     if (liveSellSubtotal) {
 
         liveSellSubtotal.textContent =
-            `€${subtotal.toFixed(2)}`;
+    formatCurrency(subtotal);
 
     }
 
@@ -22110,7 +22910,7 @@ function updateLiveSellTotals() {
     if (liveSellTotal) {
 
         liveSellTotal.textContent =
-            `€${subtotal.toFixed(2)}`;
+    formatCurrency(subtotal);
 
     }
 
@@ -22118,7 +22918,7 @@ function updateLiveSellTotals() {
     if (liveSellPayAmount) {
 
         liveSellPayAmount.textContent =
-            `€${subtotal.toFixed(2)}`;
+    formatCurrency(subtotal);
 
     }
 

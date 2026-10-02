@@ -352,7 +352,7 @@
         </h1>
 
         <div class="public-detail-price">
-            $0.00
+            0.00
         </div>
 
         <div
@@ -448,7 +448,7 @@
             <span>Total</span>
 
             <strong id="publicCartTotal">
-                $0.00
+                0.00
             </strong>
 
         </div>
@@ -653,7 +653,7 @@
                 </span>
 
                 <strong id="publicCheckoutTotal">
-                    $0.00
+                    0.00
                 </strong>
 
             </div>
@@ -1489,7 +1489,7 @@
                 class="sales-value"
                 id="overviewSales"
             >
-                $0.00
+                0.00
             </strong>
 
         </div>
@@ -1921,7 +1921,7 @@
 
 
             <div class="product-details-price">
-                $0.00
+                0.00
             </div>
 
 
@@ -2003,7 +2003,7 @@
             <span>Sale's Revenue</span>
 
             <strong id="sellTodayRevenue">
-                €0.00
+                0.00
             </strong>
 
         </div>
@@ -2334,17 +2334,17 @@
 
                 <div>
                     <span>Subtotal</span>
-                    <strong id="sellSubtotal">€0.00</strong>
+                    <strong id="sellSubtotal">0.00</strong>
                 </div>
 
                 <div>
                     <span>Discount</span>
-                    <strong id="sellDiscount">€0.00</strong>
+                    <strong id="sellDiscount">0.00</strong>
                 </div>
 
                 <div>
                     <span>Tax</span>
-                    <strong id="sellTax">€0.00</strong>
+                    <strong id="sellTax">0.00</strong>
                 </div>
 
                 <div class="sell-grand-total">
@@ -2352,7 +2352,7 @@
                     <span>Total</span>
 
                     <strong id="sellGrandTotal">
-                        €0.00
+                        0.00
                     </strong>
 
                 </div>
@@ -2373,7 +2373,7 @@
                 </span>
 
                 <strong id="sellPayAmount">
-                    €0.00
+                    0.00
                 </strong>
 
             </button>
@@ -2593,7 +2593,7 @@
             </span>
 
             <strong id="liveSellSubtotal">
-                €0.00
+                0.00
             </strong>
 
         </div>
@@ -2606,7 +2606,7 @@
             </span>
 
             <strong id="liveSellTotal">
-                €0.00
+                0.00
             </strong>
 
         </div>
@@ -2630,7 +2630,7 @@
         </span>
 
         <strong id="liveSellPayAmount">
-            €0.00
+            0.00
         </strong>
 
     </button>
@@ -2658,7 +2658,7 @@
 
             <div class="product-preview-info">
                 <strong id="productPreviewName">Your Product</strong>
-                <span id="productPreviewPrice">$0.00</span>
+                <span id="productPreviewPrice">0.00</span>
             </div>
         </div>
 
@@ -4436,7 +4436,272 @@
     </button>
 
 </section>
-         
+
+<!-- =========================================
+     C6-A — LANGUAGE & CURRENCY SCREEN
+========================================= -->
+
+<section
+    id="languageCurrencyScreen"
+    class="screen"
+>
+
+    <div class="language-currency-page">
+
+        <!-- HEADER -->
+        <div class="appearance-header">
+
+            <button
+                type="button"
+                id="closeLanguageCurrencyBtn"
+                class="appearance-back-btn"
+                aria-label="Back"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+
+            <div>
+
+                <span class="appearance-eyebrow">
+                    ACCOUNT SETTINGS
+                </span>
+
+                <h2>
+                    Language & Currency
+                </h2>
+
+                <p>
+                    Choose the language and currency used across Nexodra.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- LANGUAGE -->
+        <div class="appearance-card">
+
+            <div class="appearance-card-title">
+
+                <i class="fa-solid fa-language"></i>
+
+                <div>
+
+                    <strong>
+                        Language
+                    </strong>
+
+                    <span>
+                        Choose the language used throughout the app.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label
+                    for="languageCurrencyLanguage"
+                >
+                    App Language
+                </label>
+
+                <select
+                    id="languageCurrencyLanguage"
+                >
+
+                    <option value="en">
+                        English
+                    </option>
+
+                    <option value="sw">
+                        Kiswahili
+                    </option>
+
+                    <option value="fr">
+                        Français
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- CURRENCY -->
+        <div class="appearance-card">
+
+            <div class="appearance-card-title">
+
+                <i class="fa-solid fa-coins"></i>
+
+                <div>
+
+                    <strong>
+                        Currency
+                    </strong>
+
+                    <span>
+                        Choose the currency used for prices and sales.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label
+                    for="languageCurrencyCurrency"
+                >
+                    Store Currency
+                </label>
+
+                <select
+                    id="languageCurrencyCurrency"
+                >
+
+                    <option value="USD">
+                        USD — US Dollar ($)
+                    </option>
+
+                    <option value="UGX">
+                        UGX — Ugandan Shilling (USh)
+                    </option>
+
+                    <option value="KES">
+                        KES — Kenyan Shilling (KSh)
+                    </option>
+
+                    <option value="TZS">
+                        TZS — Tanzanian Shilling (TSh)
+                    </option>
+
+                    <option value="RWF">
+                        RWF — Rwandan Franc (FRw)
+                    </option>
+
+                    <option value="NGN">
+                        NGN — Nigerian Naira (₦)
+                    </option>
+
+                    <option value="GHS">
+                        GHS — Ghanaian Cedi (₵)
+                    </option>
+
+                    <option value="ZAR">
+                        ZAR — South African Rand (R)
+                    </option>
+
+                    <option value="EUR">
+                        EUR — Euro (€)
+                    </option>
+
+                    <option value="GBP">
+                        GBP — British Pound (£)
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- CURRENT SETTING -->
+        <div class="appearance-card">
+
+            <div class="appearance-card-title">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+                <div>
+
+                    <strong>
+                        Current Settings
+                    </strong>
+
+                    <span>
+                        These settings will eventually control prices throughout Nexodra.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="appearance-choice">
+
+                <span class="appearance-choice-icon">
+                    <i class="fa-solid fa-globe"></i>
+                </span>
+
+                <span class="appearance-choice-text">
+
+                    <strong>
+                        Language
+                    </strong>
+
+                    <small id="languageCurrencyCurrentLanguage">
+                        English
+                    </small>
+
+                </span>
+
+            </div>
+
+
+            <div
+                class="appearance-choice"
+                style="margin-top: 8px;"
+            >
+
+                <span class="appearance-choice-icon">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                </span>
+
+                <span class="appearance-choice-text">
+
+                    <strong>
+                        Currency
+                    </strong>
+
+                    <small id="languageCurrencyCurrentCurrency">
+                        USD — US Dollar ($)
+                    </small>
+
+                </span>
+
+            </div>
+
+          <!-- =========================================
+     C6-B — SAVE LANGUAGE & CURRENCY
+========================================= -->
+
+<div class="language-currency-save-area">
+
+    <button
+        type="button"
+        id="saveLanguageCurrencyBtn"
+        class="language-currency-save-btn"
+    >
+        <i class="fa-solid fa-check"></i>
+        Save Changes
+    </button>
+
+</div>
+
+        </div>
+
+    </div>
+
+</section>
+          
 <!-- =========================================
      SALES OVERVIEW SCREEN
 ========================================= -->
@@ -4494,7 +4759,7 @@
             </span>
 
             <strong id="analyticsRevenue">
-                €0.00
+                0.00
             </strong>
 
         </div>
@@ -4590,7 +4855,7 @@
 
 
             <strong id="analyticsGraphTotal">
-                €0.00
+                0.00
             </strong>
 
 

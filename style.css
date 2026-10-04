@@ -15828,3 +15828,839 @@ body.store-theme-dark .cat-circle {
     color: #111827;
 }
 
+/* =========================================
+   C7-A — PRODUCT LOADING ANIMATION
+   ========================================= */
+
+.product-loading-skeleton {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+
+    background: #ffffff;
+    border: 1px solid #e8edf3;
+    border-radius: 18px;
+    padding: 10px;
+
+    box-sizing: border-box;
+}
+
+.product-loading-skeleton-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #f1f5f9 0%,
+            #f8fafc 45%,
+            #f1f5f9 90%
+        );
+
+    background-size: 200% 100%;
+
+    animation:
+        productSkeletonShimmer
+        1.35s
+        ease-in-out
+        infinite;
+}
+
+.product-loading-skeleton-line {
+    height: 12px;
+    border-radius: 999px;
+
+    margin-top: 12px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #f1f5f9 0%,
+            #f8fafc 45%,
+            #f1f5f9 90%
+        );
+
+    background-size: 200% 100%;
+
+    animation:
+        productSkeletonShimmer
+        1.35s
+        ease-in-out
+        infinite;
+}
+
+.product-loading-skeleton-line.short {
+    width: 58%;
+}
+
+.product-loading-skeleton-line.price {
+    width: 38%;
+    margin-top: 10px;
+}
+
+@keyframes productSkeletonShimmer {
+
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+
+}
+
+
+/* =========================================
+   REAL PRODUCT CARD ENTRANCE
+   ========================================= */
+
+.product-card-enter {
+    animation:
+        productCardEnter
+        0.38s
+        ease-out
+        both;
+}
+
+.product-card-enter:nth-child(2) {
+    animation-delay: 0.04s;
+}
+
+.product-card-enter:nth-child(3) {
+    animation-delay: 0.08s;
+}
+
+.product-card-enter:nth-child(4) {
+    animation-delay: 0.12s;
+}
+
+.product-card-enter:nth-child(5) {
+    animation-delay: 0.16s;
+}
+
+.product-card-enter:nth-child(6) {
+    animation-delay: 0.20s;
+}
+
+.product-card-enter:nth-child(7) {
+    animation-delay: 0.24s;
+}
+
+.product-card-enter:nth-child(8) {
+    animation-delay: 0.28s;
+}
+
+@keyframes productCardEnter {
+
+    from {
+        opacity: 0;
+        transform:
+            translateY(10px)
+            scale(0.985);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
+
+
+/* =========================================
+   REDUCED MOTION SAFETY
+   ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .product-loading-skeleton-image,
+    .product-loading-skeleton-line,
+    .product-card-enter {
+        animation: none !important;
+    }
+
+}
+
+/* =========================================
+   C8-A — NEXODRA STARTUP SPLASH
+   ========================================= */
+
+.nexodra-startup-splash {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 999999;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle at 50% 38%,
+            #24324d 0%,
+            #111827 42%,
+            #0b1220 100%
+        );
+
+    color: #ffffff;
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transition:
+        opacity 0.35s ease,
+        visibility 0.35s ease;
+
+}
+
+.nexodra-startup-splash.is-hidden {
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+}
+
+.nexodra-startup-content {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    transform: translateY(0);
+
+    animation:
+        nexodraStartupContentIn
+        0.65s
+        ease-out
+        both;
+
+}
+
+.nexodra-startup-logo {
+
+    width: 76px;
+
+    height: 76px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin-bottom: 20px;
+
+    border-radius: 22px;
+
+    background: rgba(
+        255,
+        255,
+        255,
+        0.10
+    );
+
+    border: 1px solid rgba(
+        255,
+        255,
+        255,
+        0.16
+    );
+
+    box-shadow:
+        0 12px 40px rgba(
+            0,
+            0,
+            0,
+            0.28
+        );
+
+    animation:
+        nexodraStartupLogo
+        0.75s
+        ease-out
+        both;
+
+}
+
+.nexodra-startup-logo i {
+
+    font-size: 34px;
+
+    color: #ffffff;
+
+}
+
+.nexodra-startup-brand {
+
+    font-size: 28px;
+
+    line-height: 1;
+
+    font-weight: 800;
+
+    letter-spacing: 0.12em;
+
+    margin-left: 0.12em;
+
+}
+
+.nexodra-startup-tagline {
+
+    margin-top: 10px;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    letter-spacing: 0.04em;
+
+    color: rgba(
+        255,
+        255,
+        255,
+        0.68
+    );
+
+}
+
+.nexodra-startup-loader {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    margin-top: 34px;
+
+}
+
+.nexodra-startup-loader span {
+
+    width: 6px;
+
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: rgba(
+        255,
+        255,
+        255,
+        0.65
+    );
+
+    animation:
+        nexodraStartupDot
+        1.15s
+        ease-in-out
+        infinite;
+
+}
+
+.nexodra-startup-loader span:nth-child(2) {
+
+    animation-delay: 0.12s;
+
+}
+
+.nexodra-startup-loader span:nth-child(3) {
+
+    animation-delay: 0.24s;
+
+}
+
+@keyframes nexodraStartupContentIn {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(12px)
+            scale(0.98);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+@keyframes nexodraStartupLogo {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            scale(0.72)
+            rotate(-6deg);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            scale(1)
+            rotate(0);
+
+    }
+
+}
+
+@keyframes nexodraStartupDot {
+
+    0%,
+    100% {
+
+        opacity: 0.25;
+
+        transform: translateY(0);
+
+    }
+
+    50% {
+
+        opacity: 1;
+
+        transform: translateY(-4px);
+
+    }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .nexodra-startup-content,
+    .nexodra-startup-logo,
+    .nexodra-startup-loader span {
+
+        animation: none !important;
+
+    }
+
+}
+
+/* =========================================
+   C8-D — NEXODRA ONBOARDING
+   ========================================= */
+
+.nexodra-onboarding {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 999998;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 24px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f8fafc 0%,
+            #ffffff 100%
+        );
+
+}
+
+.nexodra-onboarding.active {
+
+    display: flex;
+
+}
+
+.nexodra-onboarding-content {
+
+    width: 100%;
+
+    max-width: 430px;
+
+    min-height: 620px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+}
+
+.nexodra-onboarding-visual {
+
+    width: 100%;
+
+    display: flex;
+
+    justify-content: center;
+
+    margin-bottom: 34px;
+
+}
+
+.nexodra-onboarding-phone {
+
+    width: 210px;
+
+    height: 330px;
+
+    padding: 12px;
+
+    border-radius: 28px;
+
+    background: #0f172a;
+
+    box-shadow:
+        0 24px 60px
+        rgba(15, 23, 42, 0.20);
+
+    transform: rotate(-3deg);
+
+    animation:
+        nexodraOnboardingFloat
+        3s
+        ease-in-out
+        infinite;
+
+}
+
+.nexodra-onboarding-phone-top {
+
+    height: 18px;
+
+    display: flex;
+
+    justify-content: center;
+
+}
+
+.nexodra-onboarding-phone-top span {
+
+    width: 54px;
+
+    height: 6px;
+
+    border-radius: 20px;
+
+    background: #1e293b;
+
+}
+
+.nexodra-onboarding-store-card {
+
+    margin-top: 8px;
+
+    padding: 12px;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+
+}
+
+.nexodra-onboarding-store-image {
+
+    height: 105px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #f1f5f9;
+
+    color: #334155;
+
+}
+
+.nexodra-onboarding-store-image i {
+
+    font-size: 32px;
+
+}
+
+.nexodra-onboarding-store-line {
+
+    height: 7px;
+
+    width: 72%;
+
+    margin-top: 9px;
+
+    border-radius: 20px;
+
+    background: #e2e8f0;
+
+}
+
+.nexodra-onboarding-store-line.large {
+
+    width: 88%;
+
+}
+
+.nexodra-onboarding-products {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 12px;
+
+}
+
+.nexodra-onboarding-product {
+
+    flex: 1;
+
+    height: 74px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #1e293b;
+
+    color: #ffffff;
+
+}
+
+.nexodra-onboarding-copy {
+
+    max-width: 360px;
+
+}
+
+.nexodra-onboarding-step {
+
+    margin-bottom: 8px;
+
+    font-size: 0.72rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.16em;
+
+    color: #64748b;
+
+}
+
+.nexodra-onboarding-copy h1 {
+
+    margin: 0;
+
+    font-size: 2rem;
+
+    line-height: 1.15;
+
+    color: #0f172a;
+
+}
+
+.nexodra-onboarding-copy p {
+
+    margin: 14px auto 0;
+
+    font-size: 0.92rem;
+
+    line-height: 1.6;
+
+    color: #64748b;
+
+}
+
+.nexodra-onboarding-actions {
+
+    width: 100%;
+
+    max-width: 340px;
+
+    margin-top: 28px;
+
+}
+
+.nexodra-onboarding-next {
+
+    width: 100%;
+
+    min-height: 48px;
+
+    border: 0;
+
+    border-radius: 12px;
+
+    background: #0f172a;
+
+    color: #ffffff;
+
+    font-size: 0.88rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+}
+
+.nexodra-onboarding-next i {
+
+    margin-left: 7px;
+
+}
+
+.nexodra-onboarding-skip {
+
+    margin-top: 12px;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #64748b;
+
+    font-size: 0.78rem;
+
+    cursor: pointer;
+
+}
+
+.nexodra-onboarding-dots {
+
+    display: flex;
+
+    gap: 7px;
+
+    margin-top: 24px;
+
+}
+
+.nexodra-onboarding-dots span {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #cbd5e1;
+
+}
+
+.nexodra-onboarding-dots span.active {
+
+    width: 22px;
+
+    border-radius: 10px;
+
+    background: #0f172a;
+
+}
+
+@keyframes nexodraOnboardingFloat {
+
+    0%,
+    100% {
+
+        transform:
+            translateY(0)
+            rotate(-3deg);
+
+    }
+
+    50% {
+
+        transform:
+            translateY(-8px)
+            rotate(-3deg);
+
+    }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .nexodra-onboarding-phone {
+
+        animation: none;
+
+    }
+
+}
+
+@media (max-width: 420px) {
+
+    .nexodra-onboarding {
+
+        padding: 18px;
+
+    }
+
+    .nexodra-onboarding-content {
+
+        min-height: 580px;
+
+    }
+
+    .nexodra-onboarding-phone {
+
+        width: 180px;
+
+        height: 285px;
+
+    }
+
+    .nexodra-onboarding-copy h1 {
+
+        font-size: 1.7rem;
+
+    }
+
+}

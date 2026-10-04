@@ -1,4 +1,333 @@
 // =========================================
+// C8-A — NEXODRA STARTUP SPLASH
+// =========================================
+
+const nexodraStartupSplash =
+    document.getElementById(
+        'nexodraStartupSplash'
+    );
+
+function hideNexodraStartupSplash() {
+
+    if (!nexodraStartupSplash) {
+        return;
+    }
+
+    nexodraStartupSplash.classList.add(
+        'is-hidden'
+    );
+
+    console.log(
+        'C8-A — Nexodra startup splash hidden.'
+    );
+
+    setTimeout(() => {
+
+        if (
+            nexodraStartupSplash &&
+            nexodraStartupSplash.parentNode
+        ) {
+
+            nexodraStartupSplash.remove();
+
+        }
+
+    }, 400);
+
+}
+
+
+/*
+ * C8-A intentionally keeps the splash
+ * visible briefly on startup.
+ *
+ * C8-B will later connect this to
+ * authentication/session routing.
+ */
+
+// =========================================
+// C8-B — STARTUP SPLASH ROUTING CONTROL
+// =========================================
+
+// =========================================
+// C8-C — SMART STARTUP SPLASH TIMING
+// =========================================
+
+let nexodraStartupRoutingComplete = false;
+
+const nexodraStartupStartedAt =
+    Date.now();
+
+const NEXODRA_MIN_STARTUP_DURATION =
+    1200;
+
+function completeNexodraStartup() {
+
+    if (nexodraStartupRoutingComplete) {
+        return;
+    }
+
+    nexodraStartupRoutingComplete = true;
+
+    const elapsed =
+        Date.now() -
+        nexodraStartupStartedAt;
+
+    const remaining =
+        Math.max(
+            0,
+            NEXODRA_MIN_STARTUP_DURATION -
+            elapsed
+        );
+
+    console.log(
+        'C8-C — Startup routing complete.',
+        'elapsed:',
+        elapsed,
+        'remaining:',
+        remaining
+    );
+
+    setTimeout(
+        () => {
+
+            hideNexodraStartupSplash();
+
+            console.log(
+                'C8-C — Startup splash released.'
+            );
+
+        },
+        remaining
+    );
+}
+
+// =========================================
+// C8-D — NEXODRA ONBOARDING REFERENCES
+// =========================================
+
+const nexodraOnboarding =
+    document.getElementById(
+        'nexodraOnboarding'
+    );
+
+const nexodraOnboardingNext =
+    document.getElementById(
+        'nexodraOnboardingNext'
+    );
+
+const nexodraOnboardingSkip =
+    document.getElementById(
+        'nexodraOnboardingSkip'
+    );
+
+console.log(
+    'C8-D — Onboarding elements:',
+    {
+        onboardingExists:
+            !!nexodraOnboarding,
+
+        nextButtonExists:
+            !!nexodraOnboardingNext,
+
+        skipButtonExists:
+            !!nexodraOnboardingSkip
+    }
+);
+
+// =========================================
+// C8-E — FIRST-TIME ONBOARDING ROUTING
+// =========================================
+
+const NEXODRA_ONBOARDING_KEY =
+    'nexodraOnboardingSeen';
+
+function showNexodraOnboarding() {
+
+    if (!nexodraOnboarding) {
+        console.warn(
+            'C8-E — Onboarding element not found.'
+        );
+        return;
+    }
+
+    nexodraOnboarding.classList.add(
+        'active'
+    );
+
+    nexodraOnboarding.setAttribute(
+        'aria-hidden',
+        'false'
+    );
+
+    console.log(
+        'C8-E — Nexodra onboarding displayed.'
+    );
+}
+
+function hideNexodraOnboarding() {
+
+    if (!nexodraOnboarding) {
+        return;
+    }
+
+    nexodraOnboarding.classList.remove(
+        'active'
+    );
+
+    nexodraOnboarding.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+}
+
+function markNexodraOnboardingSeen() {
+
+    try {
+
+        localStorage.setItem(
+            NEXODRA_ONBOARDING_KEY,
+            'true'
+        );
+
+    } catch (error) {
+
+        console.warn(
+            'C8-E — Could not save onboarding state:',
+            error
+        );
+
+    }
+
+}
+
+function hasSeenNexodraOnboarding() {
+
+    try {
+
+        return (
+            localStorage.getItem(
+                NEXODRA_ONBOARDING_KEY
+            ) === 'true'
+        );
+
+    } catch (error) {
+
+        console.warn(
+            'C8-E — Could not read onboarding state:',
+            error
+        );
+
+        return false;
+    }
+
+}
+
+// =========================================
+// C8-I — ONBOARDING STATE VERIFICATION
+// =========================================
+
+function verifyNexodraOnboardingState() {
+
+    const onboardingSeen =
+        hasSeenNexodraOnboarding();
+
+    console.log(
+        'C8-I — Onboarding state:',
+        {
+            seen: onboardingSeen
+        }
+    );
+
+    return onboardingSeen;
+}
+
+
+// =========================================
+// C8-E — ONBOARDING BUTTONS
+// =========================================
+
+// =========================================
+// C8-H — ONBOARDING COMPLETION TRANSITION
+// =========================================
+
+if (nexodraOnboardingNext) {
+
+    nexodraOnboardingNext.addEventListener(
+        'click',
+        () => {
+
+            console.log(
+                'C8-H — Onboarding completion started.'
+            );
+
+            nexodraOnboardingNext.disabled = true;
+
+            markNexodraOnboardingSeen();
+
+            verifyNexodraOnboardingState();
+
+            hideNexodraOnboarding();
+
+            setTimeout(
+                () => {
+
+                    if (authScreen) {
+
+                        authScreen.classList.add(
+                            'active'
+                        );
+
+                        authScreen.setAttribute(
+                            'aria-hidden',
+                            'false'
+                        );
+
+                    }
+
+                    nexodraOnboardingNext.disabled = false;
+
+                    console.log(
+                        'C8-H — Onboarding completed; login screen ready.'
+                    );
+
+                },
+                180
+            );
+
+        }
+    );
+
+}
+
+if (nexodraOnboardingSkip) {
+
+    nexodraOnboardingSkip.addEventListener(
+        'click',
+        () => {
+
+            console.log(
+                'C8-E — Onboarding skipped.'
+            );
+
+            markNexodraOnboardingSeen();
+
+            hideNexodraOnboarding();
+
+            if (authScreen) {
+
+                authScreen.classList.add(
+                    'active'
+                );
+
+            }
+
+        }
+    );
+
+}
+
+// =========================================
 // NEXODRA SELLER APP
 // =========================================
 
@@ -6754,6 +7083,56 @@ function updateStoreOverview() {
 }
 
 // =========================================
+// C7-A — PRODUCT LOADING SKELETONS
+// =========================================
+
+function showProductLoadingState(
+    grid,
+    count = 6
+) {
+
+    if (!grid) {
+        return;
+    }
+
+    const safeCount =
+        Math.max(
+            2,
+            Math.min(
+                Number(count) || 6,
+                8
+            )
+        );
+
+    grid.innerHTML =
+        Array.from(
+            { length: safeCount },
+            () => `
+                <div class="product-loading-skeleton">
+
+                    <div
+                        class="product-loading-skeleton-image"
+                    ></div>
+
+                    <div
+                        class="product-loading-skeleton-line"
+                    ></div>
+
+                    <div
+                        class="product-loading-skeleton-line short"
+                    ></div>
+
+                    <div
+                        class="product-loading-skeleton-line price"
+                    ></div>
+
+                </div>
+            `
+        ).join('');
+
+}
+
+// =========================================
 // RENDER PRODUCTS
 // =========================================
 
@@ -6865,7 +7244,8 @@ function renderProducts() {
             document.createElement('div');
 
 
-        card.className = 'product-card';
+        card.className =
+                  'product-card product-card-enter';
 
 
         card.innerHTML = `
@@ -14500,6 +14880,15 @@ async function loadPublicProductsFromSupabase() {
         'BRICK 3G — Loading published products from Supabase...'
     );
 
+      // =========================================
+    // C7-A — SHOW PUBLIC PRODUCT LOADING STATE
+    // =========================================
+
+    showProductLoadingState(
+        publicProductGrid,
+        6
+    );
+
     const {
     data: loadedPublicProducts,
     error: publicProductError
@@ -14671,7 +15060,7 @@ function renderPublicProducts() {
             document.createElement('div');
 
         card.className =
-    'public-product-card';
+    'public-product-card product-card-enter';
 
 card.setAttribute(
     'data-product-id',
@@ -15086,7 +15475,14 @@ async function loadProductsFromSupabase() {
         'BRICK 3D — Loading products from Supabase...'
     );
 
+    // =========================================
+    // C7-A — SHOW PRODUCT LOADING STATE
+    // =========================================
 
+    showProductLoadingState(
+        productGrid,
+        6
+    );
   
     // Get the currently authenticated user
     const {
@@ -18985,8 +19381,16 @@ if (
      */
 
     console.log(
-        'BRICK A — Authentication restoration skipped for public store.'
-    );
+    'BRICK A — Authentication restoration skipped for public store.'
+);
+
+// =========================================
+// C8-B — PUBLIC STORE ROUTING COMPLETE
+// =========================================
+
+completeNexodraStartup();
+
+return;
 
     return;
 
@@ -19067,7 +19471,31 @@ if (!session) {
         );
     }
 
-    return;
+  // =========================================
+// C8-E — NEW USER ONBOARDING DECISION
+// =========================================
+
+if (
+    !hasSeenNexodraOnboarding()
+) {
+
+    showNexodraOnboarding();
+
+} else {
+
+    console.log(
+        'C8-E — Onboarding already seen; opening login.'
+    );
+
+}
+
+    // =========================================
+// C8-B — AUTH SCREEN READY
+// =========================================
+
+completeNexodraStartup();
+
+return;
 }
 
 
@@ -19182,19 +19610,30 @@ console.log(
             );
 
         }
-      
 
+      // =========================================
+// C8-B — EXISTING USER ROUTING COMPLETE
+// =========================================
+
+completeNexodraStartup();
+      
 
     }
 
     catch(error) {
 
-        console.error(
-            "Unexpected session error:",
-            error
-        );
+    console.error(
+        "Unexpected session error:",
+        error
+    );
 
-    }
+    // =========================================
+    // C8-B — FAIL-SAFE STARTUP RELEASE
+    // =========================================
+
+    completeNexodraStartup();
+
+}
 
 
 });

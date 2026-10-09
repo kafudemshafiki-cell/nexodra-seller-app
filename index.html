@@ -105,11 +105,17 @@
         </div>
 
         <button
-            type="button"
-            class="public-icon-btn"
-        >
-            <i class="fa-solid fa-share-nodes"></i>
-        </button>
+    type="button"
+    class="public-icon-btn customer-theme-toggle"
+    id="customerThemeToggleBtn"
+    aria-label="Switch to dark mode"
+    title="Switch to dark mode"
+>
+    <i
+        id="customerThemeToggleIcon"
+        class="fa-solid fa-moon"
+    ></i>
+</button>
 
     </header>
 
@@ -750,10 +756,13 @@
         <div class="customer-chat-seller">
 
             <div class="customer-chat-avatar">
-                <i class="fa-solid fa-store"></i>
-
-                <span class="customer-chat-online-dot"></span>
-            </div>
+    <img
+        id="customerChatSellerAvatar"
+        src=""
+        alt="Store logo"
+    >
+    <span class="customer-chat-online-dot"></span>
+</div>
 
 
             <div class="customer-chat-seller-info">
@@ -820,17 +829,35 @@
 
     <!-- MESSAGE COMPOSER -->
 
-    <div class="customer-chat-composer">
+    <!-- =========================================
+     C9-D — CUSTOMER PRODUCT ATTACHMENT PREVIEW
+========================================= -->
 
+<div class="customer-chat-composer">
+
+    <!-- SELECTED PRODUCT ATTACHMENT -->
+    <div
+        id="customerChatAttachmentPreview"
+        class="customer-chat-attachment-preview"
+        aria-hidden="true"
+    ></div>
+
+
+    <!-- COMPOSER CONTROLS -->
+    <div class="customer-chat-composer-main">
+
+        <!-- ATTACH PRODUCT -->
         <button
             type="button"
             class="customer-chat-attach"
-            aria-label="Attach file"
+            id="customerChatAttachProductBtn"
+            aria-label="Attach a product"
         >
             <i class="fa-solid fa-paperclip"></i>
         </button>
 
 
+        <!-- MESSAGE INPUT -->
         <div class="customer-chat-input-wrapper">
 
             <textarea
@@ -844,6 +871,7 @@
         </div>
 
 
+        <!-- SEND -->
         <button
             type="button"
             class="customer-chat-send"
@@ -854,6 +882,8 @@
         </button>
 
     </div>
+
+</div>
 
 
     <!-- SMALL SECURITY / INFO NOTE -->
@@ -867,6 +897,72 @@
     </div>
 
 </section>
+
+<!-- =========================================
+     C9-C — CUSTOMER PRODUCT PICKER
+========================================= -->
+
+<div
+    id="customerProductPicker"
+    class="customer-product-picker"
+    aria-hidden="true"
+>
+
+    <div class="customer-product-picker-backdrop"></div>
+
+    <div
+        class="customer-product-picker-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="customerProductPickerTitle"
+    >
+
+        <div class="customer-product-picker-header">
+
+            <div>
+                <span class="customer-product-picker-eyebrow">
+                    STORE PRODUCTS
+                </span>
+
+                <h3 id="customerProductPickerTitle">
+                    Attach a product
+                </h3>
+            </div>
+
+            <button
+                type="button"
+                id="customerProductPickerClose"
+                class="customer-product-picker-close"
+                aria-label="Close product picker"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <div
+            id="customerProductPickerGrid"
+            class="customer-product-picker-grid"
+        >
+
+            <div class="customer-product-picker-empty">
+                <i class="fa-solid fa-box-open"></i>
+
+                <strong>
+                    No products available
+                </strong>
+
+                <span>
+                    This store has no published products to attach.
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
       
     </main>
 
@@ -953,7 +1049,6 @@
 
         </div>
 
-        < class="nexodra-onboarding-copy">
 
             <div class="nexodra-onboarding-copy">
 
@@ -1345,7 +1440,7 @@
     aria-label="Open Calculator"
 >
     <i class="fa-solid fa-calculator"></i>
-</>
+</button>
 
 
         <button
@@ -1579,10 +1674,6 @@
     <i class="fa-solid fa-eye"></i>
     Preview Store
 </button>
-
-    </>
-
-</>
 
 
         <!-- STORE OVERVIEW -->
@@ -2521,7 +2612,7 @@
 
             </button>
 
-        </>
+</div>
 
     </div>
 
@@ -3605,8 +3696,6 @@
     </div>
 
 </div>
-
-</>
 
             <!-- 4. PROFILE SCREEN -->
             <section id="profileScreen" class="screen">
@@ -5587,6 +5676,9 @@
     </div>
 </div>
       
+
+
+
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -5601,6 +5693,10 @@
         SUPABASE_URL,
         SUPABASE_PUBLISHABLE_KEY
     );
+</script>
+
+      <script>
+    const NEXODRA_API_URL = 'http://127.0.0.1:8000';
 </script>
 
 <!-- Barcode / QR scanner -->

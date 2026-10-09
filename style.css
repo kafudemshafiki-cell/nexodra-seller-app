@@ -8472,6 +8472,185 @@ body {
 
 }
 
+/* =========================================
+   C9-C — CUSTOMER PRODUCT PICKER
+========================================= */
+
+.customer-product-picker {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.customer-product-picker.active {
+    display: flex;
+}
+
+.customer-product-picker-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.42);
+    backdrop-filter: blur(3px);
+}
+
+.customer-product-picker-panel {
+    position: relative;
+    width: min(100%, 520px);
+    max-height: 82%;
+    overflow: hidden;
+    background: #ffffff;
+    border-radius: 24px 24px 0 0;
+    box-shadow:
+        0 -10px 35px rgba(15, 23, 42, 0.16);
+    display: flex;
+    flex-direction: column;
+}
+
+.customer-product-picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid #e7ebf0;
+}
+
+.customer-product-picker-eyebrow {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: #94a3b8;
+}
+
+.customer-product-picker-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #172033;
+}
+
+.customer-product-picker-close {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.customer-product-picker-grid {
+    overflow-y: auto;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.customer-product-picker-card {
+    border: 1px solid #e5eaf0;
+    border-radius: 16px;
+    background: #ffffff;
+    overflow: hidden;
+    cursor: pointer;
+    transition:
+        transform 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.customer-product-picker-card:active {
+    transform: scale(0.97);
+}
+
+.customer-product-picker-image {
+    aspect-ratio: 1 / 1;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.customer-product-picker-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.customer-product-picker-image span {
+    font-size: 34px;
+}
+
+.customer-product-picker-info {
+    padding: 10px;
+}
+
+.customer-product-picker-info strong {
+    display: block;
+    font-size: 13px;
+    color: #172033;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.customer-product-picker-price {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #4f46e5;
+}
+
+.customer-product-picker-empty {
+    grid-column: 1 / -1;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 8px;
+    color: #94a3b8;
+}
+
+.customer-product-picker-empty i {
+    font-size: 30px;
+    color: #cbd5e1;
+}
+
+.customer-product-picker-empty strong {
+    color: #475569;
+}
+
+.customer-product-picker-empty span {
+    max-width: 260px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+
+    .customer-product-picker-panel {
+        max-height: 86%;
+    }
+
+    .customer-product-picker-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 11px;
+        gap: 9px;
+    }
+
+}
 
 /* =========================================
    FOOTER NOTE
@@ -8616,6 +8795,21 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+/* =========================================
+   C9-A — REAL STORE CHAT AVATAR
+   ========================================= */
+
+.customer-chat-avatar img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    border-radius: 50%;
 }
 
 /* =========================================
@@ -16663,4 +16857,1919 @@ body.store-theme-dark .cat-circle {
 
     }
 
+}
+
+/* =========================================
+   C9-D — CUSTOMER PRODUCT ATTACHMENT
+   ========================================= */
+
+.customer-chat-composer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+.customer-chat-composer-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+
+.customer-chat-attachment-preview {
+    width: 100%;
+}
+
+
+.customer-chat-attachment-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 9px 10px;
+
+    background: #f8f9fc;
+
+    border: 1px solid #e1e5ee;
+
+    border-radius: 14px;
+
+    position: relative;
+}
+
+
+.customer-chat-attachment-image {
+    width: 52px;
+    height: 52px;
+
+    flex: 0 0 52px;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    background: #eef1f7;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.customer-chat-attachment-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+.customer-chat-attachment-image span {
+    font-size: 24px;
+}
+
+
+.customer-chat-attachment-info {
+    min-width: 0;
+
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.customer-chat-attachment-label {
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+
+    color: #8b94a5;
+}
+
+
+.customer-chat-attachment-info strong {
+    font-size: 14px;
+
+    line-height: 18px;
+
+    color: #172033;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+.customer-chat-attachment-price {
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #4f46e5;
+}
+
+
+.customer-chat-attachment-remove {
+    width: 34px;
+    height: 34px;
+
+    flex: 0 0 34px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #e8ebf1;
+
+    color: #4b5563;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+
+.customer-chat-attachment-remove:active {
+    transform: scale(0.94);
+}
+
+
+/* Keep composer controls responsive */
+.customer-chat-composer-row
+.customer-chat-input-wrapper {
+    min-width: 0;
+}
+
+
+@media (max-width: 420px) {
+
+    .customer-chat-attachment-card {
+        padding: 8px;
+    }
+
+
+    .customer-chat-attachment-image {
+        width: 48px;
+        height: 48px;
+
+        flex-basis: 48px;
+    }
+
+
+    .customer-chat-attachment-info strong {
+        font-size: 13px;
+    }
+
+}
+
+/* =========================================
+   C9-D FIX — CUSTOMER COMPOSER CONTROLS
+   Keep attachment preview above,
+   but keep message controls horizontal.
+   ========================================= */
+
+.customer-chat-composer-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+}
+
+.customer-chat-composer-main .customer-chat-attach {
+    flex: 0 0 40px;
+}
+
+.customer-chat-composer-main .customer-chat-input-wrapper {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.customer-chat-composer-main .customer-chat-send {
+    flex: 0 0 42px;
+}
+
+/* =========================================================
+   CUSTOMER CHAT SCREEN
+   Real messaging-app style layout
+   ========================================================= */
+
+.customer-chat-screen {
+    height: 100dvh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+
+/* =========================================================
+   CHAT HEADER
+   ========================================================= */
+
+.customer-chat-header {
+    flex: 0 0 auto;
+    min-height: 88px;
+    display: flex;
+    align-items: center;
+    padding: 14px 24px;
+    background: #ffffff;
+    border-bottom: 1px solid #e8edf4;
+    position: relative;
+    z-index: 5;
+}
+
+.customer-chat-header .back-button {
+    width: 46px;
+    height: 46px;
+    border: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 27px;
+    color: #34435a;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.customer-chat-header .seller-avatar {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+.customer-chat-header .seller-info {
+    margin-left: 14px;
+    min-width: 0;
+}
+
+.customer-chat-header .seller-name {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 750;
+    line-height: 1.15;
+    color: #172238;
+}
+
+.customer-chat-header .seller-status {
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #71809a;
+    font-size: 16px;
+}
+
+.customer-chat-header .seller-status::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #22c55e;
+    flex-shrink: 0;
+}
+
+.customer-chat-header .more-button {
+    margin-left: auto;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    color: #34435a;
+    font-size: 23px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =========================================================
+   MESSAGE AREA
+   ========================================================= */
+
+.customer-chat-messages {
+    flex: 1 1 auto;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 20px 20px 12px;
+
+    background: #f7f9fc;
+
+    /*
+       Important:
+       This prevents the message area from forcing
+       the composer into the middle of the screen.
+    */
+    justify-content: flex-end;
+
+    scroll-behavior: smooth;
+}
+
+
+/* Scrollbar */
+
+.customer-chat-messages::-webkit-scrollbar {
+    width: 5px;
+}
+
+.customer-chat-messages::-webkit-scrollbar-thumb {
+    background: #d5dce7;
+    border-radius: 20px;
+}
+
+
+/* =========================================================
+   EMPTY CHAT STATE
+   ========================================================= */
+
+.customer-chat-empty {
+    width: 100%;
+    max-width: 480px;
+    margin: auto auto 30px;
+
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.customer-chat-empty .empty-icon {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 24px;
+
+    border-radius: 26px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #eef0ff;
+    color: #5b50ed;
+
+    font-size: 38px;
+}
+
+.customer-chat-empty h3 {
+    margin: 0 0 10px;
+
+    font-size: 25px;
+    line-height: 1.25;
+    font-weight: 750;
+
+    color: #172238;
+}
+
+.customer-chat-empty p {
+    margin: 0;
+
+    font-size: 17px;
+    line-height: 1.55;
+
+    color: #7c8ba3;
+}
+
+
+/* =========================================================
+   MESSAGE BUBBLES
+   ========================================================= */
+
+.chat-message {
+    display: flex;
+    width: 100%;
+    margin: 5px 0;
+}
+
+.chat-message.customer {
+    justify-content: flex-end;
+}
+
+.chat-message.seller {
+    justify-content: flex-start;
+}
+
+.chat-message .bubble {
+    max-width: min(75%, 420px);
+    padding: 12px 16px;
+
+    font-size: 16px;
+    line-height: 1.45;
+
+    border-radius: 18px;
+
+    word-wrap: break-word;
+}
+
+.chat-message.customer .bubble {
+    color: #ffffff;
+    background: #584cf0;
+
+    border-bottom-right-radius: 5px;
+}
+
+.chat-message.seller .bubble {
+    color: #26344b;
+    background: #ffffff;
+
+    border: 1px solid #e5eaf1;
+    border-bottom-left-radius: 5px;
+}
+
+.chat-message .message-time {
+    display: block;
+    margin-top: 5px;
+
+    font-size: 12px;
+    color: #94a3ba;
+}
+
+
+/* =========================================================
+   COMPOSER
+   ========================================================= */
+
+.customer-chat-composer {
+    flex: 0 0 auto;
+
+    width: 100%;
+
+    padding: 12px 20px 10px;
+
+    background: #ffffff;
+
+    border-top: 1px solid #e6ebf2;
+
+    /*
+       IMPORTANT:
+       No position:absolute.
+       No position:fixed.
+       No transform.
+       It naturally sits underneath the message area.
+    */
+    position: relative;
+    z-index: 10;
+}
+
+
+/* =========================================================
+   COMPOSER ROW
+   ========================================================= */
+
+.customer-chat-composer-row {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+/* =========================================================
+   ATTACHMENT BUTTON
+   ========================================================= */
+
+.customer-chat-composer .attachment-button {
+    width: 52px;
+    height: 52px;
+
+    flex: 0 0 52px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #f0f4f9;
+    color: #687a94;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 23px;
+
+    cursor: pointer;
+}
+
+.customer-chat-composer .attachment-button:active {
+    transform: scale(.95);
+}
+
+
+/* =========================================================
+   MESSAGE INPUT
+   ========================================================= */
+
+.customer-chat-composer .message-input-wrapper {
+    flex: 1 1 auto;
+    min-width: 0;
+
+    height: 52px;
+
+    border-radius: 28px;
+
+    background: #f0f4f9;
+
+    display: flex;
+    align-items: center;
+
+    overflow: hidden;
+}
+
+.customer-chat-composer textarea,
+.customer-chat-composer input[type="text"] {
+    width: 100%;
+    height: 100%;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+
+    padding: 0 20px;
+
+    font-family: inherit;
+    font-size: 16px;
+
+    color: #26344b;
+
+    resize: none;
+}
+
+.customer-chat-composer textarea::placeholder,
+.customer-chat-composer input[type="text"]::placeholder {
+    color: #93a3ba;
+}
+
+
+/* =========================================================
+   SEND BUTTON
+   ========================================================= */
+
+.customer-chat-composer .send-button {
+    width: 54px;
+    height: 54px;
+
+    flex: 0 0 54px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #584cf0;
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 22px;
+
+    cursor: pointer;
+
+    box-shadow: 0 8px 20px rgba(88, 76, 240, .20);
+}
+
+.customer-chat-composer .send-button:active {
+    transform: scale(.94);
+}
+
+
+/* =========================================================
+   PRIVACY MESSAGE
+   ========================================================= */
+
+.customer-chat-privacy {
+    margin-top: 9px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    min-height: 24px;
+
+    color: #9aa9bd;
+
+    font-size: 13px;
+    line-height: 1.3;
+
+    text-align: center;
+}
+
+.customer-chat-privacy i {
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   CUSTOMER BOTTOM NAVIGATION
+   ========================================================= */
+
+.customer-bottom-nav {
+    flex: 0 0 auto;
+
+    height: 78px;
+
+    background: #ffffff;
+
+    border-top: 1px solid #e7ebf1;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    padding-bottom: env(safe-area-inset-bottom);
+
+    position: relative;
+    z-index: 20;
+}
+
+.customer-bottom-nav .nav-item {
+    flex: 1;
+
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    color: #71809a;
+
+    font-size: 13px;
+
+    text-decoration: none;
+}
+
+.customer-bottom-nav .nav-item i {
+    font-size: 23px;
+}
+
+.customer-bottom-nav .nav-item.active {
+    color: #5368e8;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .customer-chat-header {
+        min-height: 76px;
+        padding: 10px 14px;
+    }
+
+    .customer-chat-header .back-button {
+        width: 42px;
+        height: 42px;
+        font-size: 24px;
+    }
+
+    .customer-chat-header .seller-avatar {
+        width: 52px;
+        height: 52px;
+        margin-left: 4px;
+    }
+
+    .customer-chat-header .seller-info {
+        margin-left: 11px;
+    }
+
+    .customer-chat-header .seller-name {
+        font-size: 20px;
+    }
+
+    .customer-chat-header .seller-status {
+        font-size: 15px;
+    }
+
+
+    .customer-chat-messages {
+        padding: 15px 12px 10px;
+    }
+
+
+    .customer-chat-composer {
+        padding: 10px 12px 8px;
+    }
+
+    .customer-chat-composer-row {
+        gap: 8px;
+    }
+
+    .customer-chat-composer .attachment-button {
+        width: 50px;
+        height: 50px;
+        flex-basis: 50px;
+    }
+
+    .customer-chat-composer .send-button {
+        width: 52px;
+        height: 52px;
+        flex-basis: 52px;
+    }
+
+    .customer-chat-composer .message-input-wrapper {
+        height: 50px;
+    }
+
+    .customer-chat-composer textarea,
+    .customer-chat-composer input[type="text"] {
+        padding: 0 16px;
+        font-size: 16px;
+    }
+
+    .customer-chat-privacy {
+        font-size: 12px;
+        margin-top: 7px;
+    }
+
+    .customer-bottom-nav {
+        height: 72px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+    .customer-chat-composer-row {
+        gap: 6px;
+    }
+
+    .customer-chat-composer .attachment-button {
+        width: 46px;
+        height: 46px;
+        flex-basis: 46px;
+    }
+
+    .customer-chat-composer .send-button {
+        width: 48px;
+        height: 48px;
+        flex-basis: 48px;
+    }
+
+    .customer-chat-composer .message-input-wrapper {
+        height: 48px;
+    }
+}
+
+
+/* =========================================================
+   C10 — CUSTOMER CHAT MOBILE FINAL LAYOUT
+   ========================================================= */
+
+/*
+   STRUCTURE:
+
+   ┌───────────────────────────────┐
+   │                               │
+   │          CHAT BODY            │
+   │                               │
+   ├───────────────────────────────┤
+   │  📎   Write message...   ➤   │  ← COMPOSER
+   ├───────────────────────────────┤
+   │   Store      Cart      Message│  ← NAVIGATION
+   └───────────────────────────────┘
+
+   When keyboard opens:
+
+   ┌───────────────────────────────┐
+   │          CHAT BODY            │
+   │                               │
+   ├───────────────────────────────┤
+   │  📎   Write message...   ➤   │  ← moves up
+   └───────────────────────────────┘
+              KEYBOARD
+
+   The navigation is NOT part of the composer.
+*/
+
+
+/* =========================================================
+   CUSTOMER CHAT SCREEN
+   ========================================================= */
+
+#publicCustomerMessage.public-customer-message {
+
+    width: 100%;
+
+    height: 100dvh;
+    min-height: 100dvh;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    box-sizing: border-box;
+
+    position: relative;
+}
+
+
+/* =========================================================
+   CHAT HEADER
+   ========================================================= */
+
+#publicCustomerMessage .customer-chat-header {
+
+    flex: 0 0 70px;
+
+    width: 100%;
+    min-height: 70px;
+
+    box-sizing: border-box;
+
+    position: relative;
+
+    z-index: 20;
+}
+
+
+/* =========================================================
+   CHAT BODY
+   ========================================================= */
+
+#publicCustomerMessage .customer-chat-body {
+
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    width: 100%;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    box-sizing: border-box;
+
+    /*
+       Reserve space for the fixed composer.
+    */
+    padding:
+        16px
+        12px
+        145px;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+
+/* =========================================================
+   EMPTY CHAT / START CONVERSATION
+   ========================================================= */
+
+#publicCustomerMessage .customer-chat-start {
+
+    margin: auto;
+
+    flex-shrink: 0;
+
+    max-width: 520px;
+
+}
+
+
+/* =========================================================
+   COMPOSER
+   ========================================================= */
+
+/*
+   IMPORTANT:
+
+   The composer is NO LONGER part of the flex layout.
+
+   It is fixed immediately above the bottom navigation.
+*/
+
+#publicCustomerMessage .customer-chat-composer {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 64px;
+
+    transform: translateX(-50%);
+
+    width: 100%;
+
+    max-width: 520px;
+
+    box-sizing: border-box;
+
+    padding:
+        10px
+        12px
+        8px;
+
+    background: #ffffff;
+
+    border-top:
+        1px solid #e7ebf0;
+
+    z-index: 200;
+
+    /*
+       Prevent the composer itself from becoming
+       part of the scrolling chat area.
+    */
+
+    flex: none;
+
+    margin: 0;
+}
+
+
+/* =========================================================
+   COMPOSER MAIN ROW
+   ========================================================= */
+
+#publicCustomerMessage .customer-chat-composer-main {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: row;
+
+    align-items: center;
+
+    gap: 10px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   ATTACH BUTTON
+   ========================================================= */
+
+#publicCustomerMessage .customer-chat-attach {
+
+    flex:
+        0
+        0
+        48px;
+
+    width: 48px;
+    height: 48px;
+
+    min-width: 48px;
+    min-height: 48px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   INPUT WRAPPER
+   ========================================================= */
+
+#publicCustomerMessage .customer-chat-input-wrapper {
+
+    flex:
+        1
+        1
+        auto;
+
+    min-width: 0;
+
+    width: auto;
+
+    height: 48px;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    align-items: center;
+
+    border-radius: 24px;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   MESSAGE INPUT
+   ========================================================= */
+
+#publicCustomerMessage .customer-chat-input {
+
+    width: 100%;
+
+    height: 48px;
+
+    min-height: 48px;
+
+    max-height: 110px;
+
+    box-sizing: border-box;
+
+    padding:
+        12px
+        16px;
+
+    resize: none;
+
+    outline: none;
+
+    border: none;
+}
+
+
+/* =========================================================
+   SEND BUTTON
+   ========================================================= */
+
+#publicCustomerMessage .customer-chat-send {
+
+    flex:
+        0
+        0
+        52px;
+
+    width: 52px;
+    height: 52px;
+
+    min-width: 52px;
+    min-height: 52px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   PRIVACY NOTE
+   ========================================================= */
+
+#publicCustomerMessage .customer-chat-footer-note {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding:
+        4px
+        10px
+        8px;
+
+    background: #ffffff;
+
+    font-size: 11px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   PRODUCT ATTACHMENT
+   ========================================================= */
+
+#publicCustomerMessage .customer-chat-attachment-preview {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    margin-bottom: 8px;
+}
+
+
+#publicCustomerMessage
+.customer-chat-attachment-preview:empty {
+
+    display: none;
+
+}
+
+
+/* =========================================================
+   CUSTOMER BOTTOM NAVIGATION
+   ========================================================= */
+
+/*
+   THIS IS COMPLETELY INDEPENDENT FROM THE COMPOSER.
+
+   Composer:
+       bottom: 64px
+
+   Navigation:
+       bottom: 0
+*/
+
+.public-store-bottom {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 0;
+
+    transform: translateX(-50%);
+
+    width: 100%;
+
+    max-width: 520px;
+
+    height: 64px;
+
+    min-height: 64px;
+
+    box-sizing: border-box;
+
+    z-index: 300;
+
+    margin: 0;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    #publicCustomerMessage.public-customer-message {
+
+        height: 100dvh;
+
+        min-height: 100dvh;
+
+    }
+
+
+    /* -----------------------------
+       HEADER
+       ----------------------------- */
+
+    #publicCustomerMessage .customer-chat-header {
+
+        flex-basis: 64px;
+
+        min-height: 64px;
+
+    }
+
+
+    /* -----------------------------
+       BODY
+       ----------------------------- */
+
+    #publicCustomerMessage .customer-chat-body {
+
+        padding:
+            12px
+            10px
+            145px;
+
+    }
+
+
+    /* -----------------------------
+       COMPOSER
+       ----------------------------- */
+
+    #publicCustomerMessage .customer-chat-composer {
+
+        bottom: 64px;
+
+        padding:
+            8px
+            9px
+            7px;
+
+    }
+
+
+    /* -----------------------------
+       COMPOSER ROW
+       ----------------------------- */
+
+    #publicCustomerMessage
+    .customer-chat-composer-main {
+
+        gap: 8px;
+
+    }
+
+
+    /* -----------------------------
+       ATTACH
+       ----------------------------- */
+
+    #publicCustomerMessage
+    .customer-chat-attach {
+
+        flex:
+            0
+            0
+            48px;
+
+        width: 48px;
+        height: 48px;
+
+    }
+
+
+    /* -----------------------------
+       INPUT
+       ----------------------------- */
+
+    #publicCustomerMessage
+    .customer-chat-input-wrapper {
+
+        height: 48px;
+
+    }
+
+
+    #publicCustomerMessage
+    .customer-chat-input {
+
+        height: 48px;
+
+        min-height: 48px;
+
+        padding:
+            11px
+            15px;
+
+        font-size: 15px;
+
+    }
+
+
+    /* -----------------------------
+       SEND
+       ----------------------------- */
+
+    #publicCustomerMessage
+    .customer-chat-send {
+
+        flex:
+            0
+            0
+            50px;
+
+        width: 50px;
+        height: 50px;
+
+    }
+
+
+    /* -----------------------------
+       PRIVACY
+       ----------------------------- */
+
+    #publicCustomerMessage
+    .customer-chat-footer-note {
+
+        padding:
+            4px
+            8px
+            7px;
+
+        font-size: 10px;
+
+    }
+
+
+    /* -----------------------------
+       BOTTOM NAV
+       ----------------------------- */
+
+    .public-store-bottom {
+
+        height: 64px;
+
+        min-height: 64px;
+
+        bottom: 0;
+
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 360px) {
+
+    #publicCustomerMessage
+    .customer-chat-composer-main {
+
+        gap: 6px;
+
+    }
+
+
+    #publicCustomerMessage
+    .customer-chat-attach {
+
+        flex:
+            0
+            0
+            44px;
+
+        width: 44px;
+        height: 44px;
+
+    }
+
+
+    #publicCustomerMessage
+    .customer-chat-send {
+
+        flex:
+            0
+            0
+            46px;
+
+        width: 46px;
+        height: 46px;
+
+    }
+
+
+    #publicCustomerMessage
+    .customer-chat-input-wrapper {
+
+        height: 46px;
+
+    }
+
+
+    #publicCustomerMessage
+    .customer-chat-input {
+
+        height: 46px;
+
+        min-height: 46px;
+
+        padding:
+            10px
+            13px;
+
+    }
+
+}  
+
+/* =========================================================
+   C11 — CUSTOMER STORE THEME TOGGLE
+   ========================================================= */
+
+/*
+   Customer front-page theme button.
+   Light mode  -> Moon icon
+   Dark mode   -> Sun icon
+*/
+
+#customerThemeToggleBtn {
+
+    width: 44px;
+    height: 44px;
+
+    flex: 0 0 44px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 50%;
+
+    background: #f8fafc;
+
+    color: #334155;
+
+    cursor: pointer;
+
+    font-size: 17px;
+
+    box-sizing: border-box;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.18s ease;
+
+}
+
+
+#customerThemeToggleBtn:hover {
+
+    background: #eef2f7;
+
+}
+
+
+#customerThemeToggleBtn:active {
+
+    transform: scale(0.94);
+
+}
+
+
+/* =========================================================
+   SMOOTH CUSTOMER STORE THEME TRANSITION
+   ========================================================= */
+
+#publicStore,
+#publicStore .public-store-header,
+#publicStore .public-store-body,
+#publicStore .public-store-profile-bar,
+#publicStore .public-section-heading,
+#publicStore .public-categories,
+#publicStore .public-product-search,
+#publicStore .public-product-card,
+#publicStore .public-store-bottom,
+#publicStore .public-icon-btn {
+
+    transition:
+        background-color 0.22s ease,
+        color 0.22s ease,
+        border-color 0.22s ease;
+
+}
+
+
+/* =========================================================
+   DARK MODE — CUSTOMER STORE SHELL
+   ========================================================= */
+
+body.store-theme-dark #publicStore {
+
+    background:
+        var(--nx-dark-bg) !important;
+
+    color:
+        var(--nx-dark-text) !important;
+
+}
+
+
+/* Header */
+
+body.store-theme-dark #publicStore .public-store-header {
+
+    background:
+        #101113 !important;
+
+    border-bottom:
+        1px solid var(--nx-dark-border) !important;
+
+    color:
+        var(--nx-dark-text) !important;
+
+}
+
+
+body.store-theme-dark #publicStore .public-store-title strong {
+
+    color:
+        var(--nx-dark-text) !important;
+
+}
+
+
+body.store-theme-dark #publicStore .public-store-title span {
+
+    color:
+        var(--nx-dark-text-secondary) !important;
+
+}
+
+
+/* Header icon buttons */
+
+body.store-theme-dark #publicStore .public-icon-btn {
+
+    background:
+        var(--nx-dark-surface-2) !important;
+
+    border:
+        1px solid var(--nx-dark-border) !important;
+
+    color:
+        var(--nx-dark-text) !important;
+
+}
+
+
+/* Theme button specifically */
+
+body.store-theme-dark #customerThemeToggleBtn {
+
+    background:
+        #17191d !important;
+
+    border-color:
+        #35383f !important;
+
+    color:
+        #f5f7fb !important;
+
+}
+
+
+body.store-theme-dark #customerThemeToggleBtn:hover {
+
+    background:
+        #202328 !important;
+
+}
+
+
+/* =========================================================
+   CUSTOMER STORE BODY
+   ========================================================= */
+
+body.store-theme-dark #publicStore .public-store-body {
+
+    background:
+        var(--nx-dark-bg) !important;
+
+    color:
+        var(--nx-dark-text) !important;
+
+}
+
+
+/* Store banner */
+
+body.store-theme-dark #publicStore .public-store-banner-wrapper {
+
+    background:
+        var(--nx-dark-bg) !important;
+
+}
+
+
+/* Store profile */
+
+body.store-theme-dark #publicStore .public-store-profile-bar {
+
+    background:
+        var(--nx-dark-bg) !important;
+
+    color:
+        var(--nx-dark-text) !important;
+
+}
+
+
+/* Store name */
+
+body.store-theme-dark #publicStore .public-store-name {
+
+    color:
+        var(--nx-dark-text) !important;
+
+}
+
+
+/* Verification */
+
+body.store-theme-dark #publicStore .public-store-verified {
+
+    color:
+        #60a5fa !important;
+
+}
+
+
+/* Store metadata */
+
+body.store-theme-dark #publicStore .public-store-meta-item,
+body.store-theme-dark #publicStore .public-store-meta-item i {
+
+    color:
+        var(--nx-dark-text-muted) !important;
+
+}
+
+
+/* Description */
+
+body.store-theme-dark #publicStore .public-store-description {
+
+    color:
+        var(--nx-dark-text-secondary) !important;
+
+}
+
+
+/* =========================================================
+   SHOP SECTION
+   ========================================================= */
+
+body.store-theme-dark #publicStore .public-section-heading {
+
+    background:
+        var(--nx-dark-bg) !important;
+
+}
+
+
+body.store-theme-dark #publicStore .public-section-heading h2 {
+
+    color:
+        var(--nx-dark-text) !important;
+
+}
+
+
+body.store-theme-dark #publicStore .public-section-heading > span {
+
+    color:
+        var(--nx-dark-text-muted) !important;
+
+}
+
+
+/* =========================================================
+   CATEGORY BUTTONS
+   ========================================================= */
+
+body.store-theme-dark #publicStore .public-category {
+
+    background:
+        var(--nx-dark-surface-2) !important;
+
+    border-color:
+        var(--nx-dark-border) !important;
+
+    color:
+        var(--nx-dark-text-secondary) !important;
+
+}
+
+
+body.store-theme-dark #publicStore .public-category.active {
+
+    background:
+        var(--nx-dark-blue-deep) !important;
+
+    border-color:
+        var(--nx-dark-blue-deep) !important;
+
+    color:
+        #ffffff !important;
+
+}
+
+
+/* =========================================================
+   PRODUCT SEARCH
+   ========================================================= */
+
+body.store-theme-dark #publicStore .public-product-search {
+
+    background:
+        var(--nx-dark-surface-2) !important;
+
+    border-color:
+        var(--nx-dark-border) !important;
+
+}
+
+
+body.store-theme-dark #publicStore .public-product-search input {
+
+    background:
+        transparent !important;
+
+    color:
+        var(--nx-dark-text) !important;
+
+}
+
+
+body.store-theme-dark #publicStore .public-product-search input::placeholder {
+
+    color:
+        var(--nx-dark-text-muted) !important;
+
+}
+
+
+body.store-theme-dark #publicStore .public-product-search i {
+
+    color:
+        var(--nx-dark-text-muted) !important;
+
+}
+
+
+/* =========================================================
+   PRODUCT GRID
+   ========================================================= */
+
+body.store-theme-dark #publicStore .public-product-grid {
+
+    color:
+        var(--nx-dark-text) !important;
+
+}
+
+
+body.store-theme-dark #publicStore .public-product-card {
+
+    background:
+        var(--nx-dark-surface) !important;
+
+    border-color:
+        var(--nx-dark-border) !important;
+
+    color:
+        var(--nx-dark-text) !important;
+
+}
+
+
+/* =========================================================
+   CUSTOMER BOTTOM NAV
+   ========================================================= */
+
+body.store-theme-dark #publicStore .public-store-bottom {
+
+    background:
+        #101113 !important;
+
+    border-top:
+        1px solid var(--nx-dark-border) !important;
+
+}
+
+
+body.store-theme-dark #publicStore .public-bottom-btn {
+
+    background:
+        transparent !important;
+
+    color:
+        var(--nx-dark-text-muted) !important;
+
+}
+
+
+body.store-theme-dark #publicStore .public-bottom-btn.active {
+
+    color:
+        #ffffff !important;
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    #customerThemeToggleBtn {
+
+        width: 42px;
+        height: 42px;
+
+        flex-basis: 42px;
+
+        font-size: 16px;
+
+    }
+
+}
+
+
+/* =========================================
+   C9-F — CUSTOMER CHAT PRODUCT MESSAGE CARD
+   Separate from the composer attachment preview
+   ========================================= */
+
+.customer-chat-product-message-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+    padding: 9px;
+    margin-bottom: 2px;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #172033;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    box-sizing: border-box;
+}
+
+.customer-chat-product-message-image {
+    width: 68px;
+    height: 68px;
+    flex: 0 0 68px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 9px;
+    background: #eef1f7;
+    font-size: 27px;
+}
+
+.customer-chat-product-message-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.customer-chat-product-message-details {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.customer-chat-product-message-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #737f93;
+}
+
+.customer-chat-product-message-title {
+    font-size: 13px;
+    line-height: 1.35;
+    font-weight: 650;
+    color: #172033;
+    overflow-wrap: anywhere;
+}
+
+.customer-chat-product-message-price {
+    font-size: 13px;
+    font-weight: 700;
+    color: #4f46e5;
+}
+
+.customer-chat-product-message-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.customer-chat-message-bubble:has(
+    .customer-chat-product-message-card
+) {
+    padding: 9px;
+}
+
+@media (max-width: 420px) {
+    .customer-chat-product-message-image {
+        width: 58px;
+        height: 58px;
+        flex-basis: 58px;
+    }
+
+    .customer-chat-product-message-title {
+        font-size: 12px;
+    }
 }

@@ -103,6 +103,32 @@ function completeNexodraStartup() {
 }
 
 // =========================================
+// C8-H — STARTUP SPLASH FAILSAFE
+// =========================================
+
+const NEXODRA_STARTUP_FAILSAFE =
+    8000;
+
+setTimeout(() => {
+
+    if (
+        !nexodraStartupRoutingComplete
+    ) {
+
+        console.warn(
+            'C8-H — Startup routing exceeded failsafe time. Releasing splash.'
+        );
+
+        nexodraStartupRoutingComplete =
+            true;
+
+        hideNexodraStartupSplash();
+
+    }
+
+}, NEXODRA_STARTUP_FAILSAFE);
+
+// =========================================
 // C8-D — NEXODRA ONBOARDING REFERENCES
 // =========================================
 
@@ -10618,8 +10644,156 @@ async function loadSellerMessages(
             bubble.className =
                 'message-bubble';
 
-            bubble.textContent =
-                messageRecord.message || '';
+            // BRICK C9-F — Render seller-side product attachments.
+const rawMessage = String(messageRecord.message || '');
+
+const attachmentStart = '[NEXODRA_PRODUCT_ATTACHMENT]';
+const attachmentEnd = '[/NEXODRA_PRODUCT_ATTACHMENT]';
+
+const startIndex = rawMessage.indexOf(attachmentStart);
+const endIndex = startIndex === -1
+    ? -1
+    : rawMessage.indexOf(
+        attachmentEnd,
+        startIndex + attachmentStart.length
+    );
+
+let attachmentRendered = false;
+
+if (startIndex !== -1 && endIndex !== -1) {
+    try {
+        const jsonStart = startIndex + attachmentStart.length;
+        const jsonText = rawMessage.slice(jsonStart, endIndex);
+        const product = JSON.parse(jsonText);
+
+        const card = document.createElement('div');
+
+        Object.assign(card.style, {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            padding: '10px',
+            margin: '4px 0 8px',
+            background: '#ffffff',
+            color: '#1f2937',
+            border: '1px solid #e5e7eb',
+            borderRadius: '16px',
+            maxWidth: '100%',
+            boxSizing: 'border-box'
+        });
+
+        const imageBox = document.createElement('div');
+
+        Object.assign(imageBox.style, {
+            width: '96px',
+            height: '96px',
+            minWidth: '96px',
+            borderRadius: '12px',
+            background: '#f1f5f9',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            fontSize: '36px'
+        });
+
+        const imageValue = typeof product.image === 'string'
+            ? product.image.trim()
+            : '';
+
+        if (/^(https?:\/\/|data:image\/)/i.test(imageValue)) {
+            const img = document.createElement('img');
+
+            img.src = imageValue;
+            img.alt = product.title || 'Shared product';
+            img.loading = 'lazy';
+
+            Object.assign(img.style, {
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain'
+            });
+
+            img.onerror = () => {
+                img.remove();
+                imageBox.textContent = product.emoji || '📦';
+            };
+
+            imageBox.appendChild(img);
+        } else {
+            imageBox.textContent = product.emoji || '📦';
+        }
+
+        const details = document.createElement('div');
+
+        Object.assign(details.style, {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px',
+            minWidth: '0',
+            overflowWrap: 'anywhere'
+        });
+
+        const label = document.createElement('span');
+        label.textContent = 'SHARED PRODUCT';
+
+        Object.assign(label.style, {
+            fontSize: '11px',
+            fontWeight: '700',
+            letterSpacing: '0.7px',
+            color: '#64748b'
+        });
+
+        const title = document.createElement('strong');
+        title.textContent = product.title || 'Untitled Product';
+
+        Object.assign(title.style, {
+            fontSize: '16px',
+            lineHeight: '1.3',
+            color: '#111827'
+        });
+
+        const price = document.createElement('span');
+        const numericPrice = Number(product.price);
+
+        price.textContent = Number.isFinite(numericPrice)
+            ? formatCurrency(numericPrice)
+            : '';
+
+        Object.assign(price.style, {
+            fontSize: '16px',
+            fontWeight: '700',
+            color: '#4f46e5'
+        });
+
+        details.append(label, title, price);
+        card.append(imageBox, details);
+
+        bubble.appendChild(card);
+
+        const visibleMessage = (
+            rawMessage.slice(0, startIndex) +
+            rawMessage.slice(endIndex + attachmentEnd.length)
+        ).trim();
+
+        if (visibleMessage) {
+            const text = document.createElement('div');
+            text.textContent = visibleMessage;
+            bubble.appendChild(text);
+        }
+
+        attachmentRendered = true;
+    } catch (error) {
+        console.warn(
+            'BRICK C9-F — Seller product attachment could not be parsed:',
+            error
+        );
+    }
+}
+
+if (!attachmentRendered) {
+    bubble.textContent = rawMessage;
+}
 
 
             const time =
@@ -13879,6 +14053,60 @@ if (publicStoreBanner) {
 
     }
 
+  // =========================================
+// C9-B — CUSTOMER MESSAGING HEADER
+// APPLY LIVE STORE STATUS
+// =========================================
+
+const publicStoreStatus =
+    document.getElementById(
+        'publicStoreStatus'
+    );
+
+const publicStoreOnlineDot =
+    document.getElementById(
+        'publicStoreOnlineDot'
+    );
+
+
+// STORE STATUS
+
+if (publicStoreStatus) {
+
+    publicStoreStatus.innerHTML = `
+        <span
+            class="public-store-status-dot"
+        ></span>
+        Online
+    `;
+
+}
+
+
+// ONLINE DOT
+
+if (publicStoreOnlineDot) {
+
+    publicStoreOnlineDot.style.display =
+        'block';
+
+}
+
+
+// DEBUG
+
+console.log(
+    'BRICK C9-B — Messaging store header applied:',
+    {
+        storeName:
+            store.name || 'My Store',
+        logo:
+            store.profile_image_url || '',
+        status:
+            'Online'
+    }
+);
+
 
     // =====================================
     // LOCATION
@@ -16493,6 +16721,139 @@ appearanceThemeOptions.forEach(
 applyStoreTheme(
     selectedStoreTheme
 );
+
+// =========================================================
+// C11 — CUSTOMER STORE THEME TOGGLE
+// =========================================================
+
+const customerThemeToggleBtn =
+    document.getElementById(
+        'customerThemeToggleBtn'
+    );
+
+const customerThemeToggleIcon =
+    document.getElementById(
+        'customerThemeToggleIcon'
+    );
+
+
+// =========================================================
+// UPDATE CUSTOMER THEME ICON
+// =========================================================
+
+function updateCustomerThemeToggleIcon() {
+
+    if (
+        !customerThemeToggleIcon
+    ) {
+
+        return;
+
+    }
+
+
+    const isDark =
+        document.body.classList.contains(
+            'store-theme-dark'
+        );
+
+
+    /*
+       Light mode:
+       show MOON because tapping it
+       will switch to dark mode.
+    */
+
+    if (!isDark) {
+
+        customerThemeToggleIcon.className =
+            'fa-solid fa-moon';
+
+        customerThemeToggleBtn?.setAttribute(
+            'aria-label',
+            'Switch to dark mode'
+        );
+
+        customerThemeToggleBtn?.setAttribute(
+            'title',
+            'Switch to dark mode'
+        );
+
+    }
+
+
+    /*
+       Dark mode:
+       show SUN because tapping it
+       will switch back to light mode.
+    */
+
+    else {
+
+        customerThemeToggleIcon.className =
+            'fa-solid fa-sun';
+
+        customerThemeToggleBtn?.setAttribute(
+            'aria-label',
+            'Switch to light mode'
+        );
+
+        customerThemeToggleBtn?.setAttribute(
+            'title',
+            'Switch to light mode'
+        );
+
+    }
+
+}
+
+
+// =========================================================
+// TOGGLE CUSTOMER THEME
+// =========================================================
+
+if (
+    customerThemeToggleBtn
+) {
+
+    customerThemeToggleBtn.addEventListener(
+        'click',
+        () => {
+
+            const isDark =
+                document.body.classList.contains(
+                    'store-theme-dark'
+                );
+
+
+            if (isDark) {
+
+                applyStoreTheme(
+                    'default'
+                );
+
+            } else {
+
+                applyStoreTheme(
+                    'dark'
+                );
+
+            }
+
+
+            updateCustomerThemeToggleIcon();
+
+        }
+    );
+
+}
+
+
+// =========================================================
+// INITIAL ICON
+// =========================================================
+
+updateCustomerThemeToggleIcon();
 
 // =========================================
 // SAVE
@@ -19490,7 +19851,35 @@ if (
 }
 
     // =========================================
-// C8-B — AUTH SCREEN READY
+// C8-J — FIRST-TIME USER ROUTING DECISION
+// =========================================
+
+if (
+    hasSeenNexodraOnboarding()
+) {
+
+    console.log(
+        'C8-J — Returning visitor detected; opening login.'
+    );
+
+    if (authScreen) {
+        authScreen.classList.add(
+            'active'
+        );
+    }
+
+} else {
+
+    console.log(
+        'C8-J — First-time visitor detected; opening onboarding.'
+    );
+
+    showNexodraOnboarding();
+
+}
+
+// =========================================
+// C8-J — AUTH ROUTING COMPLETE
 // =========================================
 
 completeNexodraStartup();
@@ -20663,13 +21052,27 @@ const publicCustomerMessage =
 
 const publicMessageBackBtn =
     document.getElementById(
-        'publicMessageBackBtn'
+        'customerChatBackBtn'
     );
 
 
 const publicMessageStoreName =
     document.getElementById(
         'publicMessageStoreName'
+    );
+
+// =========================================
+// C9-A — REAL STORE CHAT HEADER
+// =========================================
+
+const customerChatSellerAvatar =
+    document.getElementById(
+        'customerChatSellerAvatar'
+    );
+
+const customerChatSellerName =
+    document.getElementById(
+        'customerChatSellerName'
     );
 
 
@@ -20785,13 +21188,55 @@ if (
              * Get current store name.
              */
 
-            if (publicMessageStoreName) {
+            // =========================================
+// C9-A — APPLY REAL STORE CHAT IDENTITY
+// =========================================
 
-                publicMessageStoreName.textContent =
-                    storeName ||
-                    'Store';
+if (customerChatSellerName) {
 
-            }
+    customerChatSellerName.textContent =
+        storeName ||
+        'Store';
+
+}
+
+if (publicMessageStoreName) {
+
+    publicMessageStoreName.textContent =
+        storeName ||
+        'Store';
+
+}
+
+// =========================================
+// C9-A — APPLY REAL STORE PROFILE IMAGE
+// =========================================
+
+if (customerChatSellerAvatar) {
+
+    const profileImageUrl =
+        currentStoreProfileImageUrl || '';
+
+    if (profileImageUrl) {
+
+        customerChatSellerAvatar.src =
+            profileImageUrl;
+
+        customerChatSellerAvatar.alt =
+            storeName || 'Store logo';
+
+    } else {
+
+        customerChatSellerAvatar.removeAttribute(
+            'src'
+        );
+
+        customerChatSellerAvatar.alt =
+            'Store logo';
+
+    }
+
+}
 
 
             console.log(
@@ -20911,6 +21356,474 @@ const customerChatSendBtn =
     document.getElementById(
         'customerChatSendBtn'
     );
+
+// =========================================
+// C9-B — CUSTOMER PRODUCT ATTACHMENT
+// =========================================
+
+const customerChatAttachProductBtn =
+    document.getElementById(
+        'customerChatAttachProductBtn'
+    );
+
+let customerChatAttachedProduct = null;
+
+// =========================================
+// C9-D — CUSTOMER PRODUCT ATTACHMENT PREVIEW
+// =========================================
+
+const customerChatAttachmentPreview =
+    document.getElementById(
+        'customerChatAttachmentPreview'
+    );
+
+
+function renderCustomerChatAttachment() {
+
+    if (
+        !customerChatAttachmentPreview
+    ) {
+        return;
+    }
+
+
+    /*
+     * No product attached.
+     */
+    if (
+        !customerChatAttachedProduct
+    ) {
+
+        customerChatAttachmentPreview.innerHTML =
+            '';
+
+        customerChatAttachmentPreview.hidden =
+            true;
+
+        return;
+    }
+
+
+    const product =
+        customerChatAttachedProduct;
+
+
+    const productTitle =
+        product.title ||
+        'Untitled Product';
+
+
+    const productImage =
+        product.image ||
+        '';
+
+
+    const productPrice =
+        Number(
+            product.price || 0
+        );
+
+
+    const productId =
+        product.id ||
+        '';
+
+
+    customerChatAttachmentPreview.innerHTML = `
+
+        <div
+            class="customer-chat-attachment-card"
+            data-product-id="${productId}"
+        >
+
+            <div class="customer-chat-attachment-image">
+
+                ${
+                    productImage
+
+                    ? `
+                        <img
+                            src="${productImage}"
+                            alt="${productTitle}"
+                        >
+                    `
+
+                    : `
+                        <span>
+                            ${
+                                product.emoji ||
+                                '📦'
+                            }
+                        </span>
+                    `
+                }
+
+            </div>
+
+
+            <div class="customer-chat-attachment-info">
+
+                <span
+                    class="customer-chat-attachment-label"
+                >
+                    PRODUCT
+                </span>
+
+                <strong>
+                    ${productTitle}
+                </strong>
+
+                <span
+                    class="customer-chat-attachment-price"
+                >
+                    ${formatCurrency(productPrice)}
+                </span>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="customer-chat-attachment-remove"
+                id="customerChatRemoveAttachmentBtn"
+                aria-label="Remove attached product"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+    `;
+
+
+    customerChatAttachmentPreview.hidden =
+        false;
+
+
+    console.log(
+        'BRICK C9-D — Product attachment preview rendered:',
+        product
+    );
+
+
+    const removeButton =
+        document.getElementById(
+            'customerChatRemoveAttachmentBtn'
+        );
+
+
+    if (removeButton) {
+
+        removeButton.addEventListener(
+            'click',
+            event => {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+
+                customerChatAttachedProduct =
+                    null;
+
+
+                renderCustomerChatAttachment();
+
+
+                console.log(
+                    'BRICK C9-D — Product attachment removed.'
+                );
+
+            }
+        );
+
+    }
+
+}
+
+// =========================================
+// C9-C — CUSTOMER PRODUCT PICKER
+// =========================================
+
+const customerProductPicker =
+    document.getElementById(
+        'customerProductPicker'
+    );
+
+const customerProductPickerGrid =
+    document.getElementById(
+        'customerProductPickerGrid'
+    );
+
+const customerProductPickerClose =
+    document.getElementById(
+        'customerProductPickerClose'
+    );
+
+const customerProductPickerBackdrop =
+    document.querySelector(
+        '.customer-product-picker-backdrop'
+    );
+
+
+function openCustomerProductPicker() {
+
+    if (!customerProductPicker) {
+        return;
+    }
+
+    console.log(
+        'BRICK C9-C — Opening customer product picker.'
+    );
+
+    renderCustomerProductPicker();
+
+    customerProductPicker.classList.add(
+        'active'
+    );
+
+    customerProductPicker.setAttribute(
+        'aria-hidden',
+        'false'
+    );
+}
+
+
+function closeCustomerProductPicker() {
+
+    if (!customerProductPicker) {
+        return;
+    }
+
+    customerProductPicker.classList.remove(
+        'active'
+    );
+
+    customerProductPicker.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    console.log(
+        'BRICK C9-C — Product picker closed.'
+    );
+}
+
+
+function renderCustomerProductPicker() {
+
+    if (!customerProductPickerGrid) {
+        return;
+    }
+
+    const availableProducts =
+        Array.isArray(publicProducts)
+            ? publicProducts.filter(
+                product =>
+                    Number(product.stock || 0) > 0
+            )
+            : [];
+
+    if (
+        availableProducts.length === 0
+    ) {
+
+        customerProductPickerGrid.innerHTML = `
+            <div class="customer-product-picker-empty">
+
+                <i class="fa-solid fa-box-open"></i>
+
+                <strong>
+                    No products available
+                </strong>
+
+                <span>
+                    This store has no published products
+                    available to attach.
+                </span>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    customerProductPickerGrid.innerHTML =
+        availableProducts.map(
+            product => {
+
+                const image =
+                    product.image ||
+                    '';
+
+                const title =
+                    product.title ||
+                    'Untitled Product';
+
+                const price =
+                    Number(
+                        product.price || 0
+                    );
+
+                return `
+                    <button
+                        type="button"
+                        class="customer-product-picker-card"
+                        data-product-id="${product.id}"
+                    >
+
+                        <div
+                            class="customer-product-picker-image"
+                        >
+
+                            ${
+                                image
+                                    ? `
+                                        <img
+                                            src="${image}"
+                                            alt="${title}"
+                                        >
+                                    `
+                                    : `
+                                        <span>
+                                            ${
+                                                product.emoji ||
+                                                '📦'
+                                            }
+                                        </span>
+                                    `
+                            }
+
+                        </div>
+
+                        <div
+                            class="customer-product-picker-info"
+                        >
+
+                            <strong>
+                                ${title}
+                            </strong>
+
+                            <span
+                                class="customer-product-picker-price"
+                            >
+                                ${formatCurrency(price)}
+                            </span>
+
+                        </div>
+
+                    </button>
+                `;
+
+            }
+        ).join('');
+
+
+    console.log(
+        'BRICK C9-C — Product picker rendered:',
+        availableProducts.length
+    );
+}
+
+
+if (
+    customerChatAttachProductBtn
+) {
+
+    customerChatAttachProductBtn.addEventListener(
+        'click',
+        openCustomerProductPicker
+    );
+
+}
+
+
+if (
+    customerProductPickerClose
+) {
+
+    customerProductPickerClose.addEventListener(
+        'click',
+        closeCustomerProductPicker
+    );
+
+}
+
+
+if (
+    customerProductPickerBackdrop
+) {
+
+    customerProductPickerBackdrop.addEventListener(
+        'click',
+        closeCustomerProductPicker
+    );
+
+}
+
+
+if (
+    customerProductPickerGrid
+) {
+
+    customerProductPickerGrid.addEventListener(
+        'click',
+        event => {
+
+            const productCard =
+                event.target.closest(
+                    '.customer-product-picker-card'
+                );
+
+            if (!productCard) {
+                return;
+            }
+
+            const productId =
+                productCard.getAttribute(
+                    'data-product-id'
+                );
+
+            const selectedProduct =
+                publicProducts.find(
+                    product =>
+                        String(product.id) ===
+                        String(productId)
+                );
+
+            if (!selectedProduct) {
+                console.error(
+                    'BRICK C9-C — Selected product not found:',
+                    productId
+                );
+
+                return;
+            }
+
+            customerChatAttachedProduct =
+    selectedProduct;
+
+
+renderCustomerChatAttachment();
+
+
+console.log(
+    'BRICK C9-C — Product selected for attachment:',
+    selectedProduct
+);
+
+
+console.log(
+    'BRICK C9-D — Product attachment preview ready.'
+);
+
+
+closeCustomerProductPicker();
+
+        }
+    );
+
+}
 
 
 // =========================================
@@ -21035,6 +21948,18 @@ async function getCustomerConversation() {
 
     currentCustomerBuyerId =
         buyer.id;
+
+  const {
+    data: { user: sessionUser },
+    error: sessionError
+} = await supabaseClient.auth.getUser();
+
+console.log('BRICK H — Session verification:', {
+    buyerId: buyer.id,
+    sessionUserId: sessionUser?.id || null,
+    sessionError: sessionError?.message || null,
+    idsMatch: sessionUser?.id === buyer.id
+});
 
 
     // =====================================
@@ -21303,8 +22228,100 @@ async function loadCustomerMessages() {
             bubble.className =
                 'customer-message-bubble';
 
-            bubble.textContent =
-                messageRecord.message || '';
+            
+const rawMessage = String(messageRecord.message || '');
+
+const attachmentStart = '[NEXODRA_PRODUCT_ATTACHMENT]';
+const attachmentEnd = '[/NEXODRA_PRODUCT_ATTACHMENT]';
+
+const startIndex = rawMessage.indexOf(attachmentStart);
+const endIndex = startIndex === -1
+    ? -1
+    : rawMessage.indexOf(
+        attachmentEnd,
+        startIndex + attachmentStart.length
+    );
+
+let visibleMessage = rawMessage;
+
+if (startIndex !== -1 && endIndex !== -1) {
+    const jsonStart = startIndex + attachmentStart.length;
+    const jsonText = rawMessage.slice(jsonStart, endIndex);
+
+    try {
+        const product = JSON.parse(jsonText);
+
+        const card = document.createElement('div');
+        card.className = 'customer-chat-product-message-card';
+
+        const imageBox = document.createElement('div');
+        imageBox.className = 'customer-chat-product-message-image';
+
+        
+if (
+    typeof product.image === 'string' &&
+    /^(https?:\/\/|data:image\/)/i.test(product.image)
+) {
+
+            const img = document.createElement('img');
+            img.src = product.image;
+            img.alt = product.title || 'Attached product';
+            img.loading = 'lazy';
+
+            img.onerror = () => {
+                img.remove();
+                imageBox.textContent = product.emoji || '📦';
+            };
+
+            imageBox.appendChild(img);
+        } else {
+            imageBox.textContent = product.emoji || '📦';
+        }
+
+        const details = document.createElement('div');
+        details.className = 'customer-chat-product-message-details';
+
+        const label = document.createElement('span');
+        label.className = 'customer-chat-product-message-label';
+        label.textContent = 'SHARED PRODUCT';
+
+        const title = document.createElement('strong');
+        title.className = 'customer-chat-product-message-title';
+        title.textContent = product.title || 'Untitled Product';
+
+        const price = document.createElement('span');
+        price.className = 'customer-chat-product-message-price';
+
+        const numericPrice = Number(product.price);
+        price.textContent = Number.isFinite(numericPrice)
+            ? formatCurrency(numericPrice)
+            : '';
+
+        details.append(label, title, price);
+        card.append(imageBox, details);
+        bubble.appendChild(card);
+
+        visibleMessage = (
+            rawMessage.slice(0, startIndex) +
+            rawMessage.slice(endIndex + attachmentEnd.length)
+        ).trim();
+    } catch (error) {
+        console.warn(
+            'C9-F — Could not parse product attachment:',
+            error
+        );
+    }
+}
+
+if (visibleMessage) {
+    const text = document.createElement('div');
+    text.className = 'customer-chat-product-message-text';
+    text.textContent = visibleMessage;
+    bubble.appendChild(text);
+} else if (!bubble.hasChildNodes()) {
+    bubble.textContent = rawMessage;
+}
+
 
 
             const time =
@@ -21411,7 +22428,7 @@ async function loadCustomerMessages() {
 
 
 // =========================================
-// CUSTOMER SEND MESSAGE
+// C9-E — CUSTOMER SEND MESSAGE + PRODUCT
 // =========================================
 
 async function sendCustomerMessage() {
@@ -21430,19 +22447,26 @@ async function sendCustomerMessage() {
         customerChatInput.value.trim();
 
 
-    if (!message) {
+    /*
+     * Allow sending either:
+     *
+     * 1. Normal text
+     * 2. Product attachment + text
+     */
+    if (
+        !message &&
+        !customerChatAttachedProduct
+    ) {
 
         return;
 
     }
 
 
-    if (
-        !currentStoreOwnerId
-    ) {
+    if (!currentStoreOwnerId) {
 
         console.error(
-            'BRICK H — Cannot send message without seller ID.'
+            'C9-E — Cannot send message without seller ID.'
         );
 
         return;
@@ -21492,6 +22516,96 @@ async function sendCustomerMessage() {
             buyer.user.id;
 
 
+        /*
+         * Build the message payload.
+         *
+         * The product attachment is stored
+         * inside the existing messages.message
+         * column so we do NOT need a new
+         * database column for this brick.
+         */
+        let messageToSend =
+            message;
+
+
+        if (customerChatAttachedProduct) {
+
+            const product =
+                customerChatAttachedProduct;
+
+
+          
+console.log('BRICK C9-F — Attached product image check:', {
+    productId: product.id || null,
+    productTitle: product.title || null,
+    imageValue: product.image || null,
+    imageType: typeof product.image
+});
+
+
+            const attachmentData = {
+
+                id:
+                    product.id || null,
+
+                title:
+                    product.title ||
+                    'Untitled Product',
+
+                price:
+                    Number(
+                        product.price || 0
+                    ),
+
+                image:
+                    product.image ||
+                    '',
+
+                emoji:
+                    product.emoji ||
+                    ''
+
+            };
+
+
+            const attachmentBlock =
+                '[NEXODRA_PRODUCT_ATTACHMENT]' +
+                JSON.stringify(
+                    attachmentData
+                ) +
+                '[/NEXODRA_PRODUCT_ATTACHMENT]';
+
+
+            messageToSend =
+                attachmentBlock +
+                (
+                    message
+                        ? '\n\n' + message
+                        : ''
+                );
+
+        }
+
+
+        console.log(
+            'C9-E — Sending customer message:',
+            {
+                hasMessage:
+                    Boolean(message),
+
+                hasProduct:
+                    Boolean(
+                        customerChatAttachedProduct
+                    ),
+
+                product:
+                    customerChatAttachedProduct
+                        ? customerChatAttachedProduct.title
+                        : null
+            }
+        );
+
+
         const {
             data: insertedMessage,
             error
@@ -21499,6 +22613,7 @@ async function sendCustomerMessage() {
             await supabaseClient
                 .from('messages')
                 .insert({
+
                     conversation_id:
                         conversation.id,
 
@@ -21509,10 +22624,11 @@ async function sendCustomerMessage() {
                         currentStoreOwnerId,
 
                     message:
-                        message,
+                        messageToSend,
 
                     read:
                         false
+
                 })
                 .select()
                 .single();
@@ -21521,7 +22637,7 @@ async function sendCustomerMessage() {
         if (error) {
 
             console.error(
-                'BRICK H — Customer message insert failed:',
+                'C9-E — Customer message insert failed:',
                 error
             );
 
@@ -21535,15 +22651,20 @@ async function sendCustomerMessage() {
         }
 
 
-        // Update conversation activity.
+        /*
+         * Update conversation activity.
+         */
         const {
-            error: conversationUpdateError
+            error:
+                conversationUpdateError
         } =
             await supabaseClient
                 .from('conversations')
                 .update({
+
                     updated_at:
                         new Date().toISOString()
+
                 })
                 .eq(
                     'id',
@@ -21551,26 +22672,57 @@ async function sendCustomerMessage() {
                 );
 
 
-        if (conversationUpdateError) {
+        if (
+            conversationUpdateError
+        ) {
 
             console.warn(
-                'BRICK H — Customer conversation timestamp update failed:',
+                'C9-E — Conversation timestamp update failed:',
                 conversationUpdateError
             );
 
         }
 
 
+        /*
+         * Clear composer.
+         */
         customerChatInput.value =
             '';
 
 
+        /*
+         * Clear attached product.
+         */
+        customerChatAttachedProduct =
+            null;
+
+
+        renderCustomerChatAttachment();
+
+
+        /*
+         * Reload the conversation so
+         * the sent message appears immediately.
+         */
         await loadCustomerMessages();
 
 
         console.log(
-            'BRICK H — Customer message sent:',
+            'C9-E — Customer message sent successfully:',
             insertedMessage
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            'C9-E — Unexpected send error:',
+            error
+        );
+
+        alert(
+            'Message could not be sent.'
         );
 
 
@@ -21582,7 +22734,6 @@ async function sendCustomerMessage() {
     }
 
 }
-
 
 // =========================================
 // CUSTOMER SEND BUTTON
@@ -23418,3 +24569,48 @@ if (liveSellCompleteBtn) {
     );
 
 }
+
+// =========================================
+// C10-D — NEXODRA PYTHON API CONNECTION
+// =========================================
+
+async function nexodraApiHealthCheck() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${NEXODRA_API_URL}/health`
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+        }
+
+        const data =
+            await response.json();
+
+        console.log(
+            'C10-D — Nexodra Python API connected:',
+            data
+        );
+
+        return data;
+
+    } catch (error) {
+
+        console.error(
+            'C10-D — Nexodra Python API connection failed:',
+            error
+        );
+
+        return null;
+    }
+}
+
+nexodraApiHealthCheck();
+
+
+// =========================================

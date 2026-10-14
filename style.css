@@ -18773,3 +18773,2305 @@ body.store-theme-dark #publicStore .public-bottom-btn.active {
         font-size: 12px;
     }
 }
+
+
+/* =========================================
+   BRICK 2 — STORE SALES PERIOD MENU
+========================================= */
+
+.overview-period-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+button.overview-period {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-height: 30px;
+    padding: 0 4px;
+
+    border: 1px solid #dce4ef;
+    border-radius: 10px;
+
+    background: #ffffff;
+    color: #253247;
+
+    font: inherit;
+    font-size: 0.65rem;
+    font-weight: 700;
+
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.overview-period i {
+    font-size: 11px;
+    transition: transform .18s ease;
+}
+
+.overview-period[aria-expanded="true"] i {
+    transform: rotate(180deg);
+}
+
+.overview-period-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+
+    width: 120px;
+    max-width: calc(100vw - 40px);
+    max-height: 65vh;
+    overflow-y: auto;
+
+    padding: 7px;
+
+    background: #ffffff;
+    border: 1px solid #e5eaf1;
+    border-radius: 16px;
+
+    box-shadow: 0 12px 32px rgba(15, 23, 42, .16);
+
+    z-index: 500;
+}
+
+.overview-period-menu[hidden] {
+    display: none !important;
+}
+
+.overview-period-menu button {
+    display: block;
+    width: 100%;
+
+    padding: 12px 13px;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: transparent;
+    color: #34435c;
+
+    font: inherit;
+    font-size: 14px;
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.overview-period-menu button:hover {
+    background: #f4f7fb;
+}
+
+.overview-period-menu button.selected {
+    background: #edf4ff;
+    color: #2457a7;
+    font-weight: 750;
+}
+
+.overview-period-menu button:focus-visible,
+.overview-period:focus-visible {
+    outline: 2px solid #5285db;
+    outline-offset: 2px;
+}
+
+
+
+/* =========================================
+   NEXODRA — HELP & SUPPORT SCREEN
+   BRICK HS-C
+========================================= */
+
+#helpSupportScreen {
+    padding: 24px;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 100%;
+    color: var(--text-color, #1f2937);
+}
+
+#helpSupportScreen .orders-page {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+#helpSupportScreen .orders-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+#helpSupportScreen .orders-eyebrow {
+    display: inline-block;
+    margin-bottom: 8px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+#helpSupportScreen .orders-header h2 {
+    margin: 0 0 8px;
+    font-size: clamp(24px, 4vw, 32px);
+    line-height: 1.25;
+    font-weight: 750;
+}
+
+#helpSupportScreen .orders-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#helpSupportScreen #backFromHelpSupportBtn {
+    width: auto;
+    min-width: 120px;
+    flex-shrink: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 12px 16px;
+    color: #334155;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+#helpSupportScreen #backFromHelpSupportBtn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+#helpSupportScreen .orders-content {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: stretch;
+}
+
+#helpSupportScreen .order-card {
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 26px;
+    border: 1px solid #e8edf4;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 5px 18px rgba(15, 23, 42, 0.04);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+#helpSupportScreen .order-card:hover {
+    transform: translateY(-3px);
+    border-color: #d7e2f0;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+}
+
+#helpSupportScreen .profile-menu-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 18px;
+    border-radius: 14px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 20px;
+}
+
+#helpSupportScreen .order-card h3 {
+    margin: 0 0 10px;
+    color: #1e293b;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+#helpSupportScreen .order-card p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.75;
+}
+
+#helpSupportScreen .order-card a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 11px 16px;
+    border-radius: 10px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+#helpSupportScreen .order-card a:hover {
+    background: #1d4ed8;
+}
+
+#helpSupportScreen button:focus-visible,
+#helpSupportScreen a:focus-visible {
+    outline: 3px solid #93c5fd;
+    outline-offset: 3px;
+}
+
+/* Tablet and mobile */
+
+@media (max-width: 700px) {
+    #helpSupportScreen {
+        padding: 18px 14px;
+    }
+
+    #helpSupportScreen .orders-header {
+        align-items: flex-start;
+        margin-bottom: 22px;
+        gap: 16px;
+    }
+
+    #helpSupportScreen .orders-content {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    #helpSupportScreen .order-card {
+        padding: 22px;
+        border-radius: 15px;
+    }
+
+    #helpSupportScreen #backFromHelpSupportBtn {
+        padding: 10px 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #helpSupportScreen *,
+    #helpSupportScreen *::before,
+    #helpSupportScreen *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+
+/* =========================================
+   NEXODRA — HELP SCREEN LAYOUT FIX
+   BRICK HS-D
+========================================= */
+
+#helpSupportScreen {
+    box-sizing: border-box;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding-top: 12px;
+    padding-bottom: 140px;
+}
+
+/* Remove the duplicate page title:
+   the app header already displays Help & Support */
+#helpSupportScreen .orders-header h2 {
+    display: none;
+}
+
+/* Reduce the gap above the screen content */
+#helpSupportScreen .orders-header {
+    margin-top: 0;
+    margin-bottom: 22px;
+    padding-top: 0;
+}
+
+/* Keep all support cards inside the screen */
+#helpSupportScreen .orders-content {
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+/* Prevent cards from extending beyond the screen width */
+#helpSupportScreen .order-card {
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+}
+
+/* Leave room for the fixed bottom navigation */
+#helpSupportScreen .orders-page {
+    padding-bottom: 24px;
+    box-sizing: border-box;
+}
+
+/* Mobile adjustments */
+@media (max-width: 700px) {
+    #helpSupportScreen {
+        padding: 12px 14px 150px;
+    }
+
+    #helpSupportScreen .orders-header {
+        margin-bottom: 18px;
+    }
+
+    #helpSupportScreen .orders-content {
+        gap: 14px;
+    }
+}
+
+
+/* =========================================
+   NEXODRA — HELP SCREEN TOP FIX
+   BRICK HS-E
+========================================= */
+
+#helpSupportScreen {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+#helpSupportScreen .orders-page {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+#helpSupportScreen .orders-header {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    min-height: 0 !important;
+    align-items: flex-start;
+}
+
+#helpSupportScreen .orders-header > div {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+#helpSupportScreen .orders-header p {
+    margin-top: 6px;
+}
+
+
+/* =========================================
+   NEXODRA — PAYMENTS & PAYOUTS
+   BRICK PP-2
+========================================= */
+
+#paymentsPayoutsScreen {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 20px 16px 150px;
+    color: #1e293b;
+}
+
+#paymentsPayoutsScreen .payments-page {
+    width: 100%;
+    max-width: 1000px;
+    min-width: 0;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+#paymentsPayoutsScreen .payments-balance-card {
+    position: relative;
+    overflow: hidden;
+    padding: 25px 23px;
+    border-radius: 22px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #c2185b, #ed3d62 60%, #f47738);
+    box-shadow: 0 12px 28px rgba(194, 24, 91, 0.18);
+}
+
+#paymentsPayoutsScreen .payments-balance-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#paymentsPayoutsScreen .payments-wallet-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.18);
+    font-size: 19px;
+}
+
+#paymentsPayoutsScreen .payments-balance-card h2 {
+    margin: 18px 0;
+    color: #ffffff;
+    font-size: clamp(28px, 6vw, 38px);
+    font-weight: 800;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+#paymentsPayoutsScreen .payments-account-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 13px;
+}
+
+#paymentsPayoutsScreen .payments-details-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 22px;
+    padding: 11px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#paymentsPayoutsScreen .payments-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+#paymentsPayoutsScreen .payments-action-btn {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 5px;
+    border: 1px solid #e8edf4;
+    border-radius: 16px;
+    background: #ffffff;
+    color: #334155;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 650;
+    text-align: center;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+#paymentsPayoutsScreen .payments-action-btn:hover {
+    border-color: #f0b4ce;
+    background: #fff8fb;
+}
+
+#paymentsPayoutsScreen .payments-action-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 43px;
+    height: 43px;
+    border-radius: 13px;
+    background: #fff0f6;
+    color: #c2185b;
+    font-size: 18px;
+}
+
+#paymentsPayoutsScreen .payments-overview h3,
+#paymentsPayoutsScreen .payments-section-heading h3 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 19px;
+    font-weight: 750;
+}
+
+#paymentsPayoutsScreen .payments-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 15px;
+}
+
+#paymentsPayoutsScreen .payments-summary-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    padding: 17px 14px;
+    border: 1px solid #e8edf4;
+    border-radius: 16px;
+    background: #ffffff;
+}
+
+#paymentsPayoutsScreen .payments-summary-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: #fff5e7;
+    color: #d97706;
+}
+
+#paymentsPayoutsScreen .payments-summary-card.paid
+.payments-summary-icon {
+    background: #eafaf1;
+    color: #15945b;
+}
+
+#paymentsPayoutsScreen .payments-summary-card p {
+    margin: 2px 0 8px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+#paymentsPayoutsScreen .payments-summary-card h4 {
+    margin: 0;
+    color: #1e293b;
+    font-size: clamp(17px, 4vw, 22px);
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+#paymentsPayoutsScreen .payments-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+#paymentsPayoutsScreen .payments-section-heading button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 0 7px 8px;
+    border: 0;
+    background: transparent;
+    color: #c2185b;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#paymentsPayoutsScreen .payments-transaction-list {
+    overflow: hidden;
+    border: 1px solid #e8edf4;
+    border-radius: 17px;
+    background: #ffffff;
+}
+
+#paymentsPayoutsScreen .payments-transaction {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 17px 14px;
+}
+
+#paymentsPayoutsScreen .payments-transaction
++ .payments-transaction {
+    border-top: 1px solid #edf0f5;
+}
+
+#paymentsPayoutsScreen .payments-transaction-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    background: #eafaf1;
+    color: #15945b;
+}
+
+#paymentsPayoutsScreen .payments-transaction-icon.fee {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+#paymentsPayoutsScreen .payments-transaction-icon.processing {
+    background: #fff5e7;
+    color: #d97706;
+}
+
+#paymentsPayoutsScreen .payments-transaction-info {
+    flex: 1;
+    min-width: 0;
+}
+
+#paymentsPayoutsScreen .payments-transaction-info h4 {
+    margin: 0 0 5px;
+    color: #1e293b;
+    font-size: 14px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+#paymentsPayoutsScreen .payments-transaction-info p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+#paymentsPayoutsScreen .payments-transaction-amount {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+#paymentsPayoutsScreen .payments-transaction-amount strong {
+    color: #334155;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+#paymentsPayoutsScreen .payments-transaction-amount strong.positive {
+    color: #15945b;
+}
+
+#paymentsPayoutsScreen .payments-status {
+    padding: 4px 7px;
+    border-radius: 20px;
+    background: #eafaf1;
+    color: #15803d;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+#paymentsPayoutsScreen .payments-status.pending {
+    background: #fff5e7;
+    color: #b45309;
+}
+
+/* Tablet */
+@media (min-width: 701px) {
+    #paymentsPayoutsScreen {
+        padding: 28px 24px 150px;
+    }
+
+    #paymentsPayoutsScreen .payments-page {
+        gap: 28px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 420px) {
+    #paymentsPayoutsScreen {
+        padding: 16px 12px 150px;
+    }
+
+    #paymentsPayoutsScreen .payments-page {
+        gap: 20px;
+    }
+
+    #paymentsPayoutsScreen .payments-balance-card {
+        padding: 21px 18px;
+        border-radius: 18px;
+    }
+
+    #paymentsPayoutsScreen .payments-quick-actions {
+        gap: 7px;
+    }
+
+    #paymentsPayoutsScreen .payments-action-btn {
+        padding: 13px 3px;
+        font-size: 11px;
+    }
+
+    #paymentsPayoutsScreen .payments-action-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+    }
+
+    #paymentsPayoutsScreen .payments-summary-grid {
+        gap: 9px;
+    }
+
+    #paymentsPayoutsScreen .payments-summary-card {
+        flex-direction: column;
+        padding: 13px 11px;
+        gap: 9px;
+    }
+
+    #paymentsPayoutsScreen .payments-transaction {
+        gap: 9px;
+        padding: 15px 10px;
+    }
+
+    #paymentsPayoutsScreen .payments-transaction-icon {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+
+/* =========================================
+   NEXODRA — DELIVERY & SHIPPING
+   BRICK DS-2
+========================================= */
+
+#deliveryShippingScreen {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 20px 16px 150px;
+    color: #172033;
+}
+
+#deliveryShippingScreen * {
+    box-sizing: border-box;
+}
+
+#deliveryShippingScreen .delivery-page {
+    display: flex;
+    flex-direction: column;
+    gap: 23px;
+    width: 100%;
+    max-width: 1000px;
+    min-width: 0;
+    margin: 0 auto;
+}
+
+#deliveryShippingScreen .delivery-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+#deliveryShippingScreen .delivery-page-header h2 {
+    margin: 0;
+    font-size: clamp(22px, 5vw, 28px);
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+#deliveryShippingScreen .delivery-page-header p {
+    margin: 7px 0 0;
+    color: #788397;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+#deliveryShippingScreen #deliveryNotificationsBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border: 1px solid #e9edf3;
+    border-radius: 14px;
+    background: #ffffff;
+    color: #26354b;
+    font-size: 19px;
+}
+
+/* Hero banner */
+
+#deliveryShippingScreen .delivery-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 235px;
+    overflow: hidden;
+    padding: 25px 22px;
+    border-radius: 24px;
+    background: linear-gradient(120deg, #e9f3ff 0%, #f2edff 58%, #fff0e6 100%);
+}
+
+#deliveryShippingScreen .delivery-hero-content {
+    position: relative;
+    z-index: 2;
+    width: 69%;
+    max-width: 440px;
+}
+
+#deliveryShippingScreen .delivery-eyebrow {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #2563eb;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: 1.1px;
+}
+
+#deliveryShippingScreen .delivery-hero h2 {
+    margin: 0;
+    color: #172033;
+    font-size: clamp(23px, 5.4vw, 34px);
+    font-weight: 850;
+    line-height: 1.15;
+    letter-spacing: -0.7px;
+}
+
+#deliveryShippingScreen .delivery-hero p {
+    max-width: 290px;
+    margin: 12px 0 18px;
+    color: #657188;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+#deliveryShippingScreen .delivery-primary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 43px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 13px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 750;
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.2);
+}
+
+#deliveryShippingScreen .delivery-hero-illustration {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 42%;
+    pointer-events: none;
+}
+
+#deliveryShippingScreen .delivery-hero-truck {
+    position: absolute;
+    right: 9%;
+    bottom: 31px;
+    color: #2563eb;
+    font-size: clamp(43px, 10vw, 78px);
+    filter: drop-shadow(0 9px 5px rgba(37, 99, 235, 0.13));
+    transform: rotate(-3deg);
+}
+
+#deliveryShippingScreen .delivery-hero-box {
+    position: absolute;
+    right: 5%;
+    top: 43px;
+    color: #d99b56;
+    font-size: clamp(26px, 6vw, 45px);
+    transform: rotate(9deg);
+}
+
+#deliveryShippingScreen .delivery-hero-pin {
+    position: absolute;
+    right: 28%;
+    top: 23px;
+    color: #f07855;
+    font-size: 27px;
+}
+
+/* Quick actions */
+
+#deliveryShippingScreen .delivery-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 9px;
+}
+
+#deliveryShippingScreen .delivery-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    min-width: 0;
+    padding: 14px 4px;
+    border: 1px solid #edf0f5;
+    border-radius: 17px;
+    background: #ffffff;
+    color: #344054;
+    font: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+    overflow-wrap: anywhere;
+    box-shadow: 0 4px 15px rgba(20, 36, 64, 0.025);
+}
+
+#deliveryShippingScreen .delivery-action-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 43px;
+    height: 43px;
+    border-radius: 14px;
+    font-size: 17px;
+}
+
+#deliveryShippingScreen .delivery-action-icon.blue {
+    background: #eaf2ff;
+    color: #2563eb;
+}
+
+#deliveryShippingScreen .delivery-action-icon.purple {
+    background: #f1eaff;
+    color: #8054d8;
+}
+
+#deliveryShippingScreen .delivery-action-icon.green {
+    background: #e6f9ef;
+    color: #16945b;
+}
+
+#deliveryShippingScreen .delivery-action-icon.pink {
+    background: #fff0f5;
+    color: #db477a;
+}
+
+/* Live tracking card */
+
+#deliveryShippingScreen .delivery-live-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    gap: 12px;
+    padding: 20px 17px;
+    overflow: hidden;
+    border: 1px solid #e9edf3;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 8px 26px rgba(20, 36, 64, 0.045);
+}
+
+#deliveryShippingScreen .delivery-live-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 23px;
+}
+
+#deliveryShippingScreen .delivery-live-pin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 39px;
+    height: 39px;
+    border-radius: 13px;
+    background: #eaf2ff;
+    color: #2563eb;
+}
+
+#deliveryShippingScreen .delivery-live-label {
+    color: #8a94a6;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+#deliveryShippingScreen .delivery-live-title h3 {
+    margin: 4px 0 0;
+    color: #172033;
+    font-size: 14px;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+#deliveryShippingScreen .delivery-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+}
+
+#deliveryShippingScreen .delivery-timeline-item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+}
+
+#deliveryShippingScreen .delivery-timeline-item:not(:last-child)::after {
+    position: absolute;
+    top: 20px;
+    left: 9px;
+    width: 2px;
+    height: 27px;
+    background: #dce4f0;
+    content: "";
+}
+
+#deliveryShippingScreen .delivery-timeline-item.complete::after {
+    background: #43bd83;
+}
+
+#deliveryShippingScreen .delivery-timeline-dot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #ffffff;
+    font-size: 9px;
+}
+
+#deliveryShippingScreen .delivery-timeline-item.complete
+.delivery-timeline-dot {
+    border-color: #43bd83;
+    background: #43bd83;
+}
+
+#deliveryShippingScreen .delivery-timeline-item strong {
+    display: block;
+    color: #344054;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+#deliveryShippingScreen .delivery-timeline-item p {
+    margin: 4px 0 0;
+    color: #96a0b0;
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+/* Illustrative route preview */
+
+#deliveryShippingScreen .delivery-route-preview {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+#deliveryShippingScreen .delivery-route-map {
+    position: relative;
+    min-height: 175px;
+    overflow: hidden;
+    border-radius: 16px;
+    background-color: #f0f5f9;
+    background-image:
+        linear-gradient(35deg, transparent 46%, #ffffff 47%, #ffffff 50%, transparent 51%),
+        linear-gradient(115deg, transparent 40%, #ffffff 41%, #ffffff 44%, transparent 45%),
+        linear-gradient(0deg, transparent 75%, #e2ebf1 76%, #e2ebf1 79%, transparent 80%);
+    background-size: 83px 74px, 105px 92px, 100% 53px;
+}
+
+#deliveryShippingScreen .delivery-map-road {
+    position: absolute;
+    height: 4px;
+    border-radius: 8px;
+    background: #7da8f8;
+    transform-origin: left center;
+}
+
+#deliveryShippingScreen .delivery-map-road.road-one {
+    top: 69%;
+    left: 17%;
+    width: 38%;
+    transform: rotate(-42deg);
+}
+
+#deliveryShippingScreen .delivery-map-road.road-two {
+    top: 43%;
+    left: 45%;
+    width: 32%;
+    transform: rotate(24deg);
+}
+
+#deliveryShippingScreen .delivery-map-road.road-three {
+    top: 56%;
+    left: 68%;
+    width: 24%;
+    transform: rotate(-49deg);
+}
+
+#deliveryShippingScreen .delivery-map-pin {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 4px solid #ffffff;
+    border-radius: 50%;
+    color: #ffffff;
+    font-size: 11px;
+    box-shadow: 0 3px 9px rgba(20, 36, 64, 0.12);
+}
+
+#deliveryShippingScreen .delivery-map-pin.start {
+    bottom: 17%;
+    left: 11%;
+    background: #2563eb;
+}
+
+#deliveryShippingScreen .delivery-map-pin.finish {
+    top: 15%;
+    right: 13%;
+    background: #f07855;
+}
+
+#deliveryShippingScreen .delivery-map-truck {
+    position: absolute;
+    top: 42%;
+    left: 49%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 11px;
+    background: #ffffff;
+    color: #2563eb;
+    box-shadow: 0 4px 12px rgba(20, 36, 64, 0.12);
+}
+
+#deliveryShippingScreen .delivery-eta {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 12px;
+    color: #64748b;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+#deliveryShippingScreen .delivery-eta i {
+    margin-top: 2px;
+    color: #2563eb;
+}
+
+#deliveryShippingScreen .delivery-card-open {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #edf0f5;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #64748b;
+    font-size: 11px;
+}
+
+/* Recent shipments */
+
+#deliveryShippingScreen .delivery-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+#deliveryShippingScreen .delivery-section-heading h3 {
+    margin: 0;
+    color: #172033;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+#deliveryShippingScreen .delivery-section-heading button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 0 7px 8px;
+    border: 0;
+    background: transparent;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 750;
+}
+
+#deliveryShippingScreen .delivery-shipment-list {
+    overflow: hidden;
+    border: 1px solid #e9edf3;
+    border-radius: 19px;
+    background: #ffffff;
+}
+
+#deliveryShippingScreen .delivery-shipment {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding: 15px 12px;
+}
+
+#deliveryShippingScreen .delivery-shipment + .delivery-shipment {
+    border-top: 1px solid #edf0f5;
+}
+
+#deliveryShippingScreen .delivery-shipment-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+    background: #fff1df;
+    color: #c78535;
+}
+
+#deliveryShippingScreen .delivery-shipment-icon.blue-parcel {
+    background: #eaf2ff;
+    color: #2563eb;
+}
+
+#deliveryShippingScreen .delivery-shipment-info {
+    flex: 1;
+    min-width: 0;
+}
+
+#deliveryShippingScreen .delivery-shipment-info h4 {
+    margin: 0 0 5px;
+    color: #273449;
+    font-size: 11px;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+
+#deliveryShippingScreen .delivery-shipment-info p {
+    margin: 0;
+    color: #929cad;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+#deliveryShippingScreen .delivery-status {
+    flex-shrink: 0;
+    padding: 6px 8px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+#deliveryShippingScreen .delivery-status.in-transit {
+    background: #eaf2ff;
+    color: #2563eb;
+}
+
+#deliveryShippingScreen .delivery-status.delivered {
+    background: #e6f9ef;
+    color: #168652;
+}
+
+#deliveryShippingScreen .delivery-status.picked-up {
+    background: #fff4df;
+    color: #b7791f;
+}
+
+#deliveryShippingScreen .delivery-shipment-arrow {
+    flex-shrink: 0;
+    color: #a0a9b7;
+    font-size: 10px;
+}
+
+/* Smaller phones */
+
+@media (max-width: 420px) {
+    #deliveryShippingScreen {
+        padding: 16px 12px 150px;
+    }
+
+    #deliveryShippingScreen .delivery-page {
+        gap: 19px;
+    }
+
+    #deliveryShippingScreen .delivery-hero {
+        min-height: 220px;
+        padding: 21px 16px;
+        border-radius: 20px;
+    }
+
+    #deliveryShippingScreen .delivery-hero-content {
+        width: 73%;
+    }
+
+    #deliveryShippingScreen .delivery-hero p {
+        max-width: 220px;
+        font-size: 11px;
+    }
+
+    #deliveryShippingScreen .delivery-quick-actions {
+        gap: 6px;
+    }
+
+    #deliveryShippingScreen .delivery-action {
+        padding: 12px 3px;
+        font-size: 9px;
+    }
+
+    #deliveryShippingScreen .delivery-action-icon {
+        width: 37px;
+        height: 37px;
+        font-size: 15px;
+    }
+
+    #deliveryShippingScreen .delivery-live-card {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 17px 14px 45px;
+    }
+
+    #deliveryShippingScreen .delivery-live-title {
+        margin-bottom: 18px;
+    }
+
+    #deliveryShippingScreen .delivery-timeline {
+        gap: 16px;
+    }
+
+    #deliveryShippingScreen .delivery-timeline-item:not(:last-child)::after {
+        height: 23px;
+    }
+
+    #deliveryShippingScreen .delivery-route-map {
+        min-height: 145px;
+    }
+
+    #deliveryShippingScreen .delivery-eta {
+        margin-bottom: 2px;
+    }
+
+    #deliveryShippingScreen .delivery-shipment {
+        gap: 7px;
+        padding: 14px 9px;
+    }
+
+    #deliveryShippingScreen .delivery-shipment-icon {
+        width: 34px;
+        height: 34px;
+    }
+
+    #deliveryShippingScreen .delivery-status {
+        padding: 5px 6px;
+        font-size: 8px;
+    }
+}
+
+/* =========================================
+   NEXODRA — NOTIFICATIONS SCREEN
+   BRICK N-2
+========================================= */
+
+#notificationsScreen {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 20px 16px 150px;
+    color: #172033;
+}
+
+#notificationsScreen * {
+    box-sizing: border-box;
+}
+
+#notificationsScreen .notifications-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    max-width: 900px;
+    min-width: 0;
+    margin: 0 auto;
+}
+
+#notificationsScreen .notifications-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+#notificationsScreen .notifications-page-header h2 {
+    margin: 0;
+    font-size: clamp(23px, 5vw, 29px);
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+#notificationsScreen .notifications-page-header p {
+    margin: 7px 0 0;
+    color: #788397;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#notificationsScreen .notifications-mark-read {
+    flex-shrink: 0;
+    padding: 10px 12px;
+    border: 1px solid #e4eaf3;
+    border-radius: 11px;
+    background: #ffffff;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Preferences card */
+
+#notificationsScreen .notification-settings-card {
+    padding: 20px 18px;
+    border: 1px solid #e8edf4;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 6px 22px rgba(20, 36, 64, 0.035);
+}
+
+#notificationsScreen .notification-card-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+#notificationsScreen .notification-heading-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 43px;
+    height: 43px;
+    border-radius: 14px;
+    background: #edf3ff;
+    color: #3269dc;
+    font-size: 17px;
+}
+
+#notificationsScreen .notification-card-heading h3 {
+    margin: 0;
+    color: #202d42;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+#notificationsScreen .notification-card-heading p {
+    margin: 5px 0 0;
+    color: #8993a4;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+#notificationsScreen .notification-setting-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 15px 0;
+    border-top: 1px solid #eff2f6;
+    cursor: pointer;
+}
+
+#notificationsScreen .notification-setting-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 39px;
+    height: 39px;
+    border-radius: 13px;
+    font-size: 15px;
+}
+
+#notificationsScreen .notification-setting-icon.orders {
+    background: #eaf2ff;
+    color: #2563eb;
+}
+
+#notificationsScreen .notification-setting-icon.payments {
+    background: #e6f9ef;
+    color: #15945b;
+}
+
+#notificationsScreen .notification-setting-icon.shipping {
+    background: #f1eaff;
+    color: #8054d8;
+}
+
+#notificationsScreen .notification-setting-icon.promotions {
+    background: #fff0f5;
+    color: #db477a;
+}
+
+#notificationsScreen .notification-setting-copy {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+#notificationsScreen .notification-setting-copy strong {
+    color: #29364a;
+    font-size: 13px;
+    font-weight: 750;
+}
+
+#notificationsScreen .notification-setting-copy small {
+    color: #8b95a6;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* Preference switches */
+
+#notificationsScreen .notification-setting-row input[type="checkbox"] {
+    position: relative;
+    flex-shrink: 0;
+    width: 42px;
+    height: 24px;
+    margin: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 0;
+    border-radius: 20px;
+    background: #d8dee8;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#notificationsScreen .notification-setting-row input[type="checkbox"]::before {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.18);
+    content: "";
+    transition: transform 0.2s ease;
+}
+
+#notificationsScreen .notification-setting-row input[type="checkbox"]:checked {
+    background: #2563eb;
+}
+
+#notificationsScreen .notification-setting-row input[type="checkbox"]:checked::before {
+    transform: translateX(18px);
+}
+
+#notificationsScreen .notification-setting-row input[type="checkbox"]:focus-visible {
+    outline: 3px solid #bfdbfe;
+    outline-offset: 3px;
+}
+
+/* Recent notifications */
+
+#notificationsScreen .notifications-list-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+#notificationsScreen .notifications-list-heading h3 {
+    margin: 0;
+    color: #202d42;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+#notificationsScreen .notifications-count {
+    padding: 6px 9px;
+    border-radius: 20px;
+    background: #fff0f3;
+    color: #d9365b;
+    font-size: 10px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+#notificationsScreen .notifications-list {
+    overflow: hidden;
+    border: 1px solid #e8edf4;
+    border-radius: 19px;
+    background: #ffffff;
+}
+
+#notificationsScreen .notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    padding: 17px 15px;
+    background: #ffffff;
+}
+
+#notificationsScreen .notification-item + .notification-item {
+    border-top: 1px solid #edf0f5;
+}
+
+#notificationsScreen .notification-item.unread {
+    background: #f8fbff;
+}
+
+#notificationsScreen .notification-item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    font-size: 16px;
+}
+
+#notificationsScreen .notification-item-icon.orders {
+    background: #eaf2ff;
+    color: #2563eb;
+}
+
+#notificationsScreen .notification-item-icon.payments {
+    background: #e6f9ef;
+    color: #15945b;
+}
+
+#notificationsScreen .notification-item-icon.shipping {
+    background: #f1eaff;
+    color: #8054d8;
+}
+
+#notificationsScreen .notification-item-icon.promotions {
+    background: #fff0f5;
+    color: #db477a;
+}
+
+#notificationsScreen .notification-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+#notificationsScreen .notification-item-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#notificationsScreen .notification-item-title h4 {
+    margin: 0;
+    color: #29364a;
+    font-size: 13px;
+    font-weight: 750;
+    line-height: 1.5;
+}
+
+#notificationsScreen .notification-item-content > p {
+    margin: 6px 0 8px;
+    color: #778397;
+    font-size: 11px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+#notificationsScreen .notification-item-content time {
+    color: #9aa3b2;
+    font-size: 10px;
+}
+
+#notificationsScreen .notification-unread-dot {
+    flex-shrink: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #3478f6;
+}
+
+#notificationsScreen .notification-item:not(.unread)
+.notification-unread-dot {
+    display: none;
+}
+
+/* Empty state */
+
+#notificationsScreen .notifications-empty {
+    padding: 35px 20px;
+    border: 1px dashed #dce4ef;
+    border-radius: 18px;
+    color: #64748b;
+    text-align: center;
+}
+
+#notificationsScreen .notifications-empty[hidden] {
+    display: none !important;
+}
+
+#notificationsScreen .notifications-empty > i {
+    color: #94a3b8;
+    font-size: 30px;
+}
+
+#notificationsScreen .notifications-empty h4 {
+    margin: 12px 0 6px;
+    color: #29364a;
+    font-size: 15px;
+}
+
+#notificationsScreen .notifications-empty p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* Mobile */
+
+@media (max-width: 420px) {
+    #notificationsScreen {
+        padding: 16px 12px 150px;
+    }
+
+    #notificationsScreen .notifications-page {
+        gap: 19px;
+    }
+
+    #notificationsScreen .notifications-page-header {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    #notificationsScreen .notifications-mark-read {
+        padding: 9px 10px;
+        font-size: 10px;
+    }
+
+    #notificationsScreen .notification-settings-card {
+        padding: 17px 13px;
+        border-radius: 17px;
+    }
+
+    #notificationsScreen .notification-setting-row {
+        gap: 9px;
+        padding: 14px 0;
+    }
+
+    #notificationsScreen .notification-setting-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 13px;
+    }
+
+    #notificationsScreen .notification-setting-copy strong {
+        font-size: 12px;
+    }
+
+    #notificationsScreen .notification-setting-copy small {
+        font-size: 10px;
+    }
+
+    #notificationsScreen .notification-setting-row input[type="checkbox"] {
+        width: 38px;
+        height: 22px;
+    }
+
+    #notificationsScreen .notification-setting-row input[type="checkbox"]::before {
+        width: 16px;
+        height: 16px;
+    }
+
+    #notificationsScreen .notification-setting-row input[type="checkbox"]:checked::before {
+        transform: translateX(16px);
+    }
+
+    #notificationsScreen .notification-item {
+        gap: 9px;
+        padding: 15px 11px;
+    }
+
+    #notificationsScreen .notification-item-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+}
+
+
+/* =========================================
+   NEXODRA — NOTIFICATION PREFERENCES
+   BRICK N-2
+   Scoped only to the newer N-1 screen
+========================================= */
+
+#notificationPreferencesScreen {
+    background: #ffffff;
+    color: #1e293b;
+    padding: 22px 16px 32px;
+    box-sizing: border-box;
+    min-height: 100%;
+    overflow-x: hidden;
+}
+
+#notificationPreferencesScreen *,
+#notificationPreferencesScreen *::before,
+#notificationPreferencesScreen *::after {
+    box-sizing: border-box;
+}
+
+#notificationPreferencesScreen .notifications-page {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+/* Page heading */
+
+#notificationPreferencesScreen .notifications-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+#notificationPreferencesScreen .notifications-page-header h2 {
+    margin: 0 0 7px;
+    color: #1e293b;
+    font-size: 1.35rem;
+    line-height: 1.3;
+    font-weight: 750;
+    letter-spacing: -0.035em;
+}
+
+#notificationPreferencesScreen .notifications-page-header p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.82rem;
+    line-height: 1.6;
+}
+
+/* Mark all read button */
+
+#notificationPreferencesScreen .notifications-mark-read {
+    flex-shrink: 0;
+    min-height: 40px;
+    padding: 10px 13px;
+    border: 1px solid #e8edf3;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #334155;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 650;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+#notificationPreferencesScreen .notifications-mark-read:active {
+    background: #eef2f7;
+    border-color: #cbd5e1;
+}
+
+/* Main cards */
+
+#notificationPreferencesScreen .notification-settings-card,
+#notificationPreferencesScreen .notifications-list-section {
+    width: 100%;
+    margin-bottom: 20px;
+    background: #ffffff;
+    border: 1px solid #edf0f4;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+#notificationPreferencesScreen .notification-card-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 17px 15px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+#notificationPreferencesScreen .notification-heading-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 1rem;
+}
+
+#notificationPreferencesScreen .notification-card-heading h3 {
+    margin: 0 0 4px;
+    color: #1e293b;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+#notificationPreferencesScreen .notification-card-heading p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.72rem;
+    line-height: 1.5;
+}
+
+/* Individual preference rows */
+
+#notificationPreferencesScreen .notification-setting-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 76px;
+    padding: 13px 15px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#notificationPreferencesScreen .notification-setting-row:last-child {
+    border-bottom: none;
+}
+
+#notificationPreferencesScreen .notification-setting-row:active {
+    background: #f8fafc;
+}
+
+#notificationPreferencesScreen .notification-setting-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    font-size: 0.95rem;
+}
+
+#notificationPreferencesScreen .notification-setting-icon.orders {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+#notificationPreferencesScreen .notification-setting-icon.payments {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+#notificationPreferencesScreen .notification-setting-icon.shipping {
+    background: #f5f3ff;
+    color: #7c3aed;
+}
+
+#notificationPreferencesScreen .notification-setting-icon.promotions {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+#notificationPreferencesScreen .notification-setting-copy {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+#notificationPreferencesScreen .notification-setting-copy strong {
+    color: #1e293b;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    font-weight: 650;
+}
+
+#notificationPreferencesScreen .notification-setting-copy small {
+    color: #94a3b8;
+    font-size: 0.69rem;
+    line-height: 1.5;
+}
+
+/* Accessible, mobile-friendly toggle */
+
+#notificationPreferencesScreen .notification-setting-row input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    flex-shrink: 0;
+    width: 43px;
+    height: 25px;
+    margin: 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    background: #e2e8f0;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+#notificationPreferencesScreen .notification-setting-row input[type="checkbox"]::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+    transition: transform 0.2s ease;
+}
+
+#notificationPreferencesScreen .notification-setting-row input[type="checkbox"]:checked {
+    background: #111827;
+    border-color: #111827;
+}
+
+#notificationPreferencesScreen .notification-setting-row input[type="checkbox"]:checked::before {
+    transform: translateX(18px);
+}
+
+#notificationPreferencesScreen .notification-setting-row input[type="checkbox"]:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.28);
+    outline-offset: 3px;
+}
+
+/* Recent notifications header */
+
+#notificationPreferencesScreen .notifications-list-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 17px 15px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+#notificationPreferencesScreen .notifications-list-heading h3 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+#notificationPreferencesScreen .notifications-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 25px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.68rem;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+/* Notification feed items */
+
+#notificationPreferencesScreen .notifications-list {
+    display: flex;
+    flex-direction: column;
+}
+
+#notificationPreferencesScreen .notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 15px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+#notificationPreferencesScreen .notification-item:last-child {
+    border-bottom: none;
+}
+
+#notificationPreferencesScreen .notification-item.unread {
+    background: #fbfdff;
+}
+
+#notificationPreferencesScreen .notification-item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 0.95rem;
+}
+
+#notificationPreferencesScreen .notification-item-icon.orders {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+#notificationPreferencesScreen .notification-item-icon.payments {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+#notificationPreferencesScreen .notification-item-icon.shipping {
+    background: #f5f3ff;
+    color: #7c3aed;
+}
+
+#notificationPreferencesScreen .notification-item-icon.promotions {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+#notificationPreferencesScreen .notification-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+#notificationPreferencesScreen .notification-item-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+#notificationPreferencesScreen .notification-item-title h4 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    font-weight: 700;
+}
+
+#notificationPreferencesScreen .notification-unread-dot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2563eb;
+}
+
+#notificationPreferencesScreen .notification-item-content p {
+    margin: 7px 0 9px;
+    color: #64748b;
+    font-size: 0.74rem;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+}
+
+#notificationPreferencesScreen .notification-item-content time {
+    color: #94a3b8;
+    font-size: 0.66rem;
+}
+
+/* Empty state */
+
+#notificationPreferencesScreen .notifications-empty {
+    padding: 30px 18px;
+    text-align: center;
+}
+
+#notificationPreferencesScreen .notifications-empty[hidden] {
+    display: none !important;
+}
+
+#notificationPreferencesScreen .notifications-empty > i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    margin-bottom: 12px;
+    border-radius: 50%;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 1.25rem;
+}
+
+#notificationPreferencesScreen .notifications-empty h4 {
+    margin: 0 0 7px;
+    color: #1e293b;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+#notificationPreferencesScreen .notifications-empty p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    line-height: 1.6;
+}
+
+/* Small phone screens */
+
+@media (max-width: 380px) {
+    #notificationPreferencesScreen {
+        padding: 18px 12px 28px;
+    }
+
+    #notificationPreferencesScreen .notifications-page-header {
+        gap: 8px;
+    }
+
+    #notificationPreferencesScreen .notifications-page-header h2 {
+        font-size: 1.2rem;
+    }
+
+    #notificationPreferencesScreen .notifications-mark-read {
+        padding: 9px 10px;
+        font-size: 0.69rem;
+    }
+
+    #notificationPreferencesScreen .notification-setting-row {
+        gap: 9px;
+        padding: 12px 10px;
+    }
+
+    #notificationPreferencesScreen .notification-setting-icon,
+    #notificationPreferencesScreen .notification-item-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    #notificationPreferencesScreen .notification-setting-copy small {
+        font-size: 0.66rem;
+    }
+}
+
+/* Store profile logo — circular shape */
+.store-logo,
+.store-profile-logo,
+.store-avatar,
+.store-info img {
+    border-radius: 50%;
+}

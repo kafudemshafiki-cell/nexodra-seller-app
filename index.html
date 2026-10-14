@@ -1687,9 +1687,63 @@
             </span>
         </div>
 
-        <span class="overview-period">
-            This month 
-        </span>
+        
+<div class="overview-period-wrap" id="overviewPeriodWrap">
+
+    <button
+        type="button"
+        class="overview-period"
+        id="overviewPeriodBtn"
+        aria-expanded="false"
+        aria-controls="overviewPeriodMenu"
+    >
+        This month
+        <i class="fa-solid fa-chevron-down"></i>
+    </button>
+
+    <div
+        class="overview-period-menu"
+        id="overviewPeriodMenu"
+        hidden
+    >
+        <button type="button" data-period="week">
+            This week
+        </button>
+
+        <button
+            type="button"
+            data-period="month"
+            class="selected"
+        >
+            This month
+        </button>
+
+        <button type="button" data-period="last3">
+            Last 3 months
+        </button>
+
+        <button type="button" data-period="last6">
+            Last 6 months
+        </button>
+
+        <button type="button" data-period="year">
+            This year
+        </button>
+
+        <button type="button" data-period="last12">
+            Last 12 months
+        </button>
+
+        <button type="button" data-period="all">
+            All time
+        </button>
+
+        <button type="button" data-period="custom">
+            Custom date range
+        </button>
+    </div>
+
+</div>
     </div>
 
 
@@ -3884,7 +3938,7 @@
 
         <div class="profile-menu">
 
-            <button class="profile-menu-item">
+            <button class="profile-menu-item" id="openOrdersBtn" type="button">
                 <div class="profile-menu-icon">
                     <i class="fa-solid fa-bag-shopping"></i>
                 </div>
@@ -3914,7 +3968,11 @@
             </button>
 
 
-            <button class="profile-menu-item">
+                <button
+                  type="button"
+                  class="profile-menu-item"
+                  id="openPaymentsPayoutsBtn"
+                  >
                 <div class="profile-menu-icon">
                     <i class="fa-solid fa-wallet"></i>
                 </div>
@@ -3925,10 +3983,14 @@
                 </div>
 
                 <i class="fa-solid fa-chevron-right profile-arrow"></i>
-            </button>
+            </>
 
 
-            <button class="profile-menu-item">
+            <button
+                 type="button"
+                class="profile-menu-item"
+                 id="openDeliveryShippingBtn"
+                 >
                 <div class="profile-menu-icon">
                     <i class="fa-solid fa-truck"></i>
                 </div>
@@ -3939,7 +4001,7 @@
                 </div>
 
                 <i class="fa-solid fa-chevron-right profile-arrow"></i>
-            </button>
+            </>
 
         </div>
 
@@ -3955,18 +4017,23 @@
 
         <div class="profile-menu">
 
-            <button class="profile-menu-item">
-                <div class="profile-menu-icon">
-                    <i class="fa-regular fa-bell"></i>
-                </div>
 
-                <div class="profile-menu-text">
-                    <strong>Notifications</strong>
-                    <span>Manage your notifications</span>
-                </div>
+        <button
+    type="button"
+    id="openNotificationPreferencesBtn"
+    class="profile-menu-item"
+>  
+    <div class="profile-menu-icon">
+        <i class="fa-regular fa-bell"></i>
+    </div>
 
-                <i class="fa-solid fa-chevron-right profile-arrow"></i>
-            </button>
+    <div class="profile-menu-text">
+        <strong>Notifications</strong>
+        <span>Manage your notifications</span>
+    </div>
+
+    <i class="fa-solid fa-chevron-right profile-arrow"></i>
+</>
 
 
             <button class="profile-menu-item">
@@ -3997,7 +4064,11 @@
             </button>
 
 
-            <button class="profile-menu-item">
+            <button
+                 type="button"
+                 class="profile-menu-item"
+                 id="openHelpSupportBtn"
+                 >
                 <div class="profile-menu-icon">
                     <i class="fa-regular fa-circle-question"></i>
                 </div>
@@ -4008,7 +4079,7 @@
                 </div>
 
                 <i class="fa-solid fa-chevron-right profile-arrow"></i>
-            </button>
+            </>
 
         </div>
 
@@ -4933,7 +5004,794 @@
     </div>
 
 </section>
-          
+
+   <!-- =========================================
+     NEXODRA — HELP & SUPPORT SCREEN
+========================================= -->
+
+<section
+    id="helpSupportScreen"
+    class="screen"
+>
+    <div class="orders-page">
+
+        <div class="orders-header">
+
+            <div>
+                <span class="orders-eyebrow">
+                    SUPPORT CENTER
+                </span>
+
+                <h2>Help &amp; Support</h2>
+
+                <p>
+                    Find help with managing your store.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="profile-menu-item"
+                id="backFromHelpSupportBtn"
+            >
+                <div class="profile-menu-icon">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </div>
+
+                <div class="profile-menu-text">
+                    <strong>Back</strong>
+                    <span>Return to your dashboard</span>
+                </div>
+            </button>
+
+        </div>
+
+        <div class="orders-content">
+
+            <div class="order-card">
+
+                <div class="profile-menu-icon">
+                    <i class="fa-regular fa-circle-question"></i>
+                </div>
+
+                <h3>How can we help?</h3>
+
+                <p>
+                    Get assistance with using your Nexodra seller account.
+                </p>
+
+            </div>
+
+            <div class="order-card">
+
+                <div class="profile-menu-icon">
+                    <i class="fa-solid fa-box"></i>
+                </div>
+
+                <h3>Managing Orders</h3>
+
+                <p>
+                    Learn how to view orders and manage customer purchases.
+                </p>
+
+            </div>
+
+            <div class="order-card">
+
+                <div class="profile-menu-icon">
+                    <i class="fa-solid fa-store"></i>
+                </div>
+
+                <h3>Store &amp; Products</h3>
+
+                <p>
+                    Get help with your store information and product listings.
+                </p>
+
+            </div>
+
+            <div class="order-card">
+
+                <div class="profile-menu-icon">
+                    <i class="fa-regular fa-envelope"></i>
+                </div>
+
+                <h3>Contact Support</h3>
+
+                <p>
+                    Need more help? Contact the Nexodra support team.
+                </p>
+
+                <a href="mailto:support@nexodra.com">
+                    Email Support
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- END NEXODRA HELP & SUPPORT SCREEN -->
+
+   <!-- =========================================
+     NEXODRA — PAYMENTS & PAYOUTS
+     MAIN SCREEN — BRICK PP-1
+========================================= -->
+
+<section id="paymentsPayoutsScreen" class="screen">
+
+    <div class="payments-page">
+
+        <!-- Available balance -->
+        <section class="payments-balance-card">
+
+            <div class="payments-balance-top">
+                <span>Available balance</span>
+
+                <span class="payments-wallet-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                </span>
+            </div>
+
+            <h2>₹24,850.00</h2>
+
+            <div class="payments-account-row">
+                <i class="fa-solid fa-building-columns"></i>
+                <span>A/c •••• 4821</span>
+            </div>
+
+            <button
+                type="button"
+                id="viewBalanceDetailsBtn"
+                class="payments-details-btn"
+            >
+                View details
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+        </section>
+
+        <!-- Quick actions -->
+        <section class="payments-quick-actions">
+
+            <button type="button" class="payments-action-btn"
+                id="withdrawFundsBtn">
+                <span class="payments-action-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                </span>
+                <span>Withdraw</span>
+            </button>
+
+            <button type="button" class="payments-action-btn"
+                id="addBankAccountBtn">
+                <span class="payments-action-icon">
+                    <i class="fa-solid fa-building-columns"></i>
+                </span>
+                <span>Add bank</span>
+            </button>
+
+            <button type="button" class="payments-action-btn"
+                id="viewTransactionsBtn">
+                <span class="payments-action-icon">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </span>
+                <span>Transactions</span>
+            </button>
+
+            <button type="button" class="payments-action-btn"
+                id="viewStatementsBtn">
+                <span class="payments-action-icon">
+                    <i class="fa-solid fa-file-lines"></i>
+                </span>
+                <span>Statements</span>
+            </button>
+
+        </section>
+
+        <!-- Payout overview -->
+        <section class="payments-overview">
+
+            <h3>Payout overview</h3>
+
+            <div class="payments-summary-grid">
+
+                <article class="payments-summary-card pending">
+
+                    <span class="payments-summary-icon">
+                        <i class="fa-regular fa-clock"></i>
+                    </span>
+
+                    <div>
+                        <p>Pending payouts</p>
+                        <h4>₹3,200</h4>
+                    </div>
+
+                </article>
+
+                <article class="payments-summary-card paid">
+
+                    <span class="payments-summary-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </span>
+
+                    <div>
+                        <p>Paid this month</p>
+                        <h4>₹18,450</h4>
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+        <!-- Recent transactions -->
+        <section class="payments-transactions">
+
+            <div class="payments-section-heading">
+                <h3>Recent transactions</h3>
+
+                <button type="button" id="viewAllTransactionsBtn">
+                    View all
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="payments-transaction-list">
+
+                <article class="payments-transaction">
+
+                    <span class="payments-transaction-icon received">
+                        <i class="fa-solid fa-arrow-down"></i>
+                    </span>
+
+                    <div class="payments-transaction-info">
+                        <h4>Order payout</h4>
+                        <p>Apr 29, 2025 · 10:24 AM</p>
+                    </div>
+
+                    <div class="payments-transaction-amount">
+                        <strong class="positive">+₹2,500</strong>
+                        <span class="payments-status completed">
+                            Completed
+                        </span>
+                    </div>
+
+                </article>
+
+                <article class="payments-transaction">
+
+                    <span class="payments-transaction-icon fee">
+                        <i class="fa-solid fa-minus"></i>
+                    </span>
+
+                    <div class="payments-transaction-info">
+                        <h4>Platform fee</h4>
+                        <p>Apr 28, 2025 · 03:12 PM</p>
+                    </div>
+
+                    <div class="payments-transaction-amount">
+                        <strong>−₹120</strong>
+                        <span class="payments-status completed">
+                            Completed
+                        </span>
+                    </div>
+
+                </article>
+
+                <article class="payments-transaction">
+
+                    <span class="payments-transaction-icon processing">
+                        <i class="fa-regular fa-clock"></i>
+                    </span>
+
+                    <div class="payments-transaction-info">
+                        <h4>Payout processing</h4>
+                        <p>Apr 27, 2025 · 11:45 AM</p>
+                    </div>
+
+                    <div class="payments-transaction-amount">
+                        <strong>₹3,200</strong>
+                        <span class="payments-status pending">
+                            Pending
+                        </span>
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</section>
+  
+<!-- =========================================
+     NEXODRA — DELIVERY & SHIPPING
+     MAIN SCREEN — BRICK DS-1
+========================================= -->
+
+<section id="deliveryShippingScreen" class="screen">
+
+    <div class="delivery-page">
+
+        <!-- Screen heading -->
+        <div class="delivery-page-header">
+            <div>
+                <h2>Delivery &amp; Shipping</h2>
+                <p>Track, manage and ship your orders</p>
+            </div>
+
+            <button
+                type="button"
+                id="deliveryNotificationsBtn"
+                aria-label="Delivery notifications"
+            >
+                <i class="fa-regular fa-bell"></i>
+            </button>
+        </div>
+
+        <!-- Hero banner -->
+        <section class="delivery-hero">
+
+            <div class="delivery-hero-content">
+                <span class="delivery-eyebrow">
+                    FASTER. SAFER. EVERYWHERE.
+                </span>
+
+                <h2>Your orders,<br>our priority</h2>
+
+                <p>
+                    Reliable delivery and real-time tracking,
+                    right from your dashboard.
+                </p>
+
+                <button
+                    type="button"
+                    id="deliveryTrackOrderBtn"
+                    class="delivery-primary-btn"
+                >
+                    Track Order
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="delivery-hero-illustration" aria-hidden="true">
+                <i class="fa-solid fa-location-dot delivery-hero-pin"></i>
+                <i class="fa-solid fa-truck-fast delivery-hero-truck"></i>
+                <i class="fa-solid fa-box delivery-hero-box"></i>
+            </div>
+
+        </section>
+
+        <!-- Quick actions -->
+        <section class="delivery-quick-actions">
+
+            <button
+                type="button"
+                class="delivery-action"
+                id="createShipmentBtn"
+            >
+                <span class="delivery-action-icon blue">
+                    <i class="fa-solid fa-box-open"></i>
+                </span>
+                <span>Create Shipment</span>
+            </button>
+
+            <button
+                type="button"
+                class="delivery-action"
+                id="trackShipmentBtn"
+            >
+                <span class="delivery-action-icon purple">
+                    <i class="fa-solid fa-location-dot"></i>
+                </span>
+                <span>Track Shipment</span>
+            </button>
+
+            <button
+                type="button"
+                class="delivery-action"
+                id="manageDeliveriesBtn"
+            >
+                <span class="delivery-action-icon green">
+                    <i class="fa-solid fa-box"></i>
+                </span>
+                <span>Manage Deliveries</span>
+            </button>
+
+            <button
+                type="button"
+                class="delivery-action"
+                id="shippingHistoryBtn"
+            >
+                <span class="delivery-action-icon pink">
+                    <i class="fa-solid fa-file-lines"></i>
+                </span>
+                <span>Shipping History</span>
+            </button>
+
+        </section>
+
+        <!-- Live tracking -->
+        <section class="delivery-live-card">
+
+            <div class="delivery-live-details">
+
+                <div class="delivery-live-title">
+                    <span class="delivery-live-pin">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </span>
+
+                    <div>
+                        <span class="delivery-live-label">Live Tracking</span>
+                        <h3 id="deliveryTrackingOrderId">#NX78451236</h3>
+                    </div>
+                </div>
+
+                <div class="delivery-timeline">
+
+                    <div class="delivery-timeline-item complete">
+                        <span class="delivery-timeline-dot">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+                        <div>
+                            <strong>Picked up</strong>
+                            <p>Shipment collected</p>
+                        </div>
+                    </div>
+
+                    <div class="delivery-timeline-item complete">
+                        <span class="delivery-timeline-dot">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+                        <div>
+                            <strong>In transit</strong>
+                            <p>On the way to destination</p>
+                        </div>
+                    </div>
+
+                    <div class="delivery-timeline-item">
+                        <span class="delivery-timeline-dot"></span>
+                        <div>
+                            <strong>Out for delivery</strong>
+                            <p>Awaiting delivery update</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="delivery-route-preview">
+                <div class="delivery-route-map" aria-label="Illustrative delivery route">
+                    <span class="delivery-map-road road-one"></span>
+                    <span class="delivery-map-road road-two"></span>
+                    <span class="delivery-map-road road-three"></span>
+
+                    <span class="delivery-map-pin start">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </span>
+
+                    <span class="delivery-map-pin finish">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </span>
+
+                    <span class="delivery-map-truck">
+                        <i class="fa-solid fa-truck-fast"></i>
+                    </span>
+                </div>
+
+                <div class="delivery-eta">
+                    <i class="fa-regular fa-clock"></i>
+                    Estimated arrival pending
+                </div>
+            </div>
+
+            <button
+                type="button"
+                id="deliveryViewTrackingBtn"
+                class="delivery-card-open"
+                aria-label="View tracking details"
+            >
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+        </section>
+
+        <!-- Recent shipments -->
+        <section class="delivery-recent-section">
+
+            <div class="delivery-section-heading">
+                <h3>Recent Shipments</h3>
+
+                <button
+                    type="button"
+                    id="viewAllShipmentsBtn"
+                >
+                    View all
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="delivery-shipment-list">
+
+                <article class="delivery-shipment">
+                    <span class="delivery-shipment-icon parcel">
+                        <i class="fa-solid fa-box"></i>
+                    </span>
+
+                    <div class="delivery-shipment-info">
+                        <h4>Order #NX78451236</h4>
+                        <p>Electronics · 2 items</p>
+                    </div>
+
+                    <span class="delivery-status in-transit">
+                        In Transit
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right delivery-shipment-arrow"></i>
+                </article>
+
+                <article class="delivery-shipment">
+                    <span class="delivery-shipment-icon blue-parcel">
+                        <i class="fa-solid fa-box"></i>
+                    </span>
+
+                    <div class="delivery-shipment-info">
+                        <h4>Order #NX78451235</h4>
+                        <p>Fashion · 1 item</p>
+                    </div>
+
+                    <span class="delivery-status delivered">
+                        Delivered
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right delivery-shipment-arrow"></i>
+                </article>
+
+                <article class="delivery-shipment">
+                    <span class="delivery-shipment-icon parcel">
+                        <i class="fa-solid fa-box"></i>
+                    </span>
+
+                    <div class="delivery-shipment-info">
+                        <h4>Order #NX78451234</h4>
+                        <p>Home &amp; Living · 4 items</p>
+                    </div>
+
+                    <span class="delivery-status picked-up">
+                        Picked Up
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right delivery-shipment-arrow"></i>
+                </article>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</section>
+
+<!-- =========================================
+     NEXODRA — NOTIFICATIONS SCREEN
+     BRICK N-1
+========================================= -->
+
+<section id="notificationPreferencesScreen" class="screen">
+
+    <div class="notifications-page">
+
+        <!-- Page heading -->
+        <div class="notifications-page-header">
+            <div>
+                <h2>Notifications</h2>
+                <p>Manage your notifications and stay updated.</p>
+            </div>
+
+            <button
+                type="button"
+                id="markAllNotificationsReadBtn"
+                class="notifications-mark-read"
+            >
+                Mark all read
+            </button>
+        </div>
+
+        <!-- Notification preferences -->
+        <section class="notification-settings-card">
+            <div class="notification-card-heading">
+                <span class="notification-heading-icon">
+                    <i class="fa-solid fa-sliders"></i>
+                </span>
+
+                <div>
+                    <h3>Notification Preferences</h3>
+                    <p>Choose which updates you want to receive.</p>
+                </div>
+            </div>
+
+            <label class="notification-setting-row">
+                <span class="notification-setting-icon orders">
+                    <i class="fa-solid fa-box"></i>
+                </span>
+
+                <span class="notification-setting-copy">
+                    <strong>Orders</strong>
+                    <small>New orders and order status updates</small>
+                </span>
+
+                <input
+                    type="checkbox"
+                    id="orderNotificationsToggle"
+                    checked
+                >
+            </label>
+
+            <label class="notification-setting-row">
+                <span class="notification-setting-icon payments">
+                    <i class="fa-solid fa-wallet"></i>
+                </span>
+
+                <span class="notification-setting-copy">
+                    <strong>Payments &amp; Payouts</strong>
+                    <small>Payment confirmations and payout updates</small>
+                </span>
+
+                <input
+                    type="checkbox"
+                    id="paymentNotificationsToggle"
+                    checked
+                >
+            </label>
+
+            <label class="notification-setting-row">
+                <span class="notification-setting-icon shipping">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </span>
+
+                <span class="notification-setting-copy">
+                    <strong>Delivery &amp; Shipping</strong>
+                    <small>Shipment progress and delivery updates</small>
+                </span>
+
+                <input
+                    type="checkbox"
+                    id="shippingNotificationsToggle"
+                    checked
+                >
+            </label>
+
+            <label class="notification-setting-row">
+                <span class="notification-setting-icon promotions">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </span>
+
+                <span class="notification-setting-copy">
+                    <strong>Tips &amp; Announcements</strong>
+                    <small>Seller tips, news and product updates</small>
+                </span>
+
+                <input
+                    type="checkbox"
+                    id="announcementNotificationsToggle"
+                    checked
+                >
+            </label>
+        </section>
+
+        <!-- Recent notifications -->
+        <section class="notifications-list-section">
+
+            <div class="notifications-list-heading">
+                <h3>Recent Notifications</h3>
+
+                <span id="notificationsUnreadCount" class="notifications-count">
+                    3 unread
+                </span>
+            </div>
+
+            <div id="notificationsList" class="notifications-list">
+
+                <article class="notification-item unread">
+                    <span class="notification-item-icon orders">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    </span>
+
+                    <div class="notification-item-content">
+                        <div class="notification-item-title">
+                            <h4>New order received</h4>
+                            <span class="notification-unread-dot"></span>
+                        </div>
+
+                        <p>
+                            You've received a new customer order.
+                            Review the details in your Orders screen.
+                        </p>
+
+                        <time>Just now</time>
+                    </div>
+                </article>
+
+                <article class="notification-item unread">
+                    <span class="notification-item-icon payments">
+                        <i class="fa-solid fa-wallet"></i>
+                    </span>
+
+                    <div class="notification-item-content">
+                        <div class="notification-item-title">
+                            <h4>Payout update</h4>
+                            <span class="notification-unread-dot"></span>
+                        </div>
+
+                        <p>
+                            Check your Payments &amp; Payouts screen
+                            for the latest payout information.
+                        </p>
+
+                        <time>2 hours ago</time>
+                    </div>
+                </article>
+
+                <article class="notification-item unread">
+                    <span class="notification-item-icon shipping">
+                        <i class="fa-solid fa-truck-fast"></i>
+                    </span>
+
+                    <div class="notification-item-content">
+                        <div class="notification-item-title">
+                            <h4>Shipping status update</h4>
+                            <span class="notification-unread-dot"></span>
+                        </div>
+
+                        <p>
+                            Review your shipment list for the latest
+                            delivery progress.
+                        </p>
+
+                        <time>Yesterday</time>
+                    </div>
+                </article>
+
+                <article class="notification-item">
+                    <span class="notification-item-icon promotions">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </span>
+
+                    <div class="notification-item-content">
+                        <div class="notification-item-title">
+                            <h4>Seller tip</h4>
+                        </div>
+
+                        <p>
+                            Keep your product details up to date
+                            to help customers shop confidently.
+                        </p>
+
+                        <time>2 days ago</time>
+                    </div>
+                </article>
+
+            </div>
+
+            <div id="notificationsEmptyState" class="notifications-empty" hidden>
+                <i class="fa-regular fa-bell-slash"></i>
+                <h4>You're all caught up</h4>
+                <p>New notifications will appear here.</p>
+            </div>
+
+        </section>
+
+    </div>
+
+</section>
+
+              
 <!-- =========================================
      SALES OVERVIEW SCREEN
 ========================================= -->
@@ -5674,10 +6532,7 @@
         </div>
 
     </div>
-</div>
-      
-
-
+</div>                        
 
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

@@ -2006,10 +2006,119 @@ await loadSellTodaySummary();
 }
 
 
+/* =========================================
+   BRICK 3 — SALES PERIOD DATE BOUNDARIES
+   Date calculation only; no sales queries.
+========================================= */
+
+function getSalesPeriodRange(period, now = new Date()) {
+
+    // Use local calendar dates for the seller's device.
+    const today = new Date(now);
+
+    today.setHours(0, 0, 0, 0);
+
+    // Exclusive end boundary: midnight tomorrow.
+    const endDate = new Date(today);
+
+    endDate.setDate(endDate.getDate() + 1);
+
+    // All time has no lower or upper date restriction.
+    if (period === 'all') {
+        return {
+            startDate: null,
+            endDate: null
+        };
+    }
+
+    // Custom range will be handled in Brick 7.
+    if (period === 'custom') {
+        return {
+            startDate: null,
+            endDate: null
+        };
+    }
+
+    let startDate = new Date(today);
+
+    if (period === 'today') {
+        // Start at midnight today.
+    }
+
+    else if (period === 'week') {
+        // Monday is the first day of the week.
+        const day = startDate.getDay();
+
+        const daysSinceMonday = (day + 6) % 7;
+
+        startDate.setDate(
+            startDate.getDate() - daysSinceMonday
+        );
+    }
+
+    else if (period === 'month') {
+        startDate.setDate(1);
+    }
+
+    else if (
+        period === 'last3' ||
+        period === 'last6' ||
+        period === 'last12'
+    ) {
+        const monthsBack = {
+            last3: 3,
+            last6: 6,
+            last12: 12
+        }[period];
+
+        const originalDay = startDate.getDate();
+
+        // Move to the first day to avoid month overflow.
+        startDate.setDate(1);
+
+        startDate.setMonth(
+            startDate.getMonth() - monthsBack
+        );
+
+        // Restore the day, clamping to the target month's
+        // final day when necessary.
+        const lastDayOfTargetMonth = new Date(
+            startDate.getFullYear(),
+            startDate.getMonth() + 1,
+            0
+        ).getDate();
+
+        startDate.setDate(
+            Math.min(originalDay, lastDayOfTargetMonth)
+        );
+    }
+
+    else if (period === 'year') {
+        startDate = new Date(
+            today.getFullYear(),
+            0,
+            1
+        );
+    }
+
+    else {
+        console.warn(
+            'BRICK 3 — Unknown sales period:',
+            period
+        );
+
+        return null;
+    }
+
+    return {
+        startDate,
+        endDate
+    };
+}
+
 // =========================================
 // GLOBAL SALES DATA LOADER
 // =========================================
-
 async function loadSellerSales(period = 'month') {
 
     const {
@@ -2017,112 +2126,87 @@ async function loadSellerSales(period = 'month') {
             user
         },
         error: userError
-    } =
-        await supabaseClient.auth.getUser();
-
+    } = await supabaseClient.auth.getUser();
 
     if (userError || !user) {
-
         console.error(
             'SALES LOADER — User not found:',
             userError
         );
-
         return [];
-
     }
 
-
-    let startDate;
-
-    const now = new Date();
-
-
-    if (period === 'today') {
-
-        startDate = new Date();
-
-        startDate.setHours(
-            0,
-            0,
-            0,
-            0
+    // Custom range will be implemented in Brick 7.
+    if (period === 'custom') {
+        console.warn(
+            'SALES LOADER — Custom range is not implemented yet.'
         );
-
-
-    } else if (period === 'week') {
-
-        startDate = new Date();
-
-        startDate.setDate(
-            now.getDate() - 7
-        );
-
-
-    } else {
-
-        // Month
-
-        startDate =
-            new Date(
-                now.getFullYear(),
-                now.getMonth(),
-                1
-            );
-
+        return [];
     }
 
+    // Use Brick 3 to calculate the selected period.
+    const range = getSalesPeriodRange(period);
+
+    if (!range) {
+        console.error(
+            'SALES LOADER — Invalid sales period:',
+            period
+        );
+        return [];
+    }
+
+    let query = supabaseClient
+        .from('sales')
+        .select(`
+            id,
+            items_count,
+            total,
+            created_at
+        `)
+        .eq('owner_id', user.id);
+
+    // All time has no date restrictions.
+    if (range.startDate) {
+        query = query.gte(
+            'created_at',
+            range.startDate.toISOString()
+        );
+    }
+
+    // Exclude tomorrow and all future dates for bounded periods.
+    if (range.endDate) {
+        query = query.lt(
+            'created_at',
+            range.endDate.toISOString()
+        );
+    }
 
     const {
         data,
         error
-    } =
-        await supabaseClient
-            .from('sales')
-            .select(
-                `
-                id,
-                items_count,
-                total,
-                created_at
-                `
-            )
-            .eq(
-                'owner_id',
-                user.id
-            )
-            .gte(
-                'created_at',
-                startDate.toISOString()
-            )
-            .order(
-                'created_at',
-                {
-                    ascending: false
-                }
-            );
-
+    } = await query.order(
+        'created_at',
+        {
+            ascending: false
+        }
+    );
 
     if (error) {
-
         console.error(
             'SALES LOADER ERROR:',
             error
         );
-
         return [];
-
     }
 
-
     console.log(
-        'SALES LOADER — Loaded sales:',
+        'SALES LOADER — Period:',
+        period,
+        '| Loaded sales:',
         data
     );
 
-
     return data || [];
-
 }
 
 updateStoreSalesCard();
@@ -2158,22 +2242,15 @@ async function updateStoreSalesCard() {
         return;
     }
 
+// =====================================
+// LOAD SELECTED PERIOD SALES
+// =====================================
 
-    // =====================================
-    // LOAD SAME MONTHLY SALES
-    // =====================================
+const period =
+    window.nexodraSelectedSalesPeriod || 'month';
 
-    const sales =
-        await loadSellerSales(
-            'month'
-        );
-
-
-    console.log(
-        'BRICK STORE SALES 1 — Monthly sales loaded:',
-        sales
-    );
-
+const sales =
+    await loadSellerSales(period);
 
     // =====================================
     // CALCULATE MONTHLY REVENUE
@@ -2205,8 +2282,20 @@ async function updateStoreSalesCard() {
 
         if (sales && sales.length > 0) {
 
-            statusElement.textContent =
-                `${sales.length} sale${sales.length === 1 ? '' : 's'} this month`;
+const periodLabels = {
+    today: 'today',
+    week: 'this week',
+    month: 'this month',
+    last3: 'in the last 3 months',
+    last6: 'in the last 6 months',
+    year: 'this year',
+    last12: 'in the last 12 months',
+    all: 'in total'
+};
+
+statusElement.textContent =
+    `${sales.length} sale${sales.length === 1 ? '' : 's'} ${periodLabels[period] || 'in this period'}`;
+
 
         } else {
 
@@ -5608,11 +5697,17 @@ async function loadSellerOrders() {
 ========================================= */
 
 const openOrdersCard =
-    document.getElementById(
-        'openOrdersCard'
-    );
+    document.getElementById('openOrdersCard');
 
-if (openOrdersCard) {
+const openOrdersBtn =
+    document.getElementById('openOrdersBtn');
+
+const ordersEntryPoints = [
+    openOrdersCard,
+    openOrdersBtn
+].filter(Boolean);
+
+if (ordersEntryPoints.length > 0) {
 
     const openOrdersScreen = async () => {
 
@@ -6794,28 +6889,27 @@ console.log(
         );
     };
 
-    openOrdersCard.addEventListener(
+    ordersEntryPoints.forEach(entryPoint => {
+    entryPoint.addEventListener(
         'click',
         openOrdersScreen
     );
+});
 
-    openOrdersCard.addEventListener(
+    ordersEntryPoints.forEach(entryPoint => {
+    entryPoint.addEventListener(
         'keydown',
         event => {
-
             if (
                 event.key === 'Enter' ||
                 event.key === ' '
             ) {
-
                 event.preventDefault();
-
                 openOrdersScreen();
-
             }
-
         }
     );
+});
 
 }
 
@@ -10500,6 +10594,9 @@ let currentSellerConversationId =
 let currentSellerConversationBuyerId =
     null;
 
+// BRICK H2-A — Prevent stale message loads.
+let sellerMessagesLoadToken = 0;
+
 
 // =========================================
 // LOAD MESSAGES
@@ -10522,6 +10619,9 @@ async function loadSellerMessages(
         conversationId
     );
 
+      // BRICK H2-B — Identify this message-loading request.
+    const loadToken = ++sellerMessagesLoadToken;
+
 
     const {
         data: {
@@ -10542,6 +10642,15 @@ async function loadSellerMessages(
             userError
         );
 
+        return;
+    }
+
+      // BRICK H2-C — Ignore outdated requests after authentication.
+    if (
+        loadToken !== sellerMessagesLoadToken ||
+        String(conversationId) !==
+            String(currentSellerConversationId)
+    ) {
         return;
     }
 
@@ -10572,6 +10681,15 @@ async function loadSellerMessages(
                 }
             );
 
+    
+    // BRICK H2-D — Ignore outdated message query results.
+    if (
+        loadToken !== sellerMessagesLoadToken ||
+        String(conversationId) !==
+            String(currentSellerConversationId)
+    ) {
+        return;
+    }
 
     if (error) {
 
@@ -10853,6 +10971,16 @@ if (!attachmentRendered) {
         of unreadMessages
     ) {
 
+      
+        // BRICK H2-E — Stop outdated requests.
+        if (
+            loadToken !== sellerMessagesLoadToken ||
+            String(conversationId) !==
+                String(currentSellerConversationId)
+        ) {
+            return;
+        }
+
         const {
             error: readError
         } =
@@ -11017,6 +11145,24 @@ if (chatPanel) {
 
     }
 
+  // BRICK H1 — Clear the previous chat immediately.
+    if (chatMessages) {
+
+        chatMessages.innerHTML = '';
+
+        const loadingMessage =
+            document.createElement('div');
+
+        loadingMessage.className = 'chat-date';
+
+        loadingMessage.textContent =
+            'Loading messages...';
+
+        chatMessages.appendChild(
+            loadingMessage
+        );
+
+    }
 
     await loadSellerMessages(
         conversationId
@@ -20217,8 +20363,11 @@ async function updateStoreCardSalesGraph() {
        Get the SAME sales data used by the app
        ----------------------------------------- */
 
-    const sales =
-        await loadSellerSales('month');
+    const period =
+    window.nexodraSelectedSalesPeriod || 'month';
+
+const sales =
+    await loadSellerSales(period);
 
 
     /* -----------------------------------------
@@ -24614,3 +24763,312 @@ nexodraApiHealthCheck();
 
 
 // =========================================
+
+
+/* =========================================
+   BRICK 2 — STORE SALES PERIOD SELECTOR
+   UI ONLY — NO SALES CALCULATION CHANGES
+========================================= */
+
+(function initOverviewPeriodSelector() {
+
+    const wrap = document.getElementById(
+        'overviewPeriodWrap'
+    );
+
+    const trigger = document.getElementById(
+        'overviewPeriodBtn'
+    );
+
+    const menu = document.getElementById(
+        'overviewPeriodMenu'
+    );
+
+    if (!wrap || !trigger || !menu) {
+        console.warn(
+            'BRICK 2 — Period selector elements not found.'
+        );
+        return;
+    }
+
+    function closeMenu() {
+        menu.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    trigger.addEventListener('click', function () {
+        const willOpen = menu.hidden;
+
+        menu.hidden = !willOpen;
+
+        trigger.setAttribute(
+            'aria-expanded',
+            String(willOpen)
+        );
+    });
+
+    menu.addEventListener('click', function (event) {
+        const option = event.target.closest(
+            'button[data-period]'
+        );
+
+        if (!option) return;
+
+        const label = option.textContent.trim();
+
+        // Keep the selected period available for later bricks.
+        window.nexodraSelectedSalesPeriod =
+            option.dataset.period;
+
+        trigger.innerHTML =
+            `${label} <i class="fa-solid fa-chevron-down"></i>`;
+
+        menu.querySelectorAll(
+            'button[data-period]'
+        ).forEach(function (button) {
+            button.classList.toggle(
+                'selected',
+                button === option
+            );
+        });
+
+closeMenu();
+
+console.log(
+    'BRICK 5A — Refreshing Store Overview for period:',
+    window.nexodraSelectedSalesPeriod
+);
+
+if (typeof updateStoreSalesCard === 'function') {
+    updateStoreSalesCard();
+}
+
+if (typeof updateStoreCardSalesGraph === 'function') {
+    updateStoreCardSalesGraph();
+}
+
+    });
+
+    document.addEventListener('click', function (event) {
+        if (!wrap.contains(event.target)) {
+            closeMenu();
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeMenu();
+            trigger.focus();
+        }
+    });
+
+    console.log(
+        'BRICK 2 — Period selector initialized.'
+    );
+
+})();
+
+// =========================================
+// NEXODRA — HELP & SUPPORT NAVIGATION
+// BRICK HS-B
+// =========================================
+
+const openHelpSupportBtn =
+    document.getElementById('openHelpSupportBtn');
+
+const helpSupportScreen =
+    document.getElementById('helpSupportScreen');
+
+const backFromHelpSupportBtn =
+    document.getElementById('backFromHelpSupportBtn');
+
+if (openHelpSupportBtn && helpSupportScreen) {
+
+    openHelpSupportBtn.addEventListener('click', () => {
+
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+
+        helpSupportScreen.classList.add('active');
+
+// Reset the actual scrollable app container
+const appBody = document.querySelector('.app-body');
+
+if (appBody) {
+    appBody.scrollTop = 0;
+}
+      
+// Reset Help & Support content to the top
+helpSupportScreen.scrollTop = 0;
+
+const helpPageContent =
+    helpSupportScreen.querySelector('.orders-page');
+
+if (helpPageContent) {
+    helpPageContent.scrollTop = 0;
+}
+
+window.scrollTo(0, 0);
+      
+        if (typeof screenTitle !== 'undefined' && screenTitle) {
+            screenTitle.textContent = 'Help & Support';
+        }
+
+    });
+
+}
+
+if (backFromHelpSupportBtn) {
+
+    backFromHelpSupportBtn.addEventListener('click', () => {
+
+        helpSupportScreen?.classList.remove('active');
+
+        const dashboardScreen =
+            document.querySelector('.screen');
+
+        if (dashboardScreen) {
+            dashboardScreen.classList.add('active');
+        }
+
+        if (typeof screenTitle !== 'undefined' && screenTitle) {
+            screenTitle.textContent = 'Dashboard';
+        }
+
+    });
+
+}
+
+
+/* =========================================
+   NEXODRA — PAYMENTS & PAYOUTS NAVIGATION
+   BRICK PP-3
+========================================= */
+
+(() => {
+    const paymentsBtn = document.getElementById(
+        'openPaymentsPayoutsBtn'
+    );
+
+    const paymentsScreen = document.getElementById(
+        'paymentsPayoutsScreen'
+    );
+
+    if (!paymentsBtn || !paymentsScreen) {
+        console.warn(
+            'Payments & Payouts: menu button or screen not found.'
+        );
+        return;
+    }
+
+    paymentsBtn.addEventListener('click', () => {
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+
+        paymentsScreen.classList.add('active');
+
+        const appBody = document.querySelector('.app-body');
+
+        if (appBody) {
+            appBody.scrollTop = 0;
+        }
+
+        paymentsScreen.scrollTop = 0;
+
+        const headerTitle = document.querySelector(
+            '.app-header h1, .app-header h2, ' +
+            'header h1, header h2'
+        );
+
+        if (headerTitle) {
+            headerTitle.textContent = 'Payments & Payouts';
+        }
+    });
+})();
+
+/* =========================================
+   NEXODRA — DELIVERY & SHIPPING NAVIGATION
+   BRICK DS-3
+========================================= */
+
+(() => {
+    const deliveryButton = document.getElementById(
+        'openDeliveryShippingBtn'
+    );
+
+    const deliveryScreen = document.getElementById(
+        'deliveryShippingScreen'
+    );
+
+    if (!deliveryButton || !deliveryScreen) {
+        console.warn(
+            'Delivery & Shipping: button or screen not found.'
+        );
+        return;
+    }
+
+    deliveryButton.addEventListener('click', () => {
+        // Hide the other screens using the app's
+        // existing screen convention.
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+
+        // Display Delivery & Shipping.
+        deliveryScreen.classList.add('active');
+
+        // Reset the screen's own scroll position.
+        deliveryScreen.scrollTop = 0;
+
+        const page = deliveryScreen.querySelector(
+            '.delivery-page'
+        );
+
+        if (page) {
+            page.scrollTop = 0;
+        }
+    });
+})();
+
+// N-3: Open the Notifications screen
+(() => {
+  const openNotificationsBtn =
+    document.getElementById("openNotificationPreferencesBtn");
+
+  const notificationsScreen =
+    document.getElementById("notificationPreferencesScreen");
+
+  if (!openNotificationsBtn || !notificationsScreen) {
+    console.warn(
+      "Notifications navigation: menu button or screen not found."
+    );
+    return;
+  }
+
+  function openNotificationsScreen() {
+    document.querySelectorAll(".screen").forEach((screen) => {
+      screen.classList.remove("active");
+    });
+
+    notificationsScreen.classList.add("active");
+    notificationsScreen.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }
+
+  openNotificationsBtn.addEventListener(
+    "click",
+    openNotificationsScreen
+  );
+
+  openNotificationsBtn.addEventListener("keydown", (event) => {
+    if (
+      event.key === "Enter" ||
+      event.key === " "
+    ) {
+      event.preventDefault();
+      openNotificationsScreen();
+    }
+  });
+})();

@@ -2470,29 +2470,70 @@ async function loadSalesOverview() {
     );
 
   renderSalesHistory(sales);
-  
+
+/* =========================================================
+   BRICK 2 — CONNECT REAL SALES TO REVENUE CHART
+   ========================================================= */
+
 console.log(
-    'SALES OVERVIEW 4 — ABOUT TO RENDER GRAPH'
+  'BRICK 2 — Updating Revenue chart with Supabase sales:',
+  sales.length
 );
 
 try {
 
+  const revenueCanvas =
+    document.getElementById('revenueChart');
+
+  if (revenueCanvas) {
+
+    const chartData =
+      prepareRevenueChartData(sales, '30d');
+
     console.log(
-        'SALES OVERVIEW 4 — CALLING GRAPH FUNCTION'
+      'BRICK 2 — Prepared Revenue chart data:',
+      chartData
     );
 
-    renderSalesGraph(sales);
-
-    console.log(
-        'SALES OVERVIEW 4 — GRAPH FUNCTION FINISHED'
+    updateRevenueChart(
+      revenueCanvas,
+      chartData
     );
+
+    // Update the Total Revenue display using real sales.
+const totalRevenueDisplay = document.querySelector(
+  "#totalRevenueDisplay"
+);
+
+if (totalRevenueDisplay) {
+  const totalRevenue = (sales || []).reduce((total, sale) => {
+    return total + (Number(sale.total) || 0);
+  }, 0);
+
+  totalRevenueDisplay.innerHTML = `
+    <span>$</span>${Math.floor(totalRevenue).toLocaleString("en-US")}
+    <span class="revenue-decimal">.${(totalRevenue % 1)
+      .toFixed(2)
+      .slice(2)}</span>
+  `;
+
+  console.log("BRICK 6 — Total Revenue updated:", totalRevenue);
+}
+
+  } else {
+
+    console.warn(
+      'BRICK 2 — Revenue chart canvas not found.'
+    );
+
+  }
 
 } catch (error) {
 
-    console.error(
-        'SALES OVERVIEW 4 — GRAPH FUNCTION ERROR:',
-        error
-    );
+  console.error(
+    'BRICK 2 — Revenue chart update failed:',
+    error
+  );
 
 }
 
@@ -6965,6 +7006,10 @@ if (openSalesOverview) {
                 'active'
             );
 
+          if (typeof initializeCharts === 'function') {
+    initializeCharts();
+}
+
 
             // Update title if available
             if (screenTitle) {
@@ -9010,6 +9055,56 @@ function loadStoreInformation() {
 // Load saved information
 
 loadStoreInformation();
+
+// =========================================
+// BRICK SN-1 — RESTORE DASHBOARD STORE NAME
+// Show the saved name while Supabase loads
+// =========================================
+
+(() => {
+    const storeNameElement =
+        document.getElementById('storeDisplayName');
+
+    if (!storeNameElement) {
+        console.warn(
+            'SN-1: storeDisplayName element not found.'
+        );
+        return;
+    }
+
+    try {
+        const saved =
+            localStorage.getItem('odropStoreInformation');
+
+        if (!saved) {
+            console.log(
+                'SN-1: No locally saved store information.'
+            );
+            return;
+        }
+
+        const storeInformation = JSON.parse(saved);
+
+        const savedName =
+            typeof storeInformation.name === 'string'
+                ? storeInformation.name.trim()
+                : '';
+
+        if (savedName) {
+            storeNameElement.textContent = savedName;
+
+            console.log(
+                'SN-1: Restored saved dashboard store name:',
+                savedName
+            );
+        }
+    } catch (error) {
+        console.error(
+            'SN-1: Could not restore saved store name:',
+            error
+        );
+    }
+})();
 
 // =========================================
 // BRICK 3C — LOAD STORE FROM SUPABASE
@@ -20175,6 +20270,113 @@ completeNexodraStartup();
 
 
 /* =========================================
+   TEMPORARY — NEXODRA API AUTH TEST
+   Remove after testing is complete.
+========================================= */
+
+document.addEventListener('DOMContentLoaded', () => {
+    const button = document.createElement('button');
+    button.id = 'nexodraApiAuthTestButton';
+    button.type = 'button';
+    button.textContent = 'Test API Authentication';
+
+    Object.assign(button.style, {
+        position: 'fixed',
+        right: '16px',
+        bottom: '16px',
+        zIndex: '99999',
+        padding: '12px 16px',
+        border: '0',
+        borderRadius: '8px',
+        background: '#243b53',
+        color: '#ffffff',
+        fontSize: '14px'
+    });
+
+    const status = document.createElement('div');
+    status.id = 'nexodraApiAuthTestStatus';
+    status.setAttribute('role', 'status');
+    Object.assign(status.style, {
+        position: 'fixed',
+        right: '16px',
+        bottom: '68px',
+        zIndex: '99999',
+        maxWidth: '85%',
+        padding: '10px',
+        borderRadius: '8px',
+        background: '#ffffff',
+        color: '#243b53',
+        fontSize: '13px'
+    });
+
+    button.addEventListener('click', async () => {
+        button.disabled = true;
+        status.textContent = 'Checking session…';
+
+        try {
+            if (
+                typeof supabaseClient === 'undefined' ||
+                !supabaseClient?.auth
+            ) {
+                status.textContent =
+                    'Supabase client is unavailable.';
+                return;
+            }
+
+            const { data, error } =
+                await supabaseClient.auth.getSession();
+
+            if (error || !data?.session?.access_token) {
+                status.textContent =
+                    'No active session. Sign in to Nexodra first.';
+                return;
+            }
+
+            const response = await fetch(
+                 'https://nexodra-api.onrender.com/my-store',
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization':
+                            `Bearer ${data.session.access_token}`,
+                        'Accept': 'application/json'
+                    }
+                }
+            );
+
+            let result = {};
+            try {
+                result = await response.json();
+            } catch {
+                result = {};
+            }
+
+            if (response.ok) {
+    const store = result?.store;
+
+    status.textContent = store
+        ? `Store loaded successfully (${response.status}).`
+        : `Request succeeded (${response.status}), but no store object was returned.`;
+} else {
+                status.textContent =
+                    `API returned ${response.status}: ${
+                        typeof result.detail === 'string'
+                            ? result.detail
+                            : 'Request was not accepted.'
+                    }`;
+            }
+        } catch {
+            status.textContent =
+                'Request failed. Check network or API CORS settings.';
+        } finally {
+            button.disabled = false;
+        }
+    });
+
+    document.body.append(button, status);
+});
+
+/* =========================================
    NEXODRA AUTH - BRICK 2D
    LOGOUT SYSTEM
 ========================================= */
@@ -25071,4 +25273,835 @@ if (backFromHelpSupportBtn) {
       openNotificationsScreen();
     }
   });
+})();
+
+// TEMP SN-4 — TRACK DASHBOARD STORE NAME
+setTimeout(() => {
+    const heading =
+        document.getElementById('storeDisplayName');
+
+    console.log(
+        'SN-4: Dashboard name after 3 seconds:',
+        heading?.textContent
+    );
+}, 3000);
+
+setTimeout(() => {
+    const heading =
+        document.getElementById('storeDisplayName');
+
+    console.log(
+        'SN-4: Dashboard name after 8 seconds:',
+        heading?.textContent
+    );
+}, 8000);
+
+
+
+
+
+/* =========================================================
+   6. CHART SYSTEM
+   Uses Chart.js when available.
+   Includes a native Canvas fallback.
+   ========================================================= */
+
+const chartInstances = new Map();
+
+const chartPalette = {
+  purple: "#8b5cf6",
+  blue: "#3b82f6",
+  cyan: "#06b6d4",
+  green: "#10b981",
+  orange: "#f59e0b",
+  pink: "#ec4899",
+  red: "#ef4444",
+  grid: "rgba(148, 163, 184, 0.14)",
+  text: "#94a3b8"
+};
+
+function getChartTheme() {
+  const dark =
+    document.documentElement.dataset.theme === "dark" ||
+    document.body.classList.contains("dark-mode");
+
+  return {
+    text: dark ? "#cbd5e1" : "#64748b",
+    grid: dark
+      ? "rgba(148,163,184,0.13)"
+      : "rgba(100,116,139,0.12)"
+  };
+}
+
+function makeGradient(context, color) {
+  const gradient = context.createLinearGradient(
+    0,
+    0,
+    0,
+    320
+  );
+
+  gradient.addColorStop(0, `${color}55`);
+  gradient.addColorStop(1, `${color}00`);
+
+  return gradient;
+}
+
+function initializeCharts() {
+  // Chart.js canvases.
+  document.querySelectorAll("canvas[data-chart]").forEach((canvas) => {
+    const type = canvas.dataset.chart;
+
+    const labels = (
+      canvas.dataset.labels ||
+      "Mon,Tue,Wed,Thu,Fri,Sat,Sun"
+    ).split(",");
+
+    const values = (
+      canvas.dataset.values ||
+      "18,28,23,39,32,48,42"
+    )
+      .split(",")
+      .map(Number);
+
+    const color =
+      canvas.dataset.color ||
+      chartPalette.purple;
+
+    createChart(canvas, {
+      type,
+      labels,
+      values,
+      color
+    });
+  });
+    // Automatically initialize common chart IDs.
+  const defaultCharts = [
+    {
+      selectors: ["#revenueChart", "#mainChart"],
+      type: "line",
+      labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      values: [24, 38, 31, 52, 43, 67, 58],
+      color: chartPalette.purple
+    },
+    {
+      selectors: ["#activityChart"],
+      type: "bar",
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+      values: [35, 52, 43, 68, 57, 82],
+      color: chartPalette.blue
+    },
+    {
+      selectors: ["#trafficChart"],
+      type: "doughnut",
+      labels: ["Direct", "Social", "Search", "Referral"],
+      values: [35, 25, 28, 12],
+      color: chartPalette.purple
+    }
+  ];
+
+  defaultCharts.forEach((config) => {
+    for (const selector of config.selectors) {
+      const canvas = document.querySelector(selector);
+
+      console.log(
+  'CHART DEBUG — Canvas lookup:',
+  selector,
+  canvas
+);
+
+      if (!canvas || chartInstances.has(canvas)) continue;
+
+      createChart(canvas, config);
+      break;
+    }
+  });
+}
+
+/* =========================================================
+   BRICK 1 — PREPARE REAL REVENUE CHART DATA
+   Uses sales already loaded from Supabase.
+   ========================================================= */
+
+function prepareRevenueChartData(sales, range = '30d') {
+
+  const now = new Date();
+
+  let days = 30;
+
+  if (range === '7d') {
+    days = 7;
+  } else if (range === '90d') {
+    days = 90;
+  } else if (range === '1y') {
+    days = 365;
+  }
+
+  const labels = [];
+  const values = [];
+
+  const startDate = new Date(now);
+
+  startDate.setHours(0, 0, 0, 0);
+  startDate.setDate(startDate.getDate() - (days - 1));
+
+  for (let i = 0; i < days; i++) {
+
+    const date = new Date(startDate);
+
+    date.setDate(startDate.getDate() + i);
+
+    labels.push(
+      date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: '2-digit'
+      })
+    );
+
+    values.push(0);
+
+  }
+
+  (sales || []).forEach((sale) => {
+
+    if (!sale.created_at) return;
+
+    const saleDate = new Date(sale.created_at);
+
+    if (Number.isNaN(saleDate.getTime())) return;
+
+    saleDate.setHours(0, 0, 0, 0);
+
+    const dayDifference = Math.floor(
+      (saleDate.getTime() - startDate.getTime()) /
+      (1000 * 60 * 60 * 24)
+    );
+
+    if (
+      dayDifference >= 0 &&
+      dayDifference < days
+    ) {
+
+      values[dayDifference] += Number(
+        sale.total || 0
+      );
+
+    }
+
+  });
+
+  return {
+    labels,
+    values
+  };
+
+}
+
+function createChart(canvas, config) {
+  if (!canvas || chartInstances.has(canvas)) return;
+
+  if (typeof Chart !== "undefined") {
+    createChartJS(canvas, config);
+  } else {
+    drawNativeChart(canvas, config);
+  }
+}
+
+/* =========================================================
+   BRICK 3 — UPDATE REVENUE CHART
+   Uses the existing Chart.js / Canvas chart system.
+   ========================================================= */
+
+function updateRevenueChart(canvas, chartData) {
+
+  if (!canvas || !chartData) {
+    console.warn(
+      'BRICK 3 — Missing Revenue canvas or chart data.'
+    );
+
+    return;
+  }
+
+  const config = {
+    type: 'line',
+    labels: chartData.labels,
+    values: chartData.values,
+    color: chartPalette.purple,
+    label: 'Revenue'
+  };
+
+  const existingChart = chartInstances.get(canvas);
+
+  if (
+    existingChart &&
+    typeof existingChart.update === 'function'
+  ) {
+
+    existingChart.data.labels = config.labels;
+
+    existingChart.data.datasets[0].data =
+      config.values;
+
+    existingChart.update();
+
+    console.log(
+      'BRICK 3 — Existing Revenue chart updated.'
+    );
+
+    return;
+  }
+
+  if (existingChart) {
+    chartInstances.delete(canvas);
+  }
+
+  createChart(canvas, config);
+
+  console.log(
+    'BRICK 3 — Revenue chart created.'
+  );
+
+}
+
+function createChartJS(canvas, config) {
+  const context = canvas.getContext("2d");
+
+  const theme = getChartTheme();
+
+  const isDoughnut = config.type === "doughnut";
+  const isBar = config.type === "bar";
+
+  const dataset = {
+    label: config.label || "Performance",
+    data: config.values,
+    borderColor: config.color,
+    backgroundColor: isDoughnut
+      ? [
+          chartPalette.purple,
+          chartPalette.blue,
+          chartPalette.cyan,
+          chartPalette.green
+        ]
+      : isBar
+        ? `${config.color}cc`
+        : makeGradient(context, config.color),
+    borderWidth: isDoughnut ? 0 : 2.5,
+    borderRadius: isBar ? 8 : 0,
+    fill: !isBar && !isDoughnut,
+    tension: 0.4,
+    pointRadius: isDoughnut ? 0 : 3,
+    pointHoverRadius: 6,
+    pointBackgroundColor: config.color,
+    pointBorderColor: "#ffffff",
+    pointBorderWidth: 2
+  };
+const chart = new Chart(context, {
+    type: config.type,
+    data: {
+      labels: config.labels,
+      datasets: [dataset]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        duration: prefersReducedMotion ? 0 : 1200,
+        easing: "easeOutQuart"
+      },
+      interaction: {
+        intersect: false,
+        mode: "index"
+      },
+      plugins: {
+        legend: {
+          display: isDoughnut,
+          position: "bottom",
+          labels: {
+            color: theme.text,
+            usePointStyle: true,
+            pointStyle: "circle",
+            padding: 18
+          }
+        },
+        tooltip: {
+          backgroundColor: "#111827",
+          titleColor: "#ffffff",
+          bodyColor: "#e5e7eb",
+          padding: 12,
+          cornerRadius: 10,
+          displayColors: true
+        }
+      },
+      scales: isDoughnut
+        ? {}
+        : {
+            x: {
+              grid: {
+                display: false
+              },
+              border: {
+                display: false
+              },
+              ticks: {
+                color: theme.text
+              }
+            },
+            y: {
+              beginAtZero: true,
+              border: {
+                display: false,
+                dash: [4, 4]
+              },
+              grid: {
+                color: theme.grid
+              },
+              ticks: {
+                color: theme.text,
+                padding: 10
+              }
+            }
+          }
+    }
+  });
+
+  chartInstances.set(canvas, chart);
+}
+/*
+  Native Canvas chart fallback.
+  This keeps basic charts working without Chart.js.
+*/
+
+function drawNativeChart(canvas, config) {
+  const context = canvas.getContext("2d");
+
+  if (!context) return;
+
+  const ratio = window.devicePixelRatio || 1;
+
+  const bounds = canvas.getBoundingClientRect();
+
+  const width = Math.max(bounds.width, 280);
+  const height = Math.max(bounds.height, 180);
+
+  canvas.width = width * ratio;
+  canvas.height = height * ratio;
+
+  context.scale(ratio, ratio);
+
+  const padding = {
+    top: 24,
+    right: 18,
+    bottom: 34,
+    left: 38
+  };
+
+  const chartWidth =
+    width - padding.left - padding.right;
+
+  const chartHeight =
+    height - padding.top - padding.bottom;
+
+  const values = config.values;
+  const maxValue = Math.max(...values, 1) * 1.15;
+
+  const theme = getChartTheme();
+
+  context.clearRect(0, 0, width, height);
+
+  // Horizontal grid lines.
+  context.strokeStyle = theme.grid;
+  context.lineWidth = 1;
+
+  for (let i = 0; i <= 4; i++) {
+    const y =
+      padding.top + (chartHeight / 4) * i;
+
+    context.beginPath();
+    context.moveTo(padding.left, y);
+    context.lineTo(width - padding.right, y);
+    context.stroke();
+  }
+
+  if (config.type === "doughnut") {
+    const total = values.reduce(
+      (sum, value) => sum + value,
+      0
+    );
+   const colors = [
+      chartPalette.purple,
+      chartPalette.blue,
+      chartPalette.cyan,
+      chartPalette.green
+    ];
+
+    let angle = -Math.PI / 2;
+
+    const centerX = width / 2;
+    const centerY = height / 2 - 8;
+    const radius = Math.min(width, height) * 0.32;
+
+    values.forEach((value, index) => {
+      const slice = (value / total) * Math.PI * 2;
+
+      context.beginPath();
+      context.arc(
+        centerX,
+        centerY,
+        radius,
+        angle,
+        angle + slice
+      );
+
+      context.strokeStyle = colors[index % colors.length];
+      context.lineWidth = radius * 0.38;
+      context.stroke();
+
+      angle += slice;
+    });
+
+    chartInstances.set(canvas, {
+      config,
+      redraw: () => drawNativeChart(canvas, config)
+    });
+
+    return;
+  }
+ const points = values.map((value, index) => {
+    const x =
+      padding.left +
+      (values.length === 1
+        ? chartWidth / 2
+        : (chartWidth / (values.length - 1)) * index);
+
+    const y =
+      padding.top +
+      chartHeight -
+      (value / maxValue) * chartHeight;
+
+    return { x, y };
+  });
+
+  if (config.type === "bar") {
+    const slotWidth = chartWidth / values.length;
+    const barWidth = slotWidth * 0.55;
+
+    points.forEach((point, index) => {
+      const barHeight =
+        padding.top + chartHeight - point.y;
+
+      context.fillStyle = config.color;
+
+      context.beginPath();
+
+      context.roundRect(
+        point.x - barWidth / 2,
+        point.y,
+        barWidth,
+        barHeight,
+        5
+      );
+
+      context.fill();
+    });
+  } else {
+  // Fill the area beneath the line.
+    context.beginPath();
+    context.moveTo(points[0].x, padding.top + chartHeight);
+
+    points.forEach((point) => {
+      context.lineTo(point.x, point.y);
+    });
+
+    context.lineTo(
+      points[points.length - 1].x,
+      padding.top + chartHeight
+    );
+
+    context.closePath();
+
+    const gradient = context.createLinearGradient(
+      0,
+      padding.top,
+      0,
+      padding.top + chartHeight
+    );
+
+    gradient.addColorStop(0, `${config.color}45`);
+    gradient.addColorStop(1, `${config.color}00`);
+
+    context.fillStyle = gradient;
+    context.fill();
+
+    // Smooth line.
+    context.beginPath();
+
+    points.forEach((point, index) => {
+      if (index === 0) {
+        context.moveTo(point.x, point.y);
+      } else {
+        const previous = points[index - 1];
+
+        const midX = (previous.x + point.x) / 2;
+        const midY = (previous.y + point.y) / 2;
+
+        context.quadraticCurveTo(
+          previous.x,
+          previous.y,
+          midX,
+          midY
+        );
+      }
+    });
+
+    const last = points[points.length - 1];
+
+    context.lineTo(last.x, last.y);
+
+    context.strokeStyle = config.color;
+    context.lineWidth = 3;
+    context.lineJoin = "round";
+    context.stroke();
+
+    // Data points.
+    points.forEach((point) => {
+      context.beginPath();
+      context.arc(point.x, point.y, 3.5, 0, Math.PI * 2);
+
+      context.fillStyle = config.color;
+      context.fill();
+    });
+  }
+
+  // X-axis labels.
+  context.fillStyle = theme.text;
+  context.font = "11px system-ui, sans-serif";
+  context.textAlign = "center";
+
+  config.labels.forEach((label, index) => {
+    const x =
+      padding.left +
+      (values.length === 1
+        ? chartWidth / 2
+        : (chartWidth / (values.length - 1)) * index);
+
+    context.fillText(
+      label.trim(),
+      x,
+      height - 10
+    );
+  });
+
+  chartInstances.set(canvas, {
+    config,
+    redraw: () => drawNativeChart(canvas, config)
+  });
+}
+
+/* =========================================================
+   7. CHART PERIOD SWITCHER
+   Uses real seller sales data.
+   ========================================================= */
+
+document.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-range]");
+
+  if (!button) return;
+
+  const group = button.closest(
+    "[data-chart-controls], .chart-controls"
+  );
+
+  if (group) {
+    $$("button", group).forEach((item) => {
+      item.classList.toggle("active", item === button);
+    });
+  }
+
+  const canvas = $("#revenueChart");
+  if (!canvas) return;
+
+  const range = button.dataset.range;
+
+  try {
+    const sales = await loadSellerSales("month");
+    const chartData = prepareRevenueChartData(sales, range);
+
+    updateRevenueChart(canvas, chartData);
+
+    console.log(`BRICK 4 — Revenue chart changed to ${range}.`);
+  } catch (error) {
+    console.error(
+      "BRICK 4 — Could not update Revenue chart:",
+      error
+    );
+  }
+});
+
+// =====================================================
+// NEXODRA — BRICK 2C: SIDEBAR CONTROLLER
+// =====================================================
+
+(() => {
+    const menuButton = document.getElementById(
+        'nexodraMenuToggle'
+    );
+
+    const sidebar = document.getElementById(
+        'nexodraSideNav'
+    );
+
+    const closeButton = document.getElementById(
+        'nexodraSidebarClose'
+    );
+
+    // Stop safely if the required HTML is missing.
+    if (!menuButton || !sidebar) {
+        console.warn(
+            'Nexodra sidebar: menu button or sidebar panel not found.'
+        );
+        return;
+    }
+
+    // Create the outside-click backdrop.
+    let backdrop = document.querySelector(
+        '.nexodra-sidebar-backdrop'
+    );
+
+    if (!backdrop) {
+        backdrop = document.createElement('div');
+
+        backdrop.className = 'nexodra-sidebar-backdrop';
+
+        backdrop.setAttribute('aria-hidden', 'true');
+
+        document.body.appendChild(backdrop);
+    }
+
+    // Ensure the sidebar starts closed.
+    function closeSidebar() {
+        sidebar.classList.remove('is-open');
+
+        backdrop.classList.remove('is-visible');
+
+        document.body.classList.remove(
+            'nexodra-sidebar-open'
+        );
+
+        sidebar.setAttribute('aria-hidden', 'true');
+
+        menuButton.setAttribute(
+            'aria-expanded',
+            'false'
+        );
+
+        menuButton.setAttribute(
+            'aria-label',
+            'Open navigation menu'
+        );
+    }
+
+    // Open the sidebar.
+    function openSidebar() {
+        sidebar.classList.add('is-open');
+
+        backdrop.classList.add('is-visible');
+
+        document.body.classList.add(
+            'nexodra-sidebar-open'
+        );
+
+        sidebar.setAttribute('aria-hidden', 'false');
+
+        menuButton.setAttribute(
+            'aria-expanded',
+            'true'
+        );
+
+        menuButton.setAttribute(
+            'aria-label',
+            'Close navigation menu'
+        );
+    }
+
+    // Toggle from the hamburger button.
+    menuButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        if (sidebar.classList.contains('is-open')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
+
+    // Close from the sidebar's close button.
+    if (closeButton) {
+        closeButton.addEventListener(
+            'click',
+            closeSidebar
+        );
+    }
+
+    // Close when the user taps outside the panel.
+    backdrop.addEventListener(
+        'click',
+        closeSidebar
+    );
+
+    // Close with Escape.
+    document.addEventListener('keydown', (event) => {
+        if (
+            event.key === 'Escape' &&
+            sidebar.classList.contains('is-open')
+        ) {
+            closeSidebar();
+            menuButton.focus();
+        }
+    });
+
+    // Close after tapping outside the sidebar.
+    // The backdrop handles outside taps on touchscreens.
+    // This also handles clicks outside if another element
+    // happens to be above the backdrop.
+    document.addEventListener('click', (event) => {
+        if (!sidebar.classList.contains('is-open')) {
+            return;
+        }
+
+        if (
+            !sidebar.contains(event.target) &&
+            !menuButton.contains(event.target)
+        ) {
+            closeSidebar();
+        }
+    });
+
+    // Keep the current theme styling synchronized.
+    function syncSidebarTheme() {
+        const isDark = document.body.classList.contains(
+            'store-theme-dark'
+        );
+
+        sidebar.dataset.theme = isDark ? 'dark' : 'light';
+    }
+
+    // Apply the current theme immediately.
+    syncSidebarTheme();
+
+    // Observe changes made by the existing theme function.
+    const themeObserver = new MutationObserver(() => {
+        syncSidebarTheme();
+    });
+
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class']
+    });
+
+    // Start closed on every page load.
+    closeSidebar();
+
+    console.log(
+        'Nexodra sidebar controller initialized.'
+    );
 })();

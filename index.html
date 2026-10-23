@@ -1430,6 +1430,21 @@
         <!-- App Top Bar -->
 <header class="app-header">
 
+<!-- =========================================
+     NEXODRA — RESPONSIVE MENU BUTTON
+     ========================================= -->
+
+<button
+    type="button"
+    id="nexodraMenuToggle"
+    class="nexodra-menu-toggle"
+    aria-label="Open navigation menu"
+    aria-controls="nexodraSideNav"
+    aria-expanded="false"
+>
+    <i class="fa-solid fa-bars"></i>
+</button>
+  
     <h1 id="screenTitle">Store</h1>
 
     <div class="header-right">
@@ -5801,11 +5816,6 @@
     class="screen"
 >
 
-
-    <!-- Header -->
-
-    <div class="sales-overview-page-header">
-
         <button
             type="button"
             id="closeSalesOverview"
@@ -5816,269 +5826,746 @@
 
         </button>
 
+    <!-- Prepared dashboard content begins. NOTE: figures in this template are sample/demo values. -->
+    <div class="sales-overview-dashboard">
+<!-- =================================
+                     STATISTICS CARDS
+                ================================== -->
 
-        <div>
+                <section class="stats-section" aria-label="Key performance metrics">
 
-            <span class="sell-eyebrow">
-                STORE PERFORMANCE
-            </span>
 
-            <h2>
-                Sales Overview
-            </h2>
+                    <div class="section-heading">
 
-            <p>
-                Track your store performance.
-            </p>
+                        <div>
 
-        </div>
+                            <h2>Performance overview</h2>
 
-    </div>
+                        </div>
 
 
+                        <button
+                            class="period-selector"
+                            id="statsPeriod"
+                            type="button"
+                            data-period="7d"
+                        >
 
-    <!-- Summary Cards -->
+                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <rect x="3" y="5" width="18" height="16" rx="2"/>
+                                <path d="M16 3v4"/>
+                                <path d="M8 3v4"/>
+                                <path d="M3 11h18"/>
+                            </svg>
 
-    <div class="sales-overview-summary">
+                            Last 7 days
 
+                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="m7 10 5 5 5-5"/>
+                            </svg>
 
-        <div class="sales-stat-card">
+                        </button>
 
-            <span>
-                REVENUE
-            </span>
+                    </div>
 
-            <strong id="analyticsRevenue">
-                0.00
-            </strong>
 
-        </div>
 
+                    <div class="stats-grid">
 
 
-        <div class="sales-stat-card">
+                        <!-- REVENUE -->
 
-            <span>
-                TRANSACTIONS
-            </span>
+                        <article class="stat-card" data-stat="revenue">
 
-            <strong id="analyticsTransactions">
-                0
-            </strong>
+                            <div class="stat-card-top">
 
-        </div>
+                                <span class="stat-label">
+                                    Total revenue
+                                </span>
 
+                                <span class="stat-icon stat-icon-purple">
 
+                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <rect x="2" y="5" width="20" height="14" rx="3"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                        <path d="M6 9h.01"/>
+                                        <path d="M18 15h.01"/>
+                                    </svg>
 
-        <div class="sales-stat-card">
+                                </span>
 
-            <span>
-                ITEMS SOLD
-            </span>
+                            </div>
 
-            <strong id="analyticsItemsSold">
-                0
-            </strong>
 
-        </div>
+                            <div class="stat-value-row">
 
+                                <h3 class="stat-value" data-count="24850" data-prefix="$" data-format="currency">
+                                    $24,850
+                                </h3>
 
-    </div>
+                                <span class="stat-trend trend-up">
 
+                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="m7 14 5-5 5 5"/>
+                                    </svg>
 
+                                    12.8%
 
-    <!-- Period Selector -->
+                                </span>
 
-    <div class="sales-period-switch">
+                            </div>
 
 
-        <button
-            type="button"
-            class="sales-period-btn active"
-            data-period="today"
-        >
-            Today
-        </button>
+                            <p class="stat-comparison">
+                                <span class="comparison-muted">vs. previous period</span>
+                            </p>
 
 
-        <button
-            type="button"
-            class="sales-period-btn"
-            data-period="week"
-        >
-            Week
-        </button>
+                            <div class="mini-chart mini-chart-purple">
 
+                                <canvas
+                                    class="sparkline"
+                                    id="revenueSparkline"
+                                    aria-label="Revenue trend chart"
+                                ></canvas>
 
-        <button
-            type="button"
-            class="sales-period-btn"
-            data-period="month"
-        >
-            Month
-        </button>
+                            </div>
 
+                        </article>
 
-    </div>
 
 
+                        <!-- ACTIVE USERS -->
 
+                        <article class="stat-card" data-stat="users">
 
-    <!-- Graph -->
+                            <div class="stat-card-top">
 
-    <div class="sales-analytics-card">
+                                <span class="stat-label">
+                                    Active users
+                                </span>
 
+                                <span class="stat-icon stat-icon-cyan">
 
-        <div class="sales-analytics-header">
+                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="10" cy="7" r="4"/>
+                                        <path d="M20 21v-2a4 4 0 0 0-3-3.87"/>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                    </svg>
 
-            <div>
+                                </span>
 
-                <span>
-                    SALES PERFORMANCE
-                </span>
+                            </div>
 
-                <h3>
-                    Revenue
-                </h3>
 
-            </div>
+                            <div class="stat-value-row">
 
+                                <h3 class="stat-value" data-count="8420" data-format="number">
+                                    8,420
+                                </h3>
 
-            <strong id="analyticsGraphTotal">
-                0.00
-            </strong>
+                                <span class="stat-trend trend-up">
 
+                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="m7 14 5-5 5 5"/>
+                                    </svg>
 
-        </div>
+                                    8.2%
 
+                                </span>
 
+                            </div>
 
-        <div
-            id="salesGraph"
-            class="sales-graph"
-        >
 
-        </div>
+                            <p class="stat-comparison">
+                                <span class="comparison-muted">vs. previous period</span>
+                            </p>
 
 
-    </div>
+                            <div class="mini-chart mini-chart-cyan">
 
-<!-- =========================================
-     TOP SELLING PRODUCTS
-========================================= -->
+                                <canvas
+                                    class="sparkline"
+                                    id="usersSparkline"
+                                    aria-label="Active users trend chart"
+                                ></canvas>
 
-<div class="top-selling-card">
+                            </div>
 
+                        </article>
 
-    <div class="top-selling-header">
 
-        <div>
 
-            <span>
-                TOP SELLING PRODUCTS
-            </span>
+                        <!-- CONVERSION RATE -->
 
-            <h3>
-                Best Performers
-            </h3>
+                        <article class="stat-card" data-stat="conversion">
 
-        </div>
+                            <div class="stat-card-top">
 
+                                <span class="stat-label">
+                                    Conversion rate
+                                </span>
 
-        <span class="overview-period">
-            This month
-        </span>
+                                <span class="stat-icon stat-icon-green">
 
+                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M3 17 9 11l4 4 8-8"/>
+                                        <path d="M15 7h6v6"/>
+                                    </svg>
 
-    </div>
+                                </span>
 
+                            </div>
 
 
-    <div
-        id="topSellingProductsList"
-        class="top-selling-list"
-    >
+                            <div class="stat-value-row">
 
+                                <h3 class="stat-value" data-count="3.62" data-suffix="%" data-decimals="2">
+                                    3.62%
+                                </h3>
 
-        <div class="top-selling-empty">
+                                <span class="stat-trend trend-up">
 
+                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="m7 14 5-5 5 5"/>
+                                    </svg>
 
-            <i class="fa-solid fa-trophy"></i>
+                                    4.6%
 
+                                </span>
 
-            <strong>
-                No sales data yet
-            </strong>
+                            </div>
 
 
-            <span>
-                Your best products will appear here.
-            </span>
+                            <p class="stat-comparison">
+                                <span class="comparison-muted">vs. previous period</span>
+                            </p>
 
 
-        </div>
+                            <div class="mini-chart mini-chart-green">
 
+                                <canvas
+                                    class="sparkline"
+                                    id="conversionSparkline"
+                                    aria-label="Conversion rate trend chart"
+                                ></canvas>
 
-    </div>
+                            </div>
 
+                        </article>
 
+
+
+                        <!-- ENGAGEMENT -->
+
+                        <article class="stat-card" data-stat="engagement">
+
+                            <div class="stat-card-top">
+
+                                <span class="stat-label">
+                                    Engagement
+                                </span>
+
+                                <span class="stat-icon stat-icon-orange">
+
+                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M12 21s-8-4.5-8-11a4.5 4.5 0 0 1 8-2.9A4.5 4.5 0 0 1 20 10c0 6.5-8 11-8 11Z"/>
+                                    </svg>
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="stat-value-row">
+
+                                <h3 class="stat-value" data-count="68.4" data-suffix="%" data-decimals="1">
+                                    68.4%
+                                </h3>
+
+                                <span class="stat-trend trend-down">
+
+                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="m7 10 5 5 5-5"/>
+                                    </svg>
+
+                                    1.2%
+
+                                </span>
+
+                            </div>
+
+
+                            <p class="stat-comparison">
+                                <span class="comparison-muted">vs. previous period</span>
+                            </p>
+
+
+                            <div class="mini-chart mini-chart-orange">
+
+                                <canvas
+                                    class="sparkline"
+                                    id="engagementSparkline"
+                                    aria-label="Engagement trend chart"
+                                ></canvas>
+
+                            </div>
+
+                        </article>
+
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =================================
+                     ANALYTICS GRID
+                ================================== -->
+
+                <section class="analytics-section" id="analytics">
+
+
+                    <div class="analytics-grid">
+
+
+                        <!-- MAIN ANALYTICS CHART -->
+
+                        <article class="panel revenue-panel">
+
+
+                            <div class="panel-header">
+
+                                <div>
+
+                                    <div class="panel-title-row">
+
+                                        <h2>Revenue analytics</h2>
+
+                                        <span class="chart-live-badge">
+                                            <span></span>
+                                            Updated
+                                        </span>
+
+                                    </div>
+
+                                    <p class="panel-description">
+                                        Track your financial performance over time.
+                                    </p>
+
+                                </div>
+
+
+                                <button
+                                    class="icon-button panel-menu-button"
+                                    data-menu="revenue"
+                                    type="button"
+                                    aria-label="Revenue chart options"
+                                >
+
+                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <circle cx="5" cy="12" r="1"/>
+                                        <circle cx="12" cy="12" r="1"/>
+                                        <circle cx="19" cy="12" r="1"/>
+                                    </svg>
+
+                                </button>
+
+                            </div>
+
+
+
+                            <div class="revenue-summary">
+
+                                <div class="revenue-summary-main">
+
+                                    <span class="summary-overline">
+                                        TOTAL REVENUE
+                                    </span>
+
+                                    <div class="revenue-number" id="totalRevenueDisplay">
+    <span>$</span>0<span class="revenue-decimal">.00</span>
 </div>
 
-
-    <!-- Sales History -->
-
-    <div class="sales-history-card">
+                                </div>
 
 
-        <div class="sales-history-header">
+                                <div class="revenue-summary-change">
 
-            <span>
-                TRANSACTIONS
-            </span>
+                                    <span class="change-pill">
 
+                                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="m7 14 5-5 5 5"/>
+                                        </svg>
 
-            <h3>
-                Sales History
-            </h3>
+                                        12.8%
 
+                                    </span>
 
-        </div>
+                                    <span class="change-caption">
+                                        growth
+                                    </span>
 
+                                </div>
 
-
-        <div
-            id="salesHistoryList"
-            class="sales-history-list"
-        >
-
-
-            <div class="sales-history-empty">
+                            </div>
 
 
-                <i class="fa-solid fa-receipt"></i>
+
+                            <div class="chart-legend">
+
+                                <span class="legend-item">
+
+                                    <span class="legend-dot legend-dot-purple"></span>
+
+                                    Revenue
+
+                                </span>
+
+                                <span class="legend-item">
+
+                                    <span class="legend-dot legend-dot-cyan"></span>
+
+                                    Previous period
+
+                                </span>
 
 
-                <strong>
-                    No sales yet
-                </strong>
+                                <div class="chart-period-controls" role="group" aria-label="Chart time range">
+
+                                    <button
+                                        class="chart-period-button"
+                                        data-range="7d"
+                                        type="button"
+                                    >
+                                        7D
+                                    </button>
+
+                                    <button
+                                        class="chart-period-button active"
+                                        data-range="30d"
+                                        type="button"
+                                    >
+                                        30D
+                                    </button>
+
+                                    <button
+                                        class="chart-period-button"
+                                        data-range="90d"
+                                        type="button"
+                                    >
+                                        90D
+                                    </button>
+
+                                    <button
+                                        class="chart-period-button"
+                                        data-range="1y"
+                                        type="button"
+                                    >
+                                        1Y
+                                    </button>
+
+                                </div>
+
+                            </div>
 
 
-                <span>
-                    Completed sales will appear here.
-                </span>
+
+                            <div class="main-chart-container">
+
+                                <div class="chart-y-axis" aria-hidden="true">
+
+                                    <span>$30k</span>
+
+                                    <span>$20k</span>
+
+                                    <span>$10k</span>
+
+                                    <span>$0</span>
+
+                                </div>
 
 
-            </div>
+                                <div class="main-chart-plot">
+
+                                    <div class="chart-grid-lines" aria-hidden="true">
+
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+
+                                    </div>
 
 
-        </div>
+                                    <canvas
+                                        id="revenueChart"
+                                        class="main-chart-canvas"
+                                        role="img"
+                                        aria-label="Revenue analytics chart showing revenue and previous period"
+                                    ></canvas>
 
+
+                                    <div
+                                        class="chart-tooltip"
+                                        id="chartTooltip"
+                                        aria-hidden="true"
+                                    >
+
+                                        <span class="tooltip-date">
+                                            Oct 12
+                                        </span>
+
+                                        <strong class="tooltip-value">
+                                            $24,850
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="chart-x-axis" id="chartXAxis" aria-hidden="true">
+
+                                <span>Oct 01</span>
+                                <span>Oct 05</span>
+                                <span>Oct 10</span>
+                                <span>Oct 15</span>
+                                <span>Oct 20</span>
+                                <span>Oct 25</span>
+                                <span>Oct 30</span>
+
+                            </div>
+
+
+                        </article>
+
+
+
+                        <!-- TRAFFIC SOURCES -->
+
+                        <article class="panel traffic-panel" id="audience">
+
+
+                            <div class="panel-header">
+
+                                <div>
+
+                                    <h2>Traffic sources</h2>
+
+                                    <p class="panel-description">
+                                        Where your visitors come from.
+                                    </p>
+
+                                </div>
+
+
+                                <button
+                                    class="icon-button panel-menu-button"
+                                    data-menu="traffic"
+                                    type="button"
+                                    aria-label="Traffic source options"
+                                >
+
+                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <circle cx="5" cy="12" r="1"/>
+                                        <circle cx="12" cy="12" r="1"/>
+                                        <circle cx="19" cy="12" r="1"/>
+                                    </svg>
+
+                                </button>
+
+                            </div>
+
+
+
+                            <div class="traffic-total">
+
+                                <div>
+
+                                    <span class="summary-overline">
+                                        TOTAL VISITORS
+                                    </span>
+
+                                    <h3>18,462</h3>
+
+                                </div>
+
+
+                                <span class="stat-trend trend-up">
+
+                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="m7 14 5-5 5 5"/>
+                                    </svg>
+
+                                    9.4%
+
+                                </span>
+
+                            </div>
+
+
+
+                            <div class="donut-chart-container">
+
+                                <div
+                                    class="donut-chart"
+                                    id="trafficDonut"
+                                    role="img"
+                                    aria-label="Traffic sources distribution chart"
+                                >
+
+                                    <div class="donut-center">
+
+                                        <span class="donut-center-label">
+                                            TOTAL
+                                        </span>
+
+                                        <strong>18.4k</strong>
+
+                                        <span class="donut-center-caption">
+                                            visitors
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="traffic-legend">
+
+
+                                <div class="traffic-source-row">
+
+                                    <span class="traffic-source-name">
+
+                                        <span class="source-dot source-purple"></span>
+
+                                        Organic search
+
+                                    </span>
+
+                                    <div class="traffic-source-data">
+
+                                        <strong>42%</strong>
+
+                                        <span>7,754</span>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="traffic-source-row">
+
+                                    <span class="traffic-source-name">
+
+                                        <span class="source-dot source-cyan"></span>
+
+                                        Direct
+
+                                    </span>
+
+                                    <div class="traffic-source-data">
+
+                                        <strong>28%</strong>
+
+                                        <span>5,169</span>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="traffic-source-row">
+
+                                    <span class="traffic-source-name">
+
+                                        <span class="source-dot source-pink"></span>
+
+                                        Social media
+
+                                    </span>
+
+                                    <div class="traffic-source-data">
+
+                                        <strong>18%</strong>
+
+                                        <span>3,323</span>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="traffic-source-row">
+
+                                    <span class="traffic-source-name">
+
+                                        <span class="source-dot source-orange"></span>
+
+                                        Referrals
+
+                                    </span>
+
+                                    <div class="traffic-source-data">
+
+                                        <strong>12%</strong>
+
+                                        <span>2,216</span>
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <button
+                                class="text-action"
+                                id="trafficDetailsButton"
+                                type="button"
+                            >
+
+                                View traffic details
+
+                                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M5 12h14"/>
+                                    <path d="m12 5 7 7-7 7"/>
+                                </svg>
+
+                            </button>
+
+
+                        </article>
+
+
+                    </div>
+
+
+                </section>
 
     </div>
+</>
+<!-- END NEXODRA SALES OVERVIEW -->
+
+    
 
 
-</section>
 
+
+              
           <!-- =========================================
      CALCULATOR SCREEN
      ========================================= -->
@@ -6301,7 +6788,7 @@
 
 </section>
             
-        </main>
+</main>
 
         <!-- Bottom Navigation Bar -->
 <nav class="bottom-nav">
@@ -6534,6 +7021,218 @@
     </div>
 </div>                        
 
+<!-- =====================================================
+     NEXODRA — COMPLETE DASHBOARD SIDEBAR
+     ===================================================== -->
+<aside
+    id="nexodraSideNav"
+    class="nexodra-side-nav"
+    aria-label="Main navigation"
+    aria-hidden="true"
+>
+    <!-- 1. BRAND HEADER -->
+    <div class="nexodra-sidebar-header">
+        <a href="#" class="nexodra-sidebar-brand" data-page="home">
+            <span class="nexodra-brand-mark">
+                <i class="fa-solid fa-code"></i>
+            </span>
+
+            <span class="nexodra-brand-name">NEXODRA</span>
+        </a>
+
+        <button
+            type="button"
+            class="nexodra-sidebar-close"
+            id="nexodraSidebarClose"
+            aria-label="Close navigation"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+
+    <!-- 2. WORKSPACE SELECTOR -->
+    <button
+        type="button"
+        class="nexodra-workspace-selector"
+        id="nexodraWorkspaceSelector"
+        aria-label="Current workspace: Nexodra Studio"
+    >
+        <span class="nexodra-workspace-icon">
+            <i class="fa-solid fa-code"></i>
+        </span>
+
+        <span class="nexodra-workspace-details">
+            <span class="nexodra-workspace-label">WORKSPACE</span>
+            <span class="nexodra-workspace-name">Nexodra Studio</span>
+        </span>
+
+        <i class="fa-solid fa-chevron-down nexodra-workspace-arrow"></i>
+    </button>
+
+
+    <!-- 3. MAIN WORKSPACE NAVIGATION -->
+    <nav class="nexodra-sidebar-navigation">
+
+        <div class="nexodra-sidebar-section-title">
+            WORKSPACE
+        </div>
+
+        <a
+            href="#"
+            class="nexodra-sidebar-link active"
+            data-page="home"
+            aria-current="page"
+        >
+            <i class="fa-solid fa-house"></i>
+            <span class="nexodra-sidebar-link-label">Home</span>
+        </a>
+
+        <a
+            href="#"
+            class="nexodra-sidebar-link"
+            data-page="analytics"
+        >
+            <i class="fa-solid fa-chart-line"></i>
+            <span class="nexodra-sidebar-link-label">Analytics</span>
+        </a>
+
+        <a
+            href="#"
+            class="nexodra-sidebar-link"
+            data-page="sell"
+        >
+            <i class="fa-solid fa-cash-register"></i>
+            <span class="nexodra-sidebar-link-label">Sell</span>
+
+            <span class="nexodra-sidebar-badge">
+                9
+            </span>
+        </a>
+
+        <a
+            href="#"
+            class="nexodra-sidebar-link"
+            data-page="inbox"
+        >
+            <i class="fa-solid fa-inbox"></i>
+            <span class="nexodra-sidebar-link-label">Inbox</span>
+        </a>
+
+        <a
+            href="#"
+            class="nexodra-sidebar-link"
+            data-page="reports"
+        >
+            <i class="fa-solid fa-file-lines"></i>
+            <span class="nexodra-sidebar-link-label">Reports</span>
+        </a>
+
+
+        <!-- 4. TOOLS -->
+        <div class="nexodra-sidebar-section-title nexodra-tools-title">
+            TOOLS
+        </div>
+
+        <a
+            href="#"
+            class="nexodra-sidebar-link"
+            data-page="preview-store"
+        >
+            <i class="fa-solid fa-eye"></i>
+            <span class="nexodra-sidebar-link-label">Preview store</span>
+
+            <span class="nexodra-sidebar-new-badge">
+                NEW
+            </span>
+        </a>
+
+        <a
+            href="#"
+            class="nexodra-sidebar-link"
+            data-page="profile"
+        >
+            <i class="fa-solid fa-user"></i>
+            <span class="nexodra-sidebar-link-label">Profile</span>
+        </a>
+
+        <a
+            href="#"
+            class="nexodra-sidebar-link"
+            data-page="settings"
+        >
+            <i class="fa-solid fa-gear"></i>
+            <span class="nexodra-sidebar-link-label">Settings</span>
+        </a>
+
+    </nav>
+
+
+    <!-- 5. PROMOTIONAL CARD -->
+    <section class="nexodra-sidebar-promo">
+
+        <div class="nexodra-promo-top">
+            <span class="nexodra-promo-icon">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </span>
+
+            <span class="nexodra-promo-badge">
+                PRO
+            </span>
+        </div>
+
+        <h3 class="nexodra-promo-heading">
+            Unlock your potential
+        </h3>
+
+        <p class="nexodra-promo-description">
+            Get deeper insights and take your workspace further.
+        </p>
+
+        <button
+            type="button"
+            class="nexodra-promo-button"
+            id="nexodraExplorePro"
+        >
+            <span>Explore Pro</span>
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+    </section>
+
+
+    <!-- 6. USER PROFILE FOOTER -->
+    <div class="nexodra-sidebar-footer">
+
+        <div class="nexodra-user-avatar">
+            JD
+        </div>
+
+        <div class="nexodra-user-details">
+            <span class="nexodra-user-name">
+                Jordan Davis
+            </span>
+
+            <span class="nexodra-user-role">
+                Workspace owner
+            </span>
+        </div>
+
+        <button
+            type="button"
+            class="nexodra-user-options"
+            id="nexodraUserOptions"
+            aria-label="User options"
+        >
+            <i class="fa-solid fa-ellipsis"></i>
+        </button>
+
+    </div>
+
+</aside>
+
+<!-- End NEXODRA Sidebar -->
+  
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -6551,7 +7250,7 @@
 </script>
 
       <script>
-    const NEXODRA_API_URL = 'http://127.0.0.1:8000';
+    const NEXODRA_API_URL = 'https://nexodra-api.onrender.com';
 </script>
 
 <!-- Barcode / QR scanner -->
@@ -6561,7 +7260,7 @@
 
       
     <script src="app.js"></script>
-
-                    
+                  
 </body>
+  
 </html>

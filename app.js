@@ -4294,6 +4294,28 @@ if (
 
 }
 
+// BRICK R5 — Move Reports out of hidden Sales Overview.
+const reportsScreenR5 =
+    document.getElementById('reportsScreen');
+
+const appBodyR5 =
+    document.querySelector('.app-container .app-body');
+
+if (
+    reportsScreenR5 &&
+    appBodyR5 &&
+    reportsScreenR5.parentElement !== appBodyR5
+) {
+    appBodyR5.appendChild(reportsScreenR5);
+
+    console.log(
+        'BRICK R5 — Reports moved into app-body.'
+    );
+} else {
+    console.log(
+        'BRICK R5 — Reports already in app-body or elements missing.'
+    );
+}
 
 const storeQrBackBtn =
     document.getElementById(
@@ -10692,6 +10714,100 @@ let currentSellerConversationBuyerId =
 // BRICK H2-A — Prevent stale message loads.
 let sellerMessagesLoadToken = 0;
 
+// BRICK N1 — Realtime messages for the active seller conversation
+let sellerMessagesRealtimeChannel = null;
+
+function subscribeToSellerConversationMessages(conversationId) {
+    if (!conversationId) {
+        console.warn(
+            'BRICK N1 — Cannot subscribe: conversation ID is missing.'
+        );
+        return;
+    }
+
+    // Remove the previous conversation listener.
+    if (sellerMessagesRealtimeChannel) {
+        supabaseClient.removeChannel(
+            sellerMessagesRealtimeChannel
+        );
+
+        sellerMessagesRealtimeChannel = null;
+    }
+
+    const subscribedConversationId =
+        String(conversationId);
+
+    sellerMessagesRealtimeChannel =
+        supabaseClient
+            .channel(
+                `seller-chat-${subscribedConversationId}`
+            )
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'messages',
+                    filter:
+                        `conversation_id=eq.${subscribedConversationId}`
+                },
+                payload => {
+                    const newMessage =
+                        payload.new;
+
+                    // Ignore events if the seller has changed chats.
+                    if (
+                        String(currentSellerConversationId) !==
+                        String(newMessage.conversation_id)
+                    ) {
+                        return;
+                    }
+
+                    // The seller's own sent message is already handled
+                    // by sendSellerMessage() and its message reload.
+                    if (
+                        String(newMessage.sender_id) !==
+                        String(currentSellerConversationBuyerId)
+                    ) {
+                        return;
+                    }
+
+                    console.log(
+                        'BRICK N1 — Customer message received:',
+                        newMessage.id
+                    );
+
+                    // Reload the current conversation so its existing
+                    // rendering and read-status logic stays in use.
+                    loadSellerMessages(
+                        currentSellerConversationId
+                    );
+                }
+            )
+            .subscribe(status => {
+                console.log(
+                    'BRICK N1 — Realtime subscription status:',
+                    status
+                );
+
+                if (status === 'SUBSCRIBED') {
+                    console.log(
+                        'BRICK N1 — Listening for customer messages:',
+                        subscribedConversationId
+                    );
+                }
+
+                if (
+                    status === 'CHANNEL_ERROR' ||
+                    status === 'TIMED_OUT'
+                ) {
+                    console.error(
+                        'BRICK N1 — Realtime connection issue:',
+                        status
+                    );
+                }
+            });
+}
 
 // =========================================
 // LOAD MESSAGES
@@ -11259,9 +11375,14 @@ if (chatPanel) {
 
     }
 
-    await loadSellerMessages(
-        conversationId
-    );
+    // BRICK N1 — Load history, then listen for new messages.
+await loadSellerMessages(
+    conversationId
+);
+
+subscribeToSellerConversationMessages(
+    conversationId
+);
 
 }
 
@@ -11276,11 +11397,21 @@ if (closeChatBtn) {
         'click',
         () => {
 
-            currentSellerConversationId =
-                null;
+            // BRICK N1 — Stop listening when leaving the conversation.
+if (sellerMessagesRealtimeChannel) {
+    supabaseClient.removeChannel(
+        sellerMessagesRealtimeChannel
+    );
 
-            currentSellerConversationBuyerId =
-                null;
+    sellerMessagesRealtimeChannel = null;
+}
+
+// Clear the active conversation.
+currentSellerConversationId =
+    null;
+
+currentSellerConversationBuyerId =
+    null;
 
 
             if (chatPanel) {
@@ -19283,6 +19414,8 @@ if (
                 .then(
                     registration => {
 
+                      window.nexodraServiceWorkerRegistration = registration;
+
                         console.log(
                             'BRICK 1H — Service worker registered successfully:',
                             registration.scope
@@ -19305,6 +19438,424 @@ if (
     );
 
 }
+
+// =========================================
+// BRICK 2A — CHECK EXISTING PUSH SUBSCRIPTION
+// =========================================
+
+async function checkNexodraPushSubscription() {
+
+    const registration =
+        window.nexodraServiceWorkerRegistration;
+
+    if (!registration) {
+
+        console.warn(
+            'BRICK 2A — Service worker registration is not ready.'
+        );
+
+        return null;
+    }
+
+    if (!registration.pushManager) {
+
+        console.warn(
+            'BRICK 2A — Push notifications are not supported.'
+        );
+
+        return null;
+    }
+
+    try {
+
+        const subscription =
+            await registration.pushManager.getSubscription();
+
+        if (subscription) {
+
+            console.log(
+                'BRICK 2A — Existing push subscription found.'
+            );
+
+            return subscription;
+        }
+
+        console.log(
+            'BRICK 2A — No push subscription exists yet.'
+        );
+
+        return null;
+
+    } catch (error) {
+
+        console.error(
+            'BRICK 2A — Could not check push subscription:',
+            error
+        );
+
+        return null;
+    }
+}
+
+
+/* =========================================
+   BRICK 2D — CHECK NOTIFICATION PERMISSION
+========================================= */
+
+function checkNexodraNotificationPermission() {
+    // Check whether the Notifications API is supported
+    if (
+        typeof window === 'undefined' ||
+        !('Notification' in window)
+    ) {
+        console.warn(
+            'BRICK 2D — Notifications are not supported in this environment.'
+        );
+
+        return {
+            supported: false,
+            permission: 'unsupported',
+            canNotify: false
+        };
+    }
+
+    // Read the browser's current notification permission
+    const permission = Notification.permission;
+
+    const result = {
+        supported: true,
+        permission,
+        canNotify: permission === 'granted'
+    };
+
+    console.log(
+        'BRICK 2D — Notification permission status:',
+        result
+    );
+
+    return result;
+}
+
+/* =========================================
+   BRICK 2E — REQUEST NOTIFICATION PERMISSION
+========================================= */
+
+async function requestNexodraNotificationPermission() {
+    // Check whether notifications are supported
+    const status = checkNexodraNotificationPermission();
+
+    if (!status.supported) {
+        return status;
+    }
+
+    // Permission is already granted
+    if (status.permission === 'granted') {
+        return status;
+    }
+
+    // Permission has already been denied
+    if (status.permission === 'denied') {
+        console.warn(
+            'BRICK 2E — Notification permission has been denied.'
+        );
+
+        return status;
+    }
+
+    // Request permission only when the status is default
+    try {
+        const permission = await Notification.requestPermission();
+
+        const result = {
+            supported: true,
+            permission,
+            canNotify: permission === 'granted'
+        };
+
+        console.log(
+            'BRICK 2E — Notification permission result:',
+            result
+        );
+
+        return result;
+    } catch (error) {
+        console.error(
+            'BRICK 2E — Failed to request notification permission:',
+            error
+        );
+
+        return {
+            supported: true,
+            permission: 'error',
+            canNotify: false,
+            error: error.message
+        };
+    }
+}
+
+
+/* =========================================
+   BRICK 2F — DISPLAY NEXODRA NOTIFICATION
+========================================= */
+
+function displayNexodraNotification(title, options = {}) {
+    // Check current notification permission
+    const status = checkNexodraNotificationPermission();
+
+    // Stop if notifications are unsupported
+    if (!status.supported) {
+        console.warn(
+            'BRICK 2F — Notifications are not supported.'
+        );
+
+        return null;
+    }
+
+    // Stop if permission has not been granted
+    if (!status.canNotify) {
+        console.warn(
+            'BRICK 2F — Notification permission is not granted:',
+            status.permission
+        );
+
+        return null;
+    }
+
+    // Validate notification title
+    if (
+        typeof title !== 'string' ||
+        title.trim().length === 0
+    ) {
+        console.error(
+            'BRICK 2F — A valid notification title is required.'
+        );
+
+        return null;
+    }
+
+    try {
+        // Create and display the notification
+        const notification = new Notification(title, {
+            body: options.body || '',
+            icon: options.icon || '/favicon.ico',
+            tag: options.tag || 'nexodra-notification',
+            ...options
+        });
+
+        console.log(
+            'BRICK 2F — Notification displayed:',
+            title
+        );
+
+        return notification;
+    } catch (error) {
+        console.error(
+            'BRICK 2F — Failed to display notification:',
+            error
+        );
+
+        return null;
+    }
+}
+
+
+/* =========================================
+   BRICK 2G — NOTIFICATION ERROR HANDLING
+========================================= */
+
+function handleNexodraNotificationError(error, context = '') {
+    const errorDetails = {
+        brick: 'BRICK 2G',
+        context,
+        message:
+            error instanceof Error
+                ? error.message
+                : String(error || 'Unknown notification error'),
+        timestamp: new Date().toISOString()
+    };
+
+    console.error(
+        'BRICK 2G — Notification error:',
+        errorDetails
+    );
+
+    return {
+        success: false,
+        error: errorDetails.message,
+        context: errorDetails.context,
+        timestamp: errorDetails.timestamp
+    };
+}
+
+/* =========================================
+   BRICK 2G — NOTIFICATION DIAGNOSTICS
+========================================= */
+
+function getNexodraNotificationDiagnostics() {
+    const status = checkNexodraNotificationPermission();
+
+    const diagnostics = {
+        supported: status.supported,
+        permission: status.permission,
+        canNotify: status.canNotify,
+        secureContext:
+            typeof window !== 'undefined'
+                ? window.isSecureContext
+                : false,
+        timestamp: new Date().toISOString()
+    };
+
+    console.log(
+        'BRICK 2G — Notification diagnostics:',
+        diagnostics
+    );
+
+    return diagnostics;
+}
+
+
+/* =========================================
+   BRICK 2H — NEXODRA NOTIFICATION SELF-TEST
+========================================= */
+
+async function runNexodraNotificationSelfTest() {
+    const results = [];
+
+    function record(name, passed, details) {
+        const result = {
+            test: name,
+            status: passed ? 'PASS' : 'FAIL',
+            details
+        };
+
+        results.push(result);
+
+        const log = passed ? console.info : console.error;
+        log(`[BRICK 2H] ${result.status}: ${name}`, details);
+    }
+
+    // Test 1: Required functions exist
+    const functionsAvailable =
+        typeof checkNexodraNotificationPermission === 'function' &&
+        typeof requestNexodraNotificationPermission === 'function' &&
+        typeof displayNexodraNotification === 'function' &&
+        typeof handleNexodraNotificationError === 'function' &&
+        typeof getNexodraNotificationDiagnostics === 'function';
+
+    record(
+        'Required notification functions',
+        functionsAvailable,
+        functionsAvailable
+            ? 'All required functions are available.'
+            : 'One or more required functions are missing.'
+    );
+
+    if (!functionsAvailable) {
+        return results;
+    }
+
+    // Test 2: Permission check returns a valid result
+    try {
+        const status = checkNexodraNotificationPermission();
+
+        const valid =
+            status !== null &&
+            typeof status === 'object' &&
+            typeof status.supported === 'boolean' &&
+            typeof status.canNotify === 'boolean' &&
+            typeof status.permission === 'string';
+
+        record(
+            'Permission status structure',
+            valid,
+            status
+        );
+    } catch (error) {
+        record('Permission status structure', false, error.message);
+    }
+
+    // Test 3: Diagnostics return expected fields
+    try {
+        const diagnostics = getNexodraNotificationDiagnostics();
+
+        const valid =
+            diagnostics !== null &&
+            typeof diagnostics.supported === 'boolean' &&
+            typeof diagnostics.permission === 'string' &&
+            typeof diagnostics.canNotify === 'boolean' &&
+            typeof diagnostics.secureContext === 'boolean';
+
+        record(
+            'Notification diagnostics',
+            valid,
+            diagnostics
+        );
+    } catch (error) {
+        record('Notification diagnostics', false, error.message);
+    }
+
+    // Test 4: Error handler returns a failure result
+    try {
+        const result = handleNexodraNotificationError(
+            new Error('Intentional BRICK 2H self-test'),
+            'BRICK 2H SELF-TEST'
+        );
+
+        record(
+            'Error handler',
+            result !== null &&
+            result.success === false &&
+            typeof result.error === 'string',
+            result
+        );
+    } catch (error) {
+        record('Error handler', false, error.message);
+    }
+
+    // Display the report in the page if the report element exists
+    const reportElement = document.getElementById(
+        'nexodra-notification-test-results'
+    );
+
+    if (reportElement) {
+        reportElement.textContent = results
+            .map(result =>
+                `${result.status} — ${result.test}: ${JSON.stringify(result.details)}`
+            )
+            .join('\n');
+    }
+
+    const passed = results.filter(r => r.status === 'PASS').length;
+    const failed = results.filter(r => r.status === 'FAIL').length;
+
+    console.info(
+        `[BRICK 2H] Self-test complete: ${passed} passed, ${failed} failed.`,
+        results
+    );
+
+    return results;
+}
+
+
+document
+    .getElementById('nexodra-run-notification-test')
+    ?.addEventListener('click', async () => {
+        const output = document.getElementById(
+            'nexodra-notification-test-results'
+        );
+
+        output.textContent = 'Running notification tests…';
+
+        try {
+            await runNexodraNotificationSelfTest();
+        } catch (error) {
+            output.textContent =
+                `SELF-TEST ERROR: ${error.message}`;
+
+            console.error('[BRICK 2H] Self-test failed:', error);
+        }
+    });
+
 
 /* =========================================
    NEXODRA AUTH - BRICK 2A
@@ -25936,6 +26487,203 @@ document.addEventListener("click", async (event) => {
     );
   }
 });
+
+// =====================================================
+// BRICK S1 — CONNECT SIDEBAR TO EXISTING NAVIGATION
+// =====================================================
+
+(() => {
+    const sidebar = document.getElementById(
+        'nexodraSideNav'
+    );
+
+    if (!sidebar) {
+        console.warn(
+            'BRICK S1 — Sidebar not found.'
+        );
+        return;
+    }
+
+    // Sidebar label -> existing app screen ID.
+    const sidebarScreenMap = {
+        home: 'storeScreen',
+        analytics: 'salesOverviewScreen',
+        sell: 'sellScreen',
+        inbox: 'inboxScreen',
+        reports: 'reportsScreen',
+        'preview-store': 'previewStoreBtn',
+        profile: 'profileScreen',
+        settings: 'settingsScreen'
+    };
+
+    sidebar.querySelectorAll(
+        '.nexodra-sidebar-link'
+    ).forEach(link => {
+        link.addEventListener('click', event => {
+            event.preventDefault();
+
+            let targetId =
+                link.getAttribute('data-target');
+
+            // Resolve links using their current data-page.
+            if (!targetId) {
+                const page =
+                    link.getAttribute('data-page');
+
+                targetId =
+                    sidebarScreenMap[page];
+            }
+
+            if (!targetId) {
+                console.warn(
+                    'BRICK S1 — No target mapped for sidebar link:',
+                    link.textContent.trim()
+                );
+                return;
+            }
+
+            // Preview Store is an action button,
+            // not a normal dashboard screen.
+            if (targetId === 'previewStoreBtn') {
+                const previewButton =
+                    document.getElementById(
+                        'previewStoreBtn'
+                    );
+
+                if (previewButton) {
+                    previewButton.click();
+                } else {
+                    console.error(
+                        'BRICK S1 — Preview Store button not found.'
+                    );
+                }
+            } else {
+                // BRICK S1-A — Open Sales Overview directly.
+if (targetId === 'salesOverviewScreen') {
+    const salesOverviewScreen =
+        document.getElementById(
+            'salesOverviewScreen'
+        );
+
+    if (!salesOverviewScreen) {
+        console.error(
+            'BRICK S1-A — Sales Overview screen not found.'
+        );
+        return;
+    }
+
+    // Hide all existing screens.
+    screens.forEach(screen => {
+        screen.classList.remove('active');
+    });
+
+    // Show Sales Overview.
+    salesOverviewScreen.classList.add('active');
+
+    // Initialize charts.
+    if (typeof initializeCharts === 'function') {
+        initializeCharts();
+    }
+
+    // Update the page title.
+    if (screenTitle) {
+        screenTitle.textContent = 'Sales Overview';
+    }
+
+    // Clear active state from bottom navigation.
+    navButtons.forEach(button => {
+        button.classList.remove('active');
+    });
+
+    // Load Sales Overview data.
+    if (typeof loadSalesOverview === 'function') {
+        loadSalesOverview();
+    }
+
+    console.log(
+        'BRICK S1-A — Sales Overview opened from sidebar.'
+    );
+
+} else {
+    // Use normal navigation for all other screens.
+    // BRICK R2 — Open Reports directly.
+if (targetId === 'reportsScreen') {
+    const reportsScreen =
+        document.getElementById('reportsScreen');
+
+    if (!reportsScreen) {
+        console.error(
+            'BRICK R2 — Reports screen not found.'
+        );
+        return;
+    }
+
+    // Hide all screens.
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+
+    // Activate Reports.
+    reportsScreen.classList.add('active');
+
+    // Update the page title if Nexodra has this element.
+    if (typeof screenTitle !== 'undefined' && screenTitle) {
+        screenTitle.textContent = 'Reports';
+    }
+
+    // Clear active state from the regular navigation.
+    if (typeof navButtons !== 'undefined' && navButtons) {
+        navButtons.forEach(button => {
+            button.classList.remove('active');
+        });
+    }
+
+    console.log(
+        'BRICK R2 — Reports screen opened.'
+    );
+
+} else {
+    // Keep existing navigation behavior for other sidebar links.
+    const existingNavButton =
+        document.querySelector(
+            `.nav-btn[data-target="${targetId}"]`
+        );
+
+    if (existingNavButton) {
+        existingNavButton.click();
+    } else {
+        console.warn(
+            'BRICK S1 — Existing navigation button not found:',
+            targetId
+        );
+    }
+}
+}
+            }
+
+            // Close the sidebar after choosing a destination.
+            const closeButton =
+                document.getElementById(
+                    'nexodraSidebarClose'
+                );
+
+            if (closeButton) {
+                closeButton.click();
+            }
+
+            console.log(
+                'BRICK S1 — Sidebar navigation:',
+                link.textContent.trim(),
+                '->',
+                targetId
+            );
+        });
+    });
+
+    console.log(
+        'BRICK S1 — Sidebar navigation connected.'
+    );
+})();
 
 // =====================================================
 // NEXODRA — BRICK 2C: SIDEBAR CONTROLLER

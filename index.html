@@ -6563,6 +6563,357 @@
     
 
 
+<!-- =========================================
+     NEXODRA — REPORTS SCREEN
+========================================= -->
+
+<section
+    id="reportsScreen"
+    class="screen"
+>
+
+    <div class="reports-dashboard">
+
+        <!-- REPORTS HEADER -->
+        <div class="reports-header">
+
+            <div>
+                <p class="reports-eyebrow">
+                    BUSINESS MANAGEMENT
+                </p>
+
+                <h1>Reports</h1>
+
+                <p class="reports-subtitle">
+                    Track your business performance,
+                    expenses, and customer balances.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="reports-period-btn"
+                id="reportsPeriodBtn"
+            >
+                <i class="fa-regular fa-calendar"></i>
+                This month
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+
+        </div>
+
+
+        <!-- FINANCIAL SUMMARY -->
+        <section
+            class="reports-summary-section"
+            aria-label="Financial summary"
+        >
+
+            <div class="reports-section-heading">
+                <h2>Financial overview</h2>
+                <span>Selected period</span>
+            </div>
+
+            <div class="reports-summary-grid">
+
+                <article class="reports-summary-card reports-sales-card">
+
+                    <div class="reports-card-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+
+                    <p>Total sales</p>
+
+                    <h3 id="reportsTotalSales">
+                        ₦0.00
+                    </h3>
+
+                    <span>
+                        Revenue recorded
+                    </span>
+
+                </article>
+
+
+                <article class="reports-summary-card reports-profit-card">
+
+                    <div class="reports-card-icon">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+
+                    <p>Estimated profit</p>
+
+                    <h3 id="reportsTotalProfit">
+                        ₦0.00
+                    </h3>
+
+                    <span>
+                        Based on available records
+                    </span>
+
+                </article>
+
+
+                <article class="reports-summary-card reports-debt-card">
+
+                    <div class="reports-card-icon">
+                        <i class="fa-solid fa-user-clock"></i>
+                    </div>
+
+                    <p>Customer debts</p>
+
+                    <h3 id="reportsTotalDebt">
+                        ₦0.00
+                    </h3>
+
+                    <span>
+                        Outstanding balances
+                    </span>
+
+                </article>
+
+
+                <article class="reports-summary-card reports-expense-card">
+
+                    <div class="reports-card-icon">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+
+                    <p>Total expenses</p>
+
+                    <h3 id="reportsTotalExpenses">
+                        ₦0.00
+                    </h3>
+
+                    <span>
+                        Business spending
+                    </span>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- QUICK BUSINESS TOOLS -->
+        <section class="reports-tools-section">
+
+            <div class="reports-section-heading">
+                <h2>Business tools</h2>
+                <span>Manage your finances</span>
+            </div>
+
+            <div class="reports-tools-grid">
+
+                <!-- CUSTOMER DEBTS -->
+                <button
+                    type="button"
+                    class="reports-tool-card"
+                    data-report-view="customer-debts"
+                >
+
+                    <div class="reports-tool-icon reports-tool-orange">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                    <div class="reports-tool-content">
+
+                        <h3>Customer debts</h3>
+
+                        <p>
+                            View customers who owe you,
+                            record payments, and track balances.
+                        </p>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right reports-tool-arrow"></i>
+
+                </button>
+
+
+                <!-- EXPENSES -->
+                <button
+                    type="button"
+                    class="reports-tool-card"
+                    data-report-view="expenses"
+                >
+
+                    <div class="reports-tool-icon reports-tool-red">
+                        <i class="fa-solid fa-money-bill-transfer"></i>
+                    </div>
+
+                    <div class="reports-tool-content">
+
+                        <h3>Expenses</h3>
+
+                        <p>
+                            Record business spending and
+                            organize costs by category.
+                        </p>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right reports-tool-arrow"></i>
+
+                </button>
+
+
+                <!-- BUSINESS CALCULATOR -->
+                <button
+                    type="button"
+                    class="reports-tool-card"
+                    data-report-view="business-calculator"
+                >
+
+                    <div class="reports-tool-icon reports-tool-purple">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+
+                    <div class="reports-tool-content">
+
+                        <h3>Business calculator</h3>
+
+                        <p>
+                            Calculate profit, margins,
+                            discounts, and balances.
+                        </p>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right reports-tool-arrow"></i>
+
+                </button>
+
+
+                <!-- SALES REPORT -->
+                <button
+                    type="button"
+                    class="reports-tool-card"
+                    data-report-view="sales-report"
+                >
+
+                    <div class="reports-tool-icon reports-tool-blue">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </div>
+
+                    <div class="reports-tool-content">
+
+                        <h3>Sales report</h3>
+
+                        <p>
+                            Review sales activity,
+                            products, and payment methods.
+                        </p>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right reports-tool-arrow"></i>
+
+                </button>
+
+
+                <!-- PROFIT AND LOSS -->
+                <button
+                    type="button"
+                    class="reports-tool-card"
+                    data-report-view="profit-loss"
+                >
+
+                    <div class="reports-tool-icon reports-tool-green">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+
+                    <div class="reports-tool-content">
+
+                        <h3>Profit &amp; loss</h3>
+
+                        <p>
+                            Understand revenue, costs,
+                            expenses, and estimated profit.
+                        </p>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right reports-tool-arrow"></i>
+
+                </button>
+
+
+                <!-- EXPORT -->
+                <button
+                    type="button"
+                    class="reports-tool-card"
+                    data-report-view="export-reports"
+                >
+
+                    <div class="reports-tool-icon reports-tool-gray">
+                        <i class="fa-solid fa-file-export"></i>
+                    </div>
+
+                    <div class="reports-tool-content">
+
+                        <h3>Export reports</h3>
+
+                        <p>
+                            Prepare business reports
+                            for downloading and sharing.
+                        </p>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right reports-tool-arrow"></i>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- RECENT ACTIVITY -->
+        <section class="reports-activity-section">
+
+            <div class="reports-section-heading">
+
+                <div>
+                    <h2>Recent financial activity</h2>
+
+                    <p>
+                        Your latest recorded expenses
+                        and customer payments.
+                    </p>
+                </div>
+
+            </div>
+
+            <div
+                class="reports-activity-empty"
+                id="reportsRecentActivity"
+            >
+
+                <div class="reports-empty-icon">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
+
+                <h3>No financial activity yet</h3>
+
+                <p>
+                    Recorded expenses and customer payments
+                    will appear here.
+                </p>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</section>
+
+<!-- END NEXODRA REPORTS SCREEN -->
+
 
 
               
@@ -7079,14 +7430,14 @@
         </div>
 
         <a
-            href="#"
-            class="nexodra-sidebar-link active"
-            data-page="home"
-            aria-current="page"
-        >
-            <i class="fa-solid fa-house"></i>
-            <span class="nexodra-sidebar-link-label">Home</span>
-        </a>
+    href="#"
+    class="nexodra-sidebar-link"
+    data-target="storeScreen"
+    data-title="Nexodra"
+>
+    <i class="fa-solid fa-house"></i>
+    <span class="nexodra-sidebar-link-label">Home</span>
+</a>
 
         <a
             href="#"
@@ -7232,6 +7583,22 @@
 </aside>
 
 <!-- End NEXODRA Sidebar -->
+
+
+<section id="nexodra-notification-test">
+    <h3>Nexodra Notification Diagnostics</h3>
+
+    <button id="nexodra-run-notification-test" type="button">
+        Run Notification Self-Test
+    </button>
+
+    <pre
+        id="nexodra-notification-test-results"
+        aria-live="polite"
+        style="white-space: pre-wrap;"
+    >Tests have not run yet.</pre>
+</section>
+
   
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -7251,6 +7618,9 @@
 
       <script>
     const NEXODRA_API_URL = 'https://nexodra-api.onrender.com';
+
+const NEXODRA_VAPID_PUBLIC_KEY = 'BC3vqHMDCE9pjvW_c2EE8ZSnQJjYeQgVRX4wG3nD7wIbUY-OtHTY8MTQMHOODYAvrOj4fmqAhHc40PFMcDs2O9s';
+        
 </script>
 
 <!-- Barcode / QR scanner -->

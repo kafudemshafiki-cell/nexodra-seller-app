@@ -308,3 +308,129 @@ self.addEventListener(
 
     }
 );
+
+// =========================================
+// BRICK PUSH 1 — DISPLAY PUSH NOTIFICATION
+// =========================================
+
+self.addEventListener(
+    'push',
+    event => {
+
+        console.log(
+            'BRICK PUSH 1 — Push event received.'
+        );
+
+        let pushData = {
+            title: 'Nexodra',
+            body: 'You have a new message.',
+            url: './index.html'
+        };
+
+        if (event.data) {
+
+            try {
+
+                const receivedData =
+                    event.data.json();
+
+                pushData = {
+                    ...pushData,
+                    ...receivedData
+                };
+
+            } catch (error) {
+
+                pushData.body =
+                    event.data.text();
+
+            }
+
+        }
+
+        const notificationTitle =
+            pushData.title ||
+            'Nexodra';
+
+        const notificationOptions = {
+            body:
+                pushData.body ||
+                'You have a new message.',
+
+            icon:
+                './assets/nexodra-icon-192.png',
+
+            badge:
+                './assets/nexodra-icon-192.png',
+
+            data: {
+                url:
+                    pushData.url ||
+                    './index.html'
+            }
+        };
+
+        event.waitUntil(
+
+            self.registration.showNotification(
+                notificationTitle,
+                notificationOptions
+            )
+
+        );
+
+    }
+);
+
+
+// =========================================
+// BRICK PUSH 2 — OPEN APP ON NOTIFICATION TAP
+// =========================================
+
+self.addEventListener(
+    'notificationclick',
+    event => {
+
+        console.log(
+            'BRICK PUSH 2 — Notification clicked.'
+        );
+
+        event.notification.close();
+
+        const notificationUrl =
+            event.notification.data?.url ||
+            './index.html';
+
+        event.waitUntil(
+
+            clients.matchAll({
+                type: 'window',
+                includeUncontrolled: true
+            }).then(
+                windowClients => {
+
+                    for (
+                        const client of windowClients
+                    ) {
+
+                        if (
+                            'focus' in client
+                        ) {
+
+                            return client.focus();
+
+                        }
+
+                    }
+
+                    return clients.openWindow(
+                        notificationUrl
+                    );
+
+                }
+            )
+
+        );
+
+    }
+);

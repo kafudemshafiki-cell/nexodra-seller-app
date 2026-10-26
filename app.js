@@ -27695,7 +27695,6 @@ async function nexodraSubscribeToPush() {
     }
 }
 
-
 /* =========================================
    BRICK 3B — SEND BACKEND TEST PUSH
 ========================================= */
@@ -27753,3 +27752,84 @@ async function nexodraSendBackendPushTest() {
         };
     }
 }
+
+
+/* =========================================
+   BRICK 3C — ENABLE PUSH BUTTON
+========================================= */
+
+(function nexodraSetupEnablePushButton() {
+
+    const button = document.getElementById(
+        "nexodra-enable-push"
+    );
+
+    const resultElement = document.getElementById(
+        "nexodra-enable-push-result"
+    );
+
+    if (!button || !resultElement) {
+        console.warn(
+            "BRICK 3C — Push button or result element not found."
+        );
+        return;
+    }
+
+    button.addEventListener("click", async function () {
+
+        button.disabled = true;
+        button.textContent = "Enabling Push...";
+        resultElement.textContent =
+            "Creating or checking your push subscription...";
+
+        try {
+
+            if (
+                typeof nexodraSubscribeToPush !== "function"
+            ) {
+                throw new Error(
+                    "nexodraSubscribeToPush() is not available."
+                );
+            }
+
+            const result = await nexodraSubscribeToPush();
+
+            if (!result || result.success !== true) {
+                throw new Error(
+                    result?.message ||
+                    "Push subscription could not be saved."
+                );
+            }
+
+            resultElement.textContent =
+                "SUCCESS — " + result.message;
+
+            button.textContent = "Push Enabled";
+
+            console.info(
+                "BRICK 3C — Push enabled successfully."
+            );
+
+        } catch (error) {
+
+            resultElement.textContent =
+                "FAILED — " +
+                (error.message || "Unknown error");
+
+            button.textContent = "Try Again";
+
+            console.error(
+                "BRICK 3C — Enable push failed:",
+                error
+            );
+
+        } finally {
+
+            button.disabled = false;
+
+        }
+
+    });
+
+})();
+

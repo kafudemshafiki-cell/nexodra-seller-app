@@ -19397,47 +19397,367 @@ const ODROP_REMEMBER_KEY =
 const ODROP_REMEMBER_EMAIL_KEY =
     'odropRememberEmail';
 
-// =========================================
-// BRICK 1H — REGISTER NEXODRA SERVICE WORKER
-// =========================================
 
-if (
-    'serviceWorker' in navigator
-) {
+ // =========================================
+ // BRICK 1H — REGISTER NEXODRA SERVICE WORKER
+ // WITH VISIBLE REGISTRATION DIAGNOSTICS
+ // =========================================
 
-    window.addEventListener(
-        'load',
-        () => {
+(function () {
 
-            navigator.serviceWorker
-                .register('./service-worker.js')
-                .then(
-                    registration => {
+    'use strict';
 
-                      window.nexodraServiceWorkerRegistration = registration;
+    function nexodraShowServiceWorkerStatus(message) {
 
-                        console.log(
-                            'BRICK 1H — Service worker registered successfully:',
-                            registration.scope
+        const output = document.getElementById(
+            'nexodra-real-notification-result'
+        );
+
+        if (output) {
+            output.textContent = message;
+        }
+
+        console.log(
+            'BRICK 1H — ' + message
+        );
+    }
+
+    if (!('serviceWorker' in navigator)) {
+
+        nexodraShowServiceWorkerStatus(
+            'SERVICE WORKER UNSUPPORTED\n' +
+            'This browser does not support service workers.'
+        );
+
+        return;
+    }
+
+    function nexodraRegisterServiceWorker() {
+
+        nexodraShowServiceWorkerStatus(
+            'REGISTERING SERVICE WORKER...\n' +
+            'File: ./service-worker.js'
+        );
+
+        navigator.serviceWorker
+            .register('./service-worker.js')
+            .then(function (registration) {
+
+                window.nexodraServiceWorkerRegistration =
+                    registration;
+
+                console.log(
+                    'BRICK 1H — Service worker registered successfully:',
+                    registration.scope
+                );
+
+                nexodraShowServiceWorkerStatus(
+                    'SERVICE WORKER REGISTRATION SUCCEEDED\n' +
+                    'Scope: ' + registration.scope + '\n' +
+                    'Installing: ' +
+                    (registration.installing?.state || 'None') + '\n' +
+                    'Waiting: ' +
+                    (registration.waiting?.state || 'None') + '\n' +
+                    'Active: ' +
+                    (registration.active?.state || 'Not active yet')
+                );
+
+                function nexodraTrackWorker(worker) {
+
+                    if (!worker) return;
+
+                    worker.addEventListener(
+                        'statechange',
+                        function () {
+
+                            nexodraShowServiceWorkerStatus(
+                                'SERVICE WORKER STATE CHANGED\n' +
+                                'State: ' + worker.state + '\n' +
+                                'Scope: ' + registration.scope
+                            );
+
+                        }
+                    );
+                }
+
+                nexodraTrackWorker(
+                    registration.installing
+                );
+
+                nexodraTrackWorker(
+                    registration.waiting
+                );
+
+                nexodraTrackWorker(
+                    registration.active
+                );
+
+                navigator.serviceWorker.ready
+                    .then(function (readyRegistration) {
+
+                        window.nexodraServiceWorkerRegistration =
+                            readyRegistration;
+
+                        const activeWorker =
+                            readyRegistration.active;
+
+                        nexodraShowServiceWorkerStatus(
+                            'SERVICE WORKER READY\n' +
+                            'Scope: ' + readyRegistration.scope + '\n' +
+                            'Active worker: ' +
+                            (activeWorker
+                                ? activeWorker.state
+                                : 'Not available') + '\n' +
+                            'Notification API: ' +
+                            (('Notification' in window)
+                                ? 'Available'
+                                : 'Unavailable') + '\n' +
+                            'Permission: ' +
+                            (('Notification' in window)
+                                ? Notification.permission
+                                : 'Unsupported') + '\n' +
+                            'showNotification: ' +
+                            (activeWorker &&
+                             readyRegistration.showNotification
+                                ? 'Available'
+                                : 'Not available')
                         );
 
-                    }
-                )
-                .catch(
-                    error => {
+                    })
+                    .catch(function (error) {
 
-                        console.error(
-                            'BRICK 1H — Service worker registration failed:',
-                            error
+                        nexodraShowServiceWorkerStatus(
+                            'SERVICE WORKER READY CHECK FAILED\n' +
+                            error.name + ': ' + error.message
                         );
+
+                    });
+
+                registration.addEventListener(
+                    'updatefound',
+                    function () {
+
+                        const newWorker =
+                            registration.installing;
+
+                        if (newWorker) {
+                            nexodraTrackWorker(newWorker);
+
+                            nexodraShowServiceWorkerStatus(
+                                'SERVICE WORKER UPDATE FOUND\n' +
+                                'State: ' + newWorker.state
+                            );
+                        }
 
                     }
                 );
 
-        }
+            })
+            .catch(function (error) {
+
+                console.error(
+                    'BRICK 1H — Service worker registration failed:',
+                    error
+                );
+
+                nexodraShowServiceWorkerStatus(
+                    'SERVICE WORKER REGISTRATION FAILED\n' +
+                    'Error: ' + error.name + '\n' +
+                    'Message: ' + error.message + '\n' +
+                    'Check that ./service-worker.js is accessible ' +
+                    'and that its installation succeeds.'
+                );
+
+            });
+
+    }
+
+    if (document.readyState === 'complete') {
+
+        nexodraRegisterServiceWorker();
+
+    } else {
+
+        window.addEventListener(
+            'load',
+            nexodraRegisterServiceWorker,
+            { once: true }
+        );
+
+    }
+
+})();
+
+
+ // =========================================
+ // BRICK 1I — NEXODRA SERVICE WORKER STATUS
+ // =========================================
+
+window.nexodraCheckServiceWorker = async function () {
+
+    const output = document.getElementById(
+        'nexodra-real-notification-result'
     );
 
-}
+    function report(message) {
+
+        if (output) {
+            output.textContent = message;
+        }
+
+        console.log(
+            'BRICK 1I — ' + message
+        );
+    }
+
+    if (!('serviceWorker' in navigator)) {
+
+        report(
+            'SERVICE WORKERS NOT SUPPORTED'
+        );
+
+        return;
+    }
+
+    try {
+
+        const registrations =
+            await navigator.serviceWorker.getRegistrations();
+
+        if (registrations.length === 0) {
+
+            report(
+                'NO SERVICE WORKER REGISTRATION FOUND\n' +
+                'Current URL: ' + location.href + '\n' +
+                'Secure context: ' + isSecureContext + '\n' +
+                'Expected file: ' +
+                new URL('./service-worker.js', location.href).href
+            );
+
+            return;
+        }
+
+        const details = registrations.map(
+            function (registration, index) {
+
+                return (
+                    'Registration ' + (index + 1) + '\n' +
+                    'Scope: ' + registration.scope + '\n' +
+                    'Installing: ' +
+                    (registration.installing?.state || 'None') + '\n' +
+                    'Waiting: ' +
+                    (registration.waiting?.state || 'None') + '\n' +
+                    'Active: ' +
+                    (registration.active?.state || 'None')
+                );
+
+            }
+        ).join('\n\n');
+
+        report(
+            'SERVICE WORKER REGISTRATIONS FOUND\n' +
+            details
+        );
+
+    } catch (error) {
+
+        report(
+            'SERVICE WORKER CHECK FAILED\n' +
+            error.name + ': ' + error.message
+        );
+
+    }
+
+};
+
+
+ // =========================================
+ // BRICK 1J — SERVICE WORKER FAILURE DIAGNOSTICS
+ // =========================================
+
+window.nexodraDiagnoseServiceWorker = async function () {
+
+    const output = document.getElementById(
+        'nexodra-real-notification-result'
+    );
+
+    function report(message) {
+
+        if (output) {
+            output.textContent = message;
+        }
+
+        console.log(
+            'BRICK 1J — ' + message
+        );
+
+    }
+
+    try {
+
+        if (!('serviceWorker' in navigator)) {
+
+            report('FAILED: Service workers are unsupported.');
+            return;
+
+        }
+
+        const registrations =
+            await navigator.serviceWorker.getRegistrations();
+
+        if (!registrations.length) {
+
+            report(
+                'NO REGISTRATION FOUND\n' +
+                'Page: ' + location.href + '\n' +
+                'Expected script: ' +
+                new URL('./service-worker.js', location.href).href
+            );
+
+            return;
+
+        }
+
+        const results = [];
+
+        for (const registration of registrations) {
+
+            results.push(
+                'Scope: ' + registration.scope,
+                'Installing: ' +
+                    (registration.installing?.state || 'None'),
+                'Waiting: ' +
+                    (registration.waiting?.state || 'None'),
+                'Active: ' +
+                    (registration.active?.state || 'None'),
+                'Script URL: ' +
+                    (
+                        registration.active ||
+                        registration.installing ||
+                        registration.waiting
+                    )?.scriptURL || 'Unavailable'
+            );
+
+        }
+
+        report(
+            'SERVICE WORKER DIAGNOSTICS\n' +
+            'Secure context: ' + isSecureContext + '\n' +
+            'Page: ' + location.href + '\n\n' +
+            results.join('\n')
+        );
+
+    } catch (error) {
+
+        report(
+            'DIAGNOSTIC ERROR\n' +
+            error.name + ': ' + error.message
+        );
+
+    }
+
+};
+
 
 // =========================================
 // BRICK 2A — CHECK EXISTING PUSH SUBSCRIPTION
@@ -19595,62 +19915,82 @@ async function requestNexodraNotificationPermission() {
 
 
 /* =========================================
-   BRICK 2F — DISPLAY NEXODRA NOTIFICATION
+   BRICK 2F — DISPLAY NOTIFICATION
+   DESKTOP + SERVICE WORKER SUPPORT
 ========================================= */
 
-function displayNexodraNotification(title, options = {}) {
-    // Check current notification permission
-    const status = checkNexodraNotificationPermission();
-
-    // Stop if notifications are unsupported
-    if (!status.supported) {
-        console.warn(
-            'BRICK 2F — Notifications are not supported.'
-        );
-
-        return null;
-    }
-
-    // Stop if permission has not been granted
-    if (!status.canNotify) {
-        console.warn(
-            'BRICK 2F — Notification permission is not granted:',
-            status.permission
-        );
-
-        return null;
-    }
-
-    // Validate notification title
-    if (
-        typeof title !== 'string' ||
-        title.trim().length === 0
-    ) {
-        console.error(
-            'BRICK 2F — A valid notification title is required.'
-        );
-
-        return null;
-    }
-
+async function displayNexodraNotification(title, options = {}) {
     try {
-        // Create and display the notification
-        const notification = new Notification(title, {
-            body: options.body || '',
-            icon: options.icon || '/favicon.ico',
-            tag: options.tag || 'nexodra-notification',
-            ...options
-        });
+        if (
+            typeof window === 'undefined' ||
+            !('Notification' in window)
+        ) {
+            throw new Error(
+                'Notifications are not supported in this browser.'
+            );
+        }
 
-        console.log(
-            'BRICK 2F — Notification displayed:',
-            title
+        if (Notification.permission !== 'granted') {
+            throw new Error(
+                `Notification permission is ${Notification.permission}.`
+            );
+        }
+
+        if (typeof title !== 'string' || !title.trim()) {
+            throw new Error('A valid notification title is required.');
+        }
+
+        const notificationOptions = {
+            body: options.body || '',
+            ...options
+        };
+
+        // Preferred path for mobile browsers.
+        if ('serviceWorker' in navigator) {
+            const registration =
+                window.nexodraServiceWorkerRegistration ||
+                await navigator.serviceWorker.ready;
+
+            if (
+                registration &&
+                typeof registration.showNotification === 'function'
+            ) {
+                await registration.showNotification(
+                    title,
+                    notificationOptions
+                );
+
+                console.info(
+                    'BRICK 2F — Service worker notification displayed.'
+                );
+
+                return true;
+            }
+        }
+
+        // Fallback for browsers supporting the Notification constructor.
+        const notification = new Notification(
+            title,
+            notificationOptions
         );
+
+        notification.onshow = () => {
+            console.info('BRICK 2F — Notification show event received.');
+        };
+
+        notification.onerror = (event) => {
+            console.error('BRICK 2F — Notification error:', event);
+        };
+
+        console.info('BRICK 2F — Notification created successfully.');
 
         return notification;
+
     } catch (error) {
         console.error(
-            'BRICK 2F — Failed to display notification:',
+            'BRICK 2F — Notification creation failed:',
+            error.name,
+            error.message,
             error
         );
 
@@ -19719,6 +20059,11 @@ function getNexodraNotificationDiagnostics() {
 ========================================= */
 
 async function runNexodraNotificationSelfTest() {
+
+console.log(
+    'BRICK 2H — Self-test function started.'
+);
+  
     const results = [];
 
     function record(name, passed, details) {
@@ -19837,24 +20182,412 @@ async function runNexodraNotificationSelfTest() {
 }
 
 
-document
-    .getElementById('nexodra-run-notification-test')
-    ?.addEventListener('click', async () => {
+/* =========================================
+   BRICK 2H — BUTTON CONNECTION DIAGNOSTIC
+========================================= */
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const testButton = document.getElementById(
+        'nexodra-run-notification-test'
+    );
+
+    if (!testButton) {
+        console.error(
+            'BRICK 2H — TEST BUTTON NOT FOUND.'
+        );
+
+        return;
+    }
+
+    console.log(
+        'BRICK 2H — TEST BUTTON CONNECTED.'
+    );
+
+    testButton.addEventListener('click', async () => {
+
+        console.log(
+            'BRICK 2H — TEST BUTTON CLICKED.'
+        );
+
         const output = document.getElementById(
             'nexodra-notification-test-results'
         );
 
-        output.textContent = 'Running notification tests…';
+        if (output) {
+            output.textContent = 'Running notification tests...';
+        }
 
         try {
             await runNexodraNotificationSelfTest();
-        } catch (error) {
-            output.textContent =
-                `SELF-TEST ERROR: ${error.message}`;
+            
+            await runNexodraAndroidDiagnostics();
 
-            console.error('[BRICK 2H] Self-test failed:', error);
+          
+        } catch (error) {
+            console.error(
+                'BRICK 2H — SELF-TEST FAILED:',
+                error
+            );
+
+            if (output) {
+                output.textContent =
+                    `SELF-TEST ERROR: ${error.message}`;
+            }
         }
     });
+
+});
+
+
+/* =========================================
+   BRICK 2I — REAL NOTIFICATION TEST
+========================================= */
+
+document.addEventListener('DOMContentLoaded', () => {
+    const button = document.getElementById(
+        'nexodra-test-real-notification'
+    );
+
+    const output = document.getElementById(
+        'nexodra-real-notification-result'
+    );
+
+    if (!button || !output) {
+        console.warn(
+            'BRICK 2I — Test button or result element not found.'
+        );
+        return;
+    }
+
+    button.addEventListener('click', async () => {
+        output.textContent = 'Checking notification permission…';
+
+        try {
+            const result =
+                await requestNexodraNotificationPermission();
+
+            if (!result.supported) {
+                output.textContent =
+                    'Notifications are not supported in this browser.';
+                return;
+            }
+
+            if (!result.canNotify) {
+                output.textContent =
+                    `Notifications not enabled. Permission: ${result.permission}`;
+                return;
+            }
+
+            const notification = displayNexodraNotification(
+                'Nexodra Test',
+                {
+                    body: 'Your notification system is working!',
+                    tag: 'nexodra-delivery-test'
+                }
+            );
+
+            if (notification) {
+                output.textContent =
+                    'Notification created. Check whether your browser or device displayed it.';
+
+                notification.onshow = () => {
+                    console.info(
+                        'BRICK 2I — Notification show event received.'
+                    );
+                };
+
+                notification.onerror = (event) => {
+                    console.error(
+                        'BRICK 2I — Notification error event:',
+                        event
+                    );
+                };
+            } else {
+                output.textContent =
+                    'Notification could not be created. Check the console.';
+            }
+        } catch (error) {
+            output.textContent =
+                `Notification test failed: ${error.message}`;
+
+            console.error('BRICK 2I — Test failed:', error);
+        }
+    });
+});
+
+
+/* =========================================
+   NEXODRA — ON-SCREEN ANDROID DIAGNOSTICS
+========================================= */
+
+async function runNexodraAndroidDiagnostics() {
+    const output = [];
+
+    function report(label, value) {
+        output.push(`${label}: ${value}`);
+    }
+
+    report('Browser', navigator.userAgent);
+    report('Secure context', window.isSecureContext);
+    report(
+        'Notification API',
+        'Notification' in window ? 'Available' : 'Unavailable'
+    );
+    report(
+        'Permission',
+        'Notification' in window
+            ? Notification.permission
+            : 'Not supported'
+    );
+    report(
+        'Service worker API',
+        'serviceWorker' in navigator ? 'Available' : 'Unavailable'
+    );
+
+    try {
+        if ('serviceWorker' in navigator) {
+            const registration =
+                await navigator.serviceWorker.getRegistration();
+
+            report('Registration found', !!registration);
+            report(
+                'Active worker',
+                registration?.active?.state || 'None'
+            );
+            report(
+                'showNotification method',
+                typeof registration?.showNotification === 'function'
+                    ? 'Available'
+                    : 'Unavailable'
+            );
+        }
+    } catch (error) {
+        report(
+            'Service worker error',
+            `${error.name}: ${error.message}`
+        );
+    }
+
+    const panel = document.getElementById(
+        'nexodra-real-notification-result'
+    );
+
+    if (panel) {
+        panel.textContent = output.join('\n');
+    }
+
+    return output;
+}
+
+
+ // =========================================
+ // BRICK 2J — REAL NOTIFICATION DELIVERY TEST
+ // =========================================
+
+window.nexodraTestRealNotification = async function () {
+
+    const output = document.getElementById(
+        'nexodra-real-notification-result'
+    );
+
+    function report(message) {
+
+        if (output) {
+            output.textContent = message;
+        }
+
+        console.log('BRICK 2J — ' + message);
+
+    }
+
+    try {
+
+        if (!('Notification' in window)) {
+
+            report('FAILED: Notification API unavailable.');
+            return;
+
+        }
+
+        if (Notification.permission !== 'granted') {
+
+            report(
+                'FAILED: Notification permission is ' +
+                Notification.permission
+            );
+
+            return;
+
+        }
+
+        if (!('serviceWorker' in navigator)) {
+
+            report('FAILED: Service workers unavailable.');
+            return;
+
+        }
+
+        report('CHECKING ACTIVE SERVICE WORKER...');
+
+        const registration =
+            await navigator.serviceWorker.ready;
+
+        if (!registration.active) {
+
+            report('FAILED: No active service worker.');
+            return;
+
+        }
+
+        if (
+            typeof registration.showNotification !== 'function'
+        ) {
+
+            report(
+                'FAILED: showNotification is unavailable.'
+            );
+
+            return;
+
+        }
+
+        await registration.showNotification(
+            'Nexodra Notification Test',
+            {
+                body: 'BRICK 2J passed: real notification display was requested.',
+                tag: 'nexodra-brick-2j-test',
+                icon: './assets/nexodra-icon-192.png',
+                data: {
+                    source: 'BRICK 2J',
+                    url: './index.html'
+                }
+            }
+        );
+
+        report(
+            'SUCCESS: Chrome accepted the notification request.\n' +
+            'Check your notification shade to confirm it appeared.'
+        );
+
+    } catch (error) {
+
+        report(
+            'NOTIFICATION TEST FAILED\n' +
+            error.name + ': ' + error.message
+        );
+
+    }
+
+};
+
+
+ // =========================================
+ // BRICK 2K — CONNECT REAL NOTIFICATION BUTTON
+ // =========================================
+
+(function () {
+
+    'use strict';
+
+    function nexodraConnectRealNotificationButton() {
+
+        const button = document.getElementById(
+            'nexodra-test-real-notification'
+        );
+
+        if (!button) {
+            console.warn(
+                'BRICK 2K — Real notification button not found.'
+            );
+            return;
+        }
+
+        if (button.dataset.nexodraBrick2KConnected === 'true') {
+            return;
+        }
+
+        button.dataset.nexodraBrick2KConnected = 'true';
+
+        button.addEventListener('click', async function () {
+
+            if (
+                typeof window.nexodraTestRealNotification !==
+                'function'
+            ) {
+
+                const output = document.getElementById(
+                    'nexodra-real-notification-result'
+                );
+
+                const message =
+                    'FAILED: BRICK 2J is not loaded. ' +
+                    'Check that its code is saved in app.js.';
+
+                if (output) {
+                    output.textContent = message;
+                }
+
+                console.error('BRICK 2K — ' + message);
+                return;
+
+            }
+
+            button.disabled = true;
+            button.textContent = 'Testing Notification...';
+
+            try {
+
+                await window.nexodraTestRealNotification();
+
+            } catch (error) {
+
+                const output = document.getElementById(
+                    'nexodra-real-notification-result'
+                );
+
+                if (output) {
+                    output.textContent =
+                        'TEST FAILED\n' +
+                        error.name + ': ' + error.message;
+                }
+
+                console.error(
+                    'BRICK 2K — Notification test failed:',
+                    error
+                );
+
+            } finally {
+
+                button.disabled = false;
+                button.textContent = 'Test Real Notification';
+
+            }
+
+        });
+
+        console.log(
+            'BRICK 2K — Real notification button connected.'
+        );
+
+    }
+
+    if (document.readyState === 'loading') {
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            nexodraConnectRealNotificationButton,
+            { once: true }
+        );
+
+    } else {
+
+        nexodraConnectRealNotificationButton();
+
+    }
+
+})();
+
 
 
 /* =========================================
@@ -20817,114 +21550,6 @@ completeNexodraStartup();
 }
 
 
-});
-
-
-/* =========================================
-   TEMPORARY — NEXODRA API AUTH TEST
-   Remove after testing is complete.
-========================================= */
-
-document.addEventListener('DOMContentLoaded', () => {
-    const button = document.createElement('button');
-    button.id = 'nexodraApiAuthTestButton';
-    button.type = 'button';
-    button.textContent = 'Test API Authentication';
-
-    Object.assign(button.style, {
-        position: 'fixed',
-        right: '16px',
-        bottom: '16px',
-        zIndex: '99999',
-        padding: '12px 16px',
-        border: '0',
-        borderRadius: '8px',
-        background: '#243b53',
-        color: '#ffffff',
-        fontSize: '14px'
-    });
-
-    const status = document.createElement('div');
-    status.id = 'nexodraApiAuthTestStatus';
-    status.setAttribute('role', 'status');
-    Object.assign(status.style, {
-        position: 'fixed',
-        right: '16px',
-        bottom: '68px',
-        zIndex: '99999',
-        maxWidth: '85%',
-        padding: '10px',
-        borderRadius: '8px',
-        background: '#ffffff',
-        color: '#243b53',
-        fontSize: '13px'
-    });
-
-    button.addEventListener('click', async () => {
-        button.disabled = true;
-        status.textContent = 'Checking session…';
-
-        try {
-            if (
-                typeof supabaseClient === 'undefined' ||
-                !supabaseClient?.auth
-            ) {
-                status.textContent =
-                    'Supabase client is unavailable.';
-                return;
-            }
-
-            const { data, error } =
-                await supabaseClient.auth.getSession();
-
-            if (error || !data?.session?.access_token) {
-                status.textContent =
-                    'No active session. Sign in to Nexodra first.';
-                return;
-            }
-
-            const response = await fetch(
-                 'https://nexodra-api.onrender.com/my-store',
-                {
-                    method: 'GET',
-                    headers: {
-                        'Authorization':
-                            `Bearer ${data.session.access_token}`,
-                        'Accept': 'application/json'
-                    }
-                }
-            );
-
-            let result = {};
-            try {
-                result = await response.json();
-            } catch {
-                result = {};
-            }
-
-            if (response.ok) {
-    const store = result?.store;
-
-    status.textContent = store
-        ? `Store loaded successfully (${response.status}).`
-        : `Request succeeded (${response.status}), but no store object was returned.`;
-} else {
-                status.textContent =
-                    `API returned ${response.status}: ${
-                        typeof result.detail === 'string'
-                            ? result.detail
-                            : 'Request was not accepted.'
-                    }`;
-            }
-        } catch {
-            status.textContent =
-                'Request failed. Check network or API CORS settings.';
-        } finally {
-            button.disabled = false;
-        }
-    });
-
-    document.body.append(button, status);
 });
 
 /* =========================================
@@ -23552,6 +24177,75 @@ console.log('BRICK C9-F — Attached product image check:', {
 
         }
 
+// =========================================
+// BRICK N2 — NOTIFY SELLER OF CHAT MESSAGE
+// =========================================
+
+try {
+
+    const {
+        data: {
+            session
+        },
+        error: sessionError
+    } = await supabaseClient.auth.getSession();
+
+    if (sessionError || !session) {
+
+        console.error(
+            'BRICK N2 — Customer session unavailable:',
+            sessionError
+        );
+
+    } else {
+
+        const notificationResponse =
+            await fetch(
+                `${NEXODRA_API_URL}/notifications/chat-message`,
+                {
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type': 'application/json',
+
+                        'Authorization':
+                            `Bearer ${session.access_token}`
+                    },
+
+                    body: JSON.stringify({
+                        message_id: insertedMessage.id
+                    })
+                }
+            );
+
+        if (!notificationResponse.ok) {
+
+            const notificationError =
+                await notificationResponse.text();
+
+            console.error(
+                'BRICK N2 — Seller notification failed:',
+                notificationError
+            );
+
+        } else {
+
+            console.log(
+                'BRICK N2 — Seller notification created.'
+            );
+
+        }
+
+    }
+
+} catch (notificationError) {
+
+    console.error(
+        'BRICK N2 — Notification request failed:',
+        notificationError
+    );
+
+}
 
         /*
          * Update conversation activity.
@@ -26853,3 +27547,209 @@ if (targetId === 'reportsScreen') {
         'Nexodra sidebar controller initialized.'
     );
 })();
+
+(async function diagnoseNexodraServiceWorker() {
+    const result = {
+        secureContext: window.isSecureContext,
+        serviceWorkerSupported: 'serviceWorker' in navigator,
+        notificationPermission:
+            'Notification' in window
+                ? Notification.permission
+                : 'unsupported',
+        controllerActive: !!navigator.serviceWorker?.controller,
+        savedRegistration:
+            !!window.nexodraServiceWorkerRegistration
+    };
+
+    try {
+        if ('serviceWorker' in navigator) {
+            const registration =
+                await navigator.serviceWorker.getRegistration();
+
+            result.registrationFound = !!registration;
+            result.activeWorker =
+                registration?.active?.state || 'none';
+            result.showNotificationSupported =
+                typeof registration?.showNotification === 'function';
+        }
+
+        console.table(result);
+        console.log('NEXODRA SERVICE WORKER DIAGNOSTIC:', result);
+    } catch (error) {
+        console.error('NEXODRA SERVICE WORKER DIAGNOSTIC FAILED:', error);
+    }
+})();
+
+console.log(
+    'NEXODRA — Notification JavaScript file loaded.'
+);
+
+
+/* =========================================
+   BRICK 3A — SUBSCRIBE AND SAVE TO BACKEND
+========================================= */
+
+function nexodraDecodeVapidPublicKey(base64String) {
+    const padding = "=".repeat((4 - base64String.length % 4) % 4);
+
+    const base64 = (base64String + padding)
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+    const raw = atob(base64);
+
+    return Uint8Array.from(raw, char => char.charCodeAt(0));
+}
+
+async function nexodraSubscribeToPush() {
+    try {
+        if (!("serviceWorker" in navigator) ||
+            !("PushManager" in window)) {
+            throw new Error("Push notifications are not supported.");
+        }
+
+        if (typeof NEXODRA_API_URL === "undefined" ||
+            typeof NEXODRA_VAPID_PUBLIC_KEY === "undefined" ||
+            typeof supabaseClient === "undefined") {
+            throw new Error("Nexodra configuration is missing.");
+        }
+
+        if (Notification.permission !== "granted") {
+            const permission = await Notification.requestPermission();
+
+            if (permission !== "granted") {
+                throw new Error("Notification permission was not granted.");
+            }
+        }
+
+        const { data, error } =
+            await supabaseClient.auth.getSession();
+
+        if (error) throw error;
+
+        const session = data.session;
+
+        if (!session?.access_token) {
+            throw new Error("Please sign in before enabling push notifications.");
+        }
+
+        const registration = await navigator.serviceWorker.ready;
+
+        let subscription =
+            await registration.pushManager.getSubscription();
+
+        if (!subscription) {
+            subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey:
+                    nexodraDecodeVapidPublicKey(
+                        NEXODRA_VAPID_PUBLIC_KEY
+                    )
+            });
+        }
+
+        const json = subscription.toJSON();
+
+        if (!json.endpoint || !json.keys?.p256dh || !json.keys?.auth) {
+            throw new Error("The browser returned an incomplete subscription.");
+        }
+
+        const response = await fetch(
+            `${NEXODRA_API_URL}/push/subscribe`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({
+                    endpoint: json.endpoint,
+                    p256dh: json.keys.p256dh,
+                    auth: json.keys.auth
+                })
+            }
+        );
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(
+                result.detail || `Subscription save failed (${response.status}).`
+            );
+        }
+
+        console.info("BRICK 3A — Push subscription saved.", result);
+
+        return {
+            success: true,
+            message: "Push notifications enabled and saved."
+        };
+
+    } catch (error) {
+        console.error("BRICK 3A — Subscription failed:", error);
+
+        return {
+            success: false,
+            message: error.message || "Could not enable push notifications."
+        };
+    }
+}
+
+
+/* =========================================
+   BRICK 3B — SEND BACKEND TEST PUSH
+========================================= */
+
+async function nexodraSendBackendPushTest() {
+    try {
+        const { data, error } =
+            await supabaseClient.auth.getSession();
+
+        if (error) throw error;
+
+        const session = data.session;
+
+        if (!session?.access_token) {
+            throw new Error("Please sign in before testing push notifications.");
+        }
+
+        const response = await fetch(
+            `${NEXODRA_API_URL}/push/test`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({
+                    title: "Nexodra push test",
+                    body: "Your backend push notification reached the send request.",
+                })
+            }
+        );
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(
+                result.detail || `Push test failed (${response.status}).`
+            );
+        }
+
+        console.info("BRICK 3B — Backend push test response:", result);
+
+        return {
+            success: true,
+            message: "Backend accepted the push send request.",
+            result
+        };
+
+    } catch (error) {
+        console.error("BRICK 3B — Backend push test failed:", error);
+
+        return {
+            success: false,
+            message: error.message || "Backend push test failed."
+        };
+    }
+}

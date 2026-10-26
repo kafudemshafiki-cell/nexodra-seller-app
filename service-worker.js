@@ -348,9 +348,7 @@ self.addEventListener(
 
         }
 
-        const notificationTitle =
-            pushData.title ||
-            'Nexodra';
+        const notificationTitle = 'Nexodra';
 
         const notificationOptions = {
             body:

@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexodra — Manage. Sell. Grow.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=overlays-content">
+  <title>Nexodra — Manage. Sell. Grow.</title>
     <link rel="stylesheet" href="style.css">
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1308,6 +1307,290 @@
                 </div>
 
 
+              <!-- Country of Operation -->
+<div class="auth-form-group nexodra-country-group">
+
+    <label for="signupCountryTrigger">
+        Country of operation
+    </label>
+
+    <!-- Visible searchable-picker trigger -->
+    <div class="auth-input-wrapper nexodra-country-wrapper">
+        <i class="fa-solid fa-globe" aria-hidden="true"></i>
+
+        <button
+            type="button"
+            id="signupCountryTrigger"
+            class="nexodra-country-trigger"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            aria-controls="signupCountryDialog"
+        >
+            <span id="signupCountryLabel">Select your country</span>
+            <i class="fa-solid fa-chevron-down nexodra-country-chevron"
+               aria-hidden="true"></i>
+        </button>
+    </div>
+
+    <!-- Original country list: all options preserved -->
+    <select
+        id="signupCountry"
+        name="country"
+        autocomplete="country-name"
+        required
+        class="nexodra-country-source"
+    >
+        <option value="" disabled selected>Select your country</option>
+        <option value="AF">Afghanistan</option>
+        <option value="AL">Albania</option>
+        <option value="DZ">Algeria</option>
+        <option value="AD">Andorra</option>
+        <option value="AO">Angola</option>
+        <option value="AG">Antigua and Barbuda</option>
+        <option value="AR">Argentina</option>
+        <option value="AM">Armenia</option>
+        <option value="AU">Australia</option>
+        <option value="AT">Austria</option>
+        <option value="AZ">Azerbaijan</option>
+        <option value="BS">Bahamas</option>
+        <option value="BH">Bahrain</option>
+        <option value="BD">Bangladesh</option>
+        <option value="BB">Barbados</option>
+        <option value="BY">Belarus</option>
+        <option value="BE">Belgium</option>
+        <option value="BZ">Belize</option>
+        <option value="BJ">Benin</option>
+        <option value="BT">Bhutan</option>
+        <option value="BO">Bolivia</option>
+        <option value="BA">Bosnia and Herzegovina</option>
+        <option value="BW">Botswana</option>
+        <option value="BR">Brazil</option>
+        <option value="BN">Brunei</option>
+        <option value="BG">Bulgaria</option>
+        <option value="BF">Burkina Faso</option>
+        <option value="BI">Burundi</option>
+        <option value="CV">Cabo Verde</option>
+        <option value="KH">Cambodia</option>
+        <option value="CM">Cameroon</option>
+        <option value="CA">Canada</option>
+        <option value="CF">Central African Republic</option>
+        <option value="TD">Chad</option>
+        <option value="CL">Chile</option>
+        <option value="CN">China</option>
+        <option value="CO">Colombia</option>
+        <option value="KM">Comoros</option>
+        <option value="CG">Congo</option>
+        <option value="CD">Democratic Republic of the Congo</option>
+        <option value="CR">Costa Rica</option>
+        <option value="CI">Côte d’Ivoire</option>
+        <option value="HR">Croatia</option>
+        <option value="CU">Cuba</option>
+        <option value="CY">Cyprus</option>
+        <option value="CZ">Czechia</option>
+        <option value="DK">Denmark</option>
+        <option value="DJ">Djibouti</option>
+        <option value="DM">Dominica</option>
+        <option value="DO">Dominican Republic</option>
+        <option value="EC">Ecuador</option>
+        <option value="EG">Egypt</option>
+        <option value="SV">El Salvador</option>
+        <option value="GQ">Equatorial Guinea</option>
+        <option value="ER">Eritrea</option>
+        <option value="EE">Estonia</option>
+        <option value="SZ">Eswatini</option>
+        <option value="ET">Ethiopia</option>
+        <option value="FJ">Fiji</option>
+        <option value="FI">Finland</option>
+        <option value="FR">France</option>
+        <option value="GA">Gabon</option>
+        <option value="GM">Gambia</option>
+        <option value="GE">Georgia</option>
+        <option value="DE">Germany</option>
+        <option value="GH">Ghana</option>
+        <option value="GR">Greece</option>
+        <option value="GD">Grenada</option>
+        <option value="GT">Guatemala</option>
+        <option value="GN">Guinea</option>
+        <option value="GW">Guinea-Bissau</option>
+        <option value="GY">Guyana</option>
+        <option value="HT">Haiti</option>
+        <option value="HN">Honduras</option>
+        <option value="HU">Hungary</option>
+        <option value="IS">Iceland</option>
+        <option value="IN">India</option>
+        <option value="ID">Indonesia</option>
+        <option value="IR">Iran</option>
+        <option value="IQ">Iraq</option>
+        <option value="IE">Ireland</option>
+        <option value="IL">Israel</option>
+        <option value="IT">Italy</option>
+        <option value="JM">Jamaica</option>
+        <option value="JP">Japan</option>
+        <option value="JO">Jordan</option>
+        <option value="KZ">Kazakhstan</option>
+        <option value="KE">Kenya</option>
+        <option value="KI">Kiribati</option>
+        <option value="KW">Kuwait</option>
+        <option value="KG">Kyrgyzstan</option>
+        <option value="LA">Laos</option>
+        <option value="LV">Latvia</option>
+        <option value="LB">Lebanon</option>
+        <option value="LS">Lesotho</option>
+        <option value="LR">Liberia</option>
+        <option value="LY">Libya</option>
+        <option value="LI">Liechtenstein</option>
+        <option value="LT">Lithuania</option>
+        <option value="LU">Luxembourg</option>
+        <option value="MG">Madagascar</option>
+        <option value="MW">Malawi</option>
+        <option value="MY">Malaysia</option>
+        <option value="MV">Maldives</option>
+        <option value="ML">Mali</option>
+        <option value="MT">Malta</option>
+        <option value="MH">Marshall Islands</option>
+        <option value="MR">Mauritania</option>
+        <option value="MU">Mauritius</option>
+        <option value="MX">Mexico</option>
+        <option value="FM">Micronesia</option>
+        <option value="MD">Moldova</option>
+        <option value="MC">Monaco</option>
+        <option value="MN">Mongolia</option>
+        <option value="ME">Montenegro</option>
+        <option value="MA">Morocco</option>
+        <option value="MZ">Mozambique</option>
+        <option value="MM">Myanmar</option>
+        <option value="NA">Namibia</option>
+        <option value="NR">Nauru</option>
+        <option value="NP">Nepal</option>
+        <option value="NL">Netherlands</option>
+        <option value="NZ">New Zealand</option>
+        <option value="NI">Nicaragua</option>
+        <option value="NE">Niger</option>
+        <option value="NG">Nigeria</option>
+        <option value="KP">North Korea</option>
+        <option value="MK">North Macedonia</option>
+        <option value="NO">Norway</option>
+        <option value="OM">Oman</option>
+        <option value="PK">Pakistan</option>
+        <option value="PW">Palau</option>
+        <option value="PS">Palestine</option>
+        <option value="PA">Panama</option>
+        <option value="PG">Papua New Guinea</option>
+        <option value="PY">Paraguay</option>
+        <option value="PE">Peru</option>
+        <option value="PH">Philippines</option>
+        <option value="PL">Poland</option>
+        <option value="PT">Portugal</option>
+        <option value="QA">Qatar</option>
+        <option value="RO">Romania</option>
+        <option value="RU">Russia</option>
+        <option value="RW">Rwanda</option>
+        <option value="KN">Saint Kitts and Nevis</option>
+        <option value="LC">Saint Lucia</option>
+        <option value="VC">Saint Vincent and the Grenadines</option>
+        <option value="WS">Samoa</option>
+        <option value="SM">San Marino</option>
+        <option value="ST">São Tomé and Príncipe</option>
+        <option value="SA">Saudi Arabia</option>
+        <option value="SN">Senegal</option>
+        <option value="RS">Serbia</option>
+        <option value="SC">Seychelles</option>
+        <option value="SL">Sierra Leone</option>
+        <option value="SG">Singapore</option>
+        <option value="SK">Slovakia</option>
+        <option value="SI">Slovenia</option>
+        <option value="SB">Solomon Islands</option>
+        <option value="SO">Somalia</option>
+        <option value="ZA">South Africa</option>
+        <option value="KR">South Korea</option>
+        <option value="SS">South Sudan</option>
+        <option value="ES">Spain</option>
+        <option value="LK">Sri Lanka</option>
+        <option value="SD">Sudan</option>
+        <option value="SR">Suriname</option>
+        <option value="SE">Sweden</option>
+        <option value="CH">Switzerland</option>
+        <option value="SY">Syria</option>
+        <option value="TW">Taiwan</option>
+        <option value="TJ">Tajikistan</option>
+        <option value="TZ">Tanzania</option>
+        <option value="TH">Thailand</option>
+        <option value="TL">Timor-Leste</option>
+        <option value="TG">Togo</option>
+        <option value="TO">Tonga</option>
+        <option value="TT">Trinidad and Tobago</option>
+        <option value="TN">Tunisia</option>
+        <option value="TR">Türkiye</option>
+        <option value="TM">Turkmenistan</option>
+        <option value="TV">Tuvalu</option>
+        <option value="UG">Uganda</option>
+        <option value="UA">Ukraine</option>
+        <option value="AE">United Arab Emirates</option>
+        <option value="GB">United Kingdom</option>
+        <option value="US">United States</option>
+        <option value="UY">Uruguay</option>
+        <option value="UZ">Uzbekistan</option>
+        <option value="VU">Vanuatu</option>
+        <option value="VA">Vatican City</option>
+        <option value="VE">Venezuela</option>
+        <option value="VN">Vietnam</option>
+        <option value="YE">Yemen</option>
+        <option value="ZM">Zambia</option>
+        <option value="ZW">Zimbabwe</option>
+    </select>
+
+    <!-- Searchable country dialog -->
+    <div
+        id="signupCountryDialog"
+        class="nexodra-country-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="signupCountryDialogTitle"
+        hidden
+    >
+        <div class="nexodra-country-dialog-header">
+            <h3 id="signupCountryDialogTitle">Choose your country</h3>
+
+            <button
+                type="button"
+                id="signupCountryClose"
+                class="nexodra-country-close"
+                aria-label="Close country picker"
+            >
+                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <div class="nexodra-country-search">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+
+            <input
+                type="search"
+                id="signupCountrySearch"
+                placeholder="Search country name or code..."
+                autocomplete="off"
+                aria-label="Search countries by name or code"
+            >
+        </div>
+
+        <div
+            id="signupCountryList"
+            class="nexodra-country-list"
+            role="listbox"
+            aria-label="Countries"
+        ></div>
+
+        <p
+            id="signupCountryEmpty"
+            class="nexodra-country-empty"
+            hidden
+        >
+            No matching countries found.
+        </p>
+    </div>
+
+</div>
+
                 <!-- Email -->
                 <div class="auth-form-group">
 
@@ -2265,10 +2548,18 @@
             </p>
         </div>
 
-        <div class="sell-online-status">
-            <span class="sell-status-dot"></span>
-            Online
-        </div>
+        
+<button
+    type="button"
+    class="sell-online-status sell-hire-purchase-btn"
+    id="sellHirePurchaseBtn"
+    aria-label="Hire Purchase"
+    title="Hire Purchase"
+>
+    <span class="sell-status-dot" aria-hidden="true"></span>
+    <span>Hire Purchase</span>
+</button>
+
 
     </div>
 
@@ -2353,14 +2644,19 @@
         </div>
 
 
-        <button
-            type="button"
-            class="sell-scan-btn"
-            id="sellScanBtn"
-            aria-label="Scan barcode"
-        >
-            <i class="fa-solid fa-barcode"></i>
-        </button>
+        
+
+<button
+    type="button"
+    class="sell-scan-btn sell-held-btn"
+    id="sellScanBtn"
+    aria-label="Held Sales"
+    title="Held Sales"
+>
+    <i class="fa-solid fa-pause"></i>
+</button>
+
+
 
     </div>
 
@@ -2546,60 +2842,105 @@
             </div>
 
 
-            <!-- Customer -->
-            <button
-                type="button"
-                class="sell-customer-btn"
-                id="sellCustomerBtn"
-            >
+            
+<!-- HIRE PURCHASE ENTRY BUTTON -->
+<button
+    type="button"
+    class="sell-customer-btn sell-hire-entry-btn"
+    id="sellHireEntryBtn"
+    aria-label="Start hire purchase"
+>
+    <span class="sell-action-icon">
+        <i class="fa-solid fa-calendar-check"></i>
+    </span>
 
-                <span class="sell-action-icon">
-                    <i class="fa-solid fa-user"></i>
-                </span>
+    <span class="sell-hire-entry-text">
+        <strong>Hire Purchase</strong>
+        <small>Register customer & set installments</small>
+    </span>
 
-                <span>
-                    <strong id="sellCustomerName">
-                        Walk-in Customer
-                    </strong>
-
-                    <small>
-                        Add customer
-                    </small>
-                </span>
-
-                <i class="fa-solid fa-chevron-right"></i>
-
-            </button>
+    <i class="fa-solid fa-chevron-right sell-hire-entry-arrow"></i>
+</button>
 
 
-            <!-- Sale Actions -->
-            <div class="sell-actions-row">
 
-                <button
-                    type="button"
-                    id="sellDiscountBtn"
-                >
-                    <i class="fa-solid fa-percent"></i>
-                    Discount
-                </button>
+            
+<!-- Sale Actions -->
+<div class="sell-actions-row" id="sellActionsRow">
 
-                <button
-                    type="button"
-                    id="sellNoteBtn"
-                >
-                    <i class="fa-solid fa-note-sticky"></i>
-                    Note
-                </button>
+    <!-- Discount -->
+    <button
+        type="button"
+        id="sellDiscountBtn"
+        class="sell-action-btn"
+    >
+        <i class="fa-solid fa-percent"></i>
+        Discount
+    </button>
 
-                <button
-                    type="button"
-                    id="holdSaleBtn"
-                >
-                    <i class="fa-solid fa-pause"></i>
-                    Hold
-                </button>
+    <!-- Discount input: hidden until Discount is tapped -->
+    <div
+        class="sell-discount-input-wrap"
+        id="sellDiscountInputWrap"
+        hidden
+    >
+        <input
+            type="number"
+            id="sellDiscountInput"
+            min="0"
+            step="0.01"
+            inputmode="decimal"
+            placeholder="0.00 / 0%"
+            aria-label="Discount amount"
+        >
+    </div>
 
-            </div>
+    <!-- Note -->
+    <button
+        type="button"
+        id="sellNoteBtn"
+        class="sell-action-btn"
+    >
+        <i class="fa-solid fa-note-sticky"></i>
+        Note
+    </button>
+
+    <!-- Hold -->
+    <button
+        type="button"
+        id="holdSaleBtn"
+        class="sell-action-btn"
+    >
+        <i class="fa-solid fa-pause"></i>
+        Hold
+    </button>
+
+</div>
+
+<!-- Discount controls: hidden until Discount is tapped -->
+<div
+    class="sell-discount-controls"
+    id="sellDiscountControls"
+    hidden
+>
+    <button
+        type="button"
+        id="sellDiscountCancelBtn"
+        class="sell-discount-cancel"
+    >
+        <i class="fa-solid fa-xmark"></i>
+        Cancel
+    </button>
+
+    <button
+        type="button"
+        id="sellDiscountConfirmBtn"
+        class="sell-discount-confirm"
+    >
+        <i class="fa-solid fa-check"></i>
+        Confirm
+    </button>
+</div>
 
 
             <!-- Totals -->
@@ -2661,6 +3002,1201 @@
     </div>
 
 </section>
+
+<!-- HELD SALES: LIST SCREEN -->
+<section id="heldSalesScreen" class="screen held-sales-screen" aria-label="Held sales">
+    <div class="held-page">
+        <header class="held-header">
+            <button type="button" class="held-icon-btn" id="heldBackBtn" aria-label="Back to sale">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div class="held-heading">
+                <span class="held-eyebrow">SELLING</span>
+                <h1>Held Sales</h1>
+                <p>Continue where you left off.</p>
+            </div>
+            <div class="held-header-icon"><i class="fa-solid fa-pause"></i></div>
+        </header>
+
+        <div class="held-stats-grid">
+            <article class="held-stat-card">
+                <span class="held-stat-icon held-blue"><i class="fa-solid fa-box-archive"></i></span>
+                <span class="held-stat-label">Held sales</span>
+                <strong id="heldCount">3</strong>
+                <small>Saved for later</small>
+            </article>
+            <article class="held-stat-card">
+                <span class="held-stat-icon held-green"><i class="fa-solid fa-wallet"></i></span>
+                <span class="held-stat-label">Total value</span>
+                <strong id="heldTotalValue">UGX 1.85M</strong>
+                <small>Across held sales</small>
+            </article>
+        </div>
+
+        <div class="held-search-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="heldSearchInput" type="search" placeholder="Search customer or sale number..." autocomplete="off">
+            <button type="button" id="heldClearSearch" aria-label="Clear search" hidden>
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="held-filter-row" role="group" aria-label="Filter held sales">
+            <button type="button" class="held-filter active" data-held-filter="all">All <span id="heldFilterAllCount">3</span></button>
+            <button type="button" class="held-filter" data-held-filter="today">Today</button>
+            <button type="button" class="held-filter" data-held-filter="week">This week</button>
+            <button type="button" class="held-filter" data-held-filter="older">Older</button>
+        </div>
+
+        <div class="held-list-heading">
+            <div>
+                <h2>Your saved carts</h2>
+                <p id="heldListSubtitle">3 sales waiting for you</p>
+            </div>
+            <span class="held-live-dot">Saved</span>
+        </div>
+
+        <div id="heldSalesList" class="held-sales-list" aria-live="polite"></div>
+
+        <div id="heldEmptyState" class="held-empty-state" hidden>
+            <span class="held-empty-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <h3>No held sales found</h3>
+            <p>Try a different search or filter.</p>
+            <button type="button" class="held-secondary-btn" id="heldResetFilters">Clear filters</button>
+        </div>
+
+        <p class="held-demo-note"><i class="fa-solid fa-circle-info"></i> Demo sales are shown here. Connect your saved-cart data source to display real held sales.</p>
+    </div>
+</section>
+
+<!-- HELD SALES: RESUME / DETAILS SCREEN -->
+<section id="heldResumeScreen" class="screen held-sales-screen" aria-label="Resume held sale">
+    <div class="held-page">
+        <header class="held-header">
+            <button type="button" class="held-icon-btn" id="heldResumeBackBtn" aria-label="Back to held sales">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div class="held-heading">
+                <span class="held-eyebrow">HELD SALE DETAILS</span>
+                <h1>Resume Sale</h1>
+                <p>Review the cart before continuing.</p>
+            </div>
+            <div class="held-header-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+        </header>
+
+        <article class="held-customer-card">
+            <div class="held-customer-avatar" id="heldResumeAvatar">AM</div>
+            <div class="held-customer-info">
+                <span class="held-small-label">CUSTOMER</span>
+                <h2 id="heldResumeCustomer">Amina Yusuf</h2>
+                <p id="heldResumeMeta">Sale #103 · Saved today</p>
+            </div>
+            <span class="held-saved-badge"><i class="fa-solid fa-check"></i> Saved</span>
+        </article>
+
+        <div class="held-section-title">
+            <div><h2>Items in this sale</h2><p id="heldResumeItemCount">3 items</p></div>
+            <span class="held-items-pill" id="heldResumeUnits">5 units</span>
+        </div>
+
+        <div id="heldResumeItems" class="held-resume-items"></div>
+
+        <article class="held-summary-card">
+            <h2>Order summary</h2>
+            <div class="held-summary-line"><span>Subtotal</span><strong id="heldResumeSubtotal">UGX 950,000</strong></div>
+            <div class="held-summary-line"><span>Discount</span><strong id="heldResumeDiscount">UGX 0</strong></div>
+            <div class="held-summary-line"><span>Tax</span><strong id="heldResumeTax">UGX 0</strong></div>
+            <div class="held-summary-divider"></div>
+            <div class="held-summary-line held-summary-total"><span>Total</span><strong id="heldResumeTotal">UGX 1,200,000</strong></div>
+        </article>
+
+        <div class="held-resume-notice">
+            <i class="fa-solid fa-shield-halved"></i>
+            <p>Your saved sale details are displayed for review. Resuming will return you to the selling screen.</p>
+        </div>
+
+        <div class="held-sticky-actions">
+            <button type="button" class="held-secondary-btn" id="heldResumeCancelBtn">Back to list</button>
+            <button type="button" class="held-primary-btn" id="heldConfirmResumeBtn">
+                <i class="fa-solid fa-arrow-right"></i> Resume Sale
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- HELD SALES: DELETE CONFIRMATION SCREEN -->
+<section id="heldDeleteScreen" class="screen held-sales-screen" aria-label="Delete held sale confirmation">
+    <div class="held-page held-delete-page">
+        <header class="held-header">
+            <button type="button" class="held-icon-btn" id="heldDeleteBackBtn" aria-label="Cancel and go back">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div class="held-heading">
+                <span class="held-eyebrow">MANAGE SAVED CARTS</span>
+                <h1>Delete Held Sale</h1>
+                <p>Confirm before removing this sale.</p>
+            </div>
+        </header>
+
+        <article class="held-delete-card">
+            <div class="held-delete-icon"><i class="fa-regular fa-trash-can"></i></div>
+            <span class="held-danger-label">PERMANENT ACTION</span>
+            <h2>Delete this held sale?</h2>
+            <p>This saved cart will be removed from your held sales list. This action cannot be undone.</p>
+
+            <div class="held-delete-target">
+                <div class="held-customer-avatar" id="heldDeleteAvatar">AM</div>
+                <div class="held-customer-info">
+                    <h3 id="heldDeleteCustomer">Amina Yusuf</h3>
+                    <p id="heldDeleteMeta">Sale #103 · 2 items</p>
+                    <strong id="heldDeleteAmount">UGX 1,200,000</strong>
+                </div>
+            </div>
+
+            <div class="held-delete-actions">
+                <button type="button" class="held-secondary-btn" id="heldCancelDeleteBtn">Keep Sale</button>
+                <button type="button" class="held-danger-btn" id="heldConfirmDeleteBtn">
+                    <i class="fa-solid fa-trash-can"></i> Delete Sale
+                </button>
+            </div>
+        </article>
+
+        <p class="held-delete-footnote"><i class="fa-solid fa-lock"></i> No sale will be deleted until you confirm.</p>
+    </div>
+</section>
+          
+<!-- =========================================
+     HP-2 — HIRE PURCHASE DASHBOARD
+     DEMO DATA ONLY
+========================================= -->
+<section
+    id="hirePurchaseScreen"
+    class="screen hp-dashboard-screen"
+>
+    <div class="hp-dashboard">
+
+        <header class="hp-dashboard-header">
+            <button
+                type="button"
+                class="hp-back-btn"
+                id="hpDashboardBackBtn"
+                aria-label="Back to Sell"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+
+            <div class="hp-dashboard-heading">
+                <span class="hp-eyebrow">SALES MANAGEMENT</span>
+                <h1>Hire Purchase</h1>
+                <p>Manage customer agreements and installment payments.</p>
+            </div>
+
+            <span class="hp-demo-badge">REAL DATA</span>
+        </header>
+
+        <!-- Overview metrics -->
+        <div class="hp-metrics-grid">
+            <article class="hp-metric-card hp-metric-primary">
+                <span class="hp-metric-icon">
+                    <i class="fa-solid fa-file-contract"></i>
+                </span>
+                <span class="hp-metric-label">Total agreements</span>
+                <strong>24</strong>
+                <small>Across all customers</small>
+            </article>
+
+            <article class="hp-metric-card">
+                <span class="hp-metric-icon hp-icon-green">
+                    <i class="fa-solid fa-wallet"></i>
+                </span>
+                <span class="hp-metric-label">Outstanding balance</span>
+                <strong>$18,450</strong>
+                <small>Remaining to collect</small>
+            </article>
+
+            <article class="hp-metric-card">
+                <span class="hp-metric-icon hp-icon-orange">
+                    <i class="fa-solid fa-clock"></i>
+                </span>
+                <span class="hp-metric-label">Payments overdue</span>
+                <strong>3</strong>
+                <small>Require follow-up</small>
+            </article>
+
+            <article class="hp-metric-card">
+                <span class="hp-metric-icon hp-icon-purple">
+                    <i class="fa-solid fa-circle-check"></i>
+                </span>
+                <span class="hp-metric-label">Fulfilled</span>
+                <strong>8</strong>
+                <small>Fully paid agreements</small>
+            </article>
+        </div>
+
+        <!-- Collection overview -->
+        <article class="hp-collection-card">
+            <div class="hp-collection-copy">
+                <span class="hp-eyebrow">COLLECTION OVERVIEW</span>
+                <h2>Keep payments on track</h2>
+                <p>Track installments and identify agreements that need attention.</p>
+            </div>
+            <div class="hp-collection-visual">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Demo portfolio</span>
+                <strong>$18,450</strong>
+                <small>Outstanding balance</small>
+            </div>
+        </article>
+
+        <!-- Search -->
+        <div class="hp-toolbar">
+            <div class="hp-search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                    type="search"
+                    id="hpAgreementSearch"
+                    placeholder="Search customer, agreement or product..."
+                    autocomplete="off"
+                >
+            </div>
+
+            <span class="hp-record-count" id="hpRecordCount">
+                6 agreements
+            </span>
+        </div>
+
+        <!-- Agreement filters -->
+        <nav class="hp-filter-tabs" aria-label="Filter hire purchase agreements">
+            <button type="button" class="hp-filter-btn is-active"
+                data-hp-filter="all">All <span>6</span></button>
+            <button type="button" class="hp-filter-btn"
+                data-hp-filter="incoming">Incoming <span>2</span></button>
+            <button type="button" class="hp-filter-btn"
+                data-hp-filter="overdue">Overdue <span>2</span></button>
+            <button type="button" class="hp-filter-btn"
+                data-hp-filter="active">Active <span>1</span></button>
+            <button type="button" class="hp-filter-btn"
+                data-hp-filter="fulfilled">Fulfilled <span>1</span></button>
+        </nav>
+
+        <!-- Demo agreement cards are rendered by app.js -->
+        <div
+            class="hp-agreement-list"
+            id="hpAgreementList"
+            aria-live="polite"
+        ></div>
+
+    </div>
+</section>
+
+          
+<!-- ==========================================
+     NEXODRA HIRE PURCHASE WORKFLOW
+     Screen 2: Customer and Hire Purchase Form
+     Screen 3: Review Products
+     Screen 4: Payment Plan
+     Screen 5: Confirmation
+=========================================== -->
+
+<section
+    class="screen hp-workflow"
+    id="hirePurchaseWorkflow"
+    aria-label="Hire Purchase workflow"
+    hidden
+>
+
+    <!-- WORKFLOW HEADER -->
+    <header class="hp-header">
+        <button
+            type="button"
+            class="hp-back-icon"
+            id="hpExitBtn"
+            aria-label="Exit Hire Purchase"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <div class="hp-brand">
+            <span class="hp-brand-icon">
+                <i class="fa-solid fa-calendar-check"></i>
+            </span>
+
+            <div>
+                <h2>Hire Purchase</h2>
+                <p>Customer agreements and installments</p>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- FOUR-STEP PROGRESS -->
+    <nav class="hp-progress" aria-label="Hire Purchase steps">
+
+        <div class="hp-progress-step is-active" data-hp-step="1">
+            <span class="hp-step-number">1</span>
+            <span>Customer</span>
+        </div>
+
+        <span class="hp-progress-line"></span>
+
+        <div class="hp-progress-step" data-hp-step="2">
+            <span class="hp-step-number">2</span>
+            <span>Products</span>
+        </div>
+
+        <span class="hp-progress-line"></span>
+
+        <div class="hp-progress-step" data-hp-step="3">
+            <span class="hp-step-number">3</span>
+            <span>Payment plan</span>
+        </div>
+
+        <span class="hp-progress-line"></span>
+
+        <div class="hp-progress-step" data-hp-step="4">
+            <span class="hp-step-number">4</span>
+            <span>Review</span>
+        </div>
+
+    </nav>
+
+
+    <!-- ======================================
+         SCREEN 2 — CUSTOMER REGISTRATION FORM
+    ======================================= -->
+
+    <section
+        class="hp-screen"
+        id="hpCustomerScreen"
+        data-hp-screen="1"
+        aria-labelledby="hpCustomerTitle"
+    >
+
+        <div class="hp-screen-heading">
+            <span class="hp-eyebrow">STEP 1 OF 4</span>
+
+            <h3 id="hpCustomerTitle">Customer details</h3>
+
+            <p>
+                Select an existing customer or register a new customer
+                for this hire purchase agreement.
+            </p>
+        </div>
+
+
+        <!-- CUSTOMER SEARCH -->
+        <div class="hp-card">
+
+            <div class="hp-field">
+                <label for="hpCustomerSearch">
+                    Search existing customer
+                </label>
+
+                <div class="hp-input-with-icon">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="search"
+                        id="hpCustomerSearch"
+                        name="customerSearch"
+                        placeholder="Search by name or phone number"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <small>
+                    Customer search will be connected to your customer database.
+                </small>
+            </div>
+
+            <div class="hp-divider">
+                <span>OR REGISTER A NEW CUSTOMER</span>
+            </div>
+
+
+            <!-- NEW CUSTOMER FIELDS -->
+            <div class="hp-form-grid">
+
+                <div class="hp-field">
+                    <label for="hpCustomerFirstName">
+                        First name <span class="hp-required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="hpCustomerFirstName"
+                        name="firstName"
+                        placeholder="Enter first name"
+                        autocomplete="given-name"
+                        required
+                    >
+                </div>
+
+                <div class="hp-field">
+                    <label for="hpCustomerLastName">
+                        Last name <span class="hp-required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="hpCustomerLastName"
+                        name="lastName"
+                        placeholder="Enter last name"
+                        autocomplete="family-name"
+                        required
+                    >
+                </div>
+
+                <div class="hp-field">
+                    <label for="hpCustomerPhone">
+                        Phone number <span class="hp-required">*</span>
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="hpCustomerPhone"
+                        name="phone"
+                        placeholder="+256 7XX XXX XXX"
+                        autocomplete="tel"
+                        required
+                    >
+                </div>
+
+                <div class="hp-field">
+                    <label for="hpCustomerEmail">
+                        Email address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="hpCustomerEmail"
+                        name="email"
+                        placeholder="customer@example.com"
+                        autocomplete="email"
+                    >
+                </div>
+
+                <div class="hp-field hp-field-full">
+                    <label for="hpCustomerAddress">
+                        Residential address
+                    </label>
+
+                    <textarea
+                        id="hpCustomerAddress"
+                        name="address"
+                        rows="2"
+                        placeholder="Enter the customer's address"
+                        autocomplete="street-address"
+                    ></textarea>
+                </div>
+
+                <div class="hp-field hp-field-full">
+                    <label for="hpCustomerReference">
+                        Additional customer reference
+                    </label>
+
+                    <input
+                        type="text"
+                        id="hpCustomerReference"
+                        name="customerReference"
+                        placeholder="Optional reference or account number"
+                    >
+                </div>
+
+            </div>
+
+            <p class="hp-privacy-note">
+                <i class="fa-solid fa-shield-halved"></i>
+                Customer details should only be used for managing this agreement.
+            </p>
+
+        </div>
+
+
+        <!-- DEPOSIT -->
+        <div class="hp-card">
+
+            <div class="hp-card-heading">
+                <span class="hp-card-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                </span>
+
+                <div>
+                    <h4>Initial deposit</h4>
+                    <p>Enter the amount the customer pays today.</p>
+                </div>
+            </div>
+
+            <div class="hp-field">
+                <label for="hpDepositAmount">
+                    Deposit amount (UGX)
+                    <span class="hp-required">*</span>
+                </label>
+
+                <div class="hp-money-input">
+                    <span>UGX</span>
+
+                    <input
+                        type="number"
+                        id="hpDepositAmount"
+                        name="depositAmount"
+                        min="0"
+                        step="1"
+                        value="0"
+                        inputmode="decimal"
+                        required
+                    >
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="hp-screen-actions">
+            <button
+                type="button"
+                class="hp-btn hp-btn-secondary"
+                id="hpCustomerCancelBtn"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="hp-btn hp-btn-primary"
+                id="hpCustomerNextBtn"
+            >
+                Review products
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+    </section>
+
+
+    <!-- ======================================
+         SCREEN 3 — REVIEW PRODUCTS
+    ======================================= -->
+
+    <section
+        class="hp-screen"
+        id="hpProductsScreen"
+        data-hp-screen="2"
+        aria-labelledby="hpProductsTitle"
+        hidden
+    >
+
+        <div class="hp-screen-heading">
+            <span class="hp-eyebrow">STEP 2 OF 4</span>
+
+            <h3 id="hpProductsTitle">Review products</h3>
+
+            <p>
+                Confirm the products and quantities selected in your current sale.
+            </p>
+        </div>
+
+
+        <!-- CUSTOMER SUMMARY -->
+        <div class="hp-customer-summary">
+            <span class="hp-summary-avatar">
+                <i class="fa-solid fa-user"></i>
+            </span>
+
+            <div class="hp-summary-customer">
+                <strong id="hpProductsCustomerName">
+                    Customer not selected
+                </strong>
+
+                <span id="hpProductsCustomerPhone">
+                    Customer phone number
+                </span>
+            </div>
+
+            <span class="hp-tag hp-tag-blue">Hire Purchase</span>
+        </div>
+
+
+        <!-- PRODUCT LIST -->
+        <div class="hp-card">
+
+            <div class="hp-card-title-row">
+                <div>
+                    <h4>Items in this sale</h4>
+                    <p id="hpProductsCount">Products will appear here</p>
+                </div>
+
+                <span class="hp-items-icon">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                </span>
+            </div>
+
+
+            <!-- Chat 2 will populate these rows from the current POS cart. -->
+            <div
+                class="hp-product-list"
+                id="hpProductsList"
+                aria-live="polite"
+            >
+
+                <div class="hp-product-empty">
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                    <strong>Products will appear here</strong>
+
+                    <span>
+                        Your selected POS products will be shown when connected.
+                    </span>
+                </div>
+
+            </div>
+
+
+            <!-- TOTALS -->
+            <div class="hp-totals">
+
+                <div class="hp-total-row">
+                    <span>Subtotal</span>
+                    <strong id="hpProductsSubtotal">UGX 0</strong>
+                </div>
+
+                <div class="hp-total-row">
+                    <span>Discount</span>
+                    <strong id="hpProductsDiscount">UGX 0</strong>
+                </div>
+
+                <div class="hp-total-row">
+                    <span>Tax</span>
+                    <strong id="hpProductsTax">UGX 0</strong>
+                </div>
+
+                <div class="hp-total-row hp-total-grand">
+                    <span>Sale total</span>
+                    <strong id="hpProductsTotal">UGX 0</strong>
+                </div>
+
+                <div class="hp-total-row">
+                    <span>Deposit</span>
+                    <strong id="hpProductsDeposit">UGX 0</strong>
+                </div>
+
+                <div class="hp-total-row hp-total-balance">
+                    <span>Remaining balance before fees</span>
+                    <strong id="hpProductsBalance">UGX 0</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="hp-info-banner">
+            <i class="fa-solid fa-circle-info"></i>
+
+            <p>
+                Check quantities and prices carefully before creating
+                the customer's payment plan.
+            </p>
+        </div>
+
+
+        <div class="hp-screen-actions">
+            <button
+                type="button"
+                class="hp-btn hp-btn-secondary"
+                id="hpProductsBackBtn"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+                Back
+            </button>
+
+            <button
+                type="button"
+                class="hp-btn hp-btn-primary"
+                id="hpProductsNextBtn"
+            >
+                Set payment plan
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+    </section>
+
+
+    <!-- ======================================
+         SCREEN 4 — PAYMENT PLAN
+    ======================================= -->
+
+    <section
+        class="hp-screen"
+        id="hpPlanScreen"
+        data-hp-screen="3"
+        aria-labelledby="hpPlanTitle"
+        hidden
+    >
+
+        <div class="hp-screen-heading">
+            <span class="hp-eyebrow">STEP 3 OF 4</span>
+
+            <h3 id="hpPlanTitle">Payment plan</h3>
+
+            <p>
+                Choose when installments are due and configure any
+                applicable interest or fees.
+            </p>
+        </div>
+
+
+        <!-- PAYMENT SUMMARY -->
+        <div class="hp-balance-card">
+            <span>Balance before interest and fees</span>
+
+            <strong id="hpPlanRemainingBalance">UGX 0</strong>
+
+            <small>Based on the sale total less the deposit</small>
+        </div>
+
+
+        <!-- INSTALLMENT CONFIGURATION -->
+        <div class="hp-card">
+
+            <div class="hp-card-heading">
+                <span class="hp-card-icon">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </span>
+
+                <div>
+                    <h4>Installment schedule</h4>
+                    <p>Configure the customer's repayment period.</p>
+                </div>
+            </div>
+
+
+            <div class="hp-form-grid">
+
+                <div class="hp-field hp-field-full">
+                    <label for="hpInstallmentFrequency">
+                        Installment period
+                        <span class="hp-required">*</span>
+                    </label>
+
+                    <select
+                        id="hpInstallmentFrequency"
+                        name="installmentFrequency"
+                        required
+                    >   <option value="Daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+
+
+                <div class="hp-field">
+                    <label for="hpInstallmentCount">
+                        Number of installments
+                        <span class="hp-required">*</span>
+                    </label>
+
+                    <input
+                        type="number"
+                        id="hpInstallmentCount"
+                        name="installmentCount"
+                        min="1"
+                        step="1"
+                        value="8"
+                        inputmode="numeric"
+                        required
+                    >
+                </div>
+
+
+                <div class="hp-field">
+                    <label for="hpFirstDueDate">
+                        First payment due date
+                        <span class="hp-required">*</span>
+                    </label>
+
+                    <input
+                        type="date"
+                        id="hpFirstDueDate"
+                        name="firstDueDate"
+                        required
+                    >
+                </div>
+
+
+                <div class="hp-field hp-field-full">
+                    <label for="hpAgreementNote">
+                        Agreement note (optional)
+                    </label>
+
+                    <textarea
+                        id="hpAgreementNote"
+                        name="agreementNote"
+                        rows="3"
+                        maxlength="500"
+                        placeholder="Add any relevant agreement notes"
+                    ></textarea>
+
+                    <small>
+                        Do not enter unnecessary sensitive personal information.
+                    </small>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- INTEREST AND FEES -->
+<div class="hp-card">
+
+    <div class="hp-card-heading">
+        <span class="hp-card-icon hp-card-icon-purple">
+            <i class="fa-solid fa-percent"></i>
+        </span>
+
+        <div>
+            <h4>Interest and fees</h4>
+            <p>Enter the additional money charged for each installment.</p>
+        </div>
+    </div>
+
+
+    <div class="hp-field">
+
+        <label for="hpChargeAmount">
+            Fixed interest
+        </label>
+
+        <div class="hp-money-input">
+            <span id="hpChargePrefix">UGX</span>
+
+            <input
+                type="number"
+                id="hpChargeAmount"
+                name="chargeAmount"
+                min="0"
+                step="0.01"
+                value="0"
+                inputmode="decimal"
+                placeholder="Enter additional fee"
+            >
+        </div>
+
+        
+<small>
+    This fixed amount is added once to the remaining balance.
+    The total repayment is then divided by the number of installments.
+</small>
+
+
+    </div>
+
+</div>
+
+                
+
+        <!-- INSTALLMENT ESTIMATE -->
+        <div class="hp-card hp-estimate-card">
+
+            <div class="hp-card-title-row">
+                <div>
+                    <h4>Estimated payment schedule</h4>
+                    <p>Review the estimated repayment amounts.</p>
+                </div>
+
+                <span class="hp-estimate-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </span>
+            </div>
+
+
+            <div class="hp-estimate-row">
+                <span>Amount financed before charges</span>
+                <strong id="hpPlanPrincipal">UGX 0</strong>
+            </div>
+
+            <div class="hp-estimate-row">
+                <span>Interest and fees</span>
+                <strong id="hpPlanCharges">UGX 0</strong>
+            </div>
+
+            <div class="hp-estimate-row hp-estimate-total">
+                <span>Total remaining to pay</span>
+                <strong id="hpPlanTotal">UGX 0</strong>
+            </div>
+
+            <div class="hp-installment-highlight">
+                <span id="hpInstallmentEstimateLabel">
+                    Estimated  installment
+                </span>
+
+                <strong id="hpInstallmentEstimate">
+                    UGX 0
+                </strong>
+
+                <small>
+                    Estimate only. Final amounts must be calculated and validated
+                    by the application.
+                </small>
+            </div>
+
+        </div>
+
+
+        <div class="hp-info-banner">
+            <i class="fa-solid fa-bell"></i>
+
+            <p>
+                The agreement should generate installment due dates and
+                reminders for the seller after it has been successfully saved.
+            </p>
+        </div>
+
+
+        <div class="hp-screen-actions">
+            <button
+                type="button"
+                class="hp-btn hp-btn-secondary"
+                id="hpPlanBackBtn"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+                Back
+            </button>
+
+            <button
+                type="button"
+                class="hp-btn hp-btn-primary"
+                id="hpPlanNextBtn"
+            >
+                Review agreement
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+    </section>
+
+
+    <!-- ======================================
+         SCREEN 5 — REVIEW AND CONFIRMATION
+    ======================================= -->
+
+    <section
+        class="hp-screen"
+        id="hpReviewScreen"
+        data-hp-screen="4"
+        aria-labelledby="hpReviewTitle"
+        hidden
+    >
+
+        <div class="hp-screen-heading">
+            <span class="hp-eyebrow">STEP 4 OF 4</span>
+
+            <h3 id="hpReviewTitle">Review and confirm</h3>
+
+            <p>
+                Verify the customer, products, deposit, and installment plan
+                before creating the agreement.
+            </p>
+        </div>
+
+
+        <!-- CUSTOMER REVIEW -->
+        <div class="hp-card">
+
+            <div class="hp-review-heading">
+                <span class="hp-card-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                </span>
+
+                <h4>Customer</h4>
+
+                <button
+                    type="button"
+                    class="hp-edit-btn"
+                    id="hpEditCustomerBtn"
+                >
+                    Edit
+                </button>
+            </div>
+
+            <div class="hp-review-customer">
+                <strong id="hpReviewCustomerName">
+                    Customer not selected
+                </strong>
+
+                <span id="hpReviewCustomerPhone">—</span>
+
+                <span id="hpReviewCustomerEmail">—</span>
+
+                <span id="hpReviewCustomerAddress">—</span>
+            </div>
+
+        </div>
+
+
+        <!-- PRODUCT REVIEW -->
+        <div class="hp-card">
+
+            <div class="hp-review-heading">
+                <span class="hp-card-icon">
+                    <i class="fa-solid fa-box-open"></i>
+                </span>
+
+                <h4>Products and sale total</h4>
+
+                <button
+                    type="button"
+                    class="hp-edit-btn"
+                    id="hpEditProductsBtn"
+                >
+                    Edit
+                </button>
+            </div>
+
+            <div class="hp-review-product-list" id="hpReviewProductsList">
+                <p class="hp-muted">
+                    Selected products will appear here.
+                </p>
+            </div>
+
+            <div class="hp-review-totals">
+
+                <div class="hp-total-row">
+                    <span>Sale total</span>
+                    <strong id="hpReviewSaleTotal">UGX 0</strong>
+                </div>
+
+                <div class="hp-total-row">
+                    <span>Deposit</span>
+                    <strong id="hpReviewDeposit">UGX 0</strong>
+                </div>
+
+                <div class="hp-total-row">
+                    <span>Remaining before charges</span>
+                    <strong id="hpReviewPrincipal">UGX 0</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PAYMENT PLAN REVIEW -->
+        <div class="hp-card">
+
+            <div class="hp-review-heading">
+                <span class="hp-card-icon hp-card-icon-purple">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </span>
+
+                <h4>Payment agreement</h4>
+
+                <button
+                    type="button"
+                    class="hp-edit-btn"
+                    id="hpEditPlanBtn"
+                >
+                    Edit
+                </button>
+            </div>
+
+
+            <div class="hp-review-details">
+
+                <div class="hp-review-detail-row">
+                    <span>Installment frequency</span>
+                    <strong id="hpReviewFrequency">Weekly</strong>
+                </div>
+
+                <div class="hp-review-detail-row">
+                    <span>Number of installments</span>
+                    <strong id="hpReviewCount">8</strong>
+                </div>
+
+                <div class="hp-review-detail-row">
+                    <span>First payment due</span>
+                    <strong id="hpReviewFirstDue">Not set</strong>
+                </div>
+
+                <div class="hp-review-detail-row">
+                    <span>Interest and fees</span>
+                    <strong id="hpReviewCharges">UGX 0</strong>
+                </div>
+
+                <div class="hp-review-detail-row hp-review-detail-total">
+                    <span>Total to be repaid after deposit</span>
+                    <strong id="hpReviewRemainingTotal">UGX 0</strong>
+                </div>
+
+                <div class="hp-review-installment">
+                    <span id="hpReviewInstallmentLabel">
+                        Estimated weekly installment
+                    </span>
+
+                    <strong id="hpReviewInstallmentAmount">UGX 0</strong>
+                </div>
+
+                <div class="hp-review-note" id="hpReviewNoteContainer" hidden>
+                    <span>Agreement note</span>
+                    <p id="hpReviewNote"></p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CONFIRMATION NOTICE -->
+        <div class="hp-confirm-notice">
+            <i class="fa-solid fa-circle-info"></i>
+
+            <div>
+                <strong>Before creating the agreement</strong>
+
+                <p>
+                    Confirm that the customer details, payment terms, due dates,
+                    and charges are correct. The agreement should only be saved
+                    after the application validates the information.
+                </p>
+            </div>
+        </div>
+
+
+        <!-- FINAL ACTIONS -->
+        <div class="hp-screen-actions hp-review-actions">
+
+            <button
+                type="button"
+                class="hp-btn hp-btn-secondary"
+                id="hpReviewBackBtn"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+                Back
+            </button>
+
+            <button
+                type="button"
+                class="hp-btn hp-btn-primary hp-confirm-btn"
+                id="hpConfirmAgreementBtn"
+            >
+                <i class="fa-solid fa-check"></i>
+                Confirm agreement
+            </button>
+
+        </div>
+
+
+        <p class="hp-confirm-footnote">
+            Confirmation will be connected to the agreement-saving process in Chat 2.
+        </p>
+
+    </section>
+
+</section>
+
+          
 
           <!-- =========================================
      LIVE SELL SCREEN
@@ -7558,12 +9094,6 @@
 </aside>
 
 <!-- End NEXODRA Sidebar -->
-
-
-
-
-
-
 
   
 <!-- Supabase -->

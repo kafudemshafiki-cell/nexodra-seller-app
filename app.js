@@ -3609,10 +3609,15 @@ function compressProductImage(file, maxWidth = 800, quality = 0.7) {
 // BRICK CALC 3
 // =========================================
 
-const calculatorScreen =
-    document.getElementById(
-        'calculatorScreen'
-    );
+// CALCULATOR VISIBILITY FIX
+const calculatorScreen = document.getElementById('calculatorScreen');
+
+if (calculatorScreen) {
+    calculatorScreen.hidden = true;
+    calculatorScreen.classList.remove('active');
+    calculatorScreen.style.display = 'none';
+}
+
 
 const calculatorBackBtn =
     document.getElementById(
@@ -3657,13 +3662,13 @@ if (calculatorBtn) {
 
             });
 
+             // Show calculator
+calculatorScreen.hidden = false;
+calculatorScreen.style.display = '';
+calculatorScreen.classList.add('active');
 
-            // Show calculator
-
-            calculatorScreen.classList.add(
-                'active'
-            );
-
+calculatorScreen.scrollTop = 0;
+window.scrollTo({ top: 0, behavior: 'auto' }); 
 
             // Remove bottom-nav active state
 
@@ -20600,6 +20605,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const signupForm = document.getElementById('signupForm');
 
     const signupName = document.getElementById('signupName');
+    const signupCountry = document.getElementById('signupCountry');
     const signupEmail = document.getElementById('signupEmail');
     const signupPassword = document.getElementById('signupPassword');
 
@@ -20627,6 +20633,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const name =
             signupName.value.trim();
+
+      const countryCode = signupCountry
+    ? signupCountry.value.trim()
+    : '';
+
+const countryName = signupCountry &&
+    signupCountry.selectedIndex >= 0
+        ? signupCountry.options[
+            signupCountry.selectedIndex
+          ].textContent.trim()
+        : '';
 
         const email =
             signupEmail.value.trim();
@@ -20674,6 +20691,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+      if (!countryCode || !countryName) {
+    signupMessage.textContent =
+        'Please select your country of operation.';
+
+    document.getElementById('signupCountryTrigger')?.focus();
+
+    return;
+}
 
         // Loading state
         signupBtn.disabled = true;
@@ -20705,9 +20730,11 @@ document.addEventListener('DOMContentLoaded', () => {
         emailRedirectTo:
             'http://localhost:8158',
 
-        data: {
-            name: name
-        }
+       data: {
+    name: name,
+    country: countryName,
+    country_code: countryCode
+} 
 
     }
 
@@ -27831,5 +27858,2818 @@ async function nexodraSendBackendPushTest() {
 
     });
 
+})();
+
+
+/* =====================================================
+   NEXODRA — HIRE PURCHASE WORKFLOW CONTROLLER
+   Connects the POS entry button to screens 2–5.
+   Does not replace existing Nexodra functionality.
+===================================================== */
+
+(() => {
+    'use strict';
+
+    function initNexodraHirePurchaseWorkflow() {
+        const entryButton = document.getElementById('sellHireEntryBtn');
+        const workflow = document.getElementById('hirePurchaseWorkflow');
+
+        if (!entryButton || !workflow) {
+            console.warn(
+                'Hire Purchase: entry button or workflow HTML not found.'
+            );
+            return;
+        }
+
+        // Prevent duplicate initialization.
+        if (workflow.dataset.hpInitialized === 'true') return;
+        workflow.dataset.hpInitialized = 'true';
+
+        const screens = [
+            document.getElementById('hpCustomerScreen'),
+            document.getElementById('hpProductsScreen'),
+            document.getElementById('hpPlanScreen'),
+            document.getElementById('hpReviewScreen')
+        ];
+
+        const progressSteps = workflow.querySelectorAll('[data-hp-step]');
+
+        if (screens.some(screen => !screen)) {
+            console.error(
+                'Hire Purchase: one or more screen sections are missing.'
+            );
+            return;
+        }
+
+        let currentStep = 1;
+
+
+      
+function showStep(step) {
+    if (step < 1 || step > 4) return;
+
+    currentStep = step;
+
+    // Hide the other dedicated app screens.
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+
+    // Open Hire Purchase as its own app screen.
+    workflow.hidden = false;
+    workflow.classList.add('active');
+
+    // Show only the requested Hire Purchase step.
+    screens.forEach((screen, index) => {
+        const active = index + 1 === step;
+        screen.hidden = !active;
+
+        if (active) {
+            screen.setAttribute('aria-current', 'step');
+        } else {
+            screen.removeAttribute('aria-current');
+        }
+    });
+
+    // Update the progress indicator.
+    progressSteps.forEach(item => {
+        const itemStep = Number(item.dataset.hpStep);
+
+        item.classList.toggle('is-active', itemStep === step);
+        item.classList.toggle('is-complete', itemStep < step);
+
+        if (itemStep === step) {
+            item.setAttribute('aria-current', 'step');
+        } else {
+            item.removeAttribute('aria-current');
+        }
+    });
+
+    window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+function closeWorkflow() {
+    workflow.hidden = true;
+    workflow.classList.remove('active');
+
+    // Return to the POS screen.
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+
+    const sellScreen = document.getElementById('sellScreen');
+
+    if (sellScreen) {
+        sellScreen.classList.add('active');
+        sellScreen.scrollTop = 0;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+        
+      
+        
+        // =========================================
+        // HP-1 — NORMAL POS CART TRANSFER
+        // Live Selling cart is NOT accessed.
+        // =========================================
+
+        let hpSaleItems = [];
+
+        
+let hpCustomerData = {
+    firstName: '',
+    lastName: '',
+    phone: '',
+    email: '',
+    address: '',
+    reference: ''
+};
+
+
+        function renderHirePurchaseProducts() {
+
+            const list = document.getElementById(
+                'hpProductsList'
+            );
+
+            if (!list) return;
+
+            const subtotal = hpSaleItems.reduce(
+                (sum, item) => {
+                    return sum +
+                        Number(item.price || 0) *
+                        Number(item.quantity || 0);
+                },
+                0
+            );
+
+            const discount = Number(
+                sellDiscountAmount || 0
+            );
+
+            const tax = Number(
+                sellTaxAmount || 0
+            );
+
+            const total = Math.max(
+                0,
+                subtotal - discount + tax
+            );
+
+            const depositInput = document.getElementById(
+                'hpDepositAmount'
+            );
+
+            const deposit = Math.max(
+                0,
+                Number(depositInput?.value || 0)
+            );
+
+            const balance = Math.max(
+                0,
+                total - deposit
+            );
+
+            // Product count
+            const count = document.getElementById(
+                'hpProductsCount'
+            );
+
+            if (count) {
+                count.textContent =
+                    `${hpSaleItems.length} product types · ` +
+                    `${hpSaleItems.reduce(
+                        (sum, item) =>
+                            sum + Number(item.quantity || 0),
+                        0
+                    )} items`;
+            }
+
+            // Safe text escaping
+            function escapeHPText(value) {
+                return String(value ?? '').replace(
+                    /[&<>"']/g,
+                    char => ({
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;'
+                    }[char])
+                );
+            }
+
+            // Render copied cart items
+            if (hpSaleItems.length === 0) {
+
+                list.innerHTML = `
+                    <div class="hp-product-empty">
+                        <strong>No products transferred</strong>
+                        <span>Add products to the normal POS cart.</span>
+                    </div>
+                `;
+
+            } else {
+
+                list.innerHTML = hpSaleItems.map(item => {
+
+                    const title = escapeHPText(
+                        item.title || 'Product'
+                    );
+
+                    const quantity = Number(
+                        item.quantity || 0
+                    );
+
+                    const price = Number(
+                        item.price || 0
+                    );
+
+                    const lineTotal = price * quantity;
+
+                    return `
+                        <div class="hp-product-row">
+                            <div class="hp-product-info">
+                                <strong>${title}</strong>
+                                <span>
+                                    ${quantity} × ${formatCurrency(price)}
+                                </span>
+                            </div>
+
+                            <strong>
+                                ${formatCurrency(lineTotal)}
+                            </strong>
+                        </div>
+                    `;
+
+                }).join('');
+
+            }
+
+            // Review totals
+            const totals = {
+                hpProductsSubtotal: subtotal,
+                hpProductsDiscount: discount,
+                hpProductsTax: tax,
+                hpProductsTotal: total,
+                hpProductsDeposit: deposit,
+                hpProductsBalance: balance
+            };
+
+            Object.entries(totals).forEach(
+                ([id, amount]) => {
+
+                    const element =
+                        document.getElementById(id);
+
+                    if (element) {
+                        element.textContent =
+                            formatCurrency(amount);
+                    }
+
+                }
+            );
+
+            // Connect Step 2 remaining balance to Step 3.
+updateHirePurchasePlan(balance);
+          
+        }
+
+
+      // =========================================
+// HP — STEP 3 LIVE PAYMENT PLAN UPDATES
+// =========================================
+
+const hpPlanInputs = [
+    'hpInstallmentCount',
+    'hpChargeAmount',
+    'hpInstallmentFrequency'
+];
+
+hpPlanInputs.forEach(id => {
+
+    const input = document.getElementById(id);
+
+    if (input) {
+        input.addEventListener('input', () => {
+
+            // Read the actual balance from Step 2.
+            const balanceElement = document.getElementById(
+                'hpProductsBalance'
+            );
+
+            const balance = Number(
+                (balanceElement?.textContent || '')
+                    .replace(/[^\d.-]/g, '')
+            ) || 0;
+
+            updateHirePurchasePlan(balance);
+
+        });
+
+        input.addEventListener('change', () => {
+
+            const balanceElement = document.getElementById(
+                'hpProductsBalance'
+            );
+
+            const balance = Number(
+                (balanceElement?.textContent || '')
+                    .replace(/[^\d.-]/g, '')
+            ) || 0;
+
+            updateHirePurchasePlan(balance);
+
+        });
+    }
+
+});
+
+// =========================================
+// HP — STEP 4 REVIEW AGREEMENT
+// =========================================
+
+function renderHirePurchaseReview() {
+
+    const getValue = id =>
+        document.getElementById(id)?.value?.trim() || '';
+
+    const setText = (id, value) => {
+        const element = document.getElementById(id);
+
+        if (element) {
+            element.textContent = value;
+        }
+    };
+
+
+    // -------------------------------------
+    // STEP 1 — CUSTOMER DETAILS
+    // -------------------------------------
+
+    const firstName = getValue('hpCustomerFirstName');
+    const lastName = getValue('hpCustomerLastName');
+    const phone = getValue('hpCustomerPhone');
+    const email = getValue('hpCustomerEmail');
+    const address = getValue('hpCustomerAddress');
+
+    setText(
+        'hpReviewCustomerName',
+        `${firstName} ${lastName}`.trim() || 'Customer not selected'
+    );
+
+    setText('hpReviewCustomerPhone', phone || '—');
+    setText('hpReviewCustomerEmail', email || '—');
+    setText('hpReviewCustomerAddress', address || '—');
+
+
+    // -------------------------------------
+    // STEP 2 — PRODUCTS AND SALE TOTAL
+    // -------------------------------------
+
+    const saleTotal = Number(
+        (document.getElementById('hpProductsTotal')
+            ?.textContent || '')
+            .replace(/[^\d.-]/g, '')
+    ) || 0;
+
+    const deposit = Math.max(
+        0,
+        Number(getValue('hpDepositAmount')) || 0
+    );
+
+    const remainingBalance = Math.max(
+        0,
+        saleTotal - deposit
+    );
+
+    setText(
+        'hpReviewSaleTotal',
+        formatCurrency(saleTotal)
+    );
+
+    setText(
+        'hpReviewDeposit',
+        formatCurrency(deposit)
+    );
+
+    setText(
+        'hpReviewPrincipal',
+        formatCurrency(remainingBalance)
+    );
+
+
+    // -------------------------------------
+    // STEP 2 — PRODUCT LIST
+    // -------------------------------------
+
+    const productList = document.getElementById(
+        'hpReviewProductsList'
+    );
+
+    if (productList) {
+
+        if (!Array.isArray(hpSaleItems) || hpSaleItems.length === 0) {
+
+            productList.innerHTML = `
+                <p class="hp-muted">
+                    No products selected.
+                </p>
+            `;
+
+        } else {
+
+            productList.innerHTML = hpSaleItems.map(item => {
+
+                const title = String(
+                    item.title || 'Product'
+                ).replace(/[&<>"']/g, char => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[char]));
+
+                const quantity = Number(
+                    item.quantity || 0
+                );
+
+                const price = Number(
+                    item.price || 0
+                );
+
+                const lineTotal = quantity * price;
+
+                return `
+                    <div class="hp-product-row">
+
+                        <div class="hp-product-info">
+                            <strong>${title}</strong>
+
+                            <span>
+                                ${quantity} × ${formatCurrency(price)}
+                            </span>
+                        </div>
+
+                        <strong>
+                            ${formatCurrency(lineTotal)}
+                        </strong>
+
+                    </div>
+                `;
+
+            }).join('');
+
+        }
+    }
+
+
+    // -------------------------------------
+    // STEP 3 — PAYMENT PLAN
+    // -------------------------------------
+
+    const frequency = getValue(
+        'hpInstallmentFrequency'
+    ) || 'weekly';
+
+    const installmentCount = Math.max(
+        1,
+        Number(getValue('hpInstallmentCount')) || 1
+    );
+
+    
+const fixedCharge = Math.max(
+    0,
+    Number(getValue('hpChargeAmount')) || 0
+);
+
+// Apply the fixed charge once.
+const totalFees = fixedCharge;
+
+// Add the charge to the outstanding balance.
+const totalRemainingToPay =
+    remainingBalance + totalFees;
+
+// Calculate the installment amount.
+const installmentAmount =
+    totalRemainingToPay / installmentCount;
+
+
+  
+    const firstDueDate = getValue(
+        'hpFirstDueDate'
+    );
+
+    const note = getValue(
+        'hpAgreementNote'
+    );
+
+
+    // Frequency label
+    const frequencyLabels = {
+        daily: 'Daily',
+        weekly: 'Weekly',
+        monthly: 'Monthly'
+    };
+
+    const frequencyLabel =
+        frequencyLabels[frequency] || 'Weekly';
+
+
+    setText(
+        'hpReviewFrequency',
+        frequencyLabel
+    );
+
+    setText(
+        'hpReviewCount',
+        String(installmentCount)
+    );
+
+    setText(
+        'hpReviewFirstDue',
+        firstDueDate || 'Not set'
+    );
+
+    setText(
+        'hpReviewCharges',
+        formatCurrency(totalFees)
+    );
+
+    setText(
+        'hpReviewRemainingTotal',
+        formatCurrency(totalRemainingToPay)
+    );
+
+    setText(
+        'hpReviewInstallmentLabel',
+        `Estimated ${frequency.toLowerCase()} installment`
+    );
+
+    setText(
+        'hpReviewInstallmentAmount',
+        formatCurrency(installmentAmount)
+    );
+
+
+    // -------------------------------------
+    // AGREEMENT NOTE
+    // -------------------------------------
+
+    const noteContainer = document.getElementById(
+        'hpReviewNoteContainer'
+    );
+
+    const noteElement = document.getElementById(
+        'hpReviewNote'
+    );
+
+    if (noteContainer && noteElement) {
+
+        noteElement.textContent = note;
+
+        noteContainer.hidden = !note;
+
+    }
+
+}
+      
+      // =========================================
+// HP — STEP 3 PAYMENT PLAN CALCULATION
+// =========================================
+
+function updateHirePurchasePlan(balance) {
+
+    const remainingBalance = Math.max(
+        0,
+        Number(balance || 0)
+    );
+
+    const installmentCount = Math.max(
+        1,
+        Number(
+            document.getElementById(
+                'hpInstallmentCount'
+            )?.value || 1
+        )
+    );
+
+    
+const fixedCharge = Math.max(
+    0,
+    Number(
+        document.getElementById(
+            'hpChargeAmount'
+        )?.value || 0
+    )
+);
+
+// Apply the fixed charge once.
+const totalFees = fixedCharge;
+
+// Add the charge to the remaining balance.
+const totalRemainingToPay =
+    remainingBalance + totalFees;
+
+// Divide the total repayment into installments.
+const installmentAmount =
+    totalRemainingToPay / installmentCount;
+
+
+    // Step 3 balance before fees
+    const balanceElement = document.getElementById(
+        'hpPlanRemainingBalance'
+    );
+
+    if (balanceElement) {
+        balanceElement.textContent =
+            formatCurrency(remainingBalance);
+    }
+
+
+    // Estimated payment schedule card
+    const principalElement = document.getElementById(
+        'hpPlanPrincipal'
+    );
+
+    const chargesElement = document.getElementById(
+        'hpPlanCharges'
+    );
+
+    const totalElement = document.getElementById(
+        'hpPlanTotal'
+    );
+
+    const installmentElement = document.getElementById(
+        'hpInstallmentEstimate'
+    );
+
+    const installmentLabel = document.getElementById(
+        'hpInstallmentEstimateLabel'
+    );
+
+
+    if (principalElement) {
+        principalElement.textContent =
+            formatCurrency(remainingBalance);
+    }
+
+    if (chargesElement) {
+        chargesElement.textContent =
+            formatCurrency(totalFees);
+    }
+
+    if (totalElement) {
+        totalElement.textContent =
+            formatCurrency(totalRemainingToPay);
+    }
+
+    if (installmentElement) {
+        installmentElement.textContent =
+            formatCurrency(installmentAmount);
+    }
+
+
+    // Dynamic installment period label
+    const frequency = document.getElementById(
+        'hpInstallmentFrequency'
+    )?.value || 'weekly';
+
+    const frequencyLabels = {
+        daily: 'daily',
+        weekly: 'weekly',
+        monthly: 'monthly'
+    };
+
+    const periodLabel =
+        frequencyLabels[frequency] || 'weekly';
+
+    if (installmentLabel) {
+        installmentLabel.textContent =
+            `Estimated ${periodLabel} installment`;
+    }
+
+}
+
+        // Open Hire Purchase using NORMAL POS cart only.
+        entryButton.addEventListener('click', () => {
+
+            // Do not access Live Selling cart.
+            if (
+                !Array.isArray(currentSaleItems) ||
+                currentSaleItems.length === 0
+            ) {
+
+                alert(
+                    'Please add products to the normal ' +
+                    'selling cart first.'
+                );
+
+                return;
+            }
+
+            // Snapshot: HP gets its own copy.
+            hpSaleItems = currentSaleItems.map(
+                item => ({
+                    ...item,
+                    quantity: Number(item.quantity || 0),
+                    price: Number(item.price || 0)
+                })
+            );
+
+            renderHirePurchaseProducts();
+
+            // Open customer screen.
+            showStep(1);
+
+        });
+
+
+        // Refresh deposit and balance when deposit changes.
+        document.getElementById('hpDepositAmount')
+            ?.addEventListener(
+                'input',
+                renderHirePurchaseProducts
+            );
+
+
+        // Back / cancel / exit actions.
+        document.getElementById('hpExitBtn')
+            ?.addEventListener('click', closeWorkflow);
+
+        document.getElementById('hpCustomerCancelBtn')
+            ?.addEventListener('click', closeWorkflow);
+
+        document.getElementById('hpProductsBackBtn')
+            ?.addEventListener('click', () => showStep(1));
+
+        document.getElementById('hpPlanBackBtn')
+            ?.addEventListener('click', () => showStep(2));
+
+        document.getElementById('hpReviewBackBtn')
+            ?.addEventListener('click', () => showStep(3));
+
+        // Forward navigation.
+        // Data validation will be added in the next implementation step.
+
+
+
+
+      
+document.getElementById('hpCustomerNextBtn')
+    ?.addEventListener('click', () => {
+
+        const firstNameInput = document.getElementById(
+            'hpCustomerFirstName'
+        );
+
+        const lastNameInput = document.getElementById(
+            'hpCustomerLastName'
+        );
+
+        const phoneInput = document.getElementById(
+            'hpCustomerPhone'
+        );
+
+        const firstName = firstNameInput?.value.trim() || '';
+        const lastName = lastNameInput?.value.trim() || '';
+        const phone = phoneInput?.value.trim() || '';
+
+        // Validate required customer fields.
+        if (!firstName) {
+            alert('Please enter the customer first name.');
+
+            firstNameInput?.focus();
+
+            return;
+        }
+
+        if (!lastName) {
+            alert('Please enter the customer last name.');
+
+            lastNameInput?.focus();
+
+            return;
+        }
+
+        if (!phone) {
+            alert('Please enter the customer phone number.');
+
+            phoneInput?.focus();
+
+            return;
+        }
+
+        // Save customer information.
+        renderHirePurchaseCustomer();
+
+        // Refresh copied normal POS products and totals.
+        renderHirePurchaseProducts();
+
+        // Continue to product review.
+        showStep(2);
+
+    });
+
+
+      
+function renderHirePurchaseCustomer() {
+
+    const firstName = document.getElementById(
+        'hpCustomerFirstName'
+    )?.value.trim() || '';
+
+    const lastName = document.getElementById(
+        'hpCustomerLastName'
+    )?.value.trim() || '';
+
+    const phone = document.getElementById(
+        'hpCustomerPhone'
+    )?.value.trim() || '';
+
+    const email = document.getElementById(
+        'hpCustomerEmail'
+    )?.value.trim() || '';
+
+    const address = document.getElementById(
+        'hpCustomerAddress'
+    )?.value.trim() || '';
+
+    const reference = document.getElementById(
+        'hpCustomerReference'
+    )?.value.trim() || '';
+
+    // Save temporary Hire Purchase customer state.
+    hpCustomerData = {
+        firstName,
+        lastName,
+        phone,
+        email,
+        address,
+        reference
+    };
+
+    const customerName =
+        `${firstName} ${lastName}`.trim();
+
+    const nameElement = document.getElementById(
+        'hpProductsCustomerName'
+    );
+
+    const phoneElement = document.getElementById(
+        'hpProductsCustomerPhone'
+    );
+
+    if (nameElement) {
+        nameElement.textContent =
+            customerName || 'Customer not selected';
+    }
+
+    if (phoneElement) {
+        phoneElement.textContent =
+            phone || 'Customer phone number';
+    }
+}
+
+        document.getElementById('hpProductsNextBtn')
+            ?.addEventListener('click', () => showStep(3));
+
+        // Step 3 → Step 4
+document.getElementById('hpPlanNextBtn')
+    ?.addEventListener('click', () => {
+
+        // Refresh the latest agreement details.
+        renderHirePurchaseReview();
+
+        // Open Step 4.
+        showStep(4);
+
+    });
+
+        // Review screen edit buttons.
+        document.getElementById('hpEditCustomerBtn')
+            ?.addEventListener('click', () => showStep(1));
+
+        document.getElementById('hpEditProductsBtn')
+            ?.addEventListener('click', () => showStep(2));
+
+        document.getElementById('hpEditPlanBtn')
+            ?.addEventListener('click', () => showStep(3));
+
+
+
+      
+        
+/* =========================================
+   HIRE PURCHASE — SAVE AGREEMENT TO SUPABASE
+   BRICK 1: AGREEMENT + INSTALLMENTS
+========================================= */
+
+document.getElementById('hpConfirmAgreementBtn')
+    ?.addEventListener('click', async function () {
+
+        const button = this;
+
+        // Prevent duplicate submissions.
+        if (button.dataset.saving === 'true') return;
+
+        const getValue = id =>
+            document.getElementById(id)?.value?.trim() || '';
+
+        const getNumber = id =>
+            Math.max(0, Number(getValue(id)) || 0);
+
+        const firstName = getValue('hpCustomerFirstName');
+        const lastName = getValue('hpCustomerLastName');
+        const phone = getValue('hpCustomerPhone');
+
+        const email = getValue('hpCustomerEmail');
+        const address = getValue('hpCustomerAddress');
+        const reference = getValue('hpCustomerReference');
+
+        const frequency =
+            getValue('hpInstallmentFrequency') || 'weekly';
+
+        const installmentCount = Math.max(
+            1,
+            Math.floor(getNumber('hpInstallmentCount'))
+        );
+
+        const firstDueDate = getValue('hpFirstDueDate');
+        const note = getValue('hpAgreementNote');
+
+        // Validate customer.
+        if (!firstName || !lastName || !phone) {
+            alert(
+                'Please complete the customer first name, ' +
+                'last name, and phone number.'
+            );
+            return;
+        }
+
+        // Validate products.
+        if (
+            !Array.isArray(hpSaleItems) ||
+            hpSaleItems.length === 0
+        ) {
+            alert('Please add products to the agreement.');
+            return;
+        }
+
+        // Validate first installment date.
+        if (!firstDueDate) {
+            alert('Please select the first installment date.');
+            return;
+        }
+
+        if (!['daily', 'weekly', 'monthly'].includes(frequency)) {
+            alert('Please select a valid installment frequency.');
+            return;
+        }
+
+        // Supabase authentication.
+        if (
+            typeof supabaseClient === 'undefined' ||
+            !supabaseClient
+        ) {
+            alert('Supabase is not connected.');
+            return;
+        }
+
+        button.dataset.saving = 'true';
+        button.disabled = true;
+
+        const originalButtonText = button.textContent;
+
+        button.textContent = 'Saving agreement...';
+
+        let agreementId = null;
+
+        try {
+
+            // ---------------------------------
+            // 1. GET AUTHENTICATED SELLER
+            // ---------------------------------
+
+            const {
+                data: authData,
+                error: authError
+            } = await supabaseClient.auth.getUser();
+
+            if (authError) throw authError;
+
+            const user = authData?.user;
+
+            if (!user) {
+                throw new Error(
+                    'Please sign in before saving an agreement.'
+                );
+            }
+
+            const ownerId = user.id;
+
+            // ---------------------------------
+            // 2. CALCULATE AGREEMENT TOTALS
+            // ---------------------------------
+
+            const saleTotal = Math.max(
+                0,
+                Number(
+                    (document.getElementById('hpProductsTotal')
+                        ?.textContent || '')
+                        .replace(/[^\d.-]/g, '')
+                ) || 0
+            );
+
+            const deposit = getNumber('hpDepositAmount');
+
+            if (deposit > saleTotal) {
+                throw new Error(
+                    'The deposit cannot be greater than the sale total.'
+                );
+            }
+
+            const principal = saleTotal - deposit;
+
+            // Fixed charge applies ONCE to the agreement.
+            const fixedCharge = getNumber('hpChargeAmount');
+
+            const chargesTotal = fixedCharge;
+
+            const agreementTotal =
+                principal + chargesTotal;
+
+            const installmentAmount =
+                agreementTotal / installmentCount;
+
+            // ---------------------------------
+            // 3. PREPARE PRODUCT ITEMS
+            // ---------------------------------
+
+            const items = hpSaleItems.map(item => {
+
+                const quantity = Number(item.quantity) || 0;
+                const price = Number(item.price) || 0;
+
+                return {
+                    ...item,
+                    quantity,
+                    price,
+                    line_total: quantity * price
+                };
+
+            });
+
+            // ---------------------------------
+            // 4. INSERT AGREEMENT
+            // ---------------------------------
+
+            const agreementPayload = {
+
+                owner_id: ownerId,
+
+                customer_first_name: firstName,
+                customer_last_name: lastName,
+                customer_phone: phone,
+
+                customer_email: email || null,
+                customer_address: address || null,
+                customer_reference: reference || null,
+
+                items,
+
+                // Current HP screen provides sale total.
+                // No separate discount/tax inputs were confirmed.
+                subtotal: saleTotal,
+                discount: 0,
+                tax: 0,
+                sale_total: saleTotal,
+
+                deposit_amount: deposit,
+                principal_amount: principal,
+
+                charge_type: 'fixed',
+                charge_amount: fixedCharge,
+                charges_total: chargesTotal,
+
+                agreement_total: agreementTotal,
+
+                installment_frequency: frequency,
+                installment_count: installmentCount,
+
+                first_due_date: firstDueDate,
+
+                agreement_note: note || null,
+
+                status: 'active'
+
+            };
+
+            const {
+                data: savedAgreement,
+                error: agreementError
+            } = await supabaseClient
+                .from('hire_purchase_agreements')
+                .insert(agreementPayload)
+                .select('id')
+                .single();
+
+            if (agreementError) throw agreementError;
+
+            agreementId = savedAgreement.id;
+
+            // ---------------------------------
+            // 5. BUILD INSTALLMENT DUE DATES
+            // ---------------------------------
+
+            const installments = [];
+
+            // Use date-only parsing to avoid timezone shifting.
+            const [year, month, day] =
+                firstDueDate.split('-').map(Number);
+
+            for (
+                let installmentNumber = 1;
+                installmentNumber <= installmentCount;
+                installmentNumber++
+            ) {
+
+                const dueDate = new Date(
+                    Date.UTC(year, month - 1, day)
+                );
+
+                if (frequency === 'daily') {
+
+                    dueDate.setUTCDate(
+                        dueDate.getUTCDate() +
+                        (installmentNumber - 1)
+                    );
+
+                } else if (frequency === 'weekly') {
+
+                    dueDate.setUTCDate(
+                        dueDate.getUTCDate() +
+                        7 * (installmentNumber - 1)
+                    );
+
+                } else if (frequency === 'monthly') {
+
+                    // Keep the original day when possible.
+                    // Clamp to the final day of shorter months.
+                    const targetMonth =
+                        month - 1 + installmentNumber - 1;
+
+                    const targetYear =
+                        year + Math.floor(targetMonth / 12);
+
+                    const normalizedMonth =
+                        ((targetMonth % 12) + 12) % 12;
+
+                    const lastDay = new Date(
+                        Date.UTC(
+                            targetYear,
+                            normalizedMonth + 1,
+                            0
+                        )
+                    ).getUTCDate();
+
+                    dueDate.setUTCFullYear(
+                        targetYear,
+                        normalizedMonth,
+                        Math.min(day, lastDay)
+                    );
+
+                }
+
+                const dueDateString =
+                    dueDate.toISOString().slice(0, 10);
+
+                // Adjust final installment for rounding.
+                const scheduledAmount =
+                    installmentNumber === installmentCount
+                        ? agreementTotal -
+                            installmentAmount *
+                            (installmentCount - 1)
+                        : installmentAmount;
+
+                installments.push({
+
+                    agreement_id: agreementId,
+                    owner_id: ownerId,
+
+                    installment_number: installmentNumber,
+
+                    due_date: dueDateString,
+
+                    scheduled_amount: Number(
+                        scheduledAmount.toFixed(2)
+                    ),
+
+                    amount_paid: 0,
+
+                    outstanding_amount: Number(
+                        scheduledAmount.toFixed(2)
+                    ),
+
+                    status: 'pending'
+
+                });
+
+            }
+
+            // ---------------------------------
+            // 6. INSERT INSTALLMENTS
+            // ---------------------------------
+
+            const {
+                error: installmentError
+            } = await supabaseClient
+                .from('hire_purchase_installments')
+                .insert(installments);
+
+            if (installmentError) {
+
+                // Attempt to remove the agreement if its
+                // installment records could not be saved.
+                const {
+                    error: rollbackError
+            } = await supabaseClient
+                    .from('hire_purchase_agreements')
+                    .delete()
+                    .eq('id', agreementId)
+                    .eq('owner_id', ownerId);
+
+                if (rollbackError) {
+                    console.error(
+                        'Hire Purchase rollback failed:',
+                        rollbackError
+                    );
+                }
+
+                throw installmentError;
+            }
+
+            // ---------------------------------
+            // 7. SUCCESS
+            // ---------------------------------
+
+            console.log(
+                'Hire Purchase agreement saved:',
+                agreementId
+            );
+
+            alert(
+                'Hire Purchase agreement saved successfully.'
+            );
+
+            // Agreement and installments are saved.
+            // Do not create payment records here.
+
+        } catch (error) {
+
+            console.error(
+                'Hire Purchase agreement save failed:',
+                error
+            );
+
+            alert(
+                'Could not save the Hire Purchase agreement.\n\n' +
+                (error?.message || 'Please try again.')
+            );
+
+        } finally {
+
+            button.dataset.saving = 'false';
+            button.disabled = false;
+
+            button.textContent = originalButtonText;
+
+        }
+
+    });
+      
+        // Keep the workflow closed until the seller taps Hire Purchase.
+        workflow.hidden = true;
+
+        console.log('Nexodra Hire Purchase workflow initialized.');
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener(
+            'DOMContentLoaded',
+            initNexodraHirePurchaseWorkflow,
+            { once: true }
+        );
+    } else {
+        initNexodraHirePurchaseWorkflow();
+    }
+})();
+
+
+/* =========================================
+   HP-2 — REAL SUPABASE HIRE PURCHASE DASHBOARD
+   BRICK 2
+========================================= */
+(() => {
+    'use strict';
+
+    const openButton = document.getElementById('sellHirePurchaseBtn');
+    const dashboard = document.getElementById('hirePurchaseScreen');
+    const backButton = document.getElementById('hpDashboardBackBtn');
+    const list = document.getElementById('hpAgreementList');
+    const search = document.getElementById('hpAgreementSearch');
+    const count = document.getElementById('hpRecordCount');
+    const filterButtons = document.querySelectorAll('[data-hp-filter]');
+
+    if (!openButton || !dashboard || !list) {
+        console.warn('HP-2: dashboard HTML or entry button not found.');
+        return;
+    }
+
+    // Real records loaded from Supabase.
+    let agreements = [];
+    let currentFilter = 'all';
+    let loading = false;
+
+    const statusLabels = {
+        incoming: 'Incoming',
+        overdue: 'Overdue',
+        active: 'Active',
+        fulfilled: 'Fulfilled'
+    };
+
+    const money = amount =>
+        'UGX ' + Number(amount || 0).toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
+
+    const dateLabel = value => {
+        if (!value) return 'Not scheduled';
+
+        const date = new Date(value + 'T12:00:00');
+
+        if (Number.isNaN(date.getTime())) {
+            return value;
+        }
+
+        return date.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+    };
+
+    const escapeHTML = value =>
+        String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[char]));
+
+    function getCustomerName(agreement) {
+        return (
+            `${agreement.customer_first_name || ''} ` +
+            `${agreement.customer_last_name || ''}`
+        ).trim() || 'Customer';
+    }
+
+    function getProducts(agreement) {
+        if (!Array.isArray(agreement.items)) return [];
+
+        return agreement.items.map(item => ({
+            name: item.title || item.name || item.product_name || 'Product',
+            quantity: Number(item.quantity || 0),
+            price: Number(item.price || 0)
+        }));
+    }
+
+    function getProductLabel(agreement) {
+        const products = getProducts(agreement);
+
+        if (!products.length) return 'No products';
+
+        const first = products[0].name;
+
+        if (products.length === 1) return first;
+
+        return `${first} + ${products.length - 1} more`;
+    }
+
+    function getAgreementStatus(agreement, installments) {
+        const balance = installments.reduce(
+            (sum, item) => sum + Number(item.outstanding_amount || 0),
+            0
+        );
+
+        if (balance <= 0) return 'fulfilled';
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const hasOverdue = installments.some(item => {
+            const outstanding = Number(item.outstanding_amount || 0);
+
+            if (outstanding <= 0 || !item.due_date) return false;
+
+            const dueDate = new Date(item.due_date + 'T00:00:00');
+
+            return dueDate < today;
+        });
+
+        if (hasOverdue) return 'overdue';
+
+        return 'active';
+    }
+
+    function getAgreementView(agreement) {
+        const installments = Array.isArray(agreement.installments)
+            ? agreement.installments
+            : [];
+
+        const paid = installments.reduce(
+            (sum, item) => sum + Number(item.amount_paid || 0),
+            0
+        );
+
+        const balance = installments.reduce(
+            (sum, item) =>
+                sum + Number(item.outstanding_amount || 0),
+            0
+        );
+
+        const sortedInstallments = [...installments].sort(
+            (a, b) =>
+                Number(a.installment_number) -
+                Number(b.installment_number)
+        );
+
+        const nextInstallment = sortedInstallments.find(
+            item => Number(item.outstanding_amount || 0) > 0
+        );
+
+        const total = Number(agreement.agreement_total || 0);
+
+        const status = getAgreementStatus(
+            agreement,
+            installments
+        );
+
+        return {
+            id: agreement.id,
+            name: getCustomerName(agreement),
+            phone: agreement.customer_phone || '',
+            product: getProductLabel(agreement),
+            total,
+            paid,
+            balance,
+            nextAmount: nextInstallment
+                ? Number(nextInstallment.outstanding_amount || 0)
+                : 0,
+            nextDate: nextInstallment?.due_date || '',
+            nextNumber: nextInstallment?.installment_number || null,
+            status
+        };
+    }
+
+    // -----------------------------------------
+    // LOAD REAL AGREEMENTS FROM SUPABASE
+    // -----------------------------------------
+
+    async function loadAgreements() {
+        if (loading) return;
+
+        loading = true;
+
+        list.innerHTML = `
+            <div class="hp-empty-state">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <strong>Loading agreements...</strong>
+            </div>
+        `;
+
+        try {
+
+            if (
+                typeof supabaseClient === 'undefined' ||
+                !supabaseClient
+            ) {
+                throw new Error('Supabase is not connected.');
+            }
+
+            const {
+                data: authData,
+                error: authError
+            } = await supabaseClient.auth.getUser();
+
+            if (authError) throw authError;
+
+            const user = authData?.user;
+
+            if (!user) {
+                throw new Error('Please sign in to view agreements.');
+            }
+
+            // Load agreements belonging to authenticated seller.
+            const {
+                data: agreementRows,
+                error: agreementError
+            } = await supabaseClient
+                .from('hire_purchase_agreements')
+                .select('*')
+                .eq('owner_id', user.id)
+                .order('created_at', { ascending: false });
+
+            if (agreementError) throw agreementError;
+
+            const rows = agreementRows || [];
+
+            if (!rows.length) {
+                agreements = [];
+                renderAgreements();
+                return;
+            }
+
+            // Load installment rows for these agreements.
+            const agreementIds = rows.map(item => item.id);
+
+            const {
+                data: installmentRows,
+                error: installmentError
+            } = await supabaseClient
+                .from('hire_purchase_installments')
+                .select('*')
+                .eq('owner_id', user.id)
+                .in('agreement_id', agreementIds)
+                .order('installment_number', { ascending: true });
+
+            if (installmentError) throw installmentError;
+
+            const allInstallments = installmentRows || [];
+
+            // Attach installments to their agreement.
+            agreements = rows.map(agreement => ({
+                ...agreement,
+
+                installments: allInstallments.filter(
+                    installment =>
+                        installment.agreement_id === agreement.id
+                )
+            }));
+
+            renderAgreements();
+
+            console.log(
+                'HP-2: Supabase agreements loaded:',
+                agreements.length
+            );
+
+        } catch (error) {
+
+            console.error(
+                'HP-2: Could not load agreements:',
+                error
+            );
+
+            list.innerHTML = `
+                <div class="hp-empty-state">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <strong>Could not load agreements</strong>
+                    <p>${escapeHTML(error?.message || 'Please try again.')}</p>
+                    <button type="button" class="hp-view-btn"
+                        data-hp-retry>
+                        Retry
+                    </button>
+                </div>
+            `;
+
+            if (count) count.textContent = 'Unable to load';
+
+        } finally {
+            loading = false;
+        }
+    }
+
+    // -----------------------------------------
+    // RENDER REAL AGREEMENTS
+    // -----------------------------------------
+
+    function renderAgreements() {
+        const query = (search?.value || '').trim().toLowerCase();
+
+        const filtered = agreements
+            .map(agreement => getAgreementView(agreement))
+            .filter(item => {
+
+                const matchesStatus =
+                    currentFilter === 'all' ||
+                    item.status === currentFilter;
+
+                const matchesSearch = [
+                    item.id,
+                    item.name,
+                    item.phone,
+                    item.product
+                ].some(value =>
+                    String(value || '').toLowerCase().includes(query)
+                );
+
+                return matchesStatus && matchesSearch;
+            });
+
+        if (count) {
+            count.textContent =
+                `${filtered.length} agreement` +
+                `${filtered.length === 1 ? '' : 's'}`;
+        }
+
+        if (!filtered.length) {
+            list.innerHTML = `
+                <div class="hp-empty-state">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <strong>No matching agreements</strong>
+                    <p>Try another category or search term.</p>
+                </div>
+            `;
+            return;
+        }
+
+        list.innerHTML = filtered.map(item => {
+
+            const progress = item.total > 0
+                ? Math.min(
+                    100,
+                    Math.round((item.paid / item.total) * 100)
+                )
+                : 0;
+
+            const statusLabel =
+                statusLabels[item.status] || 'Active';
+
+            const isFulfilled = item.status === 'fulfilled';
+
+            return `
+                <article class="hp-agreement-card">
+
+                    <div class="hp-agreement-top">
+                        <span class="hp-agreement-id">
+                            ${escapeHTML(item.id)}
+                        </span>
+
+                        <span class="hp-status hp-status-${item.status}">
+                            ${statusLabel}
+                        </span>
+                    </div>
+
+                    <div class="hp-customer-row">
+
+                        <div class="hp-customer-avatar">
+                            ${escapeHTML(
+                                item.name
+                                    .split(/\s+/)
+                                    .map(word => word[0] || '')
+                                    .join('')
+                                    .slice(0, 2)
+                                    .toUpperCase()
+                            )}
+                        </div>
+
+                        <div class="hp-customer-info">
+                            <strong>${escapeHTML(item.name)}</strong>
+                            <span>${escapeHTML(item.phone)}</span>
+                        </div>
+
+                    </div>
+
+                    <p class="hp-product-name">
+                        <i class="fa-solid fa-box"></i>
+                        &nbsp;${escapeHTML(item.product)}
+                    </p>
+
+                    <div class="hp-balance-row">
+                        <span>Outstanding balance</span>
+                        <strong>${money(item.balance)}</strong>
+                    </div>
+
+                    <div class="hp-progress-track">
+                        <div
+                            class="hp-progress-fill ${
+                                progress === 100 ? 'is-complete' : ''
+                            }"
+                            style="width:${progress}%"
+                        ></div>
+                    </div>
+
+                    <div class="hp-progress-caption">
+                        <span>${money(item.paid)} paid</span>
+                        <span>${progress}% complete</span>
+                    </div>
+
+                    <div class="hp-agreement-divider"></div>
+
+                    <div class="hp-agreement-footer">
+
+                        <div class="hp-next-payment">
+                            <span>${
+                                isFulfilled
+                                    ? 'Agreement status'
+                                    : 'Next installment'
+                            }</span>
+
+                            <strong>${
+                                isFulfilled
+                                    ? 'Fully paid'
+                                    : `${money(item.nextAmount)} · ${dateLabel(item.nextDate)}`
+                            }</strong>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="hp-view-btn"
+                            data-hp-view="${escapeHTML(item.id)}"
+                        >
+                            View details
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+
+                    </div>
+
+                </article>
+            `;
+        }).join('');
+    }
+
+    // -----------------------------------------
+    // OPEN DASHBOARD
+    // -----------------------------------------
+
+    function openDashboard() {
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+
+        dashboard.hidden = false;
+        dashboard.classList.add('active');
+        dashboard.scrollTop = 0;
+
+        window.scrollTo({ top: 0, behavior: 'auto' });
+
+        if (typeof screenTitle !== 'undefined' && screenTitle) {
+            screenTitle.textContent = 'Hire Purchase';
+        }
+
+        loadAgreements();
+    }
+
+    function closeDashboard() {
+        dashboard.classList.remove('active');
+        dashboard.hidden = true;
+
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+
+        const sellScreen = document.getElementById('sellScreen');
+
+        if (sellScreen) {
+            sellScreen.classList.add('active');
+        }
+
+        if (typeof screenTitle !== 'undefined' && screenTitle) {
+            screenTitle.textContent = 'Sell';
+        }
+    }
+
+    // -----------------------------------------
+    // BUTTONS AND FILTERS
+    // -----------------------------------------
+
+    openButton.addEventListener('click', openDashboard);
+
+    backButton?.addEventListener('click', closeDashboard);
+
+    search?.addEventListener('input', renderAgreements);
+
+    filterButtons.forEach(button => {
+
+        button.addEventListener('click', () => {
+
+            currentFilter = button.dataset.hpFilter || 'all';
+
+            filterButtons.forEach(item => {
+                item.classList.toggle(
+                    'is-active',
+                    item === button
+                );
+            });
+
+            renderAgreements();
+        });
+
+    });
+
+    // -----------------------------------------
+    // VIEW DETAILS + RETRY
+    // -----------------------------------------
+
+    list.addEventListener('click', event => {
+
+        const retryButton = event.target.closest('[data-hp-retry]');
+
+        if (retryButton) {
+            loadAgreements();
+            return;
+        }
+
+        const button = event.target.closest('[data-hp-view]');
+
+        if (!button) return;
+
+        const agreement = agreements.find(
+            item => item.id === button.dataset.hpView
+        );
+
+        if (!agreement) return;
+
+        const view = getAgreementView(agreement);
+
+        const installmentDetails = [...agreement.installments]
+            .sort(
+                (a, b) =>
+                    Number(a.installment_number) -
+                    Number(b.installment_number)
+            )
+            .map(item => {
+
+                const status =
+                    Number(item.outstanding_amount || 0) <= 0
+                        ? 'Paid'
+                        : item.status || 'Pending';
+
+                return (
+                    `#${item.installment_number} | ` +
+                    `${dateLabel(item.due_date)} | ` +
+                    `${money(item.scheduled_amount)} | ` +
+                    `Paid: ${money(item.amount_paid)} | ` +
+                    `Balance: ${money(item.outstanding_amount)} | ` +
+                    `${status}`
+                );
+            })
+            .join('\n');
+
+        alert(
+            `HIRE PURCHASE AGREEMENT\n\n` +
+            `Customer: ${view.name}\n` +
+            `Phone: ${view.phone}\n` +
+            `Agreement: ${view.id}\n` +
+            `Products: ${view.product}\n\n` +
+            `Sale total: ${money(agreement.sale_total)}\n` +
+            `Deposit: ${money(agreement.deposit_amount)}\n` +
+            `Principal: ${money(agreement.principal_amount)}\n` +
+            `Fixed charge: ${money(agreement.charge_amount)}\n` +
+            `Agreement total: ${money(agreement.agreement_total)}\n\n` +
+            `Paid: ${money(view.paid)}\n` +
+            `Outstanding: ${money(view.balance)}\n\n` +
+            `INSTALLMENTS\n${installmentDetails || 'No installments found'}`
+        );
+
+    });
+
+    console.log('HP-2: Supabase dashboard initialized.');
+
+})();
+
+
+/* =========================================================
+   NEXODRA — HELD SALES FLOW (DEMO)
+   List -> Resume Details -> Delete Confirmation
+   ========================================================= */
+(function initHeldSalesFlow() {
+    'use strict';
+
+    function startHeldSalesFlow() {
+        const listScreen = document.getElementById('heldSalesScreen');
+        const resumeScreen = document.getElementById('heldResumeScreen');
+        const deleteScreen = document.getElementById('heldDeleteScreen');
+        const openButton = document.getElementById('sellScanBtn');
+
+        // Do not run unless the new HTML screens exist.
+        if (!listScreen || !resumeScreen || !deleteScreen || !openButton) return;
+
+        const screens = [listScreen, resumeScreen, deleteScreen];
+
+        const money = value => 'UGX ' + Number(value || 0).toLocaleString('en-US');
+
+        const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[char]));
+
+
+      
+        
+const HELD_SALES_STORAGE_KEY = 'nexodra_held_sales';
+
+function loadHeldSales() {
+    try {
+        const saved = localStorage.getItem(HELD_SALES_STORAGE_KEY);
+        return saved ? JSON.parse(saved) : [];
+    } catch (error) {
+        console.error('Could not read held sales:', error);
+        return [];
+    }
+}
+
+function saveHeldSales() {
+    localStorage.setItem(
+        HELD_SALES_STORAGE_KEY,
+        JSON.stringify(heldSalesDemo)
+    );
+}
+
+let heldSalesDemo = loadHeldSales();
+      
+        let currentSaleId = null;
+        let activeFilter = 'all';
+        let searchText = '';
+
+      
+/* =========================================
+   HOLD CURRENT POS SALE
+   Save cart to localStorage
+========================================= */
+
+/* =========================================
+   HOLD CURRENT POS SALE
+========================================= */
+
+const holdSaleButton = document.getElementById('holdSaleBtn');
+
+if (holdSaleButton) {
+
+    holdSaleButton.addEventListener('click', function () {
+
+        // Your actual POS cart.
+        const currentCart = window.odropCart;
+
+        // Check whether products exist.
+        if (!Array.isArray(currentCart) || currentCart.length === 0) {
+
+            alert('There are no products in the current sale to hold.');
+
+            return;
+        }
+
+        // Copy products using your actual cart structure.
+        const items = currentCart.map(item => ({
+
+            productId: item.productId,
+
+            title: item.title,
+
+            price: Number(item.price || 0),
+
+            image: item.image || '',
+
+            quantity: Number(item.quantity || 1)
+
+        }));
+
+        const now = new Date();
+
+        // Create held sale.
+        const heldSale = {
+
+            id: 'HOLD-' + now.getTime(),
+
+            customer: 'Walk-in Customer',
+
+            createdAt: now.toISOString(),
+
+            items: items,
+
+            subtotal: items.reduce(
+                (total, item) =>
+                    total + (item.price * item.quantity),
+                0
+            ),
+
+            discount: Number(
+                window.getSellDiscountAmount?.() || 0
+            ),
+
+            status: 'Saved'
+
+        };
+
+        // Load previously saved held sales.
+        let existingHeldSales = [];
+
+        try {
+
+            existingHeldSales = JSON.parse(
+                localStorage.getItem('nexodra_held_sales') || '[]'
+            );
+
+            if (!Array.isArray(existingHeldSales)) {
+                existingHeldSales = [];
+            }
+
+        } catch (error) {
+
+            console.error('Could not read held sales:', error);
+
+            alert('Could not read Held Sales. Your cart is unchanged.');
+
+            return;
+        }
+
+        // Save newest held sale first.
+        existingHeldSales.unshift(heldSale);
+
+        try {
+
+            localStorage.setItem(
+                'nexodra_held_sales',
+                JSON.stringify(existingHeldSales)
+            );
+
+        } catch (error) {
+
+            console.error('Could not save held sale:', error);
+
+            alert('Could not save the sale. Your cart is unchanged.');
+
+            return;
+        }
+
+        // Clear the actual cart only after saving succeeds.
+        window.odropCart.length = 0;
+
+        // Notify the app that the cart was cleared.
+        document.dispatchEvent(
+            new CustomEvent('sell:cart-cleared')
+        );
+
+        // Refresh Held Sales if its renderer exists.
+        if (typeof renderList === 'function') {
+            renderList();
+        }
+
+        alert('Sale held successfully.');
+
+    });
+
+}
+
+
+      
+        function getSale(id) {
+            return heldSalesDemo.find(sale => sale.id === String(id));
+        }
+
+        function getSubtotal(sale) {
+            return sale.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+        }
+
+        function getTotal(sale) {
+            return Math.max(0, getSubtotal(sale) - sale.discount + sale.tax);
+        }
+
+        function getUnits(sale) {
+            return sale.items.reduce((sum, item) => sum + item.quantity, 0);
+        }
+
+        function initials(name) {
+            return String(name)
+                .split(/\s+/)
+                .filter(Boolean)
+                .slice(0, 2)
+                .map(part => part[0].toUpperCase())
+                .join('');
+        }
+
+        function showScreen(target) {
+    screens.forEach(screen => {
+        screen.classList.remove('active');
+        screen.hidden = screen !== target;
+    });
+
+    target.hidden = false;
+    target.classList.add('active');
+
+    window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+
+      
+        function showList() {
+            showScreen(listScreen);
+            renderList();
+        }
+
+        function openResume(id) {
+            const sale = getSale(id);
+            if (!sale) return;
+
+            currentSaleId = sale.id;
+
+            document.getElementById('heldResumeAvatar').textContent = initials(sale.customer);
+            document.getElementById('heldResumeCustomer').textContent = sale.customer;
+            document.getElementById('heldResumeMeta').textContent =
+                'Sale #' + sale.id + ' · ' + sale.savedLabel;
+            document.getElementById('heldResumeItemCount').textContent =
+                sale.items.length + (sale.items.length === 1 ? ' item' : ' items');
+            document.getElementById('heldResumeUnits').textContent =
+                getUnits(sale) + (getUnits(sale) === 1 ? ' unit' : ' units');
+
+            document.getElementById('heldResumeItems').innerHTML = sale.items.map(item => `
+                <article class="held-resume-item">
+                    <div class="held-product-placeholder">
+                        <i class="fa-solid ${escapeHTML(item.icon)}"></i>
+                    </div>
+                    <div class="held-resume-item-info">
+                        <h3>${escapeHTML(item.name)}</h3>
+                        <p>${item.quantity} × ${money(item.price)}</p>
+                    </div>
+                    <div class="held-resume-item-price">
+                        ${money(item.quantity * item.price)}
+                    </div>
+                </article>
+            `).join('');
+
+            document.getElementById('heldResumeSubtotal').textContent = money(getSubtotal(sale));
+            document.getElementById('heldResumeDiscount').textContent = money(sale.discount);
+            document.getElementById('heldResumeTax').textContent = money(sale.tax);
+            document.getElementById('heldResumeTotal').textContent = money(getTotal(sale));
+
+            showScreen(resumeScreen);
+        }
+
+        function openDelete(id) {
+            const sale = getSale(id);
+            if (!sale) return;
+
+            currentSaleId = sale.id;
+
+            document.getElementById('heldDeleteAvatar').textContent = initials(sale.customer);
+            document.getElementById('heldDeleteCustomer').textContent = sale.customer;
+            document.getElementById('heldDeleteMeta').textContent =
+                'Sale #' + sale.id + ' · ' +
+                sale.items.length + (sale.items.length === 1 ? ' item' : ' items');
+            document.getElementById('heldDeleteAmount').textContent = money(getTotal(sale));
+
+            showScreen(deleteScreen);
+        }
+
+        function renderList() {
+            const list = document.getElementById('heldSalesList');
+            const empty = document.getElementById('heldEmptyState');
+            const count = document.getElementById('heldCount');
+            const totalValue = document.getElementById('heldTotalValue');
+            const subtitle = document.getElementById('heldListSubtitle');
+            const allCount = document.getElementById('heldFilterAllCount');
+            const clearButton = document.getElementById('heldClearSearch');
+
+            if (!list || !empty) return;
+
+            const filtered = heldSalesDemo.filter(sale => {
+                const matchesFilter =
+                    activeFilter === 'all' ||
+                    (activeFilter === 'today' && sale.dateGroup === 'today') ||
+                    (activeFilter === 'week' && sale.dateGroup === 'week') ||
+                    (activeFilter === 'older' && sale.dateGroup === 'older');
+
+                const haystack = (sale.id + ' ' + sale.customer + ' ' +
+                    sale.items.map(item => item.name).join(' ')).toLowerCase();
+
+                return matchesFilter && haystack.includes(searchText.toLowerCase());
+            });
+
+            count.textContent = heldSalesDemo.length;
+            allCount.textContent = heldSalesDemo.length;
+            totalValue.textContent = money(heldSalesDemo.reduce((sum, sale) => sum + getTotal(sale), 0));
+            subtitle.textContent = filtered.length +
+                (filtered.length === 1 ? ' sale found' : ' sales found');
+            clearButton.hidden = !searchText;
+
+            document.querySelectorAll('[data-held-filter]').forEach(button => {
+                button.classList.toggle('active', button.dataset.heldFilter === activeFilter);
+            });
+
+            list.innerHTML = filtered.map(sale => `
+                <article class="held-sale-card">
+                    <div class="held-sale-top">
+                        <div class="held-sale-main">
+                            <span class="held-sale-number">SALE #${escapeHTML(sale.id)}</span>
+                            <h3 class="held-sale-customer">${escapeHTML(sale.customer)}</h3>
+                            <p class="held-sale-time">
+                                <i class="fa-regular fa-clock"></i>
+                                ${escapeHTML(sale.savedLabel)}
+                            </p>
+                            <span class="held-sale-status ${sale.customer === 'Walk-in Customer' ? 'walkin' : ''}">
+                                <i class="fa-solid fa-check"></i> ${escapeHTML(sale.status)}
+                            </span>
+                        </div>
+                        <div class="held-sale-value">${money(getTotal(sale))}</div>
+                    </div>
+
+                    <div class="held-sale-meta">
+                        <span><i class="fa-solid fa-cube"></i>
+                            ${sale.items.length} ${sale.items.length === 1 ? 'item' : 'items'}
+                        </span>
+                        <span><i class="fa-solid fa-layer-group"></i>
+                            ${getUnits(sale)} ${getUnits(sale) === 1 ? 'unit' : 'units'}
+                        </span>
+                    </div>
+
+                    <div class="held-sale-actions">
+                        <button type="button" class="held-primary-btn" data-held-resume="${escapeHTML(sale.id)}">
+                            <i class="fa-solid fa-play"></i> Resume
+                        </button>
+                        <button type="button" class="held-secondary-btn" data-held-delete="${escapeHTML(sale.id)}">
+                            <i class="fa-regular fa-trash-can"></i> Delete
+                        </button>
+                    </div>
+                </article>
+            `).join('');
+
+            empty.hidden = filtered.length > 0;
+            list.hidden = filtered.length === 0;
+        }
+
+        // Open list using the existing Held Sales button.
+        openButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            showList();
+        });
+
+        // Event delegation for dynamically rendered sale cards.
+        document.getElementById('heldSalesList').addEventListener('click', function (event) {
+            const resumeButton = event.target.closest('[data-held-resume]');
+            const deleteButton = event.target.closest('[data-held-delete]');
+
+            if (resumeButton) openResume(resumeButton.dataset.heldResume);
+            if (deleteButton) openDelete(deleteButton.dataset.heldDelete);
+        });
+
+        // Search.
+        document.getElementById('heldSearchInput').addEventListener('input', function () {
+            searchText = this.value.trim();
+            renderList();
+        });
+
+        document.getElementById('heldClearSearch').addEventListener('click', function () {
+            searchText = '';
+            document.getElementById('heldSearchInput').value = '';
+            renderList();
+            document.getElementById('heldSearchInput').focus();
+        });
+
+        // Date filters.
+        document.querySelectorAll('[data-held-filter]').forEach(button => {
+            button.addEventListener('click', function () {
+                activeFilter = this.dataset.heldFilter;
+                renderList();
+            });
+        });
+
+        document.getElementById('heldResetFilters').addEventListener('click', function () {
+            activeFilter = 'all';
+            searchText = '';
+            document.getElementById('heldSearchInput').value = '';
+            renderList();
+        });
+
+        // Return to the held-sales list.
+        document.getElementById('heldBackBtn').addEventListener('click', function () {
+            showScreen(document.getElementById('sellScreen') || listScreen);
+        });
+
+        document.getElementById('heldResumeBackBtn').addEventListener('click', showList);
+        document.getElementById('heldResumeCancelBtn').addEventListener('click', showList);
+        document.getElementById('heldDeleteBackBtn').addEventListener('click', showList);
+        document.getElementById('heldCancelDeleteBtn').addEventListener('click', showList);
+
+        // Confirm resume. The custom event is the integration point for your real cart.
+        document.getElementById('heldConfirmResumeBtn').addEventListener('click', function () {
+            const sale = getSale(currentSaleId);
+            if (!sale) return;
+
+            /*
+             * Demo mode: return to POS and emit the held sale data.
+             * Your existing cart code can listen for "heldsale:resume"
+             * and restore sale.items into its normal cart state.
+             */
+            window.dispatchEvent(new CustomEvent('heldsale:resume', {
+                detail: JSON.parse(JSON.stringify(sale))
+            }));
+
+            const posScreen = document.getElementById('sellScreen');
+            if (posScreen) {
+                showScreen(posScreen);
+            } else {
+                showList();
+            }
+        });
+
+        // Confirm deletion: remove only after explicit confirmation.
+        document.getElementById('heldConfirmDeleteBtn').addEventListener('click', function () {
+            const index = heldSalesDemo.findIndex(sale => sale.id === currentSaleId);
+            if (index < 0) return;
+
+            const deletedSale = heldSalesDemo[index];
+            heldSalesDemo.splice(index, 1);
+
+          saveHeldSales();
+
+            window.dispatchEvent(new CustomEvent('heldsale:delete', {
+                detail: { id: deletedSale.id, sale: deletedSale }
+            }));
+
+            currentSaleId = null;
+            showList();
+        });
+
+        // Initial state: new screens are hidden until the Held Sales button is pressed.
+        screens.forEach(screen => {
+            screen.classList.remove('active');
+            screen.hidden = true;
+        });
+
+        renderList();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startHeldSalesFlow, { once: true });
+    } else {
+        startHeldSalesFlow();
+    }
+})();
+
+
+/* =========================================
+   NEXODRA — SEARCHABLE COUNTRY PICKER
+   Uses the existing signupCountry select
+========================================= */
+
+(function nexodraSearchableCountryPicker() {
+    'use strict';
+
+    function initializeCountryPicker() {
+        const trigger = document.getElementById('signupCountryTrigger');
+        const label = document.getElementById('signupCountryLabel');
+        const select = document.getElementById('signupCountry');
+        const dialog = document.getElementById('signupCountryDialog');
+        const closeButton = document.getElementById('signupCountryClose');
+        const searchInput = document.getElementById('signupCountrySearch');
+        const countryList = document.getElementById('signupCountryList');
+        const emptyMessage = document.getElementById('signupCountryEmpty');
+
+        // Safely do nothing if this form is not on the current page.
+        if (
+            !trigger ||
+            !label ||
+            !select ||
+            !dialog ||
+            !closeButton ||
+            !searchInput ||
+            !countryList ||
+            !emptyMessage
+        ) {
+            return;
+        }
+
+        // Prevent duplicate event listeners if initialization runs again.
+        if (trigger.dataset.countryPickerInitialized === 'true') {
+            return;
+        }
+        trigger.dataset.countryPickerInitialized = 'true';
+
+        const originalOptions = Array.from(select.options)
+            .filter(option => option.value.trim() !== '')
+            .map(option => ({
+                code: option.value.trim(),
+                name: option.textContent.trim()
+            }));
+
+        let previouslyFocusedElement = null;
+
+        function normalize(value) {
+            return String(value || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLocaleLowerCase()
+                .trim();
+        }
+
+        function updateLabel() {
+            const selectedOption = select.options[select.selectedIndex];
+
+            label.textContent =
+                selectedOption && selectedOption.value
+                    ? selectedOption.textContent.trim()
+                    : 'Select your country';
+
+            trigger.setAttribute(
+                'aria-label',
+                selectedOption && selectedOption.value
+                    ? 'Country of operation: ' +
+                      selectedOption.textContent.trim() +
+                      '. Change country'
+                    : 'Select your country'
+            );
+        }
+
+        function renderCountries(query) {
+            const searchTerm = normalize(query);
+
+            const matches = originalOptions.filter(country => {
+                return (
+                    normalize(country.name).includes(searchTerm) ||
+                    normalize(country.code).includes(searchTerm)
+                );
+            });
+
+            const fragment = document.createDocumentFragment();
+
+            matches.forEach(country => {
+                const optionButton = document.createElement('button');
+                optionButton.type = 'button';
+                optionButton.className = 'nexodra-country-option';
+                optionButton.setAttribute('role', 'option');
+                optionButton.setAttribute(
+                    'aria-selected',
+                    select.value === country.code ? 'true' : 'false'
+                );
+
+                const codeSpan = document.createElement('span');
+                codeSpan.className = 'nexodra-country-option-code';
+                codeSpan.textContent = country.code;
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'nexodra-country-option-name';
+                nameSpan.textContent = country.name;
+
+                optionButton.append(codeSpan, nameSpan);
+
+                optionButton.addEventListener('click', () => {
+                    select.value = country.code;
+
+                    // Notify any existing code listening to the select.
+                    select.dispatchEvent(
+                        new Event('input', { bubbles: true })
+                    );
+                    select.dispatchEvent(
+                        new Event('change', { bubbles: true })
+                    );
+
+                    updateLabel();
+                    closePicker();
+                    trigger.focus();
+                });
+
+                fragment.appendChild(optionButton);
+            });
+
+            countryList.replaceChildren(fragment);
+            emptyMessage.hidden = matches.length !== 0;
+        }
+
+        function openPicker() {
+            previouslyFocusedElement = document.activeElement;
+
+            dialog.hidden = false;
+            trigger.setAttribute('aria-expanded', 'true');
+
+            searchInput.value = '';
+            renderCountries('');
+
+            searchInput.focus();
+        }
+
+        function closePicker() {
+            dialog.hidden = true;
+            trigger.setAttribute('aria-expanded', 'false');
+        }
+
+        trigger.addEventListener('click', () => {
+            if (dialog.hidden) {
+                openPicker();
+            } else {
+                closePicker();
+            }
+        });
+
+        closeButton.addEventListener('click', () => {
+            closePicker();
+            trigger.focus();
+        });
+
+        searchInput.addEventListener('input', () => {
+            renderCountries(searchInput.value);
+        });
+
+        searchInput.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closePicker();
+                trigger.focus();
+                return;
+            }
+
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+
+                const firstOption =
+                    countryList.querySelector('.nexodra-country-option');
+
+                if (firstOption) {
+                    firstOption.focus();
+                }
+            }
+        });
+
+        countryList.addEventListener('keydown', event => {
+            const options = Array.from(
+                countryList.querySelectorAll('.nexodra-country-option')
+            );
+
+            const currentIndex = options.indexOf(document.activeElement);
+
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closePicker();
+                trigger.focus();
+                return;
+            }
+
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+
+                if (options.length) {
+                    options[Math.min(currentIndex + 1, options.length - 1)]
+                        .focus();
+                }
+            }
+
+            if (event.key === 'ArrowUp') {
+                event.preventDefault();
+
+                if (currentIndex <= 0) {
+                    searchInput.focus();
+                } else {
+                    options[currentIndex - 1].focus();
+                }
+            }
+        });
+
+        document.addEventListener('click', event => {
+            if (
+                !dialog.hidden &&
+                !dialog.contains(event.target) &&
+                !trigger.contains(event.target)
+            ) {
+                closePicker();
+            }
+        });
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && !dialog.hidden) {
+                closePicker();
+                trigger.focus();
+            }
+        });
+
+        select.addEventListener('change', () => {
+            updateLabel();
+
+            if (!dialog.hidden) {
+                renderCountries(searchInput.value);
+            }
+        });
+
+        // Keep the visible label in sync if the signup form is reset.
+        const signupForm = document.getElementById('signupForm');
+
+        if (signupForm) {
+            signupForm.addEventListener('reset', () => {
+                window.setTimeout(() => {
+                    updateLabel();
+                    searchInput.value = '';
+                    renderCountries('');
+                    closePicker();
+                }, 0);
+            });
+        }
+
+        updateLabel();
+        renderCountries('');
+
+        console.log(
+            'NEXODRA — Searchable country picker initialized with ' +
+            originalOptions.length +
+            ' country options.'
+        );
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener(
+            'DOMContentLoaded',
+            initializeCountryPicker,
+            { once: true }
+        );
+    } else {
+        initializeCountryPicker();
+    }
+})();
+
+
+
+
+/* =========================================
+   NEXODRA — INLINE SALE DISCOUNT
+   Connects Confirm to the actual POS total
+========================================= */
+
+(function initSellDiscountUI() {
+    'use strict';
+
+    const actionsRow = document.getElementById('sellActionsRow');
+    const discountButton = document.getElementById('sellDiscountBtn');
+    const inputWrap = document.getElementById('sellDiscountInputWrap');
+    const discountInput = document.getElementById('sellDiscountInput');
+    const controls = document.getElementById('sellDiscountControls');
+    const cancelButton = document.getElementById('sellDiscountCancelBtn');
+    const confirmButton = document.getElementById('sellDiscountConfirmBtn');
+
+    if (
+        !actionsRow ||
+        !discountButton ||
+        !inputWrap ||
+        !discountInput ||
+        !controls ||
+        !cancelButton ||
+        !confirmButton
+    ) {
+        console.warn(
+            'Discount setup failed: one or more discount HTML elements are missing.'
+        );
+        return;
+    }
+
+    // Keep the normal Discount / Note / Hold actions at startup.
+    actionsRow.classList.remove('discount-open');
+    inputWrap.hidden = true;
+    controls.hidden = true;
+    discountButton.setAttribute('aria-expanded', 'false');
+
+    // Use the existing POS discount variable.
+    // This is the value updateSellTotals() and checkout already use.
+    let appliedDiscount = Number(sellDiscountAmount || 0);
+
+    function getCurrentSaleSubtotal() {
+        return (currentSaleItems || []).reduce((sum, item) => {
+            return sum +
+                (Number(item.price) || 0) *
+                (Number(item.quantity) || 0);
+        }, 0);
+    }
+
+    function openDiscountEditor() {
+        discountInput.value = appliedDiscount > 0
+            ? appliedDiscount.toFixed(2)
+            : '';
+
+        actionsRow.classList.add('discount-open');
+        inputWrap.hidden = false;
+        controls.hidden = false;
+
+        discountButton.setAttribute('aria-expanded', 'true');
+        discountInput.focus();
+    }
+
+    function closeDiscountEditor() {
+        actionsRow.classList.remove('discount-open');
+        inputWrap.hidden = true;
+        controls.hidden = true;
+
+        discountButton.setAttribute('aria-expanded', 'false');
+    }
+
+    function cancelDiscount() {
+        // Do not change the already-applied discount.
+        discountInput.value = appliedDiscount > 0
+            ? appliedDiscount.toFixed(2)
+            : '';
+
+        closeDiscountEditor();
+    }
+
+    function confirmDiscount() {
+        const rawValue = discountInput.value.trim();
+
+        // Require an amount rather than treating an empty field as zero.
+        if (rawValue === '') {
+            alert('Please enter a discount amount.');
+            discountInput.focus();
+            return;
+        }
+
+        const enteredValue = Number(rawValue);
+
+        if (!Number.isFinite(enteredValue) || enteredValue < 0) {
+            alert('Enter a valid discount amount of zero or more.');
+            discountInput.focus();
+            return;
+        }
+
+        // The discount is a fixed amount, not a percentage.
+        const subtotal = getCurrentSaleSubtotal();
+
+        if (enteredValue > subtotal) {
+            alert(
+                'The discount cannot be greater than the current sale subtotal.'
+            );
+            discountInput.focus();
+            return;
+        }
+
+        // Save to the POS variable used by the existing totals and checkout.
+        appliedDiscount = Math.round(enteredValue * 100) / 100;
+        sellDiscountAmount = appliedDiscount;
+
+        // Keep the current UI's discount value in sync.
+        actionsRow.dataset.discountAmount = String(appliedDiscount);
+
+        // Immediately recalculate the displayed subtotal, discount and total.
+        if (typeof updateSellTotals === 'function') {
+            updateSellTotals();
+        }
+
+        // Notify any other code that listens for discount changes.
+        document.dispatchEvent(
+            new CustomEvent('sell:discount-applied', {
+                detail: {
+                    amount: appliedDiscount
+                }
+            })
+        );
+
+        closeDiscountEditor();
+
+        console.log('POS discount applied:', {
+            subtotal: subtotal,
+            discount: appliedDiscount,
+            totalAfterDiscount: Math.max(0, subtotal - appliedDiscount)
+        });
+    }
+
+    discountButton.addEventListener('click', openDiscountEditor);
+    cancelButton.addEventListener('click', cancelDiscount);
+    confirmButton.addEventListener('click', confirmDiscount);
+
+    // Allow Enter to confirm while the discount input is focused.
+    discountInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            confirmDiscount();
+        }
+
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            cancelDiscount();
+        }
+    });
+
+    // Make the current confirmed value accessible to other code if needed.
+    window.getSellDiscountAmount = function () {
+        return appliedDiscount;
+    };
+
+    // Reset the discount when the sale-reset event is dispatched.
+    document.addEventListener('sell:reset', function () {
+        appliedDiscount = 0;
+        sellDiscountAmount = 0;
+
+        discountInput.value = '';
+        actionsRow.dataset.discountAmount = '0';
+
+        closeDiscountEditor();
+
+        if (typeof updateSellTotals === 'function') {
+            updateSellTotals();
+        }
+    });
+
+    console.log('NEXODRA — POS discount initialized.');
 })();
 

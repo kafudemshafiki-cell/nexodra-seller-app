@@ -5758,6 +5758,333 @@ async function loadSellerOrders() {
 
 }
 
+
+/* =========================================
+   NEXODRA — DASHBOARD PENDING ORDERS
+   C4-G — CACHE + AUTO REFRESH
+========================================= */
+
+(function initPendingOrdersOverview() {
+
+    'use strict';
+
+    const ordersCardValue =
+        document.getElementById('overviewOrders');
+
+    if (!ordersCardValue) {
+        console.warn(
+            'C4-G — overviewOrders element not found.'
+        );
+        return;
+    }
+
+    let ordersCacheKey = null;
+
+    // -----------------------------------------
+    // GET CACHE KEY FOR CURRENT SELLER
+    // -----------------------------------------
+
+    async function getOrdersCacheKey() {
+
+        try {
+
+            const {
+                data: {
+                    user
+                },
+                error
+            } = await supabaseClient.auth.getUser();
+
+            if (error || !user) {
+                return null;
+            }
+
+            return 'nexodra_orders_cache_' + user.id;
+
+        } catch (error) {
+
+            console.error(
+                'C4-G — Could not identify seller:',
+                error
+            );
+
+            return null;
+
+        }
+
+    }
+
+    // -----------------------------------------
+    // READ CACHED ORDERS
+    // -----------------------------------------
+
+    function readCachedOrders() {
+
+        if (!ordersCacheKey) {
+            return [];
+        }
+
+        try {
+
+            const cached =
+                localStorage.getItem(
+                    ordersCacheKey
+                );
+
+            if (!cached) {
+                return [];
+            }
+
+            const parsed =
+                JSON.parse(cached);
+
+            if (!Array.isArray(parsed)) {
+                return [];
+            }
+
+            return parsed;
+
+        } catch (error) {
+
+            console.error(
+                'C4-G — Could not read cached orders:',
+                error
+            );
+
+            return [];
+
+        }
+
+    }
+
+    // -----------------------------------------
+    // COUNT PENDING ORDERS
+    // -----------------------------------------
+
+    function countPendingOrders(orders) {
+
+        if (!Array.isArray(orders)) {
+            return 0;
+        }
+
+        return orders.filter(order => {
+
+            const status =
+                String(order.status || '')
+                    .trim()
+                    .toLowerCase();
+
+            return status === 'pending';
+
+        }).length;
+
+    }
+
+    // -----------------------------------------
+    // UPDATE DASHBOARD CARD
+    // -----------------------------------------
+
+    function renderPendingOrdersCount(orders) {
+
+        const pendingCount =
+            countPendingOrders(orders);
+
+        ordersCardValue.textContent =
+            pendingCount.toLocaleString();
+
+        console.log(
+            'C4-G — Pending orders count:',
+            pendingCount
+        );
+
+    }
+
+    // -----------------------------------------
+    // SAVE ORDERS CACHE
+    // -----------------------------------------
+
+    function saveCachedOrders(orders) {
+
+        if (!ordersCacheKey) {
+            return false;
+        }
+
+        if (!Array.isArray(orders)) {
+            return false;
+        }
+
+        try {
+
+            localStorage.setItem(
+                ordersCacheKey,
+                JSON.stringify(orders)
+            );
+
+            return true;
+
+        } catch (error) {
+
+            console.error(
+                'C4-G — Could not cache orders:',
+                error
+            );
+
+            return false;
+
+        }
+
+    }
+
+    // -----------------------------------------
+    // LOAD CACHE FIRST
+    // -----------------------------------------
+
+    async function initializeOrdersOverview() {
+
+        ordersCacheKey =
+            await getOrdersCacheKey();
+
+        if (!ordersCacheKey) {
+
+            console.warn(
+                'C4-G — Seller not authenticated.'
+            );
+
+            return;
+
+        }
+
+        // Display cached count immediately.
+        const cachedOrders =
+            readCachedOrders();
+
+        renderPendingOrdersCount(
+            cachedOrders
+        );
+
+        // -------------------------------------
+        // REFRESH FROM SUPABASE
+        // -------------------------------------
+
+        if (!navigator.onLine) {
+
+            console.log(
+                'C4-G — Offline. Showing cached orders.'
+            );
+
+            return;
+
+        }
+
+        await refreshOrdersOverview();
+
+    }
+
+    // -----------------------------------------
+    // REFRESH FROM SUPABASE
+    // -----------------------------------------
+
+    async function refreshOrdersOverview() {
+
+        if (!navigator.onLine) {
+            return;
+        }
+
+        try {
+
+            console.log(
+                'C4-G — Refreshing dashboard orders.'
+            );
+
+            const orders =
+                await loadSellerOrders();
+
+            if (!Array.isArray(orders)) {
+                return;
+            }
+
+            // Cache the latest seller orders.
+            saveCachedOrders(orders);
+
+            // Update the dashboard count.
+            renderPendingOrdersCount(
+                orders
+            );
+
+            console.log(
+                'C4-G — Dashboard orders refreshed.'
+            );
+
+        } catch (error) {
+
+            console.error(
+                'C4-G — Orders refresh failed:',
+                error
+            );
+
+            // Keep the last cached count.
+            renderPendingOrdersCount(
+                readCachedOrders()
+            );
+
+        }
+
+    }
+
+    // -----------------------------------------
+    // ONLINE EVENT
+    // -----------------------------------------
+
+    window.addEventListener(
+        'online',
+        function () {
+
+            console.log(
+                'C4-G — Device online. Refreshing orders.'
+            );
+
+            refreshOrdersOverview();
+
+        }
+    );
+
+    // -----------------------------------------
+    // REFRESH AFTER ORDER SCREEN LOAD
+    // -----------------------------------------
+
+    window.addEventListener(
+        'nexodra:orders-updated',
+        function () {
+
+            refreshOrdersOverview();
+
+        }
+    );
+
+    // -----------------------------------------
+    // INITIALIZE
+    // -----------------------------------------
+
+    if (document.readyState === 'loading') {
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            initializeOrdersOverview,
+            {
+                once: true
+            }
+        );
+
+    } else {
+
+        initializeOrdersOverview();
+
+    }
+
+})();
+
+
+
 /* =========================================
    NEXODRA — ORDERS SCREEN
    BRICK F3-B
@@ -5814,6 +6141,14 @@ console.log(
     sellerOrders
 );
 
+
+/* C4-G — Notify dashboard that orders were refreshed */
+
+window.dispatchEvent(
+    new Event('nexodra:orders-updated')
+);
+
+      
       // =========================================
 // C4-B — RENDER SELLER ORDERS
 // =========================================
@@ -29460,8 +29795,105 @@ document.getElementById('hpConfirmAgreementBtn')
     // -----------------------------------------
 
     function renderAgreements() {
-        const query = (search?.value || '').trim().toLowerCase();
 
+
+/* =========================================
+   HP — REAL AGREEMENT METRICS
+========================================= */
+
+function updateHirePurchaseMetrics() {
+
+    const totalAgreements =
+        agreements.length;
+
+    let totalOutstanding = 0;
+    let overdueAgreements = 0;
+    let fulfilledAgreements = 0;
+
+    agreements.forEach(agreement => {
+
+        const view =
+            getAgreementView(agreement);
+
+        const balance =
+            Math.max(
+                0,
+                Number(view.balance || 0)
+            );
+
+        totalOutstanding += balance;
+
+        if (view.status === 'overdue') {
+            overdueAgreements++;
+        }
+
+        if (view.status === 'fulfilled') {
+            fulfilledAgreements++;
+        }
+
+    });
+
+    // -------------------------------------
+    // FORMAT CURRENCY
+    // -------------------------------------
+
+    const formatPortfolioMoney = amount => {
+
+        return new Intl.NumberFormat(
+            undefined,
+            {
+                style: 'currency',
+                currency: 'USD'
+            }
+        ).format(amount);
+
+    };
+
+    // -------------------------------------
+    // UPDATE METRIC ELEMENTS
+    // -------------------------------------
+
+    const setMetric = (id, value) => {
+
+        const element =
+            document.getElementById(id);
+
+        if (element) {
+            element.textContent = value;
+        }
+
+    };
+
+    setMetric(
+        'hpMetricTotalAgreements',
+        totalAgreements.toLocaleString()
+    );
+
+    setMetric(
+        'hpMetricOutstanding',
+        formatPortfolioMoney(totalOutstanding)
+    );
+
+    setMetric(
+        'hpMetricOverdue',
+        overdueAgreements.toLocaleString()
+    );
+
+    setMetric(
+        'hpMetricFulfilled',
+        fulfilledAgreements.toLocaleString()
+    );
+
+    setMetric(
+        'hpMetricPortfolioOutstanding',
+        formatPortfolioMoney(totalOutstanding)
+    );
+
+}
+        const query = (search?.value || '').trim().toLowerCase();
+// HP — Update dashboard metrics from real Supabase data.
+updateHirePurchaseMetrics();
+      
         const filtered = agreements
             .map(agreement => getAgreementView(agreement))
             .filter(item => {
@@ -29482,6 +29914,57 @@ document.getElementById('hpConfirmAgreementBtn')
                 return matchesStatus && matchesSearch;
             });
 
+
+/* HP — Update filter counts from real agreements */
+
+const statusCounts = {
+    all: agreements.length,
+    incoming: 0,
+    overdue: 0,
+    active: 0,
+    fulfilled: 0
+};
+
+agreements.forEach(agreement => {
+
+    const status =
+        getAgreementView(agreement).status;
+
+    if (
+        Object.prototype.hasOwnProperty.call(
+            statusCounts,
+            status
+        )
+    ) {
+
+        statusCounts[status]++;
+
+    }
+
+});
+
+document.querySelectorAll(
+    '[data-hp-count]'
+).forEach(element => {
+
+    const filter =
+        element.dataset.hpCount;
+
+    if (
+        Object.prototype.hasOwnProperty.call(
+            statusCounts,
+            filter
+        )
+    ) {
+
+        element.textContent =
+            statusCounts[filter].toLocaleString();
+
+    }
+
+});
+
+      
         if (count) {
             count.textContent =
                 `${filtered.length} agreement` +
@@ -29801,14 +30284,11 @@ let heldSalesDemo = loadHeldSales();
         let activeFilter = 'all';
         let searchText = '';
 
-      
-/* =========================================
-   HOLD CURRENT POS SALE
-   Save cart to localStorage
-========================================= */
 
+    
 /* =========================================
    HOLD CURRENT POS SALE
+   Uses the actual POS cart and Held Sales data
 ========================================= */
 
 const holdSaleButton = document.getElementById('holdSaleBtn');
@@ -29817,118 +30297,90 @@ if (holdSaleButton) {
 
     holdSaleButton.addEventListener('click', function () {
 
-        // Your actual POS cart.
-        const currentCart = window.odropCart;
-
-        // Check whether products exist.
-        if (!Array.isArray(currentCart) || currentCart.length === 0) {
-
+        // Use the actual POS cart.
+        if (!Array.isArray(currentSaleItems) || currentSaleItems.length === 0) {
             alert('There are no products in the current sale to hold.');
-
             return;
         }
-
-        // Copy products using your actual cart structure.
-        const items = currentCart.map(item => ({
-
-            productId: item.productId,
-
-            title: item.title,
-
-            price: Number(item.price || 0),
-
-            image: item.image || '',
-
-            quantity: Number(item.quantity || 1)
-
-        }));
 
         const now = new Date();
 
-        // Create held sale.
+        // Convert POS cart items into the format Held Sales expects.
+        const items = currentSaleItems.map(item => ({
+            productId: item.productId,
+            name: item.title || 'Product',
+            title: item.title || 'Product',
+            price: Number(item.price) || 0,
+            image: item.image || '',
+            icon: 'fa-box',
+            emoji: item.emoji || '📦',
+            quantity: Number(item.quantity) || 1
+        }));
+
+        const subtotal = items.reduce(
+            (sum, item) => sum + (item.price * item.quantity),
+            0
+        );
+
+        const discount = Number(sellDiscountAmount) || 0;
+        const tax = Number(sellTaxAmount) || 0;
+
+        // Build a complete Held Sale record.
         const heldSale = {
-
             id: 'HOLD-' + now.getTime(),
-
             customer: 'Walk-in Customer',
-
             createdAt: now.toISOString(),
-
+            savedLabel: now.toLocaleString(),
+            dateGroup: 'today',
             items: items,
-
-            subtotal: items.reduce(
-                (total, item) =>
-                    total + (item.price * item.quantity),
-                0
-            ),
-
-            discount: Number(
-                window.getSellDiscountAmount?.() || 0
-            ),
-
+            subtotal: subtotal,
+            discount: discount,
+            tax: tax,
             status: 'Saved'
-
         };
 
-        // Load previously saved held sales.
-        let existingHeldSales = [];
+        // Add to the SAME in-memory array used by Held Sales.
+        heldSalesDemo.unshift(heldSale);
 
+        // Save the complete array.
         try {
-
-            existingHeldSales = JSON.parse(
-                localStorage.getItem('nexodra_held_sales') || '[]'
-            );
-
-            if (!Array.isArray(existingHeldSales)) {
-                existingHeldSales = [];
-            }
-
+            saveHeldSales();
         } catch (error) {
 
-            console.error('Could not read held sales:', error);
-
-            alert('Could not read Held Sales. Your cart is unchanged.');
-
-            return;
-        }
-
-        // Save newest held sale first.
-        existingHeldSales.unshift(heldSale);
-
-        try {
-
-            localStorage.setItem(
-                'nexodra_held_sales',
-                JSON.stringify(existingHeldSales)
-            );
-
-        } catch (error) {
+            // Undo the in-memory addition if saving failed.
+            heldSalesDemo.shift();
 
             console.error('Could not save held sale:', error);
-
-            alert('Could not save the sale. Your cart is unchanged.');
-
+            alert('Could not save the sale. Your current sale is unchanged.');
             return;
         }
 
-        // Clear the actual cart only after saving succeeds.
-        window.odropCart.length = 0;
+        // Clear the real POS cart only after successful save.
+        currentSaleItems.length = 0;
 
-        // Notify the app that the cart was cleared.
+        sellDiscountAmount = 0;
+        sellTaxAmount = 0;
+
+        // Refresh the actual POS panel.
+        renderSellCart();
+        updateSellTotals();
+        renderSellProducts();
+
+        // Notify other app components.
         document.dispatchEvent(
             new CustomEvent('sell:cart-cleared')
         );
 
-        // Refresh Held Sales if its renderer exists.
-        if (typeof renderList === 'function') {
-            renderList();
-        }
+        // Refresh Held Sales immediately.
+        renderList();
 
         alert('Sale held successfully.');
 
     });
 
 }
+
+        
 
 
       
@@ -30159,27 +30611,88 @@ if (holdSaleButton) {
         document.getElementById('heldDeleteBackBtn').addEventListener('click', showList);
         document.getElementById('heldCancelDeleteBtn').addEventListener('click', showList);
 
-        // Confirm resume. The custom event is the integration point for your real cart.
+        
+        // Confirm resume: restore the held sale into the real POS cart.
         document.getElementById('heldConfirmResumeBtn').addEventListener('click', function () {
-            const sale = getSale(currentSaleId);
-            if (!sale) return;
 
-            /*
-             * Demo mode: return to POS and emit the held sale data.
-             * Your existing cart code can listen for "heldsale:resume"
-             * and restore sale.items into its normal cart state.
-             */
+            const sale = getSale(currentSaleId);
+
+            if (!sale || !Array.isArray(sale.items) || sale.items.length === 0) {
+                alert('This held sale has no products to resume.');
+                return;
+            }
+
+            // Clear the current POS cart before restoring the held sale.
+            currentSaleItems.length = 0;
+
+            // Restore held products into the actual POS cart structure.
+            sale.items.forEach(item => {
+
+                currentSaleItems.push({
+
+                    productId: item.productId,
+
+                    title: item.title || item.name || 'Product',
+
+                    price: Number(item.price) || 0,
+
+                    image: item.image || '',
+
+                    emoji: item.emoji || '📦',
+
+                    quantity: Number(item.quantity) || 1
+
+                });
+
+            });
+
+            // Restore discount and tax.
+            sellDiscountAmount = Number(sale.discount) || 0;
+            sellTaxAmount = Number(sale.tax) || 0;
+
+            // Remove the sale from Held Sales after restoring it.
+            const index = heldSalesDemo.findIndex(
+                held => held.id === sale.id
+            );
+
+            if (index !== -1) {
+                heldSalesDemo.splice(index, 1);
+            }
+
+            // Save the updated Held Sales list.
+            try {
+                saveHeldSales();
+            } catch (error) {
+
+                console.error('Could not update Held Sales:', error);
+
+                alert('The sale was restored, but Held Sales could not be updated.');
+            }
+
+            // Refresh the actual POS cart and totals.
+            renderSellCart();
+            updateSellTotals();
+            renderSellProducts();
+
+            // Notify other app components.
             window.dispatchEvent(new CustomEvent('heldsale:resume', {
                 detail: JSON.parse(JSON.stringify(sale))
             }));
 
+            // Return to the POS screen.
             const posScreen = document.getElementById('sellScreen');
+
             if (posScreen) {
                 showScreen(posScreen);
             } else {
                 showList();
             }
+
+            // Clear the selected held sale.
+            currentSaleId = null;
+
         });
+
 
         // Confirm deletion: remove only after explicit confirmation.
         document.getElementById('heldConfirmDeleteBtn').addEventListener('click', function () {
@@ -30673,3 +31186,370 @@ if (holdSaleButton) {
     console.log('NEXODRA — POS discount initialized.');
 })();
 
+
+/* =========================================
+   NEXODRA CHAT INBOX — UI FILTERS
+   Does not replace existing chat functions.
+========================================= */
+
+(function initNexodraChatInboxUI() {
+
+    'use strict';
+
+    const inboxScreen =
+        document.getElementById('inboxScreen');
+
+    if (!inboxScreen) {
+        return;
+    }
+
+    const searchInput =
+        document.getElementById('inboxChatSearch');
+
+    const searchClear =
+        document.getElementById('inboxChatSearchClear');
+
+    const filterButtons =
+        inboxScreen.querySelectorAll(
+            '[data-chat-filter]'
+        );
+
+    const chatList =
+        document.getElementById('notificationList');
+
+    let activeFilter = 'all';
+
+
+    // -----------------------------------------
+    // FIND ACTUAL CHAT ROWS
+    // -----------------------------------------
+
+    function getChatRows() {
+
+        if (!chatList) {
+            return [];
+        }
+
+        return Array.from(
+            chatList.querySelectorAll(
+                '[data-chat-id], ' +
+                '[data-conversation-id], ' +
+                '.chat-list-item, ' +
+                '.conversation-item'
+            )
+        );
+
+    }
+
+
+    // -----------------------------------------
+    // CHAT FILTER MATCH
+    // -----------------------------------------
+
+    function matchesChatFilter(row, filter) {
+
+        if (filter === 'all') {
+            return true;
+        }
+
+        if (filter === 'primary') {
+
+            return (
+                row.dataset.chatCategory === 'primary' ||
+                row.dataset.category === 'primary'
+            );
+
+        }
+
+        if (filter === 'groups') {
+
+            return (
+                row.dataset.chatType === 'group' ||
+                row.dataset.type === 'group' ||
+                row.classList.contains('is-group')
+            );
+
+        }
+
+        if (filter === 'favorites') {
+
+            return (
+                row.dataset.favorite === 'true' ||
+                row.dataset.isFavorite === 'true' ||
+                row.classList.contains('is-favorite')
+            );
+
+        }
+
+        if (filter === 'requests') {
+
+            return (
+                row.dataset.chatCategory === 'requests' ||
+                row.dataset.category === 'requests' ||
+                row.dataset.chatType === 'request'
+            );
+
+        }
+
+        return true;
+
+    }
+
+
+    // -----------------------------------------
+    // SEARCH MATCH
+    // -----------------------------------------
+
+    function matchesChatSearch(row, query) {
+
+        if (!query) {
+            return true;
+        }
+
+        const searchableText =
+            row.textContent || '';
+
+        return searchableText
+            .toLowerCase()
+            .includes(query);
+
+    }
+
+
+    // -----------------------------------------
+    // APPLY FILTER + SEARCH
+    // -----------------------------------------
+
+    function applyChatFilters() {
+
+        const query =
+            (searchInput?.value || '')
+                .trim()
+                .toLowerCase();
+
+        const rows =
+            getChatRows();
+
+        rows.forEach(row => {
+
+            const matchesFilter =
+                matchesChatFilter(
+                    row,
+                    activeFilter
+                );
+
+            const matchesSearch =
+                matchesChatSearch(
+                    row,
+                    query
+                );
+
+            row.hidden =
+                !(matchesFilter && matchesSearch);
+
+        });
+
+        if (searchClear) {
+
+            searchClear.hidden =
+                !searchInput?.value;
+
+        }
+
+    }
+
+
+    // -----------------------------------------
+    // FILTER BUTTONS
+    // -----------------------------------------
+
+    filterButtons.forEach(button => {
+
+        button.addEventListener(
+            'click',
+            function () {
+
+                activeFilter =
+                    button.dataset.chatFilter || 'all';
+
+                filterButtons.forEach(tab => {
+
+                    const isActive =
+                        tab === button;
+
+                    tab.classList.toggle(
+                        'active',
+                        isActive
+                    );
+
+                    tab.setAttribute(
+                        'aria-pressed',
+                        String(isActive)
+                    );
+
+                });
+
+                applyChatFilters();
+
+            }
+        );
+
+    });
+
+
+    // -----------------------------------------
+    // SEARCH INPUT
+    // -----------------------------------------
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            'input',
+            applyChatFilters
+        );
+
+    }
+
+
+    // -----------------------------------------
+    // CLEAR SEARCH
+    // -----------------------------------------
+
+    if (searchClear) {
+
+        searchClear.addEventListener(
+            'click',
+            function () {
+
+                if (searchInput) {
+
+                    searchInput.value = '';
+
+                    searchInput.focus();
+
+                }
+
+                applyChatFilters();
+
+            }
+        );
+
+    }
+
+
+    // -----------------------------------------
+    // CHAT LIST UPDATES
+    // -----------------------------------------
+
+    if (chatList) {
+
+        const observer =
+            new MutationObserver(function () {
+
+                applyChatFilters();
+
+            });
+
+        observer.observe(
+            chatList,
+            {
+                childList: true,
+                subtree: true
+            }
+        );
+
+    }
+
+
+    // -----------------------------------------
+    // COMPOSE BUTTON BRIDGE
+    // -----------------------------------------
+
+    function openExistingCompose() {
+
+        /*
+         * Existing compose/new chat functionality
+         * should be triggered here.
+         *
+         * This bridge intentionally does not
+         * invent a new chat creation function.
+         */
+
+        inboxScreen.dispatchEvent(
+            new CustomEvent(
+                'nexodra:compose-chat',
+                {
+                    bubbles: true
+                }
+            )
+        );
+
+    }
+
+
+    const composeButton =
+        document.getElementById(
+            'inboxComposeBtn'
+        );
+
+    const floatingComposeButton =
+        document.getElementById(
+            'inboxFloatingComposeBtn'
+        );
+
+    if (composeButton) {
+
+        composeButton.addEventListener(
+            'click',
+            openExistingCompose
+        );
+
+    }
+
+    if (floatingComposeButton) {
+
+        floatingComposeButton.addEventListener(
+            'click',
+            openExistingCompose
+        );
+
+    }
+
+
+    // -----------------------------------------
+    // VIDEO CALL BRIDGE
+    // -----------------------------------------
+
+    const videoCallButton =
+        document.getElementById(
+            'inboxVideoCallBtn'
+        );
+
+    if (videoCallButton) {
+
+        videoCallButton.addEventListener(
+            'click',
+            function () {
+
+                inboxScreen.dispatchEvent(
+                    new CustomEvent(
+                        'nexodra:video-call',
+                        {
+                            bubbles: true
+                        }
+                    )
+                );
+
+            }
+        );
+
+    }
+
+
+    // -----------------------------------------
+    // INITIAL FILTER
+    // -----------------------------------------
+
+    applyChatFilters();
+
+})();

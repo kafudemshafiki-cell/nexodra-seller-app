@@ -3194,60 +3194,122 @@
             <span class="hp-demo-badge">REAL DATA</span>
         </header>
 
-        <!-- Overview metrics -->
-        <div class="hp-metrics-grid">
-            <article class="hp-metric-card hp-metric-primary">
-                <span class="hp-metric-icon">
-                    <i class="fa-solid fa-file-contract"></i>
-                </span>
-                <span class="hp-metric-label">Total agreements</span>
-                <strong>24</strong>
-                <small>Across all customers</small>
-            </article>
+        
+        
+<!-- =========================================
+     HIRE PURCHASE — REAL OVERVIEW METRICS
+========================================= -->
 
-            <article class="hp-metric-card">
-                <span class="hp-metric-icon hp-icon-green">
-                    <i class="fa-solid fa-wallet"></i>
-                </span>
-                <span class="hp-metric-label">Outstanding balance</span>
-                <strong>$18,450</strong>
-                <small>Remaining to collect</small>
-            </article>
+<div class="hp-metrics-grid">
 
-            <article class="hp-metric-card">
-                <span class="hp-metric-icon hp-icon-orange">
-                    <i class="fa-solid fa-clock"></i>
-                </span>
-                <span class="hp-metric-label">Payments overdue</span>
-                <strong>3</strong>
-                <small>Require follow-up</small>
-            </article>
+    <article class="hp-metric-card hp-metric-primary">
 
-            <article class="hp-metric-card">
-                <span class="hp-metric-icon hp-icon-purple">
-                    <i class="fa-solid fa-circle-check"></i>
-                </span>
-                <span class="hp-metric-label">Fulfilled</span>
-                <strong>8</strong>
-                <small>Fully paid agreements</small>
-            </article>
-        </div>
+        <span class="hp-metric-icon">
+            <i class="fa-solid fa-file-contract"></i>
+        </span>
 
-        <!-- Collection overview -->
-        <article class="hp-collection-card">
-            <div class="hp-collection-copy">
-                <span class="hp-eyebrow">COLLECTION OVERVIEW</span>
-                <h2>Keep payments on track</h2>
-                <p>Track installments and identify agreements that need attention.</p>
-            </div>
-            <div class="hp-collection-visual">
-                <i class="fa-solid fa-chart-line"></i>
-                <span>Demo portfolio</span>
-                <strong>$18,450</strong>
-                <small>Outstanding balance</small>
-            </div>
-        </article>
+        <span class="hp-metric-label">
+            Total agreements
+        </span>
 
+        <strong id="hpMetricTotalAgreements">0</strong>
+
+        <small>Across all customers</small>
+
+    </article>
+
+
+    <article class="hp-metric-card">
+
+        <span class="hp-metric-icon hp-icon-green">
+            <i class="fa-solid fa-wallet"></i>
+        </span>
+
+        <span class="hp-metric-label">
+            Outstanding balance
+        </span>
+
+        <strong id="hpMetricOutstanding">$0.00</strong>
+
+        <small>Remaining to collect</small>
+
+    </article>
+
+
+    <article class="hp-metric-card">
+
+        <span class="hp-metric-icon hp-icon-orange">
+            <i class="fa-solid fa-clock"></i>
+        </span>
+
+        <span class="hp-metric-label">
+            Payments overdue
+        </span>
+
+        <strong id="hpMetricOverdue">0</strong>
+
+        <small>Require follow-up</small>
+
+    </article>
+
+
+    <article class="hp-metric-card">
+
+        <span class="hp-metric-icon hp-icon-purple">
+            <i class="fa-solid fa-circle-check"></i>
+        </span>
+
+        <span class="hp-metric-label">
+            Fulfilled
+        </span>
+
+        <strong id="hpMetricFulfilled">0</strong>
+
+        <small>Fully paid agreements</small>
+
+    </article>
+
+</div>
+
+
+<!-- =========================================
+     REAL PORTFOLIO OUTSTANDING
+========================================= -->
+
+<article class="hp-collection-card">
+
+    <div class="hp-collection-copy">
+
+        <span class="hp-eyebrow">
+            COLLECTION OVERVIEW
+        </span>
+
+        <h2>Keep payments on track</h2>
+
+        <p>
+            Track installments and identify agreements
+            that need attention.
+        </p>
+
+    </div>
+
+    <div class="hp-collection-visual">
+
+        <i class="fa-solid fa-chart-line"></i>
+
+        <span>Real portfolio</span>
+
+        <strong id="hpMetricPortfolioOutstanding">$0.00</strong>
+
+        <small>Outstanding balance</small>
+
+    </div>
+
+</article>
+
+          
+
+      
         <!-- Search -->
         <div class="hp-toolbar">
             <div class="hp-search-box">
@@ -3264,20 +3326,56 @@
                 6 agreements
             </span>
         </div>
+        
+<!-- Agreement filters -->
 
-        <!-- Agreement filters -->
-        <nav class="hp-filter-tabs" aria-label="Filter hire purchase agreements">
-            <button type="button" class="hp-filter-btn is-active"
-                data-hp-filter="all">All <span>6</span></button>
-            <button type="button" class="hp-filter-btn"
-                data-hp-filter="incoming">Incoming <span>2</span></button>
-            <button type="button" class="hp-filter-btn"
-                data-hp-filter="overdue">Overdue <span>2</span></button>
-            <button type="button" class="hp-filter-btn"
-                data-hp-filter="active">Active <span>1</span></button>
-            <button type="button" class="hp-filter-btn"
-                data-hp-filter="fulfilled">Fulfilled <span>1</span></button>
-        </nav>
+<nav
+    class="hp-filter-tabs"
+    aria-label="Filter hire purchase agreements"
+>
+
+    <button
+        type="button"
+        class="hp-filter-btn is-active"
+        data-hp-filter="all"
+    >
+        All <span data-hp-count="all">0</span>
+    </button>
+
+    <button
+        type="button"
+        class="hp-filter-btn"
+        data-hp-filter="incoming"
+    >
+        Incoming <span data-hp-count="incoming">0</span>
+    </button>
+
+    <button
+        type="button"
+        class="hp-filter-btn"
+        data-hp-filter="overdue"
+    >
+        Overdue <span data-hp-count="overdue">0</span>
+    </button>
+
+    <button
+        type="button"
+        class="hp-filter-btn"
+        data-hp-filter="active"
+    >
+        Active <span data-hp-count="active">0</span>
+    </button>
+
+    <button
+        type="button"
+        class="hp-filter-btn"
+        data-hp-filter="fulfilled"
+    >
+        Fulfilled <span data-hp-count="fulfilled">0</span>
+    </button>
+
+</nav>
+
 
         <!-- Demo agreement cards are rendered by app.js -->
         <div
@@ -4743,101 +4841,249 @@
 
 </section>
 
-            <!-- INBOX / NOTIFICATIONS SCREEN -->
+ 
+<!-- =========================================
+     NEXODRA — CHAT INBOX
+     UI REDESIGN
+========================================= -->
+
 <section id="inboxScreen" class="screen">
 
-    <div class="inbox-page">
+    <div class="inbox-page inbox-chat-layout">
 
-        <!-- Header -->
-        <div class="inbox-header">
+        <!-- CHAT HEADER -->
 
-            <div>
-                <span class="inbox-eyebrow">
-                    STORE ACTIVITY
-                </span>
+        <header class="inbox-chat-header">
 
-                <h2>Inbox</h2>
+            <div class="inbox-brand">
 
-                <p id="notificationUnreadText">
-                    No unread notifications
-                </p>
+                <div class="inbox-brand-icon">
+                    <i class="fa-solid fa-comment"></i>
+                </div>
+
+                <div class="inbox-brand-title">
+
+                    <h2>Chats</h2>
+
+                    <p id="notificationUnreadText">
+                        No unread notifications
+                    </p>
+
+                </div>
+
             </div>
+
+
+            <div class="inbox-header-actions">
+
+                <!-- Video call button -->
+
+                <button
+                    type="button"
+                    class="inbox-icon-button"
+                    id="inboxVideoCallBtn"
+                    aria-label="Video call"
+                    title="Video call"
+                >
+
+                    <i class="fa-solid fa-video"></i>
+
+                    <span class="inbox-action-indicator"></span>
+
+                </button>
+
+
+                <!-- Compose button -->
+
+                <button
+                    type="button"
+                    class="inbox-icon-button"
+                    id="inboxComposeBtn"
+                    aria-label="New chat"
+                    title="New chat"
+                >
+
+                    <i class="fa-solid fa-pen"></i>
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- SEARCH -->
+
+        <div class="inbox-chat-search">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="search"
+                id="inboxChatSearch"
+                placeholder="Search chats..."
+                autocomplete="off"
+                aria-label="Search chats"
+            >
 
             <button
                 type="button"
-                class="mark-notifications-read-btn"
-                id="markNotificationsReadBtn"
+                id="inboxChatSearchClear"
+                aria-label="Clear search"
+                hidden
             >
-                Mark all read
+
+                <i class="fa-solid fa-xmark"></i>
+
             </button>
 
         </div>
 
 
-        <!-- INBOX CATEGORIES -->
-<div class="inbox-tabs">
+        <!-- CHAT FILTERS -->
 
-    <button
-        type="button"
-        class="tab-btn"
-        data-notification-filter="chat"
-    >
-        Chat
-    </button>
+        <nav
+            class="inbox-chat-tabs"
+            aria-label="Chat filters"
+        >
 
-    <button
-        type="button"
-        class="tab-btn"
-        data-notification-filter="unread"
-    >
-        Unread
-    </button>
+            <button
+                type="button"
+                class="inbox-chat-tab active"
+                data-chat-filter="all"
+                aria-pressed="true"
+            >
 
-    <button
-        type="button"
-        class="tab-btn"
-        data-notification-filter="pending"
-    >
-        Pending
-    </button>
+                All
 
-    <button
-        type="button"
-        class="tab-btn"
-        data-notification-filter="fulfilled"
-    >
-        Fulfilled
-    </button>
-
-</div>
+            </button>
 
 
-        <!-- Real Notification Feed -->
+            <button
+                type="button"
+                class="inbox-chat-tab"
+                data-chat-filter="primary"
+                aria-pressed="false"
+            >
+
+                Primary
+
+                <span
+                    class="inbox-tab-count"
+                    id="inboxPrimaryCount"
+                    hidden
+                >
+                    0
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="inbox-chat-tab"
+                data-chat-filter="groups"
+                aria-pressed="false"
+            >
+
+                Groups
+
+            </button>
+
+
+            <button
+                type="button"
+                class="inbox-chat-tab"
+                data-chat-filter="favorites"
+                aria-pressed="false"
+            >
+
+                Favorites
+
+            </button>
+
+
+            <button
+                type="button"
+                class="inbox-chat-tab"
+                data-chat-filter="requests"
+                aria-pressed="false"
+            >
+
+                Requests
+
+            </button>
+
+        </nav>
+
+
+        <!-- EXISTING CHAT / MESSAGE LIST -->
+
         <div
-            class="notification-list"
+            class="notification-list inbox-chat-list"
             id="notificationList"
         >
+
+            <!--
+                Existing Supabase chat renderer
+                populates this element.
+
+                Do not add demo customers here.
+            -->
 
             <div class="notification-empty">
 
                 <div class="notification-empty-icon">
-                    <i class="fa-regular fa-bell"></i>
+
+                    <i class="fa-regular fa-comments"></i>
+
                 </div>
 
-                <h3>No notifications yet</h3>
+                <h3>No chats yet</h3>
 
                 <p>
-                    Orders, sales, stock alerts and
-                    store activity will appear here.
+                    Your customer conversations
+                    will appear here.
                 </p>
 
             </div>
 
         </div>
 
+
+        <!-- FLOATING NEW CHAT BUTTON -->
+
+        <button
+            type="button"
+            class="inbox-floating-compose"
+            id="inboxFloatingComposeBtn"
+            aria-label="Start a new chat"
+            title="New chat"
+        >
+
+            <i class="fa-solid fa-pen"></i>
+
+        </button>
+
+
+        <!-- EXISTING MARK ALL READ FUNCTION -->
+
+        <button
+            type="button"
+            class="mark-notifications-read-btn inbox-hidden-action"
+            id="markNotificationsReadBtn"
+        >
+
+            Mark all read
+
+        </button>
+
     </div>
 
 </section>
+
+<!-- END NEXODRA CHAT INBOX -->
+           
 
 
 <!-- =========================================

@@ -16423,42 +16423,138 @@ async function loadProductsFromSupabase() {
         productGrid,
         6
     );
-  
-    // Get the currently authenticated user
-    const {
-        data: {
-            user
-        },
-        error: userError
-    } = await supabaseClient.auth.getUser();
 
 
-    if (userError) {
 
-        console.error(
-            'BRICK 3D — Could not get authenticated user:',
+    // =========================================
+    // BRICK P1-C — AUTH + OFFLINE CACHE RESTORE
+    // =========================================
+
+    let user = null;
+    let userError = null;
+
+    // Try to get the authenticated user first.
+    try {
+
+        const authResult =
+            await supabaseClient.auth.getUser();
+
+        user = authResult.data?.user || null;
+        userError = authResult.error || null;
+
+    } catch (error) {
+
+        userError = error;
+
+    }
+
+    // Use authenticated ID when available.
+    // Otherwise, use the previously saved cache owner ID.
+    let productCacheUserId = user?.id || null;
+
+    if (!productCacheUserId) {
+
+        try {
+
+            productCacheUserId =
+                localStorage.getItem(
+                    'nexodraLastProductUserId'
+                );
+
+        } catch (error) {
+
+            console.error(
+                'BRICK P1-C — Could not read saved user ID:',
+                error
+            );
+
+        }
+
+    }
+
+    // =========================================
+    // BRICK P1-A — LOAD LOCAL PRODUCT CACHE
+    // =========================================
+
+    if (productCacheUserId) {
+
+        const localProductsKey =
+            'nexodraProducts_' + productCacheUserId;
+
+        try {
+
+            const savedLocalProducts =
+                localStorage.getItem(
+                    localProductsKey
+                );
+
+            if (savedLocalProducts) {
+
+                const cachedProducts =
+                    JSON.parse(savedLocalProducts);
+
+                if (Array.isArray(cachedProducts)) {
+
+                    products = cachedProducts;
+
+                    console.log(
+                        'BRICK P1-A — Local products loaded:',
+                        products.length
+                    );
+
+                    renderProducts();
+
+                    syncSellProducts();
+
+                }
+
+            } else {
+
+                console.log(
+                    'BRICK P1-C — No local product cache found.'
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                'BRICK P1-C — Could not restore local products:',
+                error
+            );
+
+        }
+
+    } else {
+
+        console.warn(
+            'BRICK P1-C — No saved product cache user ID.'
+        );
+
+    }
+
+    // =========================================
+    // BRICK P1-C — OFFLINE FALLBACK
+    // =========================================
+
+    if (userError || !user) {
+
+        console.warn(
+            'BRICK P1-C — Authentication unavailable; using local products.',
             userError
         );
 
         return;
+
     }
 
-
-    if (!user) {
-
-        console.log(
-            'BRICK 3D — No authenticated user.'
-        );
-
-        return;
-    }
-
-
+    // Continue the existing online flow.
     console.log(
         'BRICK 3D — Logged-in user ID:',
         user.id
     );
 
+  
 
     // Load only this user's products
     const {
@@ -16493,6 +16589,45 @@ async function loadProductsFromSupabase() {
 products = supabaseProducts || [];
 
 
+
+    // =========================================
+    // BRICK P1-B — SAVE LOCAL PRODUCT CACHE
+    // =========================================
+
+    try {
+
+        localStorage.setItem(
+            'nexodraProducts_' + user.id,
+            JSON.stringify(products)
+        );
+
+        // BRICK P1-C — Remember product cache owner
+        localStorage.setItem(
+            'nexodraLastProductUserId',
+            String(user.id)
+        );
+
+        console.log(
+            'BRICK P1-B — Local product cache saved:',
+            products.length
+        );
+
+        console.log(
+            'BRICK P1-C — Product cache user ID saved:',
+            user.id
+        );
+
+    } catch (error) {
+
+        console.error(
+            'BRICK P1-B/C — Could not save local product cache:',
+            error
+        );
+
+    }
+
+
+  
 // =========================================
 // BRICK S2-A — SYNC BARCODE CACHE
 // =========================================
@@ -21062,8 +21197,7 @@ const countryName = signupCountry &&
 
     options: {
 
-        emailRedirectTo:
-            'http://localhost:8158',
+        emailRedirectTo: 'https://kafudemshafiki-cell.github.io/nexodra-seller-app/',
 
        data: {
     name: name,
@@ -30156,72 +30290,271 @@ document.querySelectorAll(
 
     });
 
+    
     // -----------------------------------------
-    // VIEW DETAILS + RETRY
+    // VIEW DETAILS + RETRY + RECORD PAYMENT
     // -----------------------------------------
 
-    list.addEventListener('click', event => {
-
+    list.addEventListener('click', async event => {
         const retryButton = event.target.closest('[data-hp-retry]');
-
         if (retryButton) {
-            loadAgreements();
+            await loadAgreements();
             return;
         }
 
         const button = event.target.closest('[data-hp-view]');
-
         if (!button) return;
 
         const agreement = agreements.find(
             item => item.id === button.dataset.hpView
         );
-
         if (!agreement) return;
 
-        const view = getAgreementView(agreement);
-
-        const installmentDetails = [...agreement.installments]
-            .sort(
-                (a, b) =>
-                    Number(a.installment_number) -
-                    Number(b.installment_number)
-            )
-            .map(item => {
-
-                const status =
-                    Number(item.outstanding_amount || 0) <= 0
-                        ? 'Paid'
-                        : item.status || 'Pending';
-
-                return (
-                    `#${item.installment_number} | ` +
-                    `${dateLabel(item.due_date)} | ` +
-                    `${money(item.scheduled_amount)} | ` +
-                    `Paid: ${money(item.amount_paid)} | ` +
-                    `Balance: ${money(item.outstanding_amount)} | ` +
-                    `${status}`
-                );
-            })
-            .join('\n');
-
-        alert(
-            `HIRE PURCHASE AGREEMENT\n\n` +
-            `Customer: ${view.name}\n` +
-            `Phone: ${view.phone}\n` +
-            `Agreement: ${view.id}\n` +
-            `Products: ${view.product}\n\n` +
-            `Sale total: ${money(agreement.sale_total)}\n` +
-            `Deposit: ${money(agreement.deposit_amount)}\n` +
-            `Principal: ${money(agreement.principal_amount)}\n` +
-            `Fixed charge: ${money(agreement.charge_amount)}\n` +
-            `Agreement total: ${money(agreement.agreement_total)}\n\n` +
-            `Paid: ${money(view.paid)}\n` +
-            `Outstanding: ${money(view.balance)}\n\n` +
-            `INSTALLMENTS\n${installmentDetails || 'No installments found'}`
+        const installments = [...(agreement.installments || [])].sort(
+            (a, b) => Number(a.installment_number) - Number(b.installment_number)
         );
 
+        const view = getAgreementView(agreement);
+        const escape = value => escapeHTML(value);
+
+        // Remove an older details dialog if one is still open.
+        document.getElementById('hpAgreementDetailsModal')?.remove();
+
+        const modal = document.createElement('div');
+        modal.id = 'hpAgreementDetailsModal';
+        modal.className = 'hp-details-modal';
+        modal.innerHTML = `
+            <div class="hp-details-backdrop" data-hp-modal-close></div>
+            <section class="hp-details-dialog" role="dialog" aria-modal="true"
+                aria-labelledby="hpDetailsTitle">
+                <header class="hp-details-header">
+                    <div>
+                        <span class="hp-eyebrow">HIRE PURCHASE</span>
+                        <h2 id="hpDetailsTitle">${escape(getCustomerName(agreement))}</h2>
+                        <p>${escape(agreement.customer_phone || 'No phone number')}</p>
+                    </div>
+                    <button type="button" class="hp-details-close" data-hp-modal-close
+                        aria-label="Close details">&times;</button>
+                </header>
+
+                <div class="hp-details-summary">
+                    <div><span>Agreement total</span><strong>${money(agreement.agreement_total)}</strong></div>
+                    <div><span>Paid</span><strong>${money(view.paid)}</strong></div>
+                    <div><span>Outstanding</span><strong>${money(view.balance)}</strong></div>
+                </div>
+
+                <div class="hp-details-meta">
+                    <span><strong>Agreement:</strong> ${escape(agreement.id)}</span>
+                    <span><strong>Products:</strong> ${escape(getProductLabel(agreement))}</span>
+                </div>
+
+                <h3 class="hp-details-section-title">Installment schedule</h3>
+                <div class="hp-details-installments">
+                    ${installments.map(item => {
+                        const outstanding = Number(item.outstanding_amount || 0);
+                        const paid = Number(item.amount_paid || 0);
+                        const isPaid = outstanding <= 0;
+                        return `
+                            <article class="hp-details-installment ${isPaid ? 'is-paid' : ''}">
+                                <div class="hp-details-installment-top">
+                                    <strong>Installment #${escape(item.installment_number)}</strong>
+                                    <span class="hp-details-status">${isPaid ? 'Paid' : escape(item.status || 'Pending')}</span>
+                                </div>
+                                <p class="hp-details-due">Due ${escape(dateLabel(item.due_date))}</p>
+                                <div class="hp-details-amounts">
+                                    <span>Scheduled <strong>${money(item.scheduled_amount)}</strong></span>
+                                    <span>Paid <strong>${money(paid)}</strong></span>
+                                    <span>Balance <strong>${money(outstanding)}</strong></span>
+                                </div>
+                                ${!isPaid ? `
+                                    <button type="button" class="hp-details-paid-btn"
+                                        data-hp-pay="${escape(item.id)}">
+                                        Paid
+                                    </button>
+                                    <div class="hp-payment-entry" data-hp-payment-entry="${escape(item.id)}" hidden>
+                                        <label>
+                                            Payment method
+                                            <select data-hp-method>
+                                                <option value="cash">Cash</option>
+                                                <option value="mobile_money">Mobile Money</option>
+                                                <option value="bank_transfer">Bank Transfer</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </label>
+                                        <label>
+                                            Reference (optional)
+                                            <input type="text" data-hp-reference maxlength="120"
+                                                placeholder="Payment reference">
+                                        </label>
+                                        <p class="hp-payment-confirm-amount">
+                                            Record ${money(outstanding)} received
+                                        </p>
+                                        <div class="hp-payment-entry-actions">
+                                            <button type="button" data-hp-cancel-payment>Cancel</button>
+                                            <button type="button" data-hp-confirm-payment="${escape(item.id)}">
+                                                Confirm payment
+                                            </button>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </article>
+                        `;
+                    }).join('')}
+                </div>
+                <footer class="hp-details-footer">
+                    <button type="button" data-hp-modal-close>Close</button>
+                </footer>
+            </section>
+        `;
+
+        // Modal styling is scoped to this dynamically-created dialog.
+        if (!document.getElementById('hpDetailsModalStyles')) {
+            const style = document.createElement('style');
+            style.id = 'hpDetailsModalStyles';
+            style.textContent = `
+                .hp-details-modal{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;font-family:inherit}
+                .hp-details-backdrop{position:absolute;inset:0;background:rgba(8,12,20,.68)}
+                .hp-details-dialog{position:relative;width:min(680px,100%);max-height:90vh;overflow:auto;background:var(--card-bg,#fff);color:var(--text-color,#172033);border-radius:18px;padding:20px;box-shadow:0 20px 70px rgba(0,0,0,.28)}
+                .hp-details-header{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+                .hp-details-header h2{margin:5px 0;font-size:1.35rem}
+                .hp-details-header p{margin:0;opacity:.72}
+                .hp-details-close{border:0;background:transparent;font-size:28px;cursor:pointer;color:inherit}
+                .hp-details-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:18px 0}
+                .hp-details-summary>div{padding:12px;border-radius:12px;background:rgba(127,127,127,.10);display:flex;flex-direction:column;gap:6px;min-width:0}
+                .hp-details-summary span,.hp-details-meta{font-size:.82rem;opacity:.8}
+                .hp-details-summary strong{overflow-wrap:anywhere}
+                .hp-details-meta{display:flex;flex-direction:column;gap:5px;overflow-wrap:anywhere}
+                .hp-details-section-title{margin:22px 0 10px}
+                .hp-details-installments{display:grid;gap:10px}
+                .hp-details-installment{border:1px solid rgba(127,127,127,.25);border-radius:13px;padding:14px}
+                .hp-details-installment.is-paid{background:rgba(40,160,90,.07)}
+                .hp-details-installment-top{display:flex;justify-content:space-between;gap:8px}
+                .hp-details-status{font-size:.8rem;opacity:.8}
+                .hp-details-due{margin:5px 0 12px;opacity:.75;font-size:.9rem}
+                .hp-details-amounts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;font-size:.78rem}
+                .hp-details-amounts span{display:flex;flex-direction:column;gap:4px}
+                .hp-details-paid-btn,.hp-payment-entry-actions button,.hp-details-footer button{margin-top:12px;border:0;border-radius:9px;padding:10px 14px;cursor:pointer;background:var(--primary-color,#2463eb);color:#fff}
+                .hp-payment-entry{margin-top:12px;padding:12px;background:rgba(127,127,127,.10);border-radius:12px}
+                .hp-payment-entry label{display:block;margin:8px 0;font-size:.85rem}
+                .hp-payment-entry select,.hp-payment-entry input{display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:10px;border:1px solid rgba(127,127,127,.35);border-radius:8px;background:var(--card-bg,#fff);color:inherit}
+                .hp-payment-confirm-amount{font-weight:600}
+                .hp-payment-entry-actions{display:flex;justify-content:flex-end;gap:8px}
+                .hp-payment-entry-actions button:first-child{background:rgba(127,127,127,.2);color:inherit}
+                .hp-details-footer{display:flex;justify-content:flex-end;margin-top:16px}
+                @media(max-width:480px){.hp-details-dialog{padding:15px}.hp-details-summary{grid-template-columns:1fr}.hp-details-amounts{font-size:.72rem}}
+            `;
+            document.head.appendChild(style);
+        }
+
+        document.body.appendChild(modal);
+
+        const closeModal = () => modal.remove();
+        modal.querySelectorAll('[data-hp-modal-close]').forEach(el =>
+            el.addEventListener('click', closeModal)
+        );
+
+        // Only the earliest outstanding installment is eligible for payment.
+        const nextInstallment = installments.find(
+            item => Number(item.outstanding_amount || 0) > 0
+        );
+
+        modal.querySelectorAll('[data-hp-pay]').forEach(payButton => {
+            const installmentId = payButton.dataset.hpPay;
+            if (!nextInstallment || installmentId !== nextInstallment.id) {
+                payButton.disabled = true;
+                payButton.textContent = 'Pay previous installment first';
+                payButton.title = 'Nexodra records installments in schedule order.';
+            }
+        });
+
+        modal.addEventListener('click', async paymentEvent => {
+            const payButton = paymentEvent.target.closest('[data-hp-pay]');
+            if (payButton) {
+                const entry = modal.querySelector(
+                    `[data-hp-payment-entry="${CSS.escape(payButton.dataset.hpPay)}"]`
+                );
+                if (entry) {
+                    entry.hidden = false;
+                    payButton.hidden = true;
+                    entry.querySelector('[data-hp-method]')?.focus();
+                }
+                return;
+            }
+
+            const cancelButton = paymentEvent.target.closest('[data-hp-cancel-payment]');
+            if (cancelButton) {
+                const entry = cancelButton.closest('.hp-payment-entry');
+                if (entry) {
+                    entry.hidden = true;
+                    const card = entry.closest('.hp-details-installment');
+                    card?.querySelector('[data-hp-pay]')?.removeAttribute('hidden');
+                }
+                return;
+            }
+
+            const confirmButton = paymentEvent.target.closest('[data-hp-confirm-payment]');
+            if (!confirmButton) return;
+
+            const installment = installments.find(
+                item => item.id === confirmButton.dataset.hpConfirmPayment
+            );
+            if (!installment || installment.id !== nextInstallment?.id) {
+                alert('Please record the earliest outstanding installment first.');
+                return;
+            }
+
+            const entry = confirmButton.closest('.hp-payment-entry');
+            const method = entry?.querySelector('[data-hp-method]')?.value;
+            const reference = entry?.querySelector('[data-hp-reference]')?.value?.trim() || null;
+            const amount = Number(installment.outstanding_amount || 0);
+
+            if (!(amount > 0)) {
+                alert('This installment has no outstanding balance.');
+                return;
+            }
+
+            if (!confirm(
+                `Confirm payment recorded in Nexodra?\n\n` +
+                `Installment #${installment.installment_number}\n` +
+                `Due: ${dateLabel(installment.due_date)}\n` +
+                `Amount: ${money(amount)}\n` +
+                `Method: ${method}`
+            )) return;
+
+            confirmButton.disabled = true;
+            confirmButton.textContent = 'Recording…';
+
+            try {
+                const { data, error } = await supabaseClient.rpc(
+                    'record_hire_purchase_payment',
+                    {
+                        p_agreement_id: agreement.id,
+                        p_installment_id: installment.id,
+                        p_payment_amount: amount,
+                        p_payment_method: method,
+                        p_payment_reference: reference,
+                        p_notes: null
+                    }
+                );
+
+                if (error) throw error;
+                if (!data || data.success !== true) {
+                    throw new Error(data?.message || 'Payment was not confirmed.');
+                }
+
+                closeModal();
+                await loadAgreements();
+            } catch (error) {
+                console.error('Hire Purchase payment recording failed:', error);
+                alert('Payment could not be recorded.\n\n' + (error.message || 'Please try again.'));
+                confirmButton.disabled = false;
+                confirmButton.textContent = 'Confirm payment';
+            }
+        });
+
+        modal.querySelector('.hp-details-close')?.focus();
     });
+
 
     console.log('HP-2: Supabase dashboard initialized.');
 

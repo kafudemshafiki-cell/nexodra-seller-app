@@ -449,6 +449,781 @@ odropOfflineSalesQueue =
     loadOdropOfflineSalesQueue();
 
 // =========================================
+// SALES-1B — LOCAL COMPLETED SALES CACHE
+// =========================================
+
+const NEXODRA_SALES_CACHE_PREFIX =
+    'nexodraSalesCacheV1:';
+
+// =========================================
+// SALES-1G-A — INDEXEDDB DATABASE
+// =========================================
+
+const NEXODRA_SALES_DB_NAME =
+    'NexodraSalesDB';
+
+const NEXODRA_SALES_DB_VERSION = 1;
+
+let nexodraSalesDBPromise = null;
+
+
+function openNexodraSalesDB() {
+
+    if (nexodraSalesDBPromise) {
+        return nexodraSalesDBPromise;
+    }
+
+    nexodraSalesDBPromise = new Promise(
+        (resolve, reject) => {
+
+            if (!window.indexedDB) {
+                reject(
+                    new Error('IndexedDB is not supported.')
+                );
+                return;
+            }
+
+            const request =
+                window.indexedDB.open(
+                    NEXODRA_SALES_DB_NAME,
+                    NEXODRA_SALES_DB_VERSION
+                );
+
+            request.onupgradeneeded = event => {
+
+                const db = event.target.result;
+
+                if (!db.objectStoreNames.contains('completedSales')) {
+
+                    db.createObjectStore(
+                        'completedSales',
+                        {
+                            keyPath: 'cacheKey'
+                        }
+                    );
+
+                }
+
+            };
+
+            request.onsuccess = () => {
+
+                console.log(
+                    'SALES-1G-A — IndexedDB opened successfully.'
+                );
+
+                resolve(request.result);
+
+            };
+
+            request.onerror = () => {
+
+                nexodraSalesDBPromise = null;
+
+                reject(request.error);
+
+            };
+
+            request.onblocked = () => {
+
+                console.warn(
+                    'SALES-1G-A — IndexedDB opening is blocked.'
+                );
+
+            };
+
+        }
+    );
+
+    return nexodraSalesDBPromise;
+}
+
+
+// Test the database connection.
+openNexodraSalesDB()
+    .then(() => {
+
+        console.log(
+            'SALES-1G-A — Database connection test passed.'
+        );
+
+    })
+    .catch(error => {
+
+        console.error(
+            'SALES-1G-A — Database connection test failed:',
+            error
+        );
+
+    });
+
+// =========================================
+// SALES-1G-B — COMPACT SALE DATA
+// =========================================
+
+function prepareNexodraSaleForOfflineCache(sale) {
+
+    if (!sale || !sale.id) {
+        return null;
+    }
+
+    const compactItems = (
+        Array.isArray(sale.items) ? sale.items : []
+    ).map(item => ({
+        productId: item.productId || null,
+        title: item.title || item.name || 'Unnamed product',
+        quantity: Number(item.quantity) || 0,
+        price: Number(item.price) || 0
+    }));
+
+    return {
+        id: sale.id,
+        owner_id: sale.owner_id || null,
+        items: compactItems,
+        items_count: Number(sale.items_count) || 0,
+        subtotal: Number(sale.subtotal) || 0,
+        discount: Number(sale.discount) || 0,
+        tax: Number(sale.tax) || 0,
+        total: Number(sale.total) || 0,
+        customer_name: sale.customer_name || 'Walk-in Customer',
+        note: sale.note || '',
+        payment_method: sale.payment_method || 'cash',
+        created_at: sale.created_at || null,
+        updated_at: sale.updated_at || null
+    };
+}
+
+// =========================================
+// SALES-1G-C — SAVE SALE TO INDEXEDDB
+// =========================================
+
+async function saveNexodraSaleToIndexedDB(userId, sale) {
+
+    try {
+
+        if (!userId || !sale) {
+            return false;
+        }
+
+        const compactSale =
+            prepareNexodraSaleForOfflineCache(sale);
+
+        if (!compactSale) {
+            return false;
+        }
+
+        compactSale.cacheKey =
+            `${userId}:${compactSale.id}`;
+
+        const db = await openNexodraSalesDB();
+
+        return await new Promise((resolve, reject) => {
+
+            const transaction =
+                db.transaction(
+                    'completedSales',
+                    'readwrite'
+                );
+
+            const store =
+                transaction.objectStore('completedSales');
+
+            store.put(compactSale);
+
+            transaction.oncomplete = () => {
+                console.log(
+                    'SALES-1G-C — Compact sale saved:',
+                    compactSale.id
+                );
+                resolve(true);
+            };
+
+            transaction.onerror = () => {
+                reject(transaction.error);
+            };
+
+            transaction.onabort = () => {
+                reject(transaction.error);
+            };
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            'SALES-1G-C — IndexedDB save failed:',
+            error
+        );
+
+        return false;
+    }
+}
+
+// =========================================
+// SALES-1G-D — LOAD SALE FROM INDEXEDDB
+// =========================================
+
+async function getNexodraSaleFromIndexedDB(userId, saleId) {
+
+    try {
+
+        if (!userId || !saleId) {
+            return null;
+        }
+
+        const cacheKey = `${userId}:${saleId}`;
+
+        const db = await openNexodraSalesDB();
+
+        return await new Promise((resolve, reject) => {
+
+            const transaction =
+                db.transaction(
+                    'completedSales',
+                    'readonly'
+                );
+
+            const store =
+                transaction.objectStore('completedSales');
+
+            const request = store.get(cacheKey);
+
+            request.onsuccess = () => {
+
+                const sale = request.result || null;
+
+                console.log(
+                    'SALES-1G-D — IndexedDB lookup:',
+                    {
+                        saleId: saleId,
+                        found: !!sale
+                    }
+                );
+
+                resolve(sale);
+
+            };
+
+            request.onerror = () => {
+                reject(request.error);
+            };
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            'SALES-1G-D — IndexedDB lookup failed:',
+            error
+        );
+
+        return null;
+    }
+}
+
+// =========================================
+// SALES-1G-F-A — BATCH SAVE TO INDEXEDDB
+// =========================================
+
+async function saveNexodraSalesBatchToIndexedDB(userId, sales) {
+
+    try {
+
+        if (!userId || !Array.isArray(sales)) {
+            return false;
+        }
+
+        const compactSales = sales
+            .map(sale =>
+                prepareNexodraSaleForOfflineCache(sale)
+            )
+            .filter(Boolean)
+            .map(sale => ({
+                ...sale,
+                cacheKey: `${userId}:${sale.id}`
+            }));
+
+        const db = await openNexodraSalesDB();
+
+        return await new Promise((resolve, reject) => {
+
+            const transaction = db.transaction(
+                'completedSales',
+                'readwrite'
+            );
+
+            const store = transaction.objectStore(
+                'completedSales'
+            );
+
+            compactSales.forEach(sale => {
+                store.put(sale);
+            });
+
+            transaction.oncomplete = () => {
+
+                console.log(
+                    'SALES-1G-F-A — Batch saved to IndexedDB:',
+                    compactSales.length
+                );
+
+                resolve(true);
+            };
+
+            transaction.onerror = () => {
+                reject(transaction.error);
+            };
+
+            transaction.onabort = () => {
+                reject(transaction.error);
+            };
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            'SALES-1G-F-A — Batch save failed:',
+            error
+        );
+
+        return false;
+    }
+}
+
+// =========================================
+// SALES-1G-F-B — LOAD USER SALES FROM INDEXEDDB
+// =========================================
+
+async function loadNexodraSalesBatchFromIndexedDB(userId) {
+
+    try {
+
+        if (!userId) {
+            return [];
+        }
+
+        const db = await openNexodraSalesDB();
+
+        return await new Promise((resolve, reject) => {
+
+            const transaction = db.transaction(
+                'completedSales',
+                'readonly'
+            );
+
+            const store = transaction.objectStore(
+                'completedSales'
+            );
+
+            const request = store.getAll();
+
+            request.onsuccess = () => {
+
+                const userPrefix = `${userId}:`;
+
+                const userSales = (request.result || [])
+                    .filter(sale =>
+                        typeof sale.cacheKey === 'string' &&
+                        sale.cacheKey.startsWith(userPrefix)
+                    )
+                    .map(sale => {
+                        const { cacheKey, ...saleData } = sale;
+                        return saleData;
+                    });
+
+                console.log(
+                    'SALES-1G-F-B — User sales loaded from IndexedDB:',
+                    userSales.length
+                );
+
+                resolve(userSales);
+            };
+
+            request.onerror = () => {
+                reject(request.error);
+            };
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            'SALES-1G-F-B — IndexedDB load failed:',
+            error
+        );
+
+        return [];
+    }
+}
+
+// =========================================
+// SALES-1G-F-C — BATCH SAVE/LOAD TEST
+// =========================================
+
+async function testNexodraSalesBatchIndexedDB() {
+
+    try {
+
+        const {
+            data: { session },
+            error
+        } = await supabaseClient.auth.getSession();
+
+        const user = session?.user || null;
+
+        if (error || !user) {
+            console.warn(
+                'SALES-1G-F-C — No authenticated user.'
+            );
+            return false;
+        }
+
+        // Read existing localStorage cache
+        const oldCachedSales =
+            loadNexodraSalesCache(user.id);
+
+        console.log(
+            'SALES-1G-F-C — Existing local sales:',
+            oldCachedSales.length
+        );
+
+        if (!oldCachedSales.length) {
+            console.warn(
+                'SALES-1G-F-C — No old cached sales to test.'
+            );
+            return false;
+        }
+
+        // Save all existing records as a batch
+        const saved =
+            await saveNexodraSalesBatchToIndexedDB(
+                user.id,
+                oldCachedSales
+            );
+
+        // Read them back from IndexedDB
+        const loaded =
+            await loadNexodraSalesBatchFromIndexedDB(
+                user.id
+            );
+
+        console.log(
+            'SALES-1G-F-C — Batch test result:',
+            {
+                sourceCount: oldCachedSales.length,
+                saved: saved,
+                loadedCount: loaded.length,
+                passed: saved && loaded.length >= oldCachedSales.length
+            }
+        );
+
+        return saved && loaded.length >= oldCachedSales.length;
+
+    } catch (error) {
+
+        console.error(
+            'SALES-1G-F-C — Test failed:',
+            error
+        );
+
+        return false;
+    }
+}
+
+// =========================================
+// SALES-1G-E — TEST INDEXEDDB SAVE + LOAD
+// =========================================
+
+async function testNexodraSalesIndexedDB() {
+
+    try {
+
+        const {
+            data: { session },
+            error
+        } = await supabaseClient.auth.getSession();
+
+        if (error || !session?.user) {
+            console.warn(
+                'SALES-1G-E — No authenticated user.'
+            );
+            return;
+        }
+
+        const userId = session.user.id;
+
+        const cachedSales =
+            loadNexodraSalesCache(userId);
+
+        if (!cachedSales.length) {
+            console.warn(
+                'SALES-1G-E — No existing sale available for test.'
+            );
+            return;
+        }
+
+        const testSale = cachedSales[0];
+
+        const saved = await saveNexodraSaleToIndexedDB(
+            userId,
+            testSale
+        );
+
+        const loaded = await getNexodraSaleFromIndexedDB(
+            userId,
+            testSale.id
+        );
+
+        console.log(
+            'SALES-1G-E — IndexedDB test result:',
+            {
+                saleId: testSale.id,
+                saved: saved,
+                loaded: !!loaded,
+                productCount: loaded?.items?.length || 0,
+                firstProduct: loaded?.items?.[0]?.title || null,
+                firstProductHasImage:
+                    loaded?.items?.[0]
+                        ? Object.prototype.hasOwnProperty.call(
+                            loaded.items[0],
+                            'image'
+                        )
+                        : false
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            'SALES-1G-E — Test failed:',
+            error
+        );
+
+    }
+}
+
+testNexodraSalesIndexedDB();
+
+// Get a separate cache key for each account.
+function getNexodraSalesCacheKey(userId) {
+
+    if (!userId) {
+        return null;
+    }
+
+    return (
+        NEXODRA_SALES_CACHE_PREFIX +
+        String(userId)
+    );
+}
+
+
+// Save completed sales locally.
+function saveNexodraSalesCache(userId, sales) {
+
+    const cacheKey =
+        getNexodraSalesCacheKey(userId);
+
+    if (!cacheKey || !Array.isArray(sales)) {
+        return false;
+    }
+
+    try {
+
+        localStorage.setItem(
+            cacheKey,
+            JSON.stringify(sales)
+        );
+
+        console.log(
+            'SALES-1B — Local sales cache saved:',
+            sales.length
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            'SALES-1B — Could not save local sales cache:',
+            error
+        );
+
+        return false;
+    }
+}
+
+
+
+
+// =========================================
+// SALES-1F-A — CACHE ALL SELLER SALES
+// =========================================
+
+async function cacheAllSellerSales() {
+
+    try {
+
+        // Read the locally saved authenticated session.
+        const {
+            data: { session },
+            error: sessionError
+        } = await supabaseClient.auth.getSession();
+
+        const user = session?.user || null;
+
+        if (sessionError || !user) {
+            console.warn(
+                'SALES-1F-A — No authenticated session.'
+            );
+            return false;
+        }
+
+        const pageSize = 500;
+        let start = 0;
+        let allFetchedSales = [];
+
+        // Fetch the seller's sales in manageable pages.
+        while (true) {
+
+            const {
+                data: salesPage,
+                error: salesError
+            } = await supabaseClient
+                .from('sales')
+                .select(`
+                    id,
+                    owner_id,
+                    items,
+                    items_count,
+                    subtotal,
+                    discount,
+                    tax,
+                    total,
+                    customer_name,
+                    note,
+                    payment_method,
+                    created_at,
+                    updated_at
+                `)
+                .eq('owner_id', user.id)
+                .order('created_at', {
+                    ascending: false
+                })
+                .range(start, start + pageSize - 1);
+
+            if (salesError) {
+                console.error(
+                    'SALES-1F-A — Sales fetch failed:',
+                    salesError
+                );
+                return false;
+            }
+
+            const page = salesPage || [];
+
+            allFetchedSales.push(...page);
+
+            if (page.length < pageSize) {
+                break;
+            }
+
+            start += pageSize;
+        }
+
+        // SALES-1G-G-A — SAVE ALL HISTORY TO INDEXEDDB
+
+const existingSales =
+    await loadNexodraSalesBatchFromIndexedDB(user.id);
+
+const fetchedIds = new Set(
+    allFetchedSales.map(sale =>
+        String(sale.id)
+    )
+);
+
+const mergedSales = [
+    ...allFetchedSales,
+    ...existingSales.filter(sale =>
+        !fetchedIds.has(String(sale.id))
+    )
+];
+
+const saved =
+    await saveNexodraSalesBatchToIndexedDB(
+        user.id,
+        mergedSales
+    );
+      
+        console.log(
+            'SALES-1F-A — All-history cache result:',
+            {
+                fetched: allFetchedSales.length,
+                previouslyCached: existingSales.length,
+                totalCached: mergedSales.length,
+                saved: saved
+            }
+        );
+
+        return saved;
+
+    } catch (error) {
+
+        console.error(
+            'SALES-1F-A — Unexpected error:',
+            error
+        );
+
+        return false;
+    }
+}
+
+// Read completed sales from local storage.
+function loadNexodraSalesCache(userId) {
+
+    const cacheKey =
+        getNexodraSalesCacheKey(userId);
+
+    if (!cacheKey) {
+        return [];
+    }
+
+    try {
+
+        const savedSales =
+            localStorage.getItem(cacheKey);
+
+        if (!savedSales) {
+            return [];
+        }
+
+        const parsedSales =
+            JSON.parse(savedSales);
+
+        if (!Array.isArray(parsedSales)) {
+            return [];
+        }
+
+        console.log(
+            'SALES-1B — Local sales cache loaded:',
+            parsedSales.length
+        );
+
+        return parsedSales;
+
+    } catch (error) {
+
+        console.error(
+            'SALES-1B — Could not load local sales cache:',
+            error
+        );
+
+        return [];
+    }
+}
+
+// =========================================
 // BRICK 1G — AUTOMATIC OFFLINE SALES SYNC
 // =========================================
 
@@ -959,7 +1734,6 @@ function renderSellProducts() {
         return;
     }
 
-
     // Render products
 
     sellProductGrid.innerHTML =
@@ -1055,7 +1829,6 @@ function renderSellProducts() {
 
 }
 
-
 // =========================================
 // BRICK SELL 5 — SELL PRODUCT DECREASE
 // =========================================
@@ -1103,7 +1876,6 @@ if (sellProductGrid) {
             const currentStock =
                 Number(product.stock || 0);
 
-
             // Do not allow selling unavailable stock
             if (currentStock <= 0) {
 
@@ -1124,19 +1896,19 @@ if (sellProductGrid) {
                 currentStock - 1;
 
              checkStockAlert(
-    product,
-    currentStock
-);
+                product,
+                currentStock
+            );
           
             // =====================================
             // FIND PRODUCT IN CURRENT SALE
             // =====================================
 
             const existingCartItem =
-    currentSaleItems.find(
-        item =>
-            String(item.productId) === String(productId)
-    );
+                currentSaleItems.find(
+                item =>
+             String(item.productId) === String(productId)
+            );
 
 
             if (existingCartItem) {
@@ -2157,11 +2929,20 @@ async function loadSellerSales(period = 'month') {
 
     let query = supabaseClient
         .from('sales')
-        .select(`
+                .select(`
             id,
+            owner_id,
+            items,
             items_count,
+            subtotal,
+            discount,
+            tax,
             total,
-            created_at
+            customer_name,
+            note,
+            payment_method,
+            created_at,
+            updated_at
         `)
         .eq('owner_id', user.id);
 
@@ -2197,17 +2978,235 @@ async function loadSellerSales(period = 'month') {
             error
         );
         return [];
+      
     }
+
+        // =========================================
+    // SALES-1E — MERGE FULL SALES INTO CACHE
+    // =========================================
+
+    const fetchedSales = data || [];
+
+    const cachedSales =
+        loadNexodraSalesCache(user.id);
+
+    const mergedSales = [
+        ...fetchedSales,
+        ...cachedSales.filter(cachedSale =>
+            !fetchedSales.some(fetchedSale =>
+                String(fetchedSale.id) ===
+                String(cachedSale.id)
+            )
+        )
+    ];
+
+    const cacheSaved =
+        saveNexodraSalesCache(
+            user.id,
+            mergedSales
+        );
+
+    // SALES-1G-F-C — TEST BATCH INDEXEDDB
+const batchTestResult =
+    await testNexodraSalesBatchIndexedDB();
+
+console.log(
+    'SALES-1G-F-C — Test result:',
+    batchTestResult
+);
+
+
+    console.log(
+        'SALES-1E — Bulk sales cache updated:',
+        {
+            fetched: fetchedSales.length,
+            cachedBefore: cachedSales.length,
+            cachedAfter: mergedSales.length,
+            saved: cacheSaved
+        }
+    );
 
     console.log(
         'SALES LOADER — Period:',
         period,
         '| Loaded sales:',
-        data
+        fetchedSales
     );
 
-    return data || [];
+    return fetchedSales;
 }
+
+// =========================================
+// SALES-1A — LOAD ONE SALE'S FULL DETAILS
+// =========================================
+
+function getNexodraCachedSale(userId, saleId) {
+
+    const cachedSales =
+        loadNexodraSalesCache(userId);
+
+    return cachedSales.find(
+        sale =>
+            String(sale.id) === String(saleId)
+    ) || null;
+}
+
+
+
+async function loadSaleDetails(saleId) {
+
+    if (!saleId) {
+        console.warn(
+            'SALES-1A — No sale ID supplied.'
+        );
+        return null;
+    }
+
+    try {
+
+                // Get the saved session from local storage.
+        const {
+            data: { session },
+            error: sessionError
+        } = await supabaseClient.auth.getSession();
+
+        const user = session?.user || null;
+
+        if (sessionError || !user) {
+            console.error(
+                'SALES-1E — No saved user session:',
+                sessionError
+            );
+            return null;
+        }
+
+              // =====================================
+        // SALES-1E — CHECK LOCAL CACHE FIRST
+        // =====================================
+
+        const cachedSale =
+            getNexodraCachedSale(user.id, saleId);
+
+        if (cachedSale) {
+
+            console.log(
+                'SALES-1E — Sale found in local cache:',
+                {
+                    saleId: cachedSale.id,
+                    products: Array.isArray(cachedSale.items)
+                        ? cachedSale.items.length
+                        : 0
+                }
+            );
+
+            return cachedSale;
+        }
+
+        console.log(
+            'SALES-1E — Sale not cached; checking Supabase.'
+        );
+
+        // Fetch only this user's selected sale.
+        const {
+            data: sale,
+            error: saleError
+        } = await supabaseClient
+            .from('sales')
+            .select(`
+                id,
+                owner_id,
+                items,
+                items_count,
+                subtotal,
+                discount,
+                tax,
+                total,
+                customer_name,
+                note,
+                payment_method,
+                created_at,
+                updated_at
+            `)
+            .eq('id', saleId)
+            .eq('owner_id', user.id)
+            .maybeSingle();
+
+        if (saleError) {
+            console.error(
+                'SALES-1A — Sale details load failed:',
+                saleError
+            );
+            return null;
+        }
+
+        if (!sale) {
+            console.warn(
+                'SALES-1A — Sale not found for this account:',
+                saleId
+            );
+            return null;
+        }
+
+      
+        // =====================================
+        // SALES-1D — SAVE FULL SALE LOCALLY
+        // =====================================
+
+        const cachedSales =
+            loadNexodraSalesCache(user.id);
+
+        // Replace an older copy of this sale.
+        const updatedCachedSales = [
+            sale,
+            ...cachedSales.filter(
+                cachedSale =>
+                    String(cachedSale.id) !==
+                    String(sale.id)
+            )
+        ];
+
+        const cacheSaved =
+            saveNexodraSalesCache(
+                user.id,
+                updatedCachedSales
+            );
+
+        console.log(
+            'SALES-1D — Sale cached:',
+            {
+                saleId: sale.id,
+                saved: cacheSaved
+            }
+        );
+
+
+        console.log(
+            'SALES-1A — Sale details loaded:',
+            {
+                saleId: sale.id,
+                itemsCount: sale.items_count,
+                total: sale.total,
+                customer: sale.customer_name,
+                paymentMethod: sale.payment_method,
+                products: Array.isArray(sale.items)
+                    ? sale.items.length
+                    : 0
+            }
+        );
+
+        return sale;
+
+    } catch (error) {
+
+        console.error(
+            'SALES-1A — Unexpected error:',
+            error
+        );
+
+        return null;
+    }
+}
+
 
 updateStoreSalesCard();
 
@@ -2698,6 +3697,68 @@ function renderSalesHistory(sales) {
 
 }
 
+// =========================================
+// SALES-1B — CLICK A SALE TO LOAD ITS DETAILS
+// =========================================
+
+(function setupSalesHistoryClick() {
+
+    const salesHistoryList =
+        document.getElementById('salesHistoryList');
+
+    if (!salesHistoryList) {
+        console.warn(
+            'SALES-1B — Sales history list not found.'
+        );
+        return;
+    }
+
+    // Prevent duplicate listeners.
+    if (salesHistoryList.dataset.detailsClickReady === 'true') {
+        return;
+    }
+
+    salesHistoryList.dataset.detailsClickReady = 'true';
+
+    salesHistoryList.addEventListener('click', async function(event) {
+
+        const saleCard = event.target.closest(
+            '.sales-history-item[data-sale-id]'
+        );
+
+        if (!saleCard || !salesHistoryList.contains(saleCard)) {
+            return;
+        }
+
+        const saleId = saleCard.dataset.saleId;
+
+        const sale = await loadSaleDetails(saleId);
+
+        if (!sale) {
+            alert('Could not load this sale. Please try again.');
+            return;
+        }
+
+        const productLines = Array.isArray(sale.items)
+            ? sale.items.length
+            : 0;
+
+        alert(
+            'SALE DETAILS LOADED\n\n' +
+            'Customer: ' + (sale.customer_name || 'Walk-in Customer') + '\n' +
+            'Payment: ' + (sale.payment_method || 'Not specified') + '\n' +
+            'Product lines: ' + productLines + '\n' +
+            'Items count: ' + sale.items_count + '\n' +
+            'Total: ' + sale.total
+        );
+
+    });
+
+    console.log(
+        'SALES-1B — Sale history click listener ready.'
+    );
+
+})();
 
 // =========================================
 // BRICK SALES OVERVIEW 4 — REVENUE LINE GRAPH
@@ -21426,6 +22487,291 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================================
+   NEXODRA FOUNDER AUTHORIZATION CHECK
+   On-page status diagnostic (no console required)
+========================================= */
+
+function nexodraShowFounderCheckStatus(status) {
+    window.nexodraFounderCheckStatus = status;
+
+    const messages = {
+        checking: 'Checking Founder access…',
+        authorized: 'Founder access verified.',
+        denied: 'Founder access is not enabled for this account.',
+        signed_out: 'Founder check: session not available. Please sign in again.',
+        unavailable: 'Founder check could not reach the backend. Seller access is unchanged.'
+    };
+
+    let notice = document.getElementById('nexodraFounderCheckNotice');
+    if (!notice && document.body) {
+        notice = document.createElement('div');
+        notice.id = 'nexodraFounderCheckNotice';
+        notice.setAttribute('role', 'status');
+        notice.setAttribute('aria-live', 'polite');
+        Object.assign(notice.style, {
+            position: 'fixed',
+            left: '50%',
+            bottom: '22px',
+            transform: 'translateX(-50%)',
+            zIndex: '2147483000',
+            maxWidth: 'calc(100vw - 32px)',
+            padding: '12px 18px',
+            borderRadius: '10px',
+            background: '#17212b',
+            color: '#ffffff',
+            boxShadow: '0 4px 18px rgba(0,0,0,.25)',
+            fontSize: '14px',
+            lineHeight: '1.4',
+            textAlign: 'center'
+        });
+        document.body.appendChild(notice);
+    }
+
+    if (notice) {
+        notice.textContent = messages[status] || 'Founder access check updated.';
+        notice.style.display = 'block';
+        if (window.nexodraFounderNoticeTimer) {
+            clearTimeout(window.nexodraFounderNoticeTimer);
+        }
+        if (status !== 'checking') {
+            window.nexodraFounderNoticeTimer = setTimeout(() => {
+                const current = document.getElementById('nexodraFounderCheckNotice');
+                if (current) current.style.display = 'none';
+            }, 9000);
+        }
+    }
+}
+
+async function nexodraCheckFounderAccess() {
+    window.nexodraFounderAuthorized = false;
+    window.nexodraFounderUserId = null;
+    nexodraShowFounderCheckStatus('checking');
+
+    try {
+        const {
+            data: { session },
+            error: sessionError
+        } = await supabaseClient.auth.getSession();
+
+        if (sessionError || !session) {
+            nexodraShowFounderCheckStatus('signed_out');
+            return false;
+        }
+
+        const response = await fetch(
+            `${NEXODRA_API_URL}/founder-check`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${session.access_token}`
+                }
+            }
+        );
+
+        if (response.status === 403) {
+            nexodraShowFounderCheckStatus('denied');
+            return false;
+        }
+
+        if (response.status === 401) {
+            nexodraShowFounderCheckStatus('signed_out');
+            return false;
+        }
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        const isFounder =
+            result.status === 'authorized' &&
+            result.role === 'founder' &&
+            result.user_id === session.user.id;
+
+        if (!isFounder) {
+            nexodraShowFounderCheckStatus('denied');
+            return false;
+        }
+
+        window.nexodraFounderAuthorized = true;
+        window.nexodraFounderUserId = session.user.id;
+        nexodraShowFounderCheckStatus('authorized');
+
+        return true;
+
+    } catch (error) {
+        nexodraShowFounderCheckStatus('unavailable');
+
+        console.error(
+            'Nexodra Founder check unavailable:',
+            error.message
+        );
+
+        return false;
+    }
+}
+
+/* =========================================
+   NEXODRA FOUNDER — REAL ENVIRONMENT
+========================================= */
+
+function showNexodraFounderSampleScreen() {
+
+    // Never open the Founder environment without verified access.
+    if (!window.nexodraFounderAuthorized) return false;
+
+    const founderEnvironment =
+        document.getElementById('founderEnvironment');
+
+    const authScreen =
+        document.getElementById('authScreen');
+
+    if (!founderEnvironment) {
+        console.error('Founder environment HTML was not found.');
+        return false;
+    }
+
+    // Hide the seller authentication screen.
+    if (authScreen) {
+        authScreen.style.display = 'none';
+    }
+
+    // Hide the seller interface without hiding the Founder environment.
+    const appContainer =
+        document.querySelector('.app-container');
+
+    if (appContainer) {
+        Array.from(appContainer.children).forEach(element => {
+            if (element !== founderEnvironment) {
+                element.style.display = 'none';
+            }
+        });
+    }
+
+    // Hide seller navigation.
+    document.querySelectorAll('.bottom-nav').forEach(nav => {
+        nav.style.display = 'none';
+    });
+
+    // Reveal the real Founder environment.
+    founderEnvironment.hidden = false;
+    founderEnvironment.style.display = 'flex';
+
+    // Open the Founder overview page.
+    document.querySelectorAll('[data-founder-page]').forEach(button => {
+        button.classList.toggle(
+            'active',
+            button.dataset.founderPage === 'overview'
+        );
+    });
+
+    document.querySelectorAll('.founder-page').forEach(page => {
+        page.hidden = page.id !== 'founderOverviewPage';
+    });
+
+    const title =
+        document.getElementById('founderPageTitle');
+
+    if (title) {
+        title.textContent = 'Overview';
+    }
+
+    // Remove the temporary Founder verification notice.
+    const statusNotice =
+        document.getElementById('nexodraFounderCheckNotice');
+
+    if (statusNotice) {
+        statusNotice.remove();
+    }
+
+      // =========================================
+    // LOAD LIVE FOUNDER OVERVIEW STATISTICS
+    // =========================================
+
+    async function loadFounderOverviewStats() {
+
+        const businessCount =
+            document.getElementById('founderBusinessCount');
+
+        const userCount =
+            document.getElementById('founderUserCount');
+
+        if (businessCount) {
+            businessCount.textContent = 'Loading…';
+        }
+
+        if (userCount) {
+            userCount.textContent = 'Loading…';
+        }
+
+        try {
+
+            const {
+                data: { session },
+                error: sessionError
+            } = await supabaseClient.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            if (!session || !session.access_token) {
+                throw new Error('Your session has expired. Please sign in again.');
+            }
+
+            const response = await fetch(
+                `${NEXODRA_API_URL}/founder/overview`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${session.access_token}`,
+                        'Accept': 'application/json'
+                    }
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(
+                    result.detail || 'Unable to load Founder statistics.'
+                );
+            }
+
+            if (businessCount) {
+                businessCount.textContent =
+                    Number(result.total_businesses || 0).toLocaleString();
+            }
+
+            if (userCount) {
+                userCount.textContent =
+                    Number(result.total_users || 0).toLocaleString();
+            }
+
+        } catch (error) {
+
+            console.error(
+                'Founder overview statistics error:',
+                error
+            );
+
+            if (businessCount) {
+                businessCount.textContent = '—';
+            }
+
+            if (userCount) {
+                userCount.textContent = '—';
+            }
+        }
+    }
+
+    loadFounderOverviewStats();
+
+    console.log('NEXODRA Founder environment opened.');
+
+    return true;
+}
+
+/* =========================================
    NEXODRA AUTH - BRICK 2B
    REAL SIGN IN
 ========================================= */
@@ -21551,6 +22897,8 @@ if (!data.session) {
     return;
 }
 
+// Verify whether this signed-in user is a Founder
+const founderAuthorizedAfterLogin = await nexodraCheckFounderAccess();
 
 /* =========================================
    ODROP AUTH R1 — REMEMBER THIS DEVICE
@@ -21593,6 +22941,11 @@ console.log(
  * Open NEXODRA app after successful login.
  */
 setTimeout(() => {
+
+    // Verified Founder accounts open the isolated sample Founder screen.
+    if (founderAuthorizedAfterLogin && showNexodraFounderSampleScreen()) {
+        return;
+    }
 
     // Hide authentication screen
     const authScreen =
@@ -21908,7 +23261,14 @@ completeNexodraStartup();
 return;
 }
 
+const founderAuthorizedOnRestore = await nexodraCheckFounderAccess();
 
+        if (founderAuthorizedOnRestore) {
+            showNexodraFounderSampleScreen();
+            completeNexodraStartup();
+            return;
+        }
+      
         console.log(
             "Existing NEXODRA user:",
             session.user.email
@@ -31884,5 +33244,154 @@ if (holdSaleButton) {
     // -----------------------------------------
 
     applyChatFilters();
+
+})();
+
+/* =========================================
+   NEXODRA FOUNDER — NAVIGATION & LOGOUT
+========================================= */
+
+(function initialiseNexodraFounderControls() {
+
+    function setupFounderControls() {
+
+        const founderEnvironment =
+            document.getElementById('founderEnvironment');
+
+        if (!founderEnvironment) {
+            console.warn('Founder environment HTML not found.');
+            return;
+        }
+
+        const founderPages = {
+            overview: 'founderOverviewPage',
+            businesses: 'founderBusinessesPage',
+            users: 'founderUsersPage',
+            analytics: 'founderAnalyticsPage',
+            settings: 'founderSettingsPage'
+        };
+
+        // Founder sidebar navigation
+        founderEnvironment
+            .querySelectorAll('[data-founder-page]')
+            .forEach(button => {
+
+                button.addEventListener('click', () => {
+
+                    if (!window.nexodraFounderAuthorized) {
+                        return;
+                    }
+
+                    const pageName =
+                        button.dataset.founderPage;
+
+                    const targetPageId =
+                        founderPages[pageName];
+
+                    if (!targetPageId) return;
+
+                    // Hide all Founder pages.
+                    Object.values(founderPages).forEach(pageId => {
+                        const page =
+                            document.getElementById(pageId);
+
+                        if (page) page.hidden = true;
+                    });
+
+                    // Show selected page.
+                    const targetPage =
+                        document.getElementById(targetPageId);
+
+                    if (targetPage) {
+                        targetPage.hidden = false;
+                    }
+
+                    // Update active navigation button.
+                    founderEnvironment
+                        .querySelectorAll('[data-founder-page]')
+                        .forEach(navButton => {
+                            navButton.classList.toggle(
+                                'active',
+                                navButton === button
+                            );
+                        });
+
+                    // Update page heading.
+                    const pageTitle =
+                        document.getElementById('founderPageTitle');
+
+                    if (pageTitle) {
+                        pageTitle.textContent =
+                            button.textContent.trim();
+                    }
+                });
+            });
+
+        // Founder logout
+        const logoutButton =
+            document.getElementById('founderLogoutBtn');
+
+        if (logoutButton && !logoutButton.dataset.logoutReady) {
+
+            logoutButton.dataset.logoutReady = 'true';
+
+            logoutButton.addEventListener('click', async () => {
+
+                if (!window.nexodraFounderAuthorized) {
+                    return;
+                }
+
+                const originalText =
+                    logoutButton.textContent;
+
+                logoutButton.disabled = true;
+                logoutButton.textContent = 'Signing out…';
+
+                try {
+
+                    if (typeof ODROP_REMEMBER_KEY !== 'undefined') {
+                        localStorage.removeItem(ODROP_REMEMBER_KEY);
+                    }
+
+                    if (typeof ODROP_REMEMBER_EMAIL_KEY !== 'undefined') {
+                        localStorage.removeItem(ODROP_REMEMBER_EMAIL_KEY);
+                    }
+
+                    const { error } =
+                        await supabaseClient.auth.signOut();
+
+                    if (error) throw error;
+
+                    window.nexodraFounderAuthorized = false;
+                    window.nexodraFounderUserId = null;
+
+                    // Reload into the normal signed-out state.
+                    window.location.reload();
+
+                } catch (error) {
+
+                    console.error(
+                        'Founder logout failed:',
+                        error
+                    );
+
+                    logoutButton.disabled = false;
+                    logoutButton.textContent = originalText;
+
+                    alert('Logout failed. Please try again.');
+                }
+            });
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener(
+            'DOMContentLoaded',
+            setupFounderControls,
+            { once: true }
+        );
+    } else {
+        setupFounderControls();
+    }
 
 })();

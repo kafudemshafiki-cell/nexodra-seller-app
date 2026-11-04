@@ -3956,7 +3956,7 @@
 
         <div>
             <h4>Interest and fees</h4>
-            <p>Enter the additional money charged for each installment.</p>
+            <p>Enter the additional money charged for hire purchase.</p>
         </div>
     </div>
 
@@ -8307,7 +8307,51 @@
 
                         </article>
 
+                <!-- =========================================
+     SALES OVERVIEW — SALES HISTORY PANEL
+========================================= -->
 
+<article class="panel sales-history-panel">
+
+    <div class="panel-header">
+
+        <div>
+            <h2>Sales History</h2>
+
+            <p class="panel-description">
+                Your completed sales and transactions.
+            </p>
+        </div>
+
+        <span class="sales-history-header-icon">
+            <i class="fa-solid fa-receipt"></i>
+        </span>
+
+    </div>
+
+    <!-- Existing app.js renders sale cards here -->
+    <div
+        class="sales-history-list"
+        id="salesHistoryList"
+    >
+
+        <div class="sales-history-empty">
+            <i class="fa-solid fa-receipt"></i>
+
+            <strong>No sales yet</strong>
+
+            <span>
+                Completed sales will appear here.
+            </span>
+        </div>
+
+    </div>
+
+</article>
+
+<!-- END SALES HISTORY PANEL --> 
+
+                      
                     </div>
 
 
@@ -8898,6 +8942,167 @@
             
 </main>
 
+<!-- =========================================
+     NEXODRA FOUNDER ENVIRONMENT
+     BRICK 1 — HTML STRUCTURE
+========================================= -->
+
+<div id="founderEnvironment" class="founder-environment" hidden>
+
+    <header class="founder-header">
+        <div class="founder-brand">
+            <span class="founder-brand-mark">N</span>
+            <span>NEXODRA</span>
+        </div>
+
+        <div class="founder-header-actions">
+            <span class="founder-access-label">
+                <i class="fa-solid fa-shield-halved"></i>
+                Founder
+            </span>
+
+            <button
+                type="button"
+                id="founderLogoutBtn"
+                class="founder-logout-btn"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="founder-layout">
+
+        <aside class="founder-sidebar">
+            <p class="founder-nav-heading">FOUNDER WORKSPACE</p>
+
+            <button type="button"
+                class="founder-nav-item active"
+                data-founder-page="overview">
+                <i class="fa-solid fa-chart-line"></i>
+                Overview
+            </button>
+
+            <button type="button"
+                class="founder-nav-item"
+                data-founder-page="businesses">
+                <i class="fa-solid fa-building"></i>
+                Businesses
+            </button>
+
+            <button type="button"
+                class="founder-nav-item"
+                data-founder-page="users">
+                <i class="fa-solid fa-users"></i>
+                Users
+            </button>
+
+            <button type="button"
+                class="founder-nav-item"
+                data-founder-page="analytics">
+                <i class="fa-solid fa-chart-pie"></i>
+                Analytics
+            </button>
+
+            <button type="button"
+                class="founder-nav-item"
+                data-founder-page="settings">
+                <i class="fa-solid fa-gear"></i>
+                Settings
+            </button>
+        </aside>
+
+        <main class="founder-main-content">
+
+            <div class="founder-page-heading">
+                <div>
+                    <p class="founder-eyebrow">NEXODRA CONTROL CENTER</p>
+                    <h1 id="founderPageTitle">Founder Overview</h1>
+                    <p>Welcome to your Founder workspace.</p>
+                </div>
+            </div>
+
+            <section
+                id="founderOverviewPage"
+                class="founder-page active"
+            >
+                <div class="founder-welcome-card">
+                    <div>
+                        <h2>Welcome, Founder.</h2>
+                        <p>
+                            Your independent Nexodra administration
+                            environment is ready.
+                        </p>
+                    </div>
+
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+
+                <div class="founder-stat-grid">
+
+                    <article class="founder-stat-card">
+                        <span>Businesses</span>
+                        <strong id="founderBusinessCount">—</strong>
+                    </article>
+
+                    <article class="founder-stat-card">
+                        <span>Registered Users</span>
+                        <strong id="founderUserCount">—</strong>
+                    </article>
+
+                    <article class="founder-stat-card">
+                        <span>Platform Status</span>
+                        <strong>Active</strong>
+                    </article>
+
+                </div>
+            </section>
+
+            <section
+                id="founderBusinessesPage"
+                class="founder-page"
+                hidden
+            >
+                <h2>Businesses</h2>
+                <p>Business administration will be connected in a later brick.</p>
+            </section>
+
+            <section
+                id="founderUsersPage"
+                class="founder-page"
+                hidden
+            >
+                <h2>Users</h2>
+                <p>User administration will be connected in a later brick.</p>
+            </section>
+
+            <section
+                id="founderAnalyticsPage"
+                class="founder-page"
+                hidden
+            >
+                <h2>Analytics</h2>
+                <p>Platform analytics will be connected in a later brick.</p>
+            </section>
+
+            <section
+                id="founderSettingsPage"
+                class="founder-page"
+                hidden
+            >
+                <h2>Founder Settings</h2>
+                <p>Founder settings will be added in a later brick.</p>
+            </section>
+
+        </main>
+
+    </div>
+
+</div>
+
+<!-- END FOUNDER ENVIRONMENT -->
+  
         <!-- Bottom Navigation Bar -->
 <nav class="bottom-nav">
 

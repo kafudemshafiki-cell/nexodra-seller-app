@@ -30211,3 +30211,392 @@ body:not(.store-theme-dark) #salesOverviewScreen .text-action:hover {
 }
 
 
+/* =========================================
+   NEXODRA FOUNDER ENVIRONMENT
+   BRICK 2 — DEDICATED CSS
+========================================= */
+
+.founder-environment {
+    --founder-bg: #f5f7fb;
+    --founder-surface: #ffffff;
+    --founder-text: #172033;
+    --founder-muted: #7b8498;
+    --founder-primary: #6558e8;
+    --founder-border: #e8eaf1;
+
+    position: fixed;
+    inset: 0;
+    z-index: 99990;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    background: var(--founder-bg);
+    color: var(--founder-text);
+    font-family: inherit;
+}
+
+.founder-environment[hidden],
+.founder-page[hidden] {
+    display: none !important;
+}
+
+/* Header */
+
+.founder-header {
+    min-height: 70px;
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--founder-surface);
+    border-bottom: 1px solid var(--founder-border);
+}
+
+.founder-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.founder-brand-mark {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--founder-primary);
+    color: #fff;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.founder-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.founder-access-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #16845b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.founder-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border: 1px solid var(--founder-border);
+    border-radius: 9px;
+    background: #fff;
+    color: #4b5568;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.founder-logout-btn:hover {
+    background: #fff1f1;
+    border-color: #f1caca;
+    color: #c03939;
+}
+
+/* Main layout */
+
+.founder-layout {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+}
+
+/* Sidebar */
+
+.founder-sidebar {
+    width: 245px;
+    flex: 0 0 245px;
+    padding: 28px 17px;
+    overflow-y: auto;
+    background: var(--founder-surface);
+    border-right: 1px solid var(--founder-border);
+}
+
+.founder-nav-heading {
+    margin: 0 0 17px 12px;
+    color: var(--founder-muted);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+}
+
+.founder-nav-item {
+    width: 100%;
+    min-height: 46px;
+    margin-bottom: 7px;
+    padding: 0 13px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: #667085;
+    text-align: left;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.founder-nav-item i {
+    width: 18px;
+    text-align: center;
+    font-size: 15px;
+}
+
+.founder-nav-item:hover {
+    background: #f4f3ff;
+    color: var(--founder-primary);
+}
+
+.founder-nav-item.active {
+    background: #eeecff;
+    color: var(--founder-primary);
+    font-weight: 750;
+}
+
+/* Content */
+
+.founder-main-content {
+    flex: 1;
+    min-width: 0;
+    padding: 34px;
+    overflow-y: auto;
+}
+
+.founder-page-heading {
+    margin-bottom: 28px;
+}
+
+.founder-eyebrow {
+    margin: 0 0 8px;
+    color: var(--founder-primary);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+}
+
+.founder-page-heading h1 {
+    margin: 0 0 7px;
+    color: var(--founder-text);
+    font-size: 27px;
+    font-weight: 800;
+}
+
+.founder-page-heading p:last-child {
+    margin: 0;
+    color: var(--founder-muted);
+    font-size: 13px;
+}
+
+/* Welcome card */
+
+.founder-welcome-card {
+    min-height: 155px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    overflow: hidden;
+    border-radius: 15px;
+    background: linear-gradient(120deg, #25214e, #6558e8);
+    color: #fff;
+}
+
+.founder-welcome-card h2 {
+    margin: 0 0 10px;
+    font-size: 23px;
+    font-weight: 800;
+}
+
+.founder-welcome-card p {
+    max-width: 480px;
+    margin: 0;
+    color: rgba(255,255,255,.8);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.founder-welcome-card > i {
+    color: rgba(255,255,255,.8);
+    font-size: 55px;
+}
+
+/* Statistics */
+
+.founder-stat-grid {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.founder-stat-card {
+    min-height: 105px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 15px;
+    border: 1px solid var(--founder-border);
+    border-radius: 13px;
+    background: var(--founder-surface);
+}
+
+.founder-stat-card span {
+    color: var(--founder-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.founder-stat-card strong {
+    color: var(--founder-text);
+    font-size: 24px;
+    font-weight: 800;
+}
+
+/* Other Founder pages */
+
+.founder-page {
+    padding: 25px;
+    border: 1px solid var(--founder-border);
+    border-radius: 13px;
+    background: var(--founder-surface);
+}
+
+.founder-page h2 {
+    margin: 0 0 10px;
+    font-size: 19px;
+}
+
+.founder-page p {
+    color: var(--founder-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* Tablet */
+
+@media (max-width: 900px) {
+    .founder-sidebar {
+        width: 205px;
+        flex-basis: 205px;
+    }
+
+    .founder-main-content {
+        padding: 25px;
+    }
+
+    .founder-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+    .founder-header {
+        min-height: 62px;
+        padding: 0 14px;
+    }
+
+    .founder-brand {
+        font-size: 16px;
+    }
+
+    .founder-header-actions {
+        gap: 9px;
+    }
+
+    .founder-access-label {
+        font-size: 11px;
+    }
+
+    .founder-logout-btn {
+        padding: 9px 10px;
+        font-size: 12px;
+    }
+
+    .founder-layout {
+        flex-direction: column;
+    }
+
+    .founder-sidebar {
+        width: 100%;
+        flex: 0 0 auto;
+        padding: 10px;
+        display: flex;
+        gap: 7px;
+        overflow-x: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--founder-border);
+    }
+
+    .founder-nav-heading {
+        display: none;
+    }
+
+    .founder-nav-item {
+        width: auto;
+        min-width: max-content;
+        min-height: 39px;
+        margin: 0;
+        padding: 0 12px;
+        font-size: 12px;
+    }
+
+    .founder-main-content {
+        padding: 20px 15px;
+    }
+
+    .founder-page-heading h1 {
+        font-size: 23px;
+    }
+
+    .founder-welcome-card {
+        min-height: 135px;
+        padding: 22px;
+    }
+
+    .founder-welcome-card h2 {
+        font-size: 19px;
+    }
+
+    .founder-welcome-card > i {
+        font-size: 35px;
+    }
+
+    .founder-stat-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .founder-stat-card {
+        min-height: 85px;
+    }
+}
+
+/* END FOUNDER ENVIRONMENT CSS */

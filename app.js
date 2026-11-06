@@ -3006,13 +3006,14 @@ async function loadSellerSales(period = 'month') {
             mergedSales
         );
 
-    // SALES-1G-F-C — TEST BATCH INDEXEDDB
-const batchTestResult =
-    await testNexodraSalesBatchIndexedDB();
+    // SALES-1G-G-B — TEST ALL-HISTORY INDEXEDDB
+
+const historyCacheResult =
+    await cacheAllSellerSales();
 
 console.log(
-    'SALES-1G-F-C — Test result:',
-    batchTestResult
+    'SALES-1G-G-B — All-history test result:',
+    historyCacheResult
 );
 
 
@@ -3081,26 +3082,38 @@ async function loadSaleDetails(saleId) {
         }
 
               // =====================================
-        // SALES-1E — CHECK LOCAL CACHE FIRST
-        // =====================================
+// SALES-1G-H — CHECK INDEXEDDB FIRST
+// =====================================
 
-        const cachedSale =
-            getNexodraCachedSale(user.id, saleId);
+let cachedSale =
+    await getNexodraSaleFromIndexedDB(
+        user.id,
+        saleId
+    );
 
-        if (cachedSale) {
+// Temporary legacy fallback while migration is verified.
+if (!cachedSale) {
+    cachedSale =
+        getNexodraCachedSale(user.id, saleId);
+}
 
-            console.log(
-                'SALES-1E — Sale found in local cache:',
-                {
-                    saleId: cachedSale.id,
-                    products: Array.isArray(cachedSale.items)
-                        ? cachedSale.items.length
-                        : 0
-                }
-            );
+if (cachedSale) {
 
-            return cachedSale;
+    console.log(
+        'SALES-1G-H — Sale found in local cache:',
+        {
+            saleId: cachedSale.id,
+            source: cachedSale.cacheKey
+                ? 'IndexedDB'
+                : 'Legacy localStorage',
+            products: Array.isArray(cachedSale.items)
+                ? cachedSale.items.length
+                : 0
         }
+    );
+
+    return cachedSale;
+}
 
         console.log(
             'SALES-1E — Sale not cached; checking Supabase.'
@@ -17472,6 +17485,27 @@ if (
 
 async function loadProductsFromSupabase() {
 
+  
+    // =========================================
+    // AUTH GATE — WAIT BEFORE LOADING PRODUCTS
+    // =========================================
+
+    const authenticatedSeller =
+        await window.NEXODRA_AUTH_GATE.wait();
+
+    if (!authenticatedSeller || !authenticatedSeller.id) {
+        console.warn(
+            'BRICK 3D — Product loading stopped: no authenticated seller.'
+        );
+        return;
+    }
+
+    console.log(
+        'AUTH GATE — Loading products for seller:',
+        authenticatedSeller.id
+    );
+
+
     console.log(
         'BRICK 3D — Loading products from Supabase...'
     );
@@ -22897,6 +22931,29 @@ if (!data.session) {
     return;
 }
 
+
+// =========================================
+// AUTH GATE — SUCCESSFUL SELLER LOGIN
+// =========================================
+
+if (
+    !window.NEXODRA_AUTH_GATE.release(
+        data.session.user
+    )
+) {
+
+    loginMessage.textContent =
+        'Your account was signed in, but the app could not initialize your session. Please try again.';
+
+    return;
+}
+
+console.log(
+    'AUTH GATE — Seller login confirmed:',
+    data.session.user.id
+);
+
+          
 // Verify whether this signed-in user is a Founder
 const founderAuthorizedAfterLogin = await nexodraCheckFounderAccess();
 
@@ -23140,20 +23197,38 @@ return;
         } = await supabaseClient.auth.getSession();
 
 
-        if (error) {
+        
+if (error) {
 
-            console.error(
-                "Session check error:",
-                error
-            );
+    // Keep seller-data functions paused.
+    window.NEXODRA_AUTH_GATE.pause();
 
-            return;
-        }
+    console.error(
+        "Session check error:",
+        error
+    );
+
+    return;
+}
+
 
 
         const session =
             data.session;
 
+ // =========================================
+// AUTH GATE — WAIT FOR USER ROLE CHECK
+// =========================================
+
+if (!session || !session.user) {
+
+    window.NEXODRA_AUTH_GATE.pause();
+
+    console.log(
+        'AUTH GATE — No authenticated session.'
+    );
+
+}     
 
         // No active Supabase session
 if (!session) {
@@ -23268,11 +23343,48 @@ const founderAuthorizedOnRestore = await nexodraCheckFounderAccess();
             completeNexodraStartup();
             return;
         }
+
+// =========================================
+// AUTH GATE — SELLER ACCESS ONLY
+// =========================================
+
+if (!window.NEXODRA_AUTH_GATE.release(session.user)) {
+
+    console.error(
+        'AUTH GATE — Could not initialize seller session.'
+    );
+
+    completeNexodraStartup();
+    return;
+}
+
+console.log(
+    'AUTH GATE — Seller access confirmed:',
+    session.user.id
+);
       
         console.log(
             "Existing NEXODRA user:",
             session.user.email
         );
+
+      // =========================================
+// AUTH GATE — VERIFY RESTORED SELLER
+// =========================================
+
+if (
+    !window.NEXODRA_AUTH_GATE.isAuthenticated() ||
+    window.NEXODRA_AUTH_GATE.getUserId() !== session.user.id
+) {
+    console.error(
+        'AUTH GATE — Seller session verification failed. Store will not open.'
+    );
+
+    window.NEXODRA_AUTH_GATE.pause();
+
+    completeNexodraStartup();
+    return;
+}
 
       // BRICK 1D — RESTORE BARCODE CACHE
 odropBarcodeCache =
@@ -33395,3 +33507,209 @@ if (holdSaleButton) {
     }
 
 })();
+
+
+/* =========================================================
+   NEXODRA AUTH GATE — BRICK 1
+   Shared authentication readiness controller
+
+   Seller-data features must wait until authentication
+   has been restored or a seller has signed in.
+========================================================= */
+
+window.NEXODRA_AUTH_GATE = (() => {
+
+    let authenticatedUser = null;
+    let isReady = false;
+
+    let resolveReady;
+
+    let readyPromise = new Promise(resolve => {
+        resolveReady = resolve;
+    });
+
+    function pause() {
+
+        authenticatedUser = null;
+        isReady = false;
+
+        // Create a fresh waiting promise for the next login.
+        readyPromise = new Promise(resolve => {
+            resolveReady = resolve;
+        });
+
+        console.log(
+            'NEXODRA AUTH GATE: Seller features are waiting for authentication.'
+        );
+    }
+
+    function release(user) {
+
+        if (!user || !user.id) {
+            console.error(
+                'NEXODRA AUTH GATE: Cannot release without a valid user ID.'
+            );
+            return false;
+        }
+
+        authenticatedUser = user;
+        isReady = true;
+
+        resolveReady(user);
+
+        console.log(
+            'NEXODRA AUTH GATE: Authentication ready for user:',
+            user.id
+        );
+
+        return true;
+    }
+
+    async function wait() {
+
+        if (isReady && authenticatedUser) {
+            return authenticatedUser;
+        }
+
+        return await readyPromise;
+    }
+
+    function getUser() {
+        return isReady ? authenticatedUser : null;
+    }
+
+    function getUserId() {
+        return isReady && authenticatedUser
+            ? authenticatedUser.id
+            : null;
+    }
+
+    function isAuthenticated() {
+        return isReady && !!authenticatedUser;
+    }
+
+    // Start closed. Startup restoration or login will release it.
+    pause();
+
+    return {
+        pause,
+        release,
+        wait,
+        getUser,
+        getUserId,
+        isAuthenticated
+    };
+
+})();
+
+
+// =========================================
+// FEEDBACK-3 — OPEN AND CLOSE FEEDBACK PANEL
+// =========================================
+
+const nexodraFeedbackTrigger =
+    document.getElementById('nexodraExplorePro');
+
+const nexodraFeedbackOverlay =
+    document.getElementById('nexodraFeedbackOverlay');
+
+const nexodraFeedbackPanel =
+    document.getElementById('nexodraFeedbackPanel');
+
+const nexodraFeedbackClose =
+    document.getElementById('nexodraFeedbackClose');
+
+
+// OPEN FEEDBACK PANEL
+if (
+    nexodraFeedbackTrigger &&
+    nexodraFeedbackOverlay
+) {
+    nexodraFeedbackTrigger.addEventListener('click', () => {
+
+        nexodraFeedbackOverlay.classList.add('active');
+
+        nexodraFeedbackOverlay.setAttribute(
+            'aria-hidden',
+            'false'
+        );
+
+        document.body.style.overflow = 'hidden';
+
+        console.log(
+            'FEEDBACK-3 — Feedback panel opened.'
+        );
+
+    });
+}
+
+
+// CLOSE FEEDBACK PANEL FUNCTION
+function closeNexodraFeedbackPanel() {
+
+    if (!nexodraFeedbackOverlay) return;
+
+    nexodraFeedbackOverlay.classList.remove('active');
+
+    nexodraFeedbackOverlay.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    document.body.style.overflow = '';
+
+    console.log(
+        'FEEDBACK-3 — Feedback panel closed.'
+    );
+
+}
+
+
+// CLOSE BUTTON
+if (nexodraFeedbackClose) {
+
+    nexodraFeedbackClose.addEventListener(
+        'click',
+        closeNexodraFeedbackPanel
+    );
+
+}
+
+
+// CLICK OUTSIDE PANEL
+if (
+    nexodraFeedbackOverlay &&
+    nexodraFeedbackPanel
+) {
+
+    nexodraFeedbackOverlay.addEventListener(
+        'click',
+        (event) => {
+
+            if (
+                !nexodraFeedbackPanel.contains(
+                    event.target
+                )
+            ) {
+                closeNexodraFeedbackPanel();
+            }
+
+        }
+    );
+
+}
+
+
+// ESCAPE KEY
+document.addEventListener('keydown', (event) => {
+
+    if (
+        event.key === 'Escape' &&
+        nexodraFeedbackOverlay &&
+        nexodraFeedbackOverlay.classList.contains('active')
+    ) {
+        closeNexodraFeedbackPanel();
+    }
+
+});
+

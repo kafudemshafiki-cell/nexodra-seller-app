@@ -4876,21 +4876,21 @@
 
             <div class="inbox-header-actions">
 
-                <!-- Video call button -->
+                     <!-- Favorite button -->
 
-                <button
-                    type="button"
-                    class="inbox-icon-button"
-                    id="inboxVideoCallBtn"
-                    aria-label="Video call"
-                    title="Video call"
-                >
+<button
+    type="button"
+    class="inbox-icon-button"
+    id="inboxFavoriteBtn"
+    aria-label="Add to favorites"
+    title="Add to favorites"
+>
 
-                    <i class="fa-solid fa-video"></i>
+    <i class="fa-regular fa-star"></i>
 
-                    <span class="inbox-action-indicator"></span>
+    <span class="inbox-action-indicator"></span>
 
-                </button>
+</button>
 
 
                 <!-- Compose button -->
@@ -8939,6 +8939,7 @@
     </div>
 
 </section>
+
             
 </main>
 
@@ -9481,7 +9482,7 @@
     </nav>
 
 
-    <!-- 5. PROMOTIONAL CARD -->
+    <!-- 5. FEEDBACK CARD -->
     <section class="nexodra-sidebar-promo">
 
         <div class="nexodra-promo-top">
@@ -9490,16 +9491,16 @@
             </span>
 
             <span class="nexodra-promo-badge">
-                PRO
+                SUPPORT
             </span>
         </div>
 
         <h3 class="nexodra-promo-heading">
-            Unlock your potential
+            Your Feedback Matters
         </h3>
 
         <p class="nexodra-promo-description">
-            Get deeper insights and take your workspace further.
+            Help us improve Nexodra. share your thoughts and suggestions.
         </p>
 
         <button
@@ -9507,7 +9508,7 @@
             class="nexodra-promo-button"
             id="nexodraExplorePro"
         >
-            <span>Explore Pro</span>
+            <span>Give Feedback</span>
             <i class="fa-solid fa-arrow-right"></i>
         </button>
 
@@ -9546,6 +9547,203 @@
 
 <!-- End NEXODRA Sidebar -->
 
+
+<!-- =====================================
+     FEEDBACK-1 — FEEDBACK MODAL HTML
+===================================== -->
+
+<div
+    class="nexodra-feedback-overlay"
+    id="nexodraFeedbackOverlay"
+    aria-hidden="true"
+>
+    <section
+        class="nexodra-feedback-panel"
+        id="nexodraFeedbackPanel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="nexodraFeedbackTitle"
+    >
+
+        <!-- HEADER -->
+        <div class="nexodra-feedback-header">
+
+            <div class="nexodra-feedback-heading-group">
+
+                <span class="nexodra-feedback-icon">
+                    <i class="fa-solid fa-message"></i>
+                </span>
+
+                <div>
+                    <h2 id="nexodraFeedbackTitle">
+                        Share your feedback
+                    </h2>
+
+                    <p>
+                        Your thoughts help us improve Nexodra.
+                    </p>
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="nexodra-feedback-close"
+                id="nexodraFeedbackClose"
+                aria-label="Close feedback form"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+        <!-- FORM -->
+        <form id="nexodraFeedbackForm">
+
+            <!-- CATEGORY -->
+            <div class="nexodra-feedback-field">
+
+                <label>
+                    What would you like to tell us?
+                </label>
+
+                <div class="nexodra-feedback-categories">
+
+                    <label class="nexodra-feedback-category">
+                        <input type="radio" name="feedbackCategory" value="general" required>
+                        <span>
+                            <i class="fa-solid fa-comment-dots"></i>
+                            General feedback
+                        </span>
+                    </label>
+
+                    <label class="nexodra-feedback-category">
+                        <input type="radio" name="feedbackCategory" value="bug">
+                        <span>
+                            <i class="fa-solid fa-bug"></i>
+                            Report a problem
+                        </span>
+                    </label>
+
+                    <label class="nexodra-feedback-category">
+                        <input type="radio" name="feedbackCategory" value="feature">
+                        <span>
+                            <i class="fa-solid fa-lightbulb"></i>
+                            Feature request
+                        </span>
+                    </label>
+
+                    <label class="nexodra-feedback-category">
+                        <input type="radio" name="feedbackCategory" value="other">
+                        <span>
+                            <i class="fa-solid fa-ellipsis"></i>
+                            Something else
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+            <!-- EXPERIENCE RATING -->
+            <div class="nexodra-feedback-field">
+
+                <label>
+                    How is your experience with Nexodra?
+                </label>
+
+                <div class="nexodra-feedback-ratings">
+
+                    <label>
+                        <input type="radio" name="feedbackRating" value="1" required>
+                        <span>😞</span>
+                    </label>
+
+                    <label>
+                        <input type="radio" name="feedbackRating" value="2">
+                        <span>😕</span>
+                    </label>
+
+                    <label>
+                        <input type="radio" name="feedbackRating" value="3">
+                        <span>😐</span>
+                    </label>
+
+                    <label>
+                        <input type="radio" name="feedbackRating" value="4">
+                        <span>🙂</span>
+                    </label>
+
+                    <label>
+                        <input type="radio" name="feedbackRating" value="5">
+                        <span>🤩</span>
+                    </label>
+
+                </div>
+
+            </div>
+
+            <!-- MESSAGE -->
+            <div class="nexodra-feedback-field">
+
+                <label for="nexodraFeedbackMessage">
+                    Your message
+                </label>
+
+                <textarea
+                    id="nexodraFeedbackMessage"
+                    name="feedbackMessage"
+                    placeholder="Tell us what you think, what went wrong, or what you'd like to see..."
+                    rows="4"
+                    required
+                ></textarea>
+
+            </div>
+
+            <!-- OPTIONAL EMAIL -->
+            <div class="nexodra-feedback-field">
+
+                <label for="nexodraFeedbackEmail">
+                    Email address
+                    <span>(Optional)</span>
+                </label>
+
+                <input
+                    type="email"
+                    id="nexodraFeedbackEmail"
+                    name="feedbackEmail"
+                    placeholder="Enter your email if you'd like us to respond"
+                />
+
+            </div>
+
+            <!-- SUBMIT -->
+            <button
+                type="submit"
+                class="nexodra-feedback-submit"
+                id="nexodraFeedbackSubmit"
+            >
+                <span>Submit Feedback</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            <!-- STATUS MESSAGE -->
+            <div
+                class="nexodra-feedback-status"
+                id="nexodraFeedbackStatus"
+                role="status"
+                aria-live="polite"
+            ></div>
+
+            <p class="nexodra-feedback-footer">
+                Thank you for helping make Nexodra better.
+            </p>
+
+        </form>
+
+    </section>
+</div>
+  
   
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

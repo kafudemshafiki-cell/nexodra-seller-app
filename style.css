@@ -1927,2365 +1927,445 @@ body {
 }
 
 
-/* =========================================================
-   NEXODRA — CHAT INBOX
-   COMPACT + AUTOMATIC THEME SUPPORT
-========================================================= */
 
-
-/* =========================================================
-   THEME COLORS
-   Uses your application's existing CSS variables.
-   Falls back to system light/dark mode.
-========================================================= */
-
-#inboxScreen {
-
-    /* Inherit the app's existing theme variables */
-
-    --inbox-bg:
-        var(--background,
-        var(--bg-primary,
-        var(--surface,
-        #ffffff)));
-
-    --inbox-surface:
-        var(--card-bg,
-        var(--surface,
-        var(--background,
-        #ffffff)));
-
-    --inbox-text:
-        var(--text-primary,
-        var(--text-color,
-        #171717));
-
-    --inbox-muted:
-        var(--text-secondary,
-        var(--muted,
-        #777783));
-
-    --inbox-border:
-        var(--border-color,
-        var(--border,
-        #e6e6eb));
-
-    --inbox-search-bg:
-        var(--input-bg,
-        var(--surface-secondary,
-        #f0f1f6));
-
-    --inbox-hover:
-        var(--hover-bg,
-        #f7f5fa);
-
-    --inbox-purple:
-        var(--primary-color,
-        var(--primary,
-        #8b4de8));
-
-    --inbox-purple-light:
-        var(--primary-light,
-        #eee5ff);
-
-    --inbox-purple-text:
-        var(--primary-text,
-        #6939bd);
-
-    color: var(--inbox-text);
-
-    background: var(--inbox-bg);
-
-    color-scheme: light dark;
-
-}
-
-
-/* =========================================================
-   AUTOMATIC SYSTEM THEME
-   Applies when the app does not explicitly set a theme.
-========================================================= */
-
-@media (prefers-color-scheme: dark) {
-
-    #inboxScreen {
-
-        --inbox-bg: #121212;
-
-        --inbox-surface: #1c1c1e;
-
-        --inbox-text: #f5f5f7;
-
-        --inbox-muted: #a1a1ad;
-
-        --inbox-border: #333338;
-
-        --inbox-search-bg: #27272b;
-
-        --inbox-hover: #29262f;
-
-        --inbox-purple: #a46be8;
-
-        --inbox-purple-light: #342344;
-
-        --inbox-purple-text: #c3a0ff;
-
-    }
-
-}
-
-
-/* =========================================================
-   EXPLICIT APP DARK MODE
-   Supports common theme attributes and classes.
-========================================================= */
-
-html.dark #inboxScreen,
-html.dark-mode #inboxScreen,
-html[data-theme="dark"] #inboxScreen,
-html[data-bs-theme="dark"] #inboxScreen,
-body.dark #inboxScreen,
-body.dark-mode #inboxScreen,
-body[data-theme="dark"] #inboxScreen,
-body[data-bs-theme="dark"] #inboxScreen,
-.dark #inboxScreen,
-.dark-mode #inboxScreen,
-[data-theme="dark"] #inboxScreen,
-[data-bs-theme="dark"] #inboxScreen {
-
-    --inbox-bg: #121212;
-
-    --inbox-surface: #1c1c1e;
-
-    --inbox-text: #f5f5f7;
-
-    --inbox-muted: #a1a1ad;
-
-    --inbox-border: #333338;
-
-    --inbox-search-bg: #27272b;
-
-    --inbox-hover: #29262f;
-
-    --inbox-purple: #a46be8;
-
-    --inbox-purple-light: #342344;
-
-    --inbox-purple-text: #c3a0ff;
-
-}
-
-
-/* =========================================================
-   EXPLICIT APP LIGHT MODE
-========================================================= */
-
-html.light #inboxScreen,
-html.light-mode #inboxScreen,
-html[data-theme="light"] #inboxScreen,
-html[data-bs-theme="light"] #inboxScreen,
-body.light #inboxScreen,
-body.light-mode #inboxScreen,
-body[data-theme="light"] #inboxScreen,
-body[data-bs-theme="light"] #inboxScreen,
-.light #inboxScreen,
-.light-mode #inboxScreen,
-[data-theme="light"] #inboxScreen,
-[data-bs-theme="light"] #inboxScreen {
-
-    --inbox-bg: #ffffff;
-
-    --inbox-surface: #ffffff;
-
-    --inbox-text: #171717;
-
-    --inbox-muted: #777783;
-
-    --inbox-border: #e6e6eb;
-
-    --inbox-search-bg: #f0f1f6;
-
-    --inbox-hover: #f7f5fa;
-
-    --inbox-purple: #8b4de8;
-
-    --inbox-purple-light: #eee5ff;
-
-    --inbox-purple-text: #6939bd;
-
-}
-
-
-/* =========================================================
-   MAIN SCREEN
-========================================================= */
-
-#inboxScreen,
-#inboxScreen .inbox-page,
-#inboxScreen .inbox-chat-layout {
-
-    background: var(--inbox-bg);
-
-    color: var(--inbox-text);
-
-}
-
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-#inboxScreen .inbox-chat-header {
-
+/* =========================================
+   INBOX CHAT SCREEN — BRICK 1
+   Reference-inspired customer messaging UI
+   ========================================= */
+
+.inbox-page.inbox-chat-layout {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background: #ffffff;
+    color: #171725;
+    font-family: inherit;
     display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
+}
 
+.inbox-page.inbox-chat-layout *,
+.inbox-page.inbox-chat-layout *::before,
+.inbox-page.inbox-chat-layout *::after {
+    box-sizing: border-box;
+}
+
+
+/* =========================================
+   1. CHAT HEADER
+   ========================================= */
+
+.inbox-chat-header {
+    width: 100%;
+    min-height: 88px;
+    padding: 12px 18px;
+    display: flex;
     align-items: center;
-
     justify-content: space-between;
-
+    gap: 12px;
+    background: #ffffff;
     flex-shrink: 0;
-
-    padding: 8px 16px 10px;
-
-    background: var(--inbox-bg);
-
-    color: var(--inbox-text);
-
 }
 
-
-#inboxScreen .inbox-brand {
-
+.inbox-brand {
     display: flex;
-
     align-items: center;
-
     gap: 14px;
-
+    min-width: 0;
 }
 
-
-#inboxScreen .inbox-brand-icon {
-
-    width: 62px;
-
-    height: 62px;
-
+.inbox-brand-icon {
+    width: 66px;
+    height: 66px;
+    min-width: 66px;
     border-radius: 19px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ff4fa9,
-            #b52bdb,
-            #6b35f0,
-            #4136cf
-        );
-
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: #ffffff;
-
-}
-
-
-#inboxScreen .inbox-brand-icon i {
-
-    color: #ffffff;
-
-    font-size: 32px;
-
-}
-
-
-#inboxScreen .inbox-brand-title h2 {
-
-    margin: 0;
-
-    color: var(--inbox-text);
-
     font-size: 30px;
-
-    font-weight: 750;
-
-    letter-spacing: -0.8px;
-
+    background: linear-gradient(
+        135deg,
+        #ff3e9d,
+        #a000e8,
+        #5425ed
+    );
+    box-shadow: 0 5px 16px rgba(153, 40, 220, 0.24);
 }
 
-
-/* =========================================================
-   HEADER BUTTONS
-========================================================= */
-
-#inboxScreen .inbox-header-actions {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-}
-
-
-#inboxScreen .inbox-icon-button {
-
-    position: relative;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    width: 60px;
-
-    height: 60px;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background: var(--inbox-search-bg);
-
-    color: var(--inbox-text);
-
-    font-size: 25px;
-
-    cursor: pointer;
-
-}
-
-
-#inboxScreen .inbox-icon-button i {
-
-    color: inherit;
-
-    font-size: 25px;
-
-}
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-#inboxScreen .inbox-chat-search {
-
-    display: flex;
-
-    align-items: center;
-
-    flex-shrink: 0;
-
-    height: 62px;
-
-    margin: 5px 10px 14px;
-
-    padding: 0 20px;
-
-    border-radius: 40px;
-
-    background: var(--inbox-search-bg);
-
-    color: var(--inbox-text);
-
-}
-
-
-#inboxScreen .inbox-chat-search > i {
-
-    margin-right: 14px;
-
-    color: var(--inbox-muted);
-
-    font-size: 23px;
-
-}
-
-
-#inboxScreen #inboxChatSearch {
-
-    flex: 1;
-
+.inbox-brand-title {
     min-width: 0;
-
-    height: 100%;
-
-    padding: 0;
-
-    border: none;
-
-    outline: none;
-
-    background: transparent;
-
-    color: var(--inbox-text);
-
-    font-family: inherit;
-
-    font-size: 19px;
-
-    box-shadow: none;
-
 }
 
-
-#inboxScreen #inboxChatSearch::placeholder {
-
-    color: var(--inbox-muted);
-
-    opacity: 1;
-
-}
-
-
-#inboxScreen #inboxChatSearchClear {
-
-    background: transparent;
-
-    color: var(--inbox-muted);
-
-    border: none;
-
-}
-
-
-/* =========================================================
-   FILTER TABS
-========================================================= */
-
-#inboxScreen .inbox-chat-tabs {
-
-    display: flex;
-
-    align-items: center;
-
-    flex-shrink: 0;
-
-    gap: 10px;
-
-    padding: 0 10px 14px;
-
-    overflow-x: auto;
-
-    overflow-y: hidden;
-
-    scrollbar-width: none;
-
-    background: var(--inbox-bg);
-
-}
-
-
-#inboxScreen .inbox-chat-tabs::-webkit-scrollbar {
-
-    display: none;
-
-}
-
-
-#inboxScreen .inbox-chat-tab {
-
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    flex: 0 0 auto;
-
-    min-width: 72px;
-
-    height: 46px;
-
-    padding: 0 18px;
-
-    border: 1px solid var(--inbox-border);
-
-    border-radius: 50px;
-
-    background: var(--inbox-search-bg);
-
-    color: var(--inbox-text);
-
-    font-family: inherit;
-
-    font-size: 17px;
-
-    white-space: nowrap;
-
-    cursor: pointer;
-
-}
-
-
-/* Selected filter */
-
-#inboxScreen .inbox-chat-tab.active,
-#inboxScreen .inbox-chat-tab[aria-pressed="true"] {
-
-    background: var(--inbox-purple-light);
-
-    border-color: var(--inbox-purple-light);
-
-    color: var(--inbox-purple-text);
-
-}
-
-
-/* Primary count */
-
-#inboxScreen .inbox-tab-count {
-
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    min-width: 29px;
-
-    height: 29px;
-
-    margin-left: 7px;
-
-    border-radius: 50%;
-
-    background: var(--inbox-purple);
-
-    color: #ffffff;
-
-    font-size: 14px;
-
-}
-
-
-/* =========================================================
-   CHAT LIST
-========================================================= */
-
-#inboxScreen .inbox-chat-list {
-
-    display: flex;
-
-    flex-direction: column;
-
-    flex: 1 1 auto;
-
-    min-height: 0;
-
-    padding: 0 10px;
-
-    overflow-x: hidden;
-
-    overflow-y: auto;
-
-    background: var(--inbox-bg);
-
-    color: var(--inbox-text);
-
-}
-
-
-/* Compact chat rows */
-
-#inboxScreen .inbox-chat-list > .notification-item,
-#inboxScreen .inbox-chat-list > .chat-item,
-#inboxScreen .inbox-chat-list > .conversation-item,
-#inboxScreen .inbox-chat-list > .message-item,
-#inboxScreen .inbox-chat-list > .chat-list-item,
-#inboxScreen .inbox-chat-list > [data-chat-id],
-#inboxScreen .inbox-chat-list > [data-conversation-id] {
-
-    min-height: 145px !important;
-
-    height: auto;
-
-    padding: 12px 4px 12px 0 !important;
-
-    margin: 0 !important;
-
-    border: none;
-
-    border-bottom: 1px solid var(--inbox-border);
-
-    border-radius: 0;
-
-    background: var(--inbox-bg);
-
-    color: var(--inbox-text);
-
-    box-sizing: border-box;
-
-}
-
-
-/* Row hover */
-
-#inboxScreen .inbox-chat-list > .notification-item:hover,
-#inboxScreen .inbox-chat-list > .chat-item:hover,
-#inboxScreen .inbox-chat-list > .conversation-item:hover,
-#inboxScreen .inbox-chat-list > .message-item:hover,
-#inboxScreen .inbox-chat-list > .chat-list-item:hover,
-#inboxScreen .inbox-chat-list > [data-chat-id]:hover,
-#inboxScreen .inbox-chat-list > [data-conversation-id]:hover {
-
-    background: var(--inbox-hover);
-
-}
-
-
-/* =========================================================
-   AVATARS
-========================================================= */
-
-#inboxScreen .inbox-chat-list .notification-avatar,
-#inboxScreen .inbox-chat-list .chat-avatar,
-#inboxScreen .inbox-chat-list .conversation-avatar,
-#inboxScreen .inbox-chat-list .avatar,
-#inboxScreen .inbox-chat-list .user-avatar,
-#inboxScreen .inbox-chat-list .group-avatar,
-#inboxScreen .inbox-chat-list .group-chat-avatar {
-
-    width: 100px;
-
-    height: 100px;
-
-    min-width: 100px;
-
-    min-height: 100px;
-
-    margin-right: 16px;
-
-    border: 2px solid var(--inbox-purple);
-
-    border-radius: 50%;
-
-    background: var(--inbox-search-bg);
-
-}
-
-
-#inboxScreen .inbox-chat-list .notification-avatar img,
-#inboxScreen .inbox-chat-list .chat-avatar img,
-#inboxScreen .inbox-chat-list .conversation-avatar img,
-#inboxScreen .inbox-chat-list .avatar img,
-#inboxScreen .inbox-chat-list .user-avatar img {
-
-    width: 100%;
-
-    height: 100%;
-
-    border-radius: 50%;
-
-    object-fit: cover;
-
-}
-
-
-/* =========================================================
-   CHAT TEXT
-========================================================= */
-
-#inboxScreen .inbox-chat-list .notification-content,
-#inboxScreen .inbox-chat-list .chat-content,
-#inboxScreen .inbox-chat-list .conversation-content,
-#inboxScreen .inbox-chat-list .chat-details,
-#inboxScreen .inbox-chat-list .message-content,
-#inboxScreen .inbox-chat-list .chat-info {
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: center;
-
-    flex: 1 1 auto;
-
-    min-width: 0;
-
-    gap: 3px;
-
-    padding-right: 75px;
-
-}
-
-
-#inboxScreen .inbox-chat-list .notification-title,
-#inboxScreen .inbox-chat-list .chat-name,
-#inboxScreen .inbox-chat-list .conversation-name,
-#inboxScreen .inbox-chat-list .contact-name,
-#inboxScreen .inbox-chat-list .user-name {
-
+.inbox-brand-title h2 {
     margin: 0;
-
-    color: var(--inbox-text);
-
-    font-size: 23px;
-
-    font-weight: 650;
-
-    line-height: 1.2;
-
-}
-
-
-#inboxScreen .inbox-chat-list .notification-message,
-#inboxScreen .inbox-chat-list .chat-preview,
-#inboxScreen .inbox-chat-list .last-message,
-#inboxScreen .inbox-chat-list .message-preview,
-#inboxScreen .inbox-chat-list .chat-message,
-#inboxScreen .inbox-chat-list .conversation-preview {
-
-    margin: 0;
-
-    color: var(--inbox-muted);
-
-    font-size: 19px;
-
-    line-height: 1.3;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-}
-
-
-/* =========================================================
-   LANGUAGE TAGS
-========================================================= */
-
-#inboxScreen .inbox-chat-list .language-tags,
-#inboxScreen .inbox-chat-list .chat-languages,
-#inboxScreen .inbox-chat-list .language-badges,
-#inboxScreen .inbox-chat-list .languages {
-
-    display: flex;
-
-    align-items: center;
-
-    flex-wrap: wrap;
-
-    gap: 6px;
-
-    margin-top: 5px;
-
-}
-
-
-#inboxScreen .inbox-chat-list .language-tag,
-#inboxScreen .inbox-chat-list .language-badge,
-#inboxScreen .inbox-chat-list .chat-language {
-
-    min-height: 28px;
-
-    padding: 2px 8px 2px 4px;
-
-    border-radius: 7px;
-
-    background: var(--inbox-search-bg);
-
-    color: var(--inbox-text);
-
-    font-size: 14px;
-
-}
-
-
-#inboxScreen .inbox-chat-list .language-code,
-#inboxScreen .inbox-chat-list .language-tag-code,
-#inboxScreen .inbox-chat-list .language-badge-code {
-
-    min-width: 27px;
-
-    height: 24px;
-
-    margin-right: 5px;
-
-    border-radius: 5px;
-
-    background: var(--inbox-purple);
-
-    color: #ffffff;
-
-    font-size: 12px;
-
-}
-
-
-/* =========================================================
-   TIME + UNREAD
-========================================================= */
-
-#inboxScreen .inbox-chat-list .notification-time,
-#inboxScreen .inbox-chat-list .chat-time,
-#inboxScreen .inbox-chat-list .message-time,
-#inboxScreen .inbox-chat-list .conversation-time,
-#inboxScreen .inbox-chat-list time {
-
-    position: absolute;
-
-    top: 16px;
-
-    right: 4px;
-
-    color: var(--inbox-muted);
-
-    font-size: 15px;
-
-}
-
-
-#inboxScreen .inbox-chat-list .unread-count,
-#inboxScreen .inbox-chat-list .unread-badge,
-#inboxScreen .inbox-chat-list .notification-count,
-#inboxScreen .inbox-chat-list .chat-unread-count {
-
-    position: absolute;
-
-    top: 72px;
-
-    right: 4px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    min-width: 32px;
-
-    height: 32px;
-
-    padding: 0 7px;
-
-    border-radius: 50%;
-
-    background: var(--inbox-purple);
-
-    color: #ffffff;
-
-    font-size: 15px;
-
-}
-
-
-/* =========================================================
-   EMPTY STATE
-========================================================= */
-
-#inboxScreen .notification-empty {
-
-    background: var(--inbox-bg);
-
-    color: var(--inbox-text);
-
-}
-
-
-#inboxScreen .notification-empty h3 {
-
-    color: var(--inbox-text);
-
-}
-
-
-#inboxScreen .notification-empty p {
-
-    color: var(--inbox-muted);
-
-}
-
-
-#inboxScreen .notification-empty-icon {
-
-    background: var(--inbox-purple-light);
-
-    color: var(--inbox-purple);
-
-}
-
-
-/* =========================================================
-   FLOATING COMPOSE
-========================================================= */
-
-#inboxScreen .inbox-floating-compose {
-
-    position: absolute;
-
-    right: 24px;
-
-    bottom: 24px;
-
-    z-index: 20;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    width: 64px;
-
-    height: 64px;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background: var(--inbox-purple);
-
-    color: #ffffff;
-
-    font-size: 25px;
-
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 600px) {
-
-    #inboxScreen .inbox-chat-header {
-        padding: 8px 12px;
-    }
-
-    #inboxScreen .inbox-brand-icon {
-        width: 48px;
-        height: 48px;
-    }
-
-    #inboxScreen .inbox-brand-title h2 {
-        font-size: 25px;
-    }
-
-    #inboxScreen .inbox-icon-button {
-        width: 44px;
-        height: 44px;
-    }
-
-    #inboxScreen .inbox-chat-search {
-        height: 50px;
-        margin: 4px 10px 12px;
-        padding: 0 15px;
-    }
-
-    #inboxScreen .inbox-chat-tabs {
-        gap: 7px;
-        padding-bottom: 11px;
-    }
-
-    #inboxScreen .inbox-chat-tab {
-        height: 38px;
-        min-width: 60px;
-        padding: 0 13px;
-        font-size: 14px;
-    }
-
-    #inboxScreen .inbox-chat-list > .notification-item,
-    #inboxScreen .inbox-chat-list > .chat-item,
-    #inboxScreen .inbox-chat-list > .conversation-item,
-    #inboxScreen .inbox-chat-list > .message-item,
-    #inboxScreen .inbox-chat-list > .chat-list-item,
-    #inboxScreen .inbox-chat-list > [data-chat-id],
-    #inboxScreen .inbox-chat-list > [data-conversation-id] {
-
-        min-height: 105px !important;
-
-        padding: 10px 2px !important;
-
-    }
-
-    #inboxScreen .inbox-chat-list .notification-avatar,
-    #inboxScreen .inbox-chat-list .chat-avatar,
-    #inboxScreen .inbox-chat-list .conversation-avatar,
-    #inboxScreen .inbox-chat-list .avatar,
-    #inboxScreen .inbox-chat-list .user-avatar,
-    #inboxScreen .inbox-chat-list .group-avatar,
-    #inboxScreen .inbox-chat-list .group-chat-avatar {
-
-        width: 72px;
-        height: 72px;
-
-        min-width: 72px;
-        min-height: 72px;
-
-        margin-right: 10px;
-
-    }
-
-    #inboxScreen .inbox-chat-list .notification-title,
-    #inboxScreen .inbox-chat-list .chat-name,
-    #inboxScreen .inbox-chat-list .conversation-name,
-    #inboxScreen .inbox-chat-list .contact-name,
-    #inboxScreen .inbox-chat-list .user-name {
-
-        font-size: 17px;
-
-    }
-
-    #inboxScreen .inbox-chat-list .notification-message,
-    #inboxScreen .inbox-chat-list .chat-preview,
-    #inboxScreen .inbox-chat-list .last-message,
-    #inboxScreen .inbox-chat-list .message-preview,
-    #inboxScreen .inbox-chat-list .chat-message,
-    #inboxScreen .inbox-chat-list .conversation-preview {
-
-        font-size: 14px;
-
-    }
-
-    #inboxScreen .inbox-chat-list .notification-content,
-    #inboxScreen .inbox-chat-list .chat-content,
-    #inboxScreen .inbox-chat-list .conversation-content,
-    #inboxScreen .inbox-chat-list .chat-details,
-    #inboxScreen .inbox-chat-list .message-content,
-    #inboxScreen .inbox-chat-list .chat-info {
-
-        padding-right: 48px;
-
-    }
-
-    #inboxScreen .inbox-chat-list .notification-time,
-    #inboxScreen .inbox-chat-list .chat-time,
-    #inboxScreen .inbox-chat-list .message-time,
-    #inboxScreen .inbox-chat-list .conversation-time,
-    #inboxScreen .inbox-chat-list time {
-
-        top: 10px;
-
-        font-size: 11px;
-
-    }
-
-    #inboxScreen .inbox-chat-list .unread-count,
-    #inboxScreen .inbox-chat-list .unread-badge,
-    #inboxScreen .inbox-chat-list .notification-count,
-    #inboxScreen .inbox-chat-list .chat-unread-count {
-
-        top: 55px;
-
-        min-width: 25px;
-
-        height: 25px;
-
-        font-size: 12px;
-
-    }
-
-    #inboxScreen .inbox-floating-compose {
-
-        width: 54px;
-
-        height: 54px;
-
-        right: 16px;
-
-        bottom: 18px;
-
-    }
-
-}
-
-
-/* =========================================================
-   END
-========================================================= */
-
-
-
-/* =========================================================
-   NEXODRA — CHAT INBOX
-   Screenshot-inspired UI redesign
-========================================================= */
-
-#inboxScreen {
-    --inbox-purple: #8b4de8;
-    --inbox-purple-dark: #6f35c9;
-    --inbox-purple-light: #f0e9ff;
-    --inbox-text: #171717;
-    --inbox-muted: #777783;
-    --inbox-border: #e6e6eb;
-    --inbox-surface: #ffffff;
-    --inbox-search: #f0f1f6;
-
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-
-    background: var(--inbox-surface);
-    color: var(--inbox-text);
-
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Helvetica,
-        Arial,
-        sans-serif;
-
-    overflow: hidden;
-}
-
-
-/* =========================================================
-   MAIN LAYOUT
-========================================================= */
-
-#inboxScreen .inbox-page {
-    position: relative;
-
-    display: flex;
-    flex-direction: column;
-
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-
-    background: #ffffff;
-
-    overflow: hidden;
-}
-
-#inboxScreen .inbox-chat-layout {
-    padding: 0;
-
-    gap: 0;
-}
-
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-#inboxScreen .inbox-chat-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    flex-shrink: 0;
-
-    width: 100%;
-
-    padding: 12px 18px 14px;
-
-    background: #ffffff;
-
-    box-sizing: border-box;
-}
-
-
-/* Brand */
-
-#inboxScreen .inbox-brand {
-    display: flex;
-    align-items: center;
-
-    gap: 18px;
-
-    min-width: 0;
-}
-
-
-/* Purple gradient app logo */
-
-#inboxScreen .inbox-brand-icon {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
-
-    width: 78px;
-    height: 78px;
-
-    border-radius: 23px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ff4fa9 0%,
-            #b52bdb 38%,
-            #6b35f0 72%,
-            #4136cf 100%
-        );
-
-    color: #ffffff;
-
-    box-shadow:
-        0 7px 18px rgba(139, 77, 232, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-
-    overflow: hidden;
-}
-
-
-/* Logo icon */
-
-#inboxScreen .inbox-brand-icon i {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 39px;
-
-    color: #ffffff;
-
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
-}
-
-
-/* Brand text */
-
-#inboxScreen .inbox-brand-title {
-    display: flex;
-    flex-direction: column;
-
-    justify-content: center;
-
-    min-width: 0;
-}
-
-#inboxScreen .inbox-brand-title h2 {
-    margin: 0;
-
-    color: #111111;
-
-    font-size: 37px;
-    font-weight: 750;
-
-    letter-spacing: -1.4px;
-    line-height: 1.1;
-}
-
-
-/* Notification summary */
-
-#inboxScreen #notificationUnreadText {
-    display: none;
-
-    margin: 5px 0 0;
-
-    color: #888894;
-
-    font-size: 12px;
-    font-weight: 500;
-}
-
-
-/* =========================================================
-   HEADER ACTIONS
-========================================================= */
-
-#inboxScreen .inbox-header-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    gap: 13px;
-
-    flex-shrink: 0;
-}
-
-
-/* Circular action buttons */
-
-#inboxScreen .inbox-icon-button {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 76px;
-    height: 76px;
-
-    padding: 0;
-
-    border: none;
-    border-radius: 50%;
-
-    background: #f5f5f8;
-
-    color: #151515;
-
-    font-size: 32px;
-
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
-}
-
-
-/* Icons */
-
-#inboxScreen .inbox-icon-button i {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 31px;
-}
-
-
-/* Video call notification dot */
-
-#inboxScreen .inbox-action-indicator {
-    position: absolute;
-
-    top: 12px;
-    right: 9px;
-
-    width: 17px;
-    height: 17px;
-
-    border-radius: 50%;
-
-    background: #bd4bca;
-
-    border: 2px solid #f5f5f8;
-}
-
-
-/* Button hover */
-
-@media (hover: hover) {
-    #inboxScreen .inbox-icon-button:hover {
-        background: #ece8f7;
-    }
-}
-
-#inboxScreen .inbox-icon-button:active {
-    transform: scale(0.96);
-}
-
-
-/* =========================================================
-   SEARCH BAR
-========================================================= */
-
-#inboxScreen .inbox-chat-search {
-    display: flex;
-    align-items: center;
-
-    flex-shrink: 0;
-
-    height: 79px;
-
-    margin: 8px 10px 22px;
-    padding: 0 26px;
-
-    border-radius: 50px;
-
-    background: #f0f1f6;
-
-    box-sizing: border-box;
-
-    transition:
-        background 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-
-/* Search icon */
-
-#inboxScreen .inbox-chat-search > i {
-    flex-shrink: 0;
-
-    margin-right: 19px;
-
-    color: #55555f;
-
     font-size: 29px;
+    font-weight: 750;
+    letter-spacing: -0.8px;
+    color: #171725;
 }
 
-
-/* Search input */
-
-#inboxScreen #inboxChatSearch {
-    flex: 1;
-
-    width: 100%;
-    min-width: 0;
-    height: 100%;
-
-    padding: 0;
-
-    border: none;
-    outline: none;
-
-    background: transparent;
-
-    color: #171717;
-
-    font-family: inherit;
-
-    font-size: 24px;
-    font-weight: 400;
-
-    box-shadow: none;
-}
-
-
-/* Search placeholder */
-
-#inboxScreen #inboxChatSearch::placeholder {
-    color: #74747e;
-
-    opacity: 1;
-}
-
-
-/* Remove browser search decorations */
-
-#inboxScreen #inboxChatSearch::-webkit-search-decoration,
-#inboxScreen #inboxChatSearch::-webkit-search-cancel-button,
-#inboxScreen #inboxChatSearch::-webkit-search-results-button,
-#inboxScreen #inboxChatSearch::-webkit-search-results-decoration {
+.inbox-brand-title p {
     display: none;
+    margin: 3px 0 0;
+    color: #92929e;
+    font-size: 11px;
 }
 
 
-/* Search focus */
+/* =========================================
+   2. HEADER ACTION BUTTONS
+   ========================================= */
 
-#inboxScreen .inbox-chat-search:focus-within {
-    background: #f0eef8;
-
-    box-shadow: inset 0 0 0 1px rgba(139, 77, 232, 0.16);
-}
-
-
-/* Clear button */
-
-#inboxScreen #inboxChatSearchClear {
+.inbox-header-actions {
     display: flex;
     align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
-
-    width: 36px;
-    height: 36px;
-
-    margin-left: 8px;
-
-    border: none;
-    border-radius: 50%;
-
-    background: transparent;
-
-    color: #777783;
-
-    font-size: 18px;
-
-    cursor: pointer;
-}
-
-#inboxScreen #inboxChatSearchClear[hidden] {
-    display: none !important;
-}
-
-
-/* =========================================================
-   FILTER TABS
-========================================================= */
-
-#inboxScreen .inbox-chat-tabs {
-    display: flex;
-    align-items: center;
-
-    flex-shrink: 0;
-
-    width: 100%;
-
-    gap: 14px;
-
-    padding: 0 10px 22px;
-
-    overflow-x: auto;
-    overflow-y: hidden;
-
-    scrollbar-width: none;
-
-    background: #ffffff;
-
-    box-sizing: border-box;
-}
-
-#inboxScreen .inbox-chat-tabs::-webkit-scrollbar {
-    display: none;
-}
-
-
-/* Individual filter */
-
-#inboxScreen .inbox-chat-tab {
-    position: relative;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    flex: 0 0 auto;
-
-    min-width: 90px;
-    height: 57px;
-
-    padding: 0 24px;
-
-    border: 1px solid #e6e6eb;
-    border-radius: 50px;
-
-    background: #f3f3f7;
-
-    color: #25252b;
-
-    font-family: inherit;
-
-    font-size: 22px;
-    font-weight: 500;
-
-    white-space: nowrap;
-
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        border-color 0.2s ease;
-}
-
-
-/* Selected filter */
-
-#inboxScreen .inbox-chat-tab.active,
-#inboxScreen .inbox-chat-tab[aria-pressed="true"] {
-    border-color: #e8ddff;
-
-    background: #eee5ff;
-
-    color: #282039;
-}
-
-
-/* Primary tab */
-
-#inboxScreen .inbox-chat-tab[data-chat-filter="primary"] {
     gap: 12px;
 }
 
+.inbox-icon-button {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    border: none;
+    border-radius: 50%;
+    background: #f3f3f7;
+    color: #171725;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 23px;
+    cursor: pointer;
+    transition: background 0.2s ease,
+                transform 0.2s ease;
+}
 
-/* Filter count */
+.inbox-icon-button:active {
+    transform: scale(0.94);
+    background: #eae7f4;
+}
 
-#inboxScreen .inbox-tab-count {
+.inbox-action-indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #d946ef;
+    border: 2px solid #ffffff;
+}
+
+
+/* =========================================
+   3. CHAT SEARCH BAR
+   ========================================= */
+
+.inbox-chat-search {
+    width: calc(100% - 28px);
+    min-height: 56px;
+    margin: 10px 14px 18px;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    border-radius: 35px;
+    background: #f1f1f5;
+    flex-shrink: 0;
+}
+
+.inbox-chat-search > i {
+    font-size: 23px;
+    color: #686873;
+}
+
+.inbox-chat-search input {
+    width: 100%;
+    min-width: 0;
+    height: 52px;
+    padding: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #171725;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.inbox-chat-search input::placeholder {
+    color: #777782;
+    opacity: 1;
+}
+
+.inbox-chat-search button {
+    border: none;
+    background: transparent;
+    color: #777782;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.inbox-chat-search button[hidden] {
+    display: none;
+}
+
+
+/* =========================================
+   4. CHAT CATEGORY NAVIGATION
+   ========================================= */
+
+.inbox-chat-tabs {
+    width: 100%;
+    padding: 5px 12px 17px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    scrollbar-width: none;
+    flex-shrink: 0;
+    border-bottom: 1px solid #eeeeF2;
+}
+
+.inbox-chat-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.inbox-chat-tab {
+    min-height: 49px;
+    padding: 0 20px;
+    border: 1px solid #eeeeF2;
+    border-radius: 30px;
+    background: #f1f1f5;
+    color: #252530;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
+    gap: 9px;
     flex-shrink: 0;
-
-    min-width: 34px;
-    height: 34px;
-
-    padding: 0 7px;
-
-    border-radius: 50%;
-
-    background: #6939bd;
-
-    color: #ffffff;
-
-    font-size: 17px;
-    font-weight: 600;
-
-    line-height: 1;
+    cursor: pointer;
+    transition: background 0.2s ease,
+                color 0.2s ease;
 }
 
-#inboxScreen .inbox-tab-count[hidden] {
+.inbox-chat-tab.active {
+    background: #ffffff;
+    color: #171725;
+    border: 2px solid #e0dfe8;
+    font-weight: 650;
+}
+
+.inbox-chat-tab:active {
+    transform: scale(0.97);
+}
+
+
+/* =========================================
+   5. PRIMARY UNREAD COUNT
+   ========================================= */
+
+.inbox-tab-count {
+    min-width: 25px;
+    height: 25px;
+    padding: 0 6px;
+    border-radius: 50%;
+    background: #5527a9;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.inbox-tab-count[hidden] {
+    display: none;
+}
+
+
+/* =========================================
+   6. CHAT / NOTIFICATION LIST
+   ========================================= */
+
+.inbox-chat-list {
+    width: 100%;
+    flex: 1;
+    min-height: 200px;
+    padding: 0 12px 90px;
+    overflow-y: auto;
+    background: #ffffff;
+}
+
+
+/* =========================================
+   7. EMPTY CHAT STATE
+   ========================================= */
+
+.inbox-chat-list .notification-empty {
+    min-height: 300px;
+    padding: 35px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.inbox-chat-list .notification-empty-icon {
+    width: 68px;
+    height: 68px;
+    margin-bottom: 15px;
+    border-radius: 50%;
+    background: #f3eaff;
+    color: #8136c8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 27px;
+}
+
+.inbox-chat-list .notification-empty h3 {
+    margin: 0 0 8px;
+    color: #222230;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.inbox-chat-list .notification-empty p {
+    max-width: 260px;
+    margin: 0;
+    color: #858591;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+
+/* =========================================
+   8. FLOATING COMPOSE BUTTON
+   ========================================= */
+
+.inbox-floating-compose {
+    position: absolute;
+    right: 22px;
+    bottom: 25px;
+    width: 62px;
+    height: 62px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(
+        135deg,
+        #b34be9,
+        #7834cb
+    );
+    color: #ffffff;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 18px rgba(126, 54, 194, 0.3);
+    cursor: pointer;
+    z-index: 20;
+    transition: transform 0.2s ease;
+}
+
+.inbox-floating-compose:active {
+    transform: scale(0.92);
+}
+
+
+/* =========================================
+   9. HIDDEN ACTION
+   ========================================= */
+
+.inbox-hidden-action {
     display: none !important;
 }
 
 
-/* Tab hover */
+/* =========================================
+   10. MOBILE RESPONSIVENESS
+   ========================================= */
 
-@media (hover: hover) {
-    #inboxScreen .inbox-chat-tab:hover {
-        background: #eae6f3;
+@media (max-width: 480px) {
+
+    .inbox-chat-header {
+        min-height: 76px;
+        padding: 10px 13px;
     }
 
-    #inboxScreen .inbox-chat-tab.active:hover,
-    #inboxScreen .inbox-chat-tab[aria-pressed="true"]:hover {
-        background: #e7d9ff;
+    .inbox-brand {
+        gap: 11px;
     }
-}
 
-
-/* =========================================================
-   CHAT LIST
-========================================================= */
-
-#inboxScreen .inbox-chat-list {
-    position: relative;
-
-    display: flex;
-    flex-direction: column;
-
-    flex: 1 1 auto;
-
-    width: 100%;
-    min-height: 0;
-
-    padding: 0 10px;
-
-    background: #ffffff;
-
-    overflow-x: hidden;
-    overflow-y: auto;
-
-    scrollbar-width: thin;
-    scrollbar-color: #d8d8df transparent;
-
-    box-sizing: border-box;
-}
-
-
-/* Existing notification/chat rows */
-
-#inboxScreen .inbox-chat-list > * {
-    flex-shrink: 0;
-}
-
-
-/* Common chat row selectors.
-   These target common existing renderer structures. */
-
-#inboxScreen .inbox-chat-list > .notification-item,
-#inboxScreen .inbox-chat-list > .chat-item,
-#inboxScreen .inbox-chat-list > .conversation-item,
-#inboxScreen .inbox-chat-list > .message-item,
-#inboxScreen .inbox-chat-list > .chat-list-item,
-#inboxScreen .inbox-chat-list > [data-chat-id],
-#inboxScreen .inbox-chat-list > [data-conversation-id] {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-
-    width: 100%;
-    min-height: 174px;
-
-    padding: 18px 4px 20px 0;
-
-    border: none;
-    border-bottom: 1px solid #e8e8ed;
-
-    border-radius: 0;
-
-    background: #ffffff;
-
-    box-sizing: border-box;
-
-    cursor: pointer;
-}
-
-
-/* Row hover */
-
-@media (hover: hover) {
-    #inboxScreen .inbox-chat-list > .notification-item:hover,
-    #inboxScreen .inbox-chat-list > .chat-item:hover,
-    #inboxScreen .inbox-chat-list > .conversation-item:hover,
-    #inboxScreen .inbox-chat-list > .message-item:hover,
-    #inboxScreen .inbox-chat-list > .chat-list-item:hover,
-    #inboxScreen .inbox-chat-list > [data-chat-id]:hover,
-    #inboxScreen .inbox-chat-list > [data-conversation-id]:hover {
-        background: #faf9fd;
+    .inbox-brand-icon {
+        width: 54px;
+        height: 54px;
+        min-width: 54px;
+        border-radius: 16px;
+        font-size: 25px;
     }
-}
 
-
-/* =========================================================
-   CHAT AVATARS
-========================================================= */
-
-/* Common avatar wrappers */
-
-#inboxScreen .inbox-chat-list .notification-avatar,
-#inboxScreen .inbox-chat-list .chat-avatar,
-#inboxScreen .inbox-chat-list .conversation-avatar,
-#inboxScreen .inbox-chat-list .avatar,
-#inboxScreen .inbox-chat-list .user-avatar {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
-
-    width: 128px;
-    height: 128px;
-
-    margin-right: 20px;
-
-    border: 3px solid #b75b9d;
-    border-radius: 50%;
-
-    background: #f3eaff;
-
-    box-sizing: border-box;
-}
-
-
-/* Avatar images */
-
-#inboxScreen .inbox-chat-list .notification-avatar img,
-#inboxScreen .inbox-chat-list .chat-avatar img,
-#inboxScreen .inbox-chat-list .conversation-avatar img,
-#inboxScreen .inbox-chat-list .avatar img,
-#inboxScreen .inbox-chat-list .user-avatar img {
-    display: block;
-
-    width: 100%;
-    height: 100%;
-
-    border: 3px solid #ffffff;
-    border-radius: 50%;
-
-    object-fit: cover;
-
-    box-sizing: border-box;
-}
-
-
-/* Online status indicator */
-
-#inboxScreen .inbox-chat-list .online-indicator,
-#inboxScreen .inbox-chat-list .status-indicator,
-#inboxScreen .inbox-chat-list .avatar-status,
-#inboxScreen .inbox-chat-list .user-status {
-    position: absolute;
-
-    right: 0;
-    bottom: 0;
-
-    z-index: 2;
-
-    width: 23px;
-    height: 23px;
-
-    border: 3px solid #ffffff;
-    border-radius: 50%;
-
-    background: #43b65a;
-
-    box-sizing: border-box;
-}
-
-
-/* Offline */
-
-#inboxScreen .inbox-chat-list .offline,
-#inboxScreen .inbox-chat-list [data-status="offline"] {
-    background: #a4a4ad;
-}
-
-
-/* Away */
-
-#inboxScreen .inbox-chat-list .away,
-#inboxScreen .inbox-chat-list [data-status="away"] {
-    background: #9b5de5;
-}
-
-
-/* =========================================================
-   CHAT CONTENT
-========================================================= */
-
-/* Common content wrappers */
-
-#inboxScreen .inbox-chat-list .notification-content,
-#inboxScreen .inbox-chat-list .chat-content,
-#inboxScreen .inbox-chat-list .conversation-content,
-#inboxScreen .inbox-chat-list .chat-details,
-#inboxScreen .inbox-chat-list .message-content,
-#inboxScreen .inbox-chat-list .chat-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    flex: 1 1 auto;
-
-    min-width: 0;
-
-    align-self: stretch;
-
-    gap: 5px;
-}
-
-
-/* Contact name */
-
-#inboxScreen .inbox-chat-list .notification-title,
-#inboxScreen .inbox-chat-list .chat-name,
-#inboxScreen .inbox-chat-list .conversation-name,
-#inboxScreen .inbox-chat-list .contact-name,
-#inboxScreen .inbox-chat-list .user-name {
-    display: flex;
-    align-items: center;
-
-    min-width: 0;
-
-    margin: 0;
-
-    color: #171717;
-
-    font-size: 28px;
-    font-weight: 650;
-
-    letter-spacing: -0.5px;
-    line-height: 1.25;
-}
-
-
-/* Message preview */
-
-#inboxScreen .inbox-chat-list .notification-message,
-#inboxScreen .inbox-chat-list .chat-preview,
-#inboxScreen .inbox-chat-list .last-message,
-#inboxScreen .inbox-chat-list .message-preview,
-#inboxScreen .inbox-chat-list .chat-message,
-#inboxScreen .inbox-chat-list .conversation-preview {
-    display: block;
-
-    width: 100%;
-    min-width: 0;
-
-    margin: 0;
-
-    color: #25252b;
-
-    font-size: 24px;
-    font-weight: 400;
-
-    line-height: 1.35;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-
-    overflow-wrap: anywhere;
-}
-
-
-/* Typing state */
-
-#inboxScreen .inbox-chat-list .typing,
-#inboxScreen .inbox-chat-list .typing-indicator,
-#inboxScreen .inbox-chat-list [data-typing="true"] {
-    color: #9565bc;
-
-    font-size: 24px;
-    font-weight: 500;
-
-    font-style: italic;
-}
-
-
-/* =========================================================
-   VERIFIED BADGE
-========================================================= */
-
-/* Common verified indicators */
-
-#inboxScreen .inbox-chat-list .verified-badge,
-#inboxScreen .inbox-chat-list .verified-icon,
-#inboxScreen .inbox-chat-list .verification-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
-
-    width: 25px;
-    height: 25px;
-
-    margin-left: 8px;
-
-    border-radius: 50%;
-
-    background: #3786ec;
-
-    color: #ffffff;
-
-    font-size: 12px;
-}
-
-
-/* Font Awesome verified icon */
-
-#inboxScreen .inbox-chat-list .verified-badge i,
-#inboxScreen .inbox-chat-list .verified-icon i,
-#inboxScreen .inbox-chat-list .verification-badge i {
-    font-size: 13px;
-}
-
-
-/* =========================================================
-   LANGUAGE TAGS
-========================================================= */
-
-/* Language container */
-
-#inboxScreen .inbox-chat-list .language-tags,
-#inboxScreen .inbox-chat-list .chat-languages,
-#inboxScreen .inbox-chat-list .language-badges,
-#inboxScreen .inbox-chat-list .languages {
-    display: flex;
-    align-items: center;
-
-    flex-wrap: wrap;
-
-    gap: 8px;
-
-    margin-top: 7px;
-}
-
-
-/* Language pill */
-
-#inboxScreen .inbox-chat-list .language-tag,
-#inboxScreen .inbox-chat-list .language-badge,
-#inboxScreen .inbox-chat-list .chat-language {
-    display: inline-flex;
-    align-items: center;
-
-    flex-shrink: 0;
-
-    min-height: 34px;
-
-    padding: 3px 10px 3px 5px;
-
-    border: none;
-    border-radius: 9px;
-
-    background: #ededf2;
-
-    color: #292930;
-
-    font-size: 18px;
-    font-weight: 400;
-
-    line-height: 1.2;
-
-    white-space: nowrap;
-
-    box-sizing: border-box;
-}
-
-
-/* Language abbreviation */
-
-#inboxScreen .inbox-chat-list .language-code,
-#inboxScreen .inbox-chat-list .language-tag-code,
-#inboxScreen .inbox-chat-list .language-badge-code {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
-
-    min-width: 34px;
-    height: 29px;
-
-    margin-right: 7px;
-
-    padding: 0 5px;
-
-    border-radius: 6px;
-
-    background: #3156a9;
-
-    color: #ffffff;
-
-    font-size: 15px;
-    font-weight: 600;
-
-    line-height: 1;
-}
-
-
-/* Spanish */
-
-#inboxScreen .inbox-chat-list .language-code[data-language="es"],
-#inboxScreen .inbox-chat-list .language-tag-code[data-language="es"],
-#inboxScreen .inbox-chat-list .language-badge-code[data-language="es"] {
-    background: #c84965;
-}
-
-
-/* French */
-
-#inboxScreen .inbox-chat-list .language-code[data-language="fr"],
-#inboxScreen .inbox-chat-list .language-tag-code[data-language="fr"],
-#inboxScreen .inbox-chat-list .language-badge-code[data-language="fr"] {
-    background: #3976c5;
-}
-
-
-/* Japanese */
-
-#inboxScreen .inbox-chat-list .language-code[data-language="ja"],
-#inboxScreen .inbox-chat-list .language-tag-code[data-language="ja"],
-#inboxScreen .inbox-chat-list .language-badge-code[data-language="ja"] {
-    background: #3976c5;
-}
-
-
-/* =========================================================
-   CHAT TIME
-========================================================= */
-
-#inboxScreen .inbox-chat-list .notification-time,
-#inboxScreen .inbox-chat-list .chat-time,
-#inboxScreen .inbox-chat-list .message-time,
-#inboxScreen .inbox-chat-list .conversation-time,
-#inboxScreen .inbox-chat-list time {
-    position: absolute;
-
-    top: 25px;
-    right: 5px;
-
-    color: #72727d;
-
-    font-size: 18px;
-    font-weight: 400;
-
-    white-space: nowrap;
-}
-
-
-/* Reserve space for time */
-
-#inboxScreen .inbox-chat-list .notification-content,
-#inboxScreen .inbox-chat-list .chat-content,
-#inboxScreen .inbox-chat-list .conversation-content,
-#inboxScreen .inbox-chat-list .chat-details,
-#inboxScreen .inbox-chat-list .message-content,
-#inboxScreen .inbox-chat-list .chat-info {
-    padding-right: 80px;
-}
-
-
-/* =========================================================
-   UNREAD BADGE
-========================================================= */
-
-#inboxScreen .inbox-chat-list .unread-count,
-#inboxScreen .inbox-chat-list .unread-badge,
-#inboxScreen .inbox-chat-list .notification-count,
-#inboxScreen .inbox-chat-list .chat-unread-count {
-    position: absolute;
-
-    top: 85px;
-    right: 5px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    min-width: 38px;
-    height: 38px;
-
-    padding: 0 9px;
-
-    border: none;
-    border-radius: 50%;
-
-    background: #a46be8;
-
-    color: #ffffff;
-
-    font-size: 18px;
-    font-weight: 600;
-
-    line-height: 1;
-
-    box-sizing: border-box;
-}
-
-
-/* =========================================================
-   GROUP CHAT
-========================================================= */
-
-/* Group avatar */
-
-#inboxScreen .inbox-chat-list .group-avatar,
-#inboxScreen .inbox-chat-list .group-chat-avatar {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
-
-    width: 128px;
-    height: 128px;
-
-    margin-right: 20px;
-
-    border: 3px solid #b75b9d;
-    border-radius: 50%;
-
-    background: #f5efff;
-
-    box-sizing: border-box;
-}
-
-
-/* Group avatar image */
-
-#inboxScreen .inbox-chat-list .group-avatar img,
-#inboxScreen .inbox-chat-list .group-chat-avatar img {
-    width: 100%;
-    height: 100%;
-
-    border-radius: 50%;
-
-    object-fit: cover;
-}
-
-
-/* Group icon */
-
-#inboxScreen .inbox-chat-list .group-avatar > i,
-#inboxScreen .inbox-chat-list .group-chat-avatar > i {
-    color: #8050ce;
-
-    font-size: 38px;
-}
-
-
-/* Group indicator */
-
-#inboxScreen .inbox-chat-list .group-indicator,
-#inboxScreen .inbox-chat-list .group-badge {
-    position: absolute;
-
-    right: -1px;
-    bottom: -1px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 41px;
-    height: 41px;
-
-    border: 3px solid #ffffff;
-    border-radius: 50%;
-
-    background: #7941cb;
-
-    color: #ffffff;
-
-    font-size: 17px;
-
-    box-sizing: border-box;
-}
-
-
-/* =========================================================
-   VOICE MESSAGE PREVIEW
-========================================================= */
-
-#inboxScreen .inbox-chat-list .voice-message,
-#inboxScreen .inbox-chat-list .voice-preview,
-#inboxScreen .inbox-chat-list [data-message-type="voice"] {
-    display: flex;
-    align-items: center;
-
-    gap: 7px;
-
-    color: #9364b6;
-
-    font-size: 23px;
-}
-
-
-/* Voice icon */
-
-#inboxScreen .inbox-chat-list .voice-message i,
-#inboxScreen .inbox-chat-list .voice-preview i {
-    color: #9565bc;
-
-    font-size: 21px;
-}
-
-
-/* =========================================================
-   EMPTY STATE
-========================================================= */
-
-#inboxScreen .notification-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    flex: 1;
-
-    min-height: 280px;
-
-    padding: 35px 20px;
-
-    text-align: center;
-
-    background: #ffffff;
-}
-
-
-/* Empty icon */
-
-#inboxScreen .notification-empty-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 90px;
-    height: 90px;
-
-    margin-bottom: 20px;
-
-    border-radius: 50%;
-
-    background: #f1e9ff;
-
-    color: #8852d5;
-
-    font-size: 35px;
-}
-
-
-/* Empty title */
-
-#inboxScreen .notification-empty h3 {
-    margin: 0 0 10px;
-
-    color: #24242b;
-
-    font-size: 25px;
-    font-weight: 650;
-}
-
-
-/* Empty description */
-
-#inboxScreen .notification-empty p {
-    max-width: 320px;
-
-    margin: 0;
-
-    color: #777783;
-
-    font-size: 18px;
-    font-weight: 400;
-
-    line-height: 1.5;
-}
-
-
-/* =========================================================
-   FLOATING COMPOSE BUTTON
-========================================================= */
-
-#inboxScreen .inbox-floating-compose {
-    position: absolute;
-
-    right: 38px;
-    bottom: 40px;
-
-    z-index: 20;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 76px;
-    height: 76px;
-
-    padding: 0;
-
-    border: none;
-    border-radius: 50%;
-
-    background:
-        linear-gradient(
-            145deg,
-            #a45de8 0%,
-            #8c4bdc 55%,
-            #7136c9 100%
-        );
-
-    color: #ffffff;
-
-    font-size: 30px;
-
-    box-shadow:
-        0 6px 18px rgba(116, 56, 193, 0.30),
-        0 2px 5px rgba(0, 0, 0, 0.08);
-
-    cursor: pointer;
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
-}
-
-
-/* Compose icon */
-
-#inboxScreen .inbox-floating-compose i {
-    font-size: 29px;
-}
-
-
-/* Compose hover */
-
-@media (hover: hover) {
-    #inboxScreen .inbox-floating-compose:hover {
-        transform: translateY(-3px);
-
-        box-shadow:
-            0 9px 24px rgba(116, 56, 193, 0.36),
-            0 2px 5px rgba(0, 0, 0, 0.08);
+    .inbox-brand-title h2 {
+        font-size: 25px;
     }
+
+    .inbox-header-actions {
+        gap: 8px;
+    }
+
+    .inbox-icon-button {
+        width: 49px;
+        height: 49px;
+        min-width: 49px;
+        font-size: 20px;
+    }
+
+    .inbox-chat-search {
+        width: calc(100% - 24px);
+        min-height: 51px;
+        margin: 9px 12px 15px;
+        padding: 0 15px;
+    }
+
+    .inbox-chat-search input {
+        font-size: 14px;
+    }
+
+    .inbox-chat-tabs {
+        gap: 9px;
+        padding: 4px 10px 14px;
+    }
+
+    .inbox-chat-tab {
+        min-height: 43px;
+        padding: 0 16px;
+        font-size: 13px;
+    }
+
+    .inbox-tab-count {
+        min-width: 22px;
+        height: 22px;
+        font-size: 11px;
+    }
+
+    .inbox-floating-compose {
+        width: 55px;
+        height: 55px;
+        right: 17px;
+        bottom: 20px;
+        font-size: 21px;
+    }
+
 }
 
 
-/* Compose press */
-
-#inboxScreen .inbox-floating-compose:active {
-    transform: scale(0.95);
-}
 
 
 /* =========================================================
@@ -30209,6 +28289,387 @@ body:not(.store-theme-dark) #salesOverviewScreen .text-action:hover {
 #chatPanel .chat-composer {
     flex: 0 0 auto;
 }
+
+
+/* =========================================
+   FEEDBACK-2 — FEEDBACK PANEL STYLING
+========================================= */
+
+/* BACKGROUND OVERLAY */
+.nexodra-feedback-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(10, 15, 25, 0.55);
+
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+/* OPEN STATE */
+.nexodra-feedback-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+/* FEEDBACK PANEL */
+.nexodra-feedback-panel {
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: var(--card-bg, #ffffff);
+    color: var(--text-color, #1f2937);
+
+    border-radius: 18px;
+    padding: 26px;
+
+    box-shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
+
+    transform: translateY(18px) scale(0.98);
+    transition: transform 0.25s ease;
+}
+
+/* PANEL OPEN ANIMATION */
+.nexodra-feedback-overlay.active .nexodra-feedback-panel {
+    transform: translateY(0) scale(1);
+}
+
+/* HEADER */
+.nexodra-feedback-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-bottom: 24px;
+}
+
+.nexodra-feedback-heading-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nexodra-feedback-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #eaf0ff;
+    color: #3867d6;
+
+    border-radius: 12px;
+    font-size: 19px;
+}
+
+.nexodra-feedback-heading-group h2 {
+    margin: 0 0 5px;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.nexodra-feedback-heading-group p {
+    margin: 0;
+    color: #8992a2;
+    font-size: 13px;
+}
+
+/* CLOSE BUTTON */
+.nexodra-feedback-close {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 9px;
+
+    background: transparent;
+    color: #8992a2;
+
+    font-size: 19px;
+    cursor: pointer;
+
+    transition: background 0.2s, color 0.2s;
+}
+
+.nexodra-feedback-close:hover {
+    background: #f1f3f7;
+    color: #333;
+}
+
+/* FORM FIELD GROUPS */
+.nexodra-feedback-field {
+    margin-bottom: 21px;
+}
+
+.nexodra-feedback-field > label {
+    display: block;
+    margin-bottom: 11px;
+
+    font-size: 13px;
+    font-weight: 650;
+}
+
+/* CATEGORY GRID */
+.nexodra-feedback-categories {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.nexodra-feedback-category {
+    position: relative;
+    cursor: pointer;
+}
+
+.nexodra-feedback-category input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.nexodra-feedback-category span {
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 11px;
+
+    border: 1px solid #e5e8ef;
+    border-radius: 10px;
+
+    background: var(--card-bg, #fff);
+
+    font-size: 12px;
+    font-weight: 550;
+
+    transition: 0.2s ease;
+}
+
+.nexodra-feedback-category span i {
+    color: #64748b;
+    font-size: 15px;
+}
+
+.nexodra-feedback-category input:checked + span {
+    border-color: #3867d6;
+    background: #f0f4ff;
+    color: #315fc5;
+}
+
+.nexodra-feedback-category input:checked + span i {
+    color: #3867d6;
+}
+
+/* KEYBOARD FOCUS */
+.nexodra-feedback-category input:focus-visible + span,
+.nexodra-feedback-ratings input:focus-visible + span {
+    outline: 2px solid #3867d6;
+    outline-offset: 3px;
+}
+
+/* EXPERIENCE RATINGS */
+.nexodra-feedback-ratings {
+    display: flex;
+    justify-content: space-between;
+    gap: 9px;
+}
+
+.nexodra-feedback-ratings label {
+    flex: 1;
+    cursor: pointer;
+}
+
+.nexodra-feedback-ratings input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.nexodra-feedback-ratings span {
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #e5e8ef;
+    border-radius: 10px;
+
+    font-size: 24px;
+
+    transition: 0.2s ease;
+}
+
+.nexodra-feedback-ratings input:checked + span {
+    border-color: #3867d6;
+    background: #f0f4ff;
+    transform: translateY(-2px);
+}
+
+/* TEXTAREA AND EMAIL INPUT */
+.nexodra-feedback-field textarea,
+.nexodra-feedback-field input[type="email"] {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 13px 14px;
+
+    border: 1px solid #e1e5ed;
+    border-radius: 10px;
+
+    background: var(--input-bg, #fff);
+    color: inherit;
+
+    font-family: inherit;
+    font-size: 13px;
+
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.nexodra-feedback-field textarea {
+    resize: vertical;
+    min-height: 105px;
+}
+
+.nexodra-feedback-field textarea:focus,
+.nexodra-feedback-field input[type="email"]:focus {
+    border-color: #3867d6;
+    box-shadow: 0 0 0 3px rgba(56, 103, 214, 0.10);
+}
+
+.nexodra-feedback-field textarea::placeholder,
+.nexodra-feedback-field input::placeholder {
+    color: #a0a8b5;
+}
+
+.nexodra-feedback-field label span {
+    color: #8992a2;
+    font-weight: 400;
+}
+
+/* SUBMIT BUTTON */
+.nexodra-feedback-submit {
+    width: 100%;
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #3867d6;
+    color: #fff;
+
+    font-size: 14px;
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition: background 0.2s, transform 0.2s;
+}
+
+.nexodra-feedback-submit:hover {
+    background: #2855bd;
+    transform: translateY(-1px);
+}
+
+.nexodra-feedback-submit:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* STATUS MESSAGE */
+.nexodra-feedback-status {
+    display: none;
+    margin-top: 14px;
+    padding: 11px 13px;
+
+    border-radius: 9px;
+    font-size: 13px;
+}
+
+.nexodra-feedback-status.success {
+    display: block;
+    background: #eaf8ef;
+    color: #207344;
+}
+
+.nexodra-feedback-status.error {
+    display: block;
+    background: #fff0f0;
+    color: #b42318;
+}
+
+/* FOOTER */
+.nexodra-feedback-footer {
+    margin: 16px 0 0;
+    text-align: center;
+
+    color: #929baa;
+    font-size: 11px;
+}
+
+/* MOBILE RESPONSIVENESS */
+@media (max-width: 600px) {
+
+    .nexodra-feedback-overlay {
+        padding: 12px;
+    }
+
+    .nexodra-feedback-panel {
+        max-height: 92vh;
+        padding: 20px 17px;
+        border-radius: 15px;
+    }
+
+    .nexodra-feedback-heading-group h2 {
+        font-size: 17px;
+    }
+
+    .nexodra-feedback-heading-group p {
+        font-size: 11px;
+    }
+
+    .nexodra-feedback-category span {
+        padding: 10px 8px;
+        font-size: 11px;
+    }
+
+    .nexodra-feedback-ratings span {
+        min-height: 43px;
+        font-size: 21px;
+    }
+}
+
 
 
 /* =========================================

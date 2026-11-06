@@ -1,3 +1,99 @@
+/* =========================================================
+   NEXODRA AUTH GATE — BRICK 1 REPAIRED
+   Shared authentication readiness controller
+========================================================= */
+
+window.NEXODRA_AUTH_GATE = (() => {
+
+    let authenticatedUser = null;
+    let isReady = false;
+    let resolveReady;
+
+    function createWaitingPromise() {
+        return new Promise(resolve => {
+            resolveReady = resolve;
+        });
+    }
+
+    let readyPromise = createWaitingPromise();
+
+    function pause() {
+
+        // Do not replace an existing waiting promise.
+        if (!isReady) {
+            console.log(
+                'AUTH GATE — Already waiting for authentication.'
+            );
+            return;
+        }
+
+        authenticatedUser = null;
+        isReady = false;
+
+        readyPromise = createWaitingPromise();
+
+        console.log(
+            'AUTH GATE — Seller features paused.'
+        );
+    }
+
+    function release(user) {
+
+        if (!user || !user.id) {
+            console.error(
+                'AUTH GATE — Cannot release without a valid user.'
+            );
+            return false;
+        }
+
+        authenticatedUser = user;
+        isReady = true;
+
+        resolveReady(user);
+
+        console.log(
+            'AUTH GATE — Seller session ready:',
+            user.id
+        );
+
+        return true;
+    }
+
+    async function wait() {
+
+        if (isReady && authenticatedUser) {
+            return authenticatedUser;
+        }
+
+        return await readyPromise;
+    }
+
+    function getUser() {
+        return isReady ? authenticatedUser : null;
+    }
+
+    function getUserId() {
+        return isReady && authenticatedUser
+            ? authenticatedUser.id
+            : null;
+    }
+
+    function isAuthenticated() {
+        return isReady && !!authenticatedUser;
+    }
+
+    return {
+        pause,
+        release,
+        wait,
+        getUser,
+        getUserId,
+        isAuthenticated
+    };
+
+})();
+
+
 // =========================================
 // C8-A — NEXODRA STARTUP SPLASH
 // =========================================
@@ -2893,20 +2989,21 @@ function getSalesPeriodRange(period, now = new Date()) {
 // =========================================
 async function loadSellerSales(period = 'month') {
 
-    const {
-        data: {
-            user
-        },
-        error: userError
-    } = await supabaseClient.auth.getUser();
+        // Wait until the seller's session has been restored.
+    const user = await window.NEXODRA_AUTH_GATE.wait();
 
-    if (userError || !user) {
-        console.error(
-            'SALES LOADER — User not found:',
-            userError
+    // Safety check: never load sales without an authenticated seller.
+    if (!user || !user.id) {
+        console.warn(
+            'SALES LOADER — Authentication gate returned no seller.'
         );
         return [];
     }
+
+    console.log(
+        'SALES LOADER — Authenticated seller ready:',
+        user.id
+    );
 
     // Custom range will be implemented in Brick 7.
     if (period === 'custom') {
@@ -4169,25 +4266,21 @@ async function loadSellTodaySummary() {
     // GET AUTHENTICATED USER
     // =====================================
 
-    const {
-        data: {
-            user
-        },
-        error: userError
-    } =
-        await supabaseClient.auth.getUser();
+        // Wait until the seller's session has been restored.
+    const user = await window.NEXODRA_AUTH_GATE.wait();
 
-
-    if (userError || !user) {
-
-        console.error(
-            'BRICK SELL 10 — Could not get user:',
-            userError
+    // Safety check: require an authenticated seller.
+    if (!user || !user.id) {
+        console.warn(
+            'BRICK SELL 10 — Authentication gate returned no seller.'
         );
-
         return;
-
     }
+
+    console.log(
+        'BRICK SELL 10 — Authenticated seller ready:',
+        user.id
+    );
 
 
     // =====================================
@@ -10553,38 +10646,19 @@ async function loadStoreInformationFromSupabase() {
     );
 
 
-    // Get the currently authenticated user
-    const {
-        data: {
-            user
-        },
-        error: userError
-    } = await supabaseClient.auth.getUser();
+        // Wait until the seller's session has been restored.
+    const user = await window.NEXODRA_AUTH_GATE.wait();
 
-
-    if (userError) {
-
-        console.error(
-            'BRICK 3C — Could not get authenticated user:',
-            userError
+    // Safety check: do not load store data without a seller.
+    if (!user || !user.id) {
+        console.warn(
+            'BRICK 3C — Authentication gate returned no seller.'
         );
-
         return;
     }
-
-
-    if (!user) {
-
-        console.log(
-            'BRICK 3C — No authenticated user.'
-        );
-
-        return;
-    }
-
 
     console.log(
-        'BRICK 3C — Authenticated user:',
+        'BRICK 3C — Authenticated seller ready:',
         user.id
     );
 
@@ -17479,6 +17553,7 @@ if (
 
 }
 
+
 // =========================================
 // BRICK 3D — LOAD PRODUCTS FROM SUPABASE
 // =========================================
@@ -22933,29 +23008,38 @@ if (!data.session) {
 
 
 // =========================================
-// AUTH GATE — SUCCESSFUL SELLER LOGIN
+// AUTHENTICATION — IDENTIFY ACCOUNT TYPE
 // =========================================
 
-if (
-    !window.NEXODRA_AUTH_GATE.release(
-        data.session.user
-    )
-) {
+// Check Founder access before opening seller features.
+const founderAuthorizedAfterLogin =
+    await nexodraCheckFounderAccess();
 
-    loginMessage.textContent =
-        'Your account was signed in, but the app could not initialize your session. Please try again.';
+// Founder accounts must not release the seller gate.
+if (founderAuthorizedAfterLogin) {
 
-    return;
+    console.log(
+        'AUTH — Founder account verified. Seller gate remains closed.'
+    );
+
+} else {
+
+    // Release seller features for a normal seller.
+    if (
+        !window.NEXODRA_AUTH_GATE.release(data.session.user)
+    ) {
+
+        loginMessage.textContent =
+            'Your account was signed in, but the app could not initialize your session. Please try again.';
+
+        return;
+    }
+
+    console.log(
+        'AUTH GATE — Seller login confirmed:',
+        data.session.user.id
+    );
 }
-
-console.log(
-    'AUTH GATE — Seller login confirmed:',
-    data.session.user.id
-);
-
-          
-// Verify whether this signed-in user is a Founder
-const founderAuthorizedAfterLogin = await nexodraCheckFounderAccess();
 
 /* =========================================
    ODROP AUTH R1 — REMEMBER THIS DEVICE
@@ -33509,98 +33593,8 @@ if (holdSaleButton) {
 })();
 
 
-/* =========================================================
-   NEXODRA AUTH GATE — BRICK 1
-   Shared authentication readiness controller
 
-   Seller-data features must wait until authentication
-   has been restored or a seller has signed in.
-========================================================= */
 
-window.NEXODRA_AUTH_GATE = (() => {
-
-    let authenticatedUser = null;
-    let isReady = false;
-
-    let resolveReady;
-
-    let readyPromise = new Promise(resolve => {
-        resolveReady = resolve;
-    });
-
-    function pause() {
-
-        authenticatedUser = null;
-        isReady = false;
-
-        // Create a fresh waiting promise for the next login.
-        readyPromise = new Promise(resolve => {
-            resolveReady = resolve;
-        });
-
-        console.log(
-            'NEXODRA AUTH GATE: Seller features are waiting for authentication.'
-        );
-    }
-
-    function release(user) {
-
-        if (!user || !user.id) {
-            console.error(
-                'NEXODRA AUTH GATE: Cannot release without a valid user ID.'
-            );
-            return false;
-        }
-
-        authenticatedUser = user;
-        isReady = true;
-
-        resolveReady(user);
-
-        console.log(
-            'NEXODRA AUTH GATE: Authentication ready for user:',
-            user.id
-        );
-
-        return true;
-    }
-
-    async function wait() {
-
-        if (isReady && authenticatedUser) {
-            return authenticatedUser;
-        }
-
-        return await readyPromise;
-    }
-
-    function getUser() {
-        return isReady ? authenticatedUser : null;
-    }
-
-    function getUserId() {
-        return isReady && authenticatedUser
-            ? authenticatedUser.id
-            : null;
-    }
-
-    function isAuthenticated() {
-        return isReady && !!authenticatedUser;
-    }
-
-    // Start closed. Startup restoration or login will release it.
-    pause();
-
-    return {
-        pause,
-        release,
-        wait,
-        getUser,
-        getUserId,
-        isAuthenticated
-    };
-
-})();
 
 
 // =========================================

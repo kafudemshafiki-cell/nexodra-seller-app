@@ -2895,14 +2895,15 @@
         >
     </div>
 
-    <!-- Note -->
+        <!-- Customer -->
     <button
         type="button"
         id="sellNoteBtn"
         class="sell-action-btn"
+        aria-label="Select or register customer for this sale"
     >
-        <i class="fa-solid fa-note-sticky"></i>
-        Note
+        <i class="fa-solid fa-user-plus"></i>
+        Customer
     </button>
 
     <!-- Hold -->
@@ -3003,6 +3004,90 @@
 
 </section>
 
+
+<!-- P2-05B: POS CUSTOMER SELECTION VIEW -->
+<section
+    id="p2PosCustomerScreen"
+    class="screen p2-pos-customer-screen"
+    aria-label="Select customer for current sale"
+    hidden
+>
+    <div class="p2-pos-customer-panel">
+
+        <header class="p2-pos-customer-header">
+            <div>
+                <span class="p2-customers-eyebrow">CURRENT POS SALE</span>
+                <h2>Select Customer</h2>
+                <p>Find an existing customer or register a new one.</p>
+            </div>
+
+            <button
+                type="button"
+                id="p2PosCustomerCloseBtn"
+                class="p2-icon-button"
+                aria-label="Close customer selection"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </header>
+
+        <!-- Search existing customers -->
+        <div class="p2-pos-customer-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="search"
+                id="p2PosCustomerSearch"
+                placeholder="Search customer name, phone or email..."
+                autocomplete="off"
+                aria-label="Search existing customers"
+            >
+        </div>
+
+        <!-- Existing customer results will appear here -->
+        <div
+            id="p2PosCustomerResults"
+            class="p2-pos-customer-results"
+            aria-live="polite"
+        >
+            <div class="p2-pos-customer-empty">
+                <i class="fa-solid fa-users"></i>
+                <strong>Find a customer</strong>
+                <span>Search by name, phone number or email address.</span>
+            </div>
+        </div>
+
+        <!-- Register a new customer -->
+        <div class="p2-pos-customer-register">
+            <div>
+                <strong>New customer?</strong>
+                <span>Register their details and connect them to this sale.</span>
+            </div>
+
+            <button
+                type="button"
+                id="p2PosAddCustomerBtn"
+                class="p2-pos-add-customer-btn"
+            >
+                <i class="fa-solid fa-user-plus"></i>
+                Add Customer
+            </button>
+        </div>
+
+        <footer class="p2-pos-customer-footer">
+            <button
+                type="button"
+                id="p2PosContinueWalkInBtn"
+                class="p2-pos-walkin-btn"
+            >
+                Continue without customer
+            </button>
+        </footer>
+
+    </div>
+</section>
+<!-- END P2-05B -->
+          
 <!-- HELD SALES: LIST SCREEN -->
 <section id="heldSalesScreen" class="screen held-sales-screen" aria-label="Held sales">
     <div class="held-page">
@@ -4588,30 +4673,33 @@
                 >
             </div>
 
-            <!-- Category -->
-            <div class="form-group">
-                <label for="productCategory">Category</label>
+            <!-- Category + Cost Price -->
+<div class="form-row">
 
-                <select id="productCategory">
+    <div class="form-group">
+        <label for="productCategory">Category</label>
 
-                    <option value="Electronics">
-                        Electronics
-                    </option>
+        <select id="productCategory">
+            <option value="Electronics">Electronics</option>
+            <option value="Fashion">Fashion</option>
+            <option value="Home">Home</option>
+            <option value="Accessories">Accessories</option>
+        </select>
+    </div>
 
-                    <option value="Fashion">
-                        Fashion
-                    </option>
+    <div class="form-group">
+        <label for="productCostPrice">Cost Price</label>
 
-                    <option value="Home">
-                        Home
-                    </option>
+        <input
+            type="number"
+            id="productCostPrice"
+            placeholder="e.g. 39.99"
+            step="0.01"
+            min="0"
+        >
+    </div>
 
-                    <option value="Accessories">
-                        Accessories
-                    </option>
-
-                </select>
-            </div>
+</div>
 
             <!-- Price + Stock -->
             <div class="form-row">
@@ -5726,7 +5814,11 @@
             </button>
 
 
-            <button class="profile-menu-item">
+            <button
+    type="button"
+    class="profile-menu-item"
+    id="openCustomersBtn"
+>
                 <div class="profile-menu-icon">
                     <i class="fa-solid fa-users"></i>
                 </div>
@@ -5755,7 +5847,7 @@
                 </div>
 
                 <i class="fa-solid fa-chevron-right profile-arrow"></i>
-            </>
+            </button>
 
 
             <button
@@ -5773,7 +5865,7 @@
                 </div>
 
                 <i class="fa-solid fa-chevron-right profile-arrow"></i>
-            </>
+            </button>
 
         </div>
 
@@ -5805,7 +5897,7 @@
     </div>
 
     <i class="fa-solid fa-chevron-right profile-arrow"></i>
-</>
+</button>
 
 
             <button class="profile-menu-item">
@@ -5851,7 +5943,7 @@
                 </div>
 
                 <i class="fa-solid fa-chevron-right profile-arrow"></i>
-            </>
+            </button>
 
         </div>
 
@@ -6777,6 +6869,707 @@
 
 </section>
 
+<!-- =====================================================
+     NEXODRA PHASE 1 — CASHBOOK & FINANCIAL LEDGER
+     BRICK P1-11 — SCREEN HTML
+===================================================== -->
+
+<section id="p1CashbookScreen" class="screen p1-cashbook-screen">
+
+    <div class="p1-cashbook-workspace">
+
+        <!-- Header -->
+        <header class="p1-cashbook-header">
+            <div>
+                <span class="p1-cashbook-eyebrow">FINANCIAL CONTROL</span>
+                <h1>Cashbook & Ledger</h1>
+                <p>Track money moving through your business accounts.</p>
+            </div>
+
+            <button type="button" id="p1NewCashbookEntryBtn"
+                class="p1-cashbook-primary-btn">
+                + Record transaction
+            </button>
+        </header>
+
+        <!-- Account balance overview -->
+        <section class="p1-cashbook-balance-section">
+            <div class="p1-cashbook-section-heading">
+                <div>
+                    <h2>Account overview</h2>
+                    <p>Your current recorded balances.</p>
+                </div>
+                <button type="button" id="p1AddAccountBtn"
+                    class="p1-cashbook-secondary-btn">
+                    + Add account
+                </button>
+            </div>
+
+            <div id="p1CashbookAccountCards"
+                class="p1-cashbook-account-grid">
+                <div class="p1-cashbook-empty">
+                    Your accounts will appear here.
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="p1-cashbook-summary-grid">
+
+            <article class="p1-cashbook-summary-card">
+                <span>Money received</span>
+                <strong id="p1CashbookMoneyIn">0.00</strong>
+                <small>For the selected period</small>
+            </article>
+
+            <article class="p1-cashbook-summary-card">
+                <span>Money paid out</span>
+                <strong id="p1CashbookMoneyOut">0.00</strong>
+                <small>For the selected period</small>
+            </article>
+
+            <article class="p1-cashbook-summary-card">
+                <span>Net movement</span>
+                <strong id="p1CashbookNetMovement">0.00</strong>
+                <small>Received minus paid</small>
+            </article>
+
+        </section>
+
+        <!-- Account form -->
+        <section id="p1CashbookAccountPanel"
+            class="p1-cashbook-panel" hidden>
+
+            <div class="p1-cashbook-panel-header">
+                <div>
+                    <h2 id="p1CashbookAccountFormTitle">Add account</h2>
+                    <p>Set up a cash, bank, or mobile money account.</p>
+                </div>
+                <button type="button" id="p1CloseAccountFormBtn"
+                    class="p1-cashbook-close-btn" aria-label="Close">×</button>
+            </div>
+
+            <div class="p1-cashbook-panel-body">
+                <form id="p1CashbookAccountForm">
+
+                    <input type="hidden" id="p1CashbookAccountId">
+
+                    <div class="p1-cashbook-form-grid">
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1CashbookAccountName">Account name *</label>
+                            <input id="p1CashbookAccountName" type="text"
+                                placeholder="e.g. Main cash till" required>
+                        </div>
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1CashbookAccountType">Account type *</label>
+                            <select id="p1CashbookAccountType" required>
+                                <option value="">Choose account type</option>
+                                <option value="cash">Cash</option>
+                                <option value="bank">Bank</option>
+                                <option value="mobile_money">Mobile money</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1CashbookOpeningBalance">Opening balance *</label>
+                            <input id="p1CashbookOpeningBalance" type="number"
+                                min="0" step="0.01" value="0" required>
+                        </div>
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1CashbookAccountReference">Account reference</label>
+                            <input id="p1CashbookAccountReference" type="text"
+                                placeholder="Optional account or wallet reference">
+                        </div>
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1CashbookAccountNotes">Notes</label>
+                            <input id="p1CashbookAccountNotes" type="text"
+                                placeholder="Optional notes">
+                        </div>
+
+                    </div>
+
+                    <div class="p1-cashbook-form-actions">
+                        <button type="button" id="p1CancelAccountBtn"
+                            class="p1-cashbook-cancel-btn">Cancel</button>
+                        <button type="submit" id="p1SaveAccountBtn"
+                            class="p1-cashbook-primary-btn">Save account</button>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+        <!-- Transaction form -->
+        <section id="p1CashbookEntryPanel"
+            class="p1-cashbook-panel" hidden>
+
+            <div class="p1-cashbook-panel-header">
+                <div>
+                    <h2 id="p1CashbookEntryFormTitle">Record transaction</h2>
+                    <p>Record money received or paid out.</p>
+                </div>
+                <button type="button" id="p1CloseEntryFormBtn"
+                    class="p1-cashbook-close-btn" aria-label="Close">×</button>
+            </div>
+
+            <div class="p1-cashbook-panel-body">
+
+                <form id="p1CashbookEntryForm">
+
+                    <input type="hidden" id="p1CashbookEntryId">
+
+                    <div class="p1-cashbook-entry-type-selector">
+                        <label class="p1-cashbook-type-option">
+                            <input type="radio" name="p1CashbookEntryType"
+                                value="in" checked>
+                            <span>
+                                <strong>Money received</strong>
+                                <small>Cash entering an account</small>
+                            </span>
+                        </label>
+
+                        <label class="p1-cashbook-type-option">
+                            <input type="radio" name="p1CashbookEntryType"
+                                value="out">
+                            <span>
+                                <strong>Money paid out</strong>
+                                <small>Cash leaving an account</small>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="p1-cashbook-form-grid">
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1CashbookEntryDate">Transaction date *</label>
+                            <input id="p1CashbookEntryDate" type="date" required>
+                        </div>
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1CashbookEntryAccount">Account *</label>
+                            <select id="p1CashbookEntryAccount" required>
+                                <option value="">Choose account</option>
+                            </select>
+                        </div>
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1CashbookEntryCategory">Category *</label>
+                            <select id="p1CashbookEntryCategory" required>
+                                <option value="">Choose category</option>
+                                <option value="sales_receipt">Sales receipt</option>
+                                <option value="customer_payment">Customer payment</option>
+                                <option value="capital">Capital introduced</option>
+                                <option value="other_income">Other income</option>
+                                <option value="expense">Business expense</option>
+                                <option value="supplier_payment">Supplier payment</option>
+                                <option value="withdrawal">Owner withdrawal</option>
+                                <option value="transfer">Account transfer</option>
+                                <option value="other_payment">Other payment</option>
+                            </select>
+                        </div>
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1CashbookEntryAmount">Amount *</label>
+                            <input id="p1CashbookEntryAmount" type="number"
+                                min="0.01" step="0.01" placeholder="0.00" required>
+                        </div>
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1CashbookEntryMethod">Payment method</label>
+                            <select id="p1CashbookEntryMethod">
+                                <option value="">Choose method</option>
+                                <option value="cash">Cash</option>
+                                <option value="bank_transfer">Bank transfer</option>
+                                <option value="mobile_money">Mobile money</option>
+                                <option value="card">Card</option>
+                                <option value="cheque">Cheque</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1CashbookEntryReference">Reference</label>
+                            <input id="p1CashbookEntryReference" type="text"
+                                placeholder="Receipt or transaction reference">
+                        </div>
+
+                        <div class="p1-cashbook-field p1-cashbook-field-full">
+                            <label for="p1CashbookEntryDescription">Description *</label>
+                            <textarea id="p1CashbookEntryDescription"
+                                rows="3" placeholder="What was this transaction for?"
+                                required></textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="p1-cashbook-form-actions">
+                        <button type="button" id="p1CancelEntryBtn"
+                            class="p1-cashbook-cancel-btn">Cancel</button>
+                        <button type="submit" id="p1SaveEntryBtn"
+                            class="p1-cashbook-primary-btn">Save transaction</button>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+        <!-- Ledger -->
+        <section class="p1-cashbook-panel">
+
+            <div class="p1-cashbook-panel-header">
+                <div>
+                    <h2>Financial ledger</h2>
+                    <p>A dated record of money moving through your accounts.</p>
+                </div>
+
+                <button type="button" id="p1ExportCashbookBtn"
+                    class="p1-cashbook-secondary-btn">
+                    Export ledger
+                </button>
+            </div>
+
+            <div class="p1-cashbook-toolbar">
+
+                <input id="p1CashbookSearch" type="search"
+                    placeholder="Search description or reference">
+
+                <select id="p1CashbookAccountFilter">
+                    <option value="">All accounts</option>
+                </select>
+
+                <select id="p1CashbookTypeFilter">
+                    <option value="">All transactions</option>
+                    <option value="in">Money received</option>
+                    <option value="out">Money paid out</option>
+                </select>
+
+                <input id="p1CashbookFromDate" type="date"
+                    aria-label="From date">
+
+                <input id="p1CashbookToDate" type="date"
+                    aria-label="To date">
+
+            </div>
+
+            <div class="p1-cashbook-ledger-scroll">
+                <table class="p1-cashbook-ledger-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Account</th>
+                            <th>Category</th>
+                            <th>Money in</th>
+                            <th>Money out</th>
+                            <th>Balance</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="p1CashbookLedgerBody">
+                        <tr>
+                            <td colspan="8" class="p1-cashbook-empty">
+                                No transactions recorded yet.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p1-cashbook-ledger-footer">
+                <span>Showing recorded account movements</span>
+                <strong id="p1CashbookLedgerCount">0 transactions</strong>
+            </div>
+
+        </section>
+
+        <!-- Reconciliation -->
+        <section class="p1-cashbook-panel">
+
+            <div class="p1-cashbook-panel-header">
+                <div>
+                    <h2>Account reconciliation</h2>
+                    <p>Compare your recorded balance with the actual balance.</p>
+                </div>
+            </div>
+
+            <div class="p1-cashbook-panel-body">
+
+                <form id="p1CashbookReconciliationForm">
+
+                    <div class="p1-cashbook-form-grid">
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1ReconcileAccount">Account *</label>
+                            <select id="p1ReconcileAccount" required>
+                                <option value="">Choose account</option>
+                            </select>
+                        </div>
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1ReconcileDate">Statement date *</label>
+                            <input id="p1ReconcileDate" type="date" required>
+                        </div>
+
+                        <div class="p1-cashbook-field">
+                            <label for="p1ReconcileActualBalance">Actual balance *</label>
+                            <input id="p1ReconcileActualBalance" type="number"
+                                step="0.01" required placeholder="0.00">
+                        </div>
+
+                    </div>
+
+                    <div class="p1-cashbook-reconciliation-result"
+                        id="p1ReconciliationResult" aria-live="polite">
+                        Select an account and enter its actual balance.
+                    </div>
+
+                    <div class="p1-cashbook-form-actions">
+                        <button type="submit" id="p1SaveReconciliationBtn"
+                            class="p1-cashbook-primary-btn">
+                            Save reconciliation
+                        </button>
+                    </div>
+
+                </form>
+
+                <div class="p1-cashbook-reconciliation-history">
+                    <h3>Recent reconciliations</h3>
+                    <div id="p1CashbookReconciliationList">
+                        <p>No reconciliations recorded yet.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+</section>
+
+<!-- END BRICK P1-11 -->
+
+
+<!-- =====================================================
+     P2-01 — CUSTOMER MANAGEMENT SCREEN
+     ===================================================== -->
+<section id="p2CustomersScreen" class="screen p2-customers-screen">
+
+    <div class="p2-customers-workspace">
+
+        <!-- PAGE HEADER -->
+        <header class="p2-customers-header">
+            <div>
+                <span class="p2-customers-eyebrow">CUSTOMER RELATIONSHIPS</span>
+                <h1>Customer Management</h1>
+                <p>Manage your customers, understand their activity and keep their details organised.</p>
+            </div>
+
+            <button type="button" id="p2AddCustomerBtn"
+                    class="p2-primary-button">
+                <i class="fa-solid fa-user-plus"></i>
+                Add Customer
+            </button>
+        </header>
+
+        <!-- CUSTOMER SUMMARY -->
+        <div class="p2-customer-summary">
+
+            <article class="p2-customer-stat">
+                <div class="p2-stat-icon p2-stat-purple">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div>
+                    <span>Total Customers</span>
+                    <strong id="p2TotalCustomers">0</strong>
+                    <small>All customer records</small>
+                </div>
+            </article>
+
+            <article class="p2-customer-stat">
+                <div class="p2-stat-icon p2-stat-blue">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <div>
+                    <span>New Customers</span>
+                    <strong id="p2NewCustomers">0</strong>
+                    <small>This month</small>
+                </div>
+            </article>
+
+            <article class="p2-customer-stat">
+                <div class="p2-stat-icon p2-stat-green">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                </div>
+                <div>
+                    <span>Customers with Purchases</span>
+                    <strong id="p2ActiveCustomers">0</strong>
+                    <small>Based on recorded sales</small>
+                </div>
+            </article>
+
+            <article class="p2-customer-stat">
+                <div class="p2-stat-icon p2-stat-orange">
+                    <i class="fa-solid fa-address-book"></i>
+                </div>
+                <div>
+                    <span>Unclassified</span>
+                    <strong id="p2UnclassifiedCustomers">0</strong>
+                    <small>Awaiting customer details</small>
+                </div>
+            </article>
+
+        </div>
+
+        <!-- CUSTOMER DIRECTORY -->
+        <section class="p2-customer-directory">
+
+            <div class="p2-directory-heading">
+                <div>
+                    <h2>Customer Directory</h2>
+                    <p>Search and manage your customer records.</p>
+                </div>
+
+                <span id="p2CustomerCount" class="p2-customer-count">
+                    0 customers
+                </span>
+            </div>
+
+            <div class="p2-customer-toolbar">
+
+                <div class="p2-customer-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search"
+                           id="p2CustomerSearch"
+                           placeholder="Search name, phone or email..."
+                           autocomplete="off">
+                </div>
+
+                <select id="p2CustomerStatusFilter">
+                    <option value="">All customers</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+
+                <select id="p2CustomerSort">
+                    <option value="newest">Newest first</option>
+                    <option value="oldest">Oldest first</option>
+                    <option value="name">Name A–Z</option>
+                </select>
+
+            </div>
+
+            <div class="p2-customer-table-wrap">
+                <table class="p2-customer-table">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Customer Since</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="p2CustomerTableBody">
+                        <tr>
+                            <td colspan="6" class="p2-customer-empty">
+                                <i class="fa-solid fa-users"></i>
+                                <strong>No customers yet</strong>
+                                <span>Add your first customer to get started.</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- ADD / EDIT CUSTOMER PANEL -->
+        <section id="p2CustomerFormPanel"
+                 class="p2-customer-panel"
+                 hidden>
+
+            <div class="p2-customer-panel-header">
+                <div>
+                    <span class="p2-customers-eyebrow">CUSTOMER DETAILS</span>
+                    <h2 id="p2CustomerFormTitle">Add New Customer</h2>
+                    <p>Enter the customer's contact and business details.</p>
+                </div>
+
+                <button type="button"
+                        id="p2CloseCustomerFormBtn"
+                        class="p2-icon-button"
+                        aria-label="Close customer form">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="p2CustomerForm">
+
+                <input type="hidden" id="p2CustomerId">
+
+                <div class="p2-customer-form-grid">
+
+                    <div class="p2-customer-field">
+                        <label for="p2CustomerName">Customer Name *</label>
+                        <input type="text"
+                               id="p2CustomerName"
+                               placeholder="Enter full name"
+                               required>
+                    </div>
+
+                    <div class="p2-customer-field">
+                        <label for="p2CustomerPhone">Phone Number *</label>
+                        <input type="tel"
+                               id="p2CustomerPhone"
+                               placeholder="Enter phone number"
+                               required>
+                    </div>
+
+                    <div class="p2-customer-field">
+                        <label for="p2CustomerEmail">Email Address</label>
+                        <input type="email"
+                               id="p2CustomerEmail"
+                               placeholder="Enter email address">
+                    </div>
+
+                    <div class="p2-customer-field">
+                        <label for="p2CustomerType">Customer Type</label>
+                        <select id="p2CustomerType">
+                            <option value="individual">Individual</option>
+                            <option value="business">Business</option>
+                            <option value="wholesale">Wholesale</option>
+                        </select>
+                    </div>
+
+                    <div class="p2-customer-field">
+                        <label for="p2CustomerAddress">Address</label>
+                        <input type="text"
+                               id="p2CustomerAddress"
+                               placeholder="Street and building">
+                    </div>
+
+                    <div class="p2-customer-field">
+                        <label for="p2CustomerCity">City / Town</label>
+                        <input type="text"
+                               id="p2CustomerCity"
+                               placeholder="Enter city or town">
+                    </div>
+
+                    <div class="p2-customer-field">
+                        <label for="p2CustomerStatus">Status</label>
+                        <select id="p2CustomerStatus">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+
+                    <div class="p2-customer-field p2-customer-field-full">
+                        <label for="p2CustomerNotes">Customer Notes</label>
+                        <textarea id="p2CustomerNotes"
+                                  rows="3"
+                                  placeholder="Additional information about this customer..."></textarea>
+                    </div>
+
+                </div>
+
+                <div class="p2-customer-form-actions">
+                    <button type="button"
+                            id="p2CancelCustomerBtn"
+                            class="p2-secondary-button">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            id="p2SaveCustomerBtn"
+                            class="p2-primary-button">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Save Customer
+                    </button>
+                </div>
+
+            </form>
+        </section>
+
+        <!-- CUSTOMER PROFILE PANEL -->
+        <section id="p2CustomerProfilePanel"
+                 class="p2-customer-panel"
+                 hidden>
+
+            <div class="p2-customer-panel-header">
+                <div>
+                    <span class="p2-customers-eyebrow">CUSTOMER PROFILE</span>
+                    <h2 id="p2ProfileCustomerName">Customer Details</h2>
+                    <p id="p2ProfileCustomerContact">Customer contact information</p>
+                </div>
+
+                <button type="button"
+                        id="p2CloseCustomerProfileBtn"
+                        class="p2-icon-button"
+                        aria-label="Close customer profile">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p2-customer-profile-stats">
+                <div>
+                    <span>Total Purchases</span>
+                    <strong id="p2ProfilePurchaseCount">0</strong>
+                </div>
+
+                <div>
+                    <span>Total Spent</span>
+                    <strong id="p2ProfileTotalSpent">0</strong>
+                </div>
+
+                <div>
+                    <span>Outstanding Balance</span>
+                    <strong id="p2ProfileOutstanding">0</strong>
+                </div>
+            </div>
+
+            <div class="p2-customer-profile-details">
+                <h3>Contact Information</h3>
+                <div id="p2ProfileContactDetails"></div>
+            </div>
+
+            <div class="p2-customer-profile-history">
+                <h3>Purchase History</h3>
+
+                <div class="p2-customer-table-wrap">
+                    <table class="p2-customer-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Receipt / Reference</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="p2CustomerPurchaseHistory">
+                            <tr>
+                                <td colspan="4" class="p2-customer-empty">
+                                    Purchase history will appear here.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+</section>
+<!-- END P2-01 -->
+
+              
    <!-- =========================================
      NEXODRA — HELP & SUPPORT SCREEN
 ========================================= -->
@@ -8358,10 +9151,464 @@
                 </section>
 
     </div>
-</>
+</section>
 <!-- END NEXODRA SALES OVERVIEW -->
 
-    
+ 
+<!-- =====================================================
+     P2-07 — INVENTORY MANAGEMENT WORKSPACE
+===================================================== -->
+
+<section id="inventoryManagementScreen" class="screen">
+
+    <div class="inventory-workspace">
+
+        <!-- INVENTORY HEADER -->
+        <header class="inventory-header">
+            <div>
+                <span class="inventory-eyebrow">STOCK & OPERATIONS</span>
+                <h1>Inventory Management</h1>
+                <p>Manage products, purchases, stock movements, returns and damaged goods.</p>
+            </div>
+
+            <div class="inventory-header-actions">
+                <button type="button" id="inventoryAddProductBtn">
+                    <i class="fa-solid fa-plus"></i>
+                    Add Product
+                </button>
+            </div>
+        </header>
+
+        <!-- INVENTORY OVERVIEW -->
+        <section class="inventory-overview-section">
+
+            <div class="inventory-section-heading">
+                <h2>Inventory Overview</h2>
+                <p>A snapshot of your current stock position.</p>
+            </div>
+
+            <div class="inventory-overview-grid">
+
+                <article class="inventory-stat-card">
+                    <span>Total Stock Units</span>
+                    <strong id="inventoryTotalUnits">0</strong>
+                    <small>Units currently held</small>
+                </article>
+
+                <article class="inventory-stat-card">
+                    <span>Stock Cost Value</span>
+                    <strong id="inventoryCostValue">0.00</strong>
+                    <small>Based on product cost prices</small>
+                </article>
+
+                <article class="inventory-stat-card">
+                    <span>Potential Selling Value</span>
+                    <strong id="inventorySellingValue">0.00</strong>
+                    <small>Based on selling prices</small>
+                </article>
+
+                <article class="inventory-stat-card">
+                    <span>Low Stock</span>
+                    <strong id="inventoryLowStockCount">0</strong>
+                    <small>Products needing attention</small>
+                </article>
+
+                <article class="inventory-stat-card">
+                    <span>Out of Stock</span>
+                    <strong id="inventoryOutOfStockCount">0</strong>
+                    <small>Products with no available units</small>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- INVENTORY WORKSPACE NAVIGATION -->
+        <nav class="inventory-section-navigation"
+             aria-label="Inventory sections">
+
+            <button type="button"
+                    class="inventory-section-tab active"
+                    data-inventory-tab="products">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                Products
+            </button>
+
+            <button type="button"
+                    class="inventory-section-tab"
+                    data-inventory-tab="purchases">
+                <i class="fa-solid fa-truck-ramp-box"></i>
+                Purchases
+            </button>
+
+            <button type="button"
+                    class="inventory-section-tab"
+                    data-inventory-tab="returns">
+                <i class="fa-solid fa-arrow-rotate-left"></i>
+                Returns & Exchanges
+            </button>
+
+            <button type="button"
+                    class="inventory-section-tab"
+                    data-inventory-tab="damaged">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Damaged & Lost
+            </button>
+
+            <button type="button"
+                    class="inventory-section-tab"
+                    data-inventory-tab="activity">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Stock Activity
+            </button>
+
+        </nav>
+
+        <!-- =============================================
+             PRODUCTS SECTION
+        ============================================== -->
+
+        <section class="inventory-content-panel active"
+                 id="inventoryProductsPanel"
+                 data-inventory-panel="products">
+
+            <div class="inventory-panel-heading">
+                <div>
+                    <h2>Product Inventory</h2>
+                    <p>View and manage quantities for your existing products.</p>
+                </div>
+            </div>
+
+            <div class="inventory-product-toolbar">
+
+                <div class="inventory-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search"
+                           id="inventoryProductSearch"
+                           placeholder="Search product, SKU or barcode...">
+                </div>
+
+                <select id="inventoryCategoryFilter">
+                    <option value="">All categories</option>
+                </select>
+
+                <select id="inventoryStockFilter">
+                    <option value="">All stock statuses</option>
+                    <option value="in-stock">In stock</option>
+                    <option value="low-stock">Low stock</option>
+                    <option value="out-of-stock">Out of stock</option>
+                </select>
+
+            </div>
+
+            <div class="inventory-table-wrapper">
+
+                <table class="inventory-products-table">
+
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>SKU / Barcode</th>
+                            <th>Category</th>
+                            <th>Cost Price</th>
+                            <th>Selling Price</th>
+                            <th>Quantity</th>
+                            <th>Stock Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="inventoryProductsTableBody">
+                        <tr>
+                            <td colspan="8">
+                                Inventory products will appear here.
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- =============================================
+             PURCHASE HISTORY SECTION
+        ============================================== -->
+
+        <section class="inventory-content-panel"
+                 id="inventoryPurchasesPanel"
+                 data-inventory-panel="purchases"
+                 hidden>
+
+            <div class="inventory-panel-heading">
+                <div>
+                    <h2>Purchases & Receiving</h2>
+                    <p>Track supplier purchases and the stock received into your inventory.</p>
+                </div>
+            </div>
+
+            <div class="inventory-filter-row">
+
+                <input type="search"
+                       id="inventoryPurchaseSearch"
+                       placeholder="Search purchase or supplier...">
+
+                <select id="inventoryPurchaseStatusFilter">
+                    <option value="">All purchase statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="received">Received</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+
+            </div>
+
+            <div class="inventory-table-wrapper">
+
+                <table class="inventory-history-table">
+
+                    <thead>
+                        <tr>
+                            <th>Purchase Reference</th>
+                            <th>Supplier</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Total Cost</th>
+                            <th>Receiving Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="inventoryPurchasesTableBody">
+                        <tr>
+                            <td colspan="7">
+                                Purchase history will appear here.
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- =============================================
+             RETURNS, REFUNDS & EXCHANGES SECTION
+        ============================================== -->
+
+        <section class="inventory-content-panel"
+                 id="inventoryReturnsPanel"
+                 data-inventory-panel="returns"
+                 hidden>
+
+            <div class="inventory-panel-heading">
+                <div>
+                    <h2>Returns, Refunds & Exchanges</h2>
+                    <p>Track returned products and what happens to their stock.</p>
+                </div>
+            </div>
+
+            <div class="inventory-filter-row">
+
+                <input type="search"
+                       id="inventoryReturnsSearch"
+                       placeholder="Search sale, receipt or product...">
+
+                <select id="inventoryReturnTypeFilter">
+                    <option value="">All return types</option>
+                    <option value="return">Return</option>
+                    <option value="refund">Refund</option>
+                    <option value="exchange">Exchange</option>
+                </select>
+
+                <select id="inventoryReturnStatusFilter">
+                    <option value="">All statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+
+            </div>
+
+            <div class="inventory-table-wrapper">
+
+                <table class="inventory-history-table">
+
+                    <thead>
+                        <tr>
+                            <th>Reference</th>
+                            <th>Original Sale</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Reason</th>
+                            <th>Type</th>
+                            <th>Stock Outcome</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="inventoryReturnsTableBody">
+                        <tr>
+                            <td colspan="9">
+                                Returns and exchanges will appear here.
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="inventory-information-note">
+                <i class="fa-solid fa-circle-info"></i>
+                Returned goods must be assessed before being added back
+                to sellable stock. Refunds and exchanges must not create
+                duplicate stock movements.
+            </div>
+
+        </section>
+
+        <!-- =============================================
+             DAMAGED & LOST STOCK SECTION
+        ============================================== -->
+
+        <section class="inventory-content-panel"
+                 id="inventoryDamagedPanel"
+                 data-inventory-panel="damaged"
+                 hidden>
+
+            <div class="inventory-panel-heading">
+                <div>
+                    <h2>Damaged & Lost Stock</h2>
+                    <p>Keep records of products that can no longer be sold.</p>
+                </div>
+
+                <button type="button" id="inventoryRecordDamageBtn">
+                    <i class="fa-solid fa-plus"></i>
+                    Record Damage or Loss
+                </button>
+            </div>
+
+            <div class="inventory-filter-row">
+
+                <input type="search"
+                       id="inventoryDamageSearch"
+                       placeholder="Search product or reference...">
+
+                <select id="inventoryDamageReasonFilter">
+                    <option value="">All reasons</option>
+                    <option value="damaged">Damaged</option>
+                    <option value="lost">Lost</option>
+                    <option value="expired">Expired</option>
+                    <option value="stolen">Stolen</option>
+                    <option value="other">Other</option>
+                </select>
+
+            </div>
+
+            <div class="inventory-table-wrapper">
+
+                <table class="inventory-history-table">
+
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Reason</th>
+                            <th>Stock Before</th>
+                            <th>Stock After</th>
+                            <th>Reference</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="inventoryDamageTableBody">
+                        <tr>
+                            <td colspan="8">
+                                Damaged and lost stock records will appear here.
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- =============================================
+             STOCK ACTIVITY / MOVEMENT HISTORY
+        ============================================== -->
+
+        <section class="inventory-content-panel"
+                 id="inventoryActivityPanel"
+                 data-inventory-panel="activity"
+                 hidden>
+
+            <div class="inventory-panel-heading">
+                <div>
+                    <h2>Stock Activity</h2>
+                    <p>Review the history of stock changes across your business.</p>
+                </div>
+            </div>
+
+            <div class="inventory-filter-row">
+
+                <input type="search"
+                       id="inventoryActivitySearch"
+                       placeholder="Search product or reference...">
+
+                <select id="inventoryActivityTypeFilter">
+                    <option value="">All movements</option>
+                    <option value="sale">Sales</option>
+                    <option value="purchase">Purchase receiving</option>
+                    <option value="return">Returns</option>
+                    <option value="exchange">Exchanges</option>
+                    <option value="damage">Damage or loss</option>
+                    <option value="adjustment">Manual adjustments</option>
+                </select>
+
+            </div>
+
+            <div class="inventory-table-wrapper">
+
+                <table class="inventory-history-table">
+
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Product</th>
+                            <th>Movement</th>
+                            <th>Quantity</th>
+                            <th>Previous Stock</th>
+                            <th>New Stock</th>
+                            <th>Reason</th>
+                            <th>Reference</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="inventoryActivityTableBody">
+                        <tr>
+                            <td colspan="8">
+                                Stock movement history will appear here.
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</section>
+
+<!-- END P2-07 INVENTORY MANAGEMENT WORKSPACE -->
+   
 
 
 <!-- =========================================
@@ -8708,6 +9955,591 @@
             </div>
 
         </section>
+
+      
+<!-- =========================================
+     PHASE 1 — EXPENSE MANAGEMENT
+     BRICK P1-02 — HTML INTERFACE
+========================================= -->
+
+<section
+    class="p1-expense-manager"
+    id="p1ExpenseManager"
+    hidden
+    aria-labelledby="p1ExpenseTitle"
+>
+
+    <div class="p1-module-header">
+
+        <div>
+            <button
+                type="button"
+                class="p1-back-button"
+                id="p1ExpenseBackBtn"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Reports
+            </button>
+
+            <p class="reports-eyebrow">
+                FINANCIAL MANAGEMENT
+            </p>
+
+            <h2 id="p1ExpenseTitle">
+                Expense Management
+            </h2>
+
+            <p>
+                Record and monitor your business spending.
+            </p>
+        </div>
+
+        <button
+            type="button"
+            class="p1-primary-button"
+            id="p1AddExpenseBtn"
+        >
+            <i class="fa-solid fa-plus"></i>
+            Add expense
+        </button>
+
+    </div>
+
+
+    <!-- EXPENSE SUMMARY -->
+
+    <div class="p1-expense-summary">
+
+        <article class="p1-expense-stat">
+            <span>Total expenses</span>
+            <strong id="p1ExpenseTotal">₦0.00</strong>
+            <small>Selected period</small>
+        </article>
+
+        <article class="p1-expense-stat">
+            <span>Transactions</span>
+            <strong id="p1ExpenseCount">0</strong>
+            <small>Recorded expenses</small>
+        </article>
+
+        <article class="p1-expense-stat">
+            <span>Average expense</span>
+            <strong id="p1ExpenseAverage">₦0.00</strong>
+            <small>Per transaction</small>
+        </article>
+
+    </div>
+
+
+    <!-- EXPENSE FORM -->
+
+    <section
+        class="p1-expense-form-panel"
+        id="p1ExpenseFormPanel"
+        hidden
+    >
+
+        <div class="p1-panel-heading">
+
+            <div>
+                <h3 id="p1ExpenseFormTitle">
+                    Add new expense
+                </h3>
+
+                <p>
+                    Enter the details of your business expense.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="p1-icon-button"
+                id="p1CloseExpenseFormBtn"
+                aria-label="Close expense form"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <form id="p1ExpenseForm">
+
+            <input
+                type="hidden"
+                id="p1ExpenseRecordId"
+            >
+
+            <div class="p1-form-grid">
+
+                <label class="p1-form-field">
+                    <span>Expense title *</span>
+
+                    <input
+                        type="text"
+                        id="p1ExpenseTitleInput"
+                        maxlength="120"
+                        placeholder="e.g. Shop rent"
+                        required
+                    >
+                </label>
+
+
+                <label class="p1-form-field">
+                    <span>Amount *</span>
+
+                    <input
+                        type="number"
+                        id="p1ExpenseAmount"
+                        min="0.01"
+                        step="0.01"
+                        placeholder="0.00"
+                        required
+                    >
+                </label>
+
+
+                <label class="p1-form-field">
+                    <span>Category *</span>
+
+                    <select
+                        id="p1ExpenseCategory"
+                        required
+                    >
+                        <option value="">Select category</option>
+                        <option value="rent">Rent</option>
+                        <option value="transport">Transport</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="salaries">Salaries</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="supplies">Business supplies</option>
+                        <option value="communication">Communication</option>
+                        <option value="taxes">Taxes and fees</option>
+                        <option value="other">Other</option>
+                    </select>
+
+                </label>
+
+
+                <label class="p1-form-field">
+                    <span>Expense date *</span>
+
+                    <input
+                        type="date"
+                        id="p1ExpenseDate"
+                        required
+                    >
+                </label>
+
+
+                <label class="p1-form-field">
+                    <span>Payment method *</span>
+
+                    <select
+                        id="p1ExpensePaymentMethod"
+                        required
+                    >
+                        <option value="">Select payment method</option>
+                        <option value="cash">Cash</option>
+                        <option value="bank">Bank transfer</option>
+                        <option value="mobile-money">Mobile money</option>
+                        <option value="card">Card</option>
+                        <option value="credit">Unpaid / Credit</option>
+                    </select>
+
+                </label>
+
+
+                <label class="p1-form-field">
+                    <span>Paid from account</span>
+
+                    <select id="p1ExpenseAccount">
+                        <option value="">Select account later</option>
+                    </select>
+
+                    <small>
+                        Account selection will be connected to Cashbook.
+                    </small>
+
+                </label>
+
+
+                <label class="p1-form-field p1-form-full">
+                    <span>Receipt reference or image link</span>
+
+                    <input
+                        type="text"
+                        id="p1ExpenseReceipt"
+                        maxlength="500"
+                        placeholder="Receipt number or image URL"
+                    >
+
+                </label>
+
+
+                <label class="p1-form-field p1-form-full">
+                    <span>Notes</span>
+
+                    <textarea
+                        id="p1ExpenseNotes"
+                        rows="3"
+                        maxlength="1000"
+                        placeholder="Additional expense details..."
+                    ></textarea>
+
+                </label>
+
+            </div>
+
+
+            <div class="p1-form-actions">
+
+                <button
+                    type="button"
+                    class="p1-secondary-button"
+                    id="p1CancelExpenseBtn"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="p1-primary-button"
+                    id="p1SaveExpenseBtn"
+                >
+                    Save expense
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- EXPENSE FILTERS -->
+
+    <section class="p1-expense-list-panel">
+
+        <div class="p1-panel-heading">
+
+            <div>
+                <h3>Expense history</h3>
+                <p>Search and review recorded spending.</p>
+            </div>
+
+            <button
+                type="button"
+                class="p1-secondary-button"
+                id="p1ExportExpensesBtn"
+            >
+                <i class="fa-solid fa-download"></i>
+                Export
+            </button>
+
+        </div>
+
+
+        <div class="p1-expense-filters">
+
+            <label class="p1-form-field">
+                <span>Search expenses</span>
+
+                <input
+                    type="search"
+                    id="p1ExpenseSearch"
+                    placeholder="Search title or notes..."
+                >
+            </label>
+
+
+            <label class="p1-form-field">
+                <span>Category</span>
+
+                <select id="p1ExpenseFilterCategory">
+                    <option value="all">All categories</option>
+                    <option value="rent">Rent</option>
+                    <option value="transport">Transport</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="salaries">Salaries</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="maintenance">Maintenance</option>
+                    <option value="supplies">Business supplies</option>
+                    <option value="communication">Communication</option>
+                    <option value="taxes">Taxes and fees</option>
+                    <option value="other">Other</option>
+                </select>
+            </label>
+
+
+            <label class="p1-form-field">
+                <span>From date</span>
+
+                <input
+                    type="date"
+                    id="p1ExpenseFilterFrom"
+                >
+            </label>
+
+
+            <label class="p1-form-field">
+                <span>To date</span>
+
+                <input
+                    type="date"
+                    id="p1ExpenseFilterTo"
+                >
+            </label>
+
+            <button
+                type="button"
+                class="p1-secondary-button"
+                id="p1ClearExpenseFiltersBtn"
+            >
+                Clear filters
+            </button>
+
+        </div>
+
+
+        <!-- EXPENSE RECORDS -->
+
+        <div
+            class="p1-expense-record-list"
+            id="p1ExpenseRecordList"
+        >
+
+            <div class="p1-empty-state">
+
+                <i class="fa-solid fa-receipt"></i>
+
+                <h3>No expenses recorded</h3>
+
+                <p>
+                    Your saved business expenses will appear here.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</section>
+
+<!-- END PHASE 1 EXPENSE MANAGEMENT -->
+
+     <!-- =========================================
+     PHASE 1 — SUPPLIER MANAGEMENT
+     BRICK P1-05 — HTML INTERFACE
+========================================= -->
+
+<section class="p1-supplier-manager" id="p1SupplierManager"
+    hidden aria-labelledby="p1SupplierTitle">
+
+    <div class="p1-module-header">
+        <div>
+            <button type="button" class="p1-back-button" id="p1SupplierBackBtn">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Reports
+            </button>
+            <p class="reports-eyebrow">FINANCIAL MANAGEMENT</p>
+            <h2 id="p1SupplierTitle">Supplier Management</h2>
+            <p>Manage supplier contacts, purchases, payments and outstanding balances.</p>
+        </div>
+
+        <button type="button" class="p1-primary-button" id="p1AddSupplierBtn">
+            <i class="fa-solid fa-plus"></i>
+            Add supplier
+        </button>
+    </div>
+
+    <!-- Supplier summary -->
+    <div class="p1-supplier-summary">
+        <article class="p1-expense-stat">
+            <span>Total suppliers</span>
+            <strong id="p1SupplierCount">0</strong>
+            <small>Registered suppliers</small>
+        </article>
+
+        <article class="p1-expense-stat">
+            <span>Total outstanding</span>
+            <strong id="p1SupplierOutstanding">₦0.00</strong>
+            <small>Unpaid supplier balances</small>
+        </article>
+
+        <article class="p1-expense-stat">
+            <span>Total purchases</span>
+            <strong id="p1SupplierPurchases">₦0.00</strong>
+            <small>Recorded purchase value</small>
+        </article>
+    </div>
+
+    <!-- Add / edit supplier form -->
+    <section class="p1-supplier-form-panel" id="p1SupplierFormPanel" hidden>
+        <div class="p1-panel-heading">
+            <div>
+                <h3 id="p1SupplierFormTitle">Register supplier</h3>
+                <p>Enter the supplier's business and contact information.</p>
+            </div>
+
+            <button type="button" class="p1-icon-button"
+                id="p1CloseSupplierFormBtn" aria-label="Close supplier form">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form id="p1SupplierForm">
+            <input type="hidden" id="p1SupplierRecordId">
+
+            <div class="p1-form-grid">
+                <label class="p1-form-field">
+                    <span>Supplier / business name *</span>
+                    <input type="text" id="p1SupplierName"
+                        maxlength="150" placeholder="Supplier business name" required>
+                </label>
+
+                <label class="p1-form-field">
+                    <span>Contact person</span>
+                    <input type="text" id="p1SupplierContact"
+                        maxlength="120" placeholder="Contact person's name">
+                </label>
+
+                <label class="p1-form-field">
+                    <span>Phone number *</span>
+                    <input type="tel" id="p1SupplierPhone"
+                        maxlength="40" placeholder="Supplier phone number" required>
+                </label>
+
+                <label class="p1-form-field">
+                    <span>Email address</span>
+                    <input type="email" id="p1SupplierEmail"
+                        maxlength="150" placeholder="supplier@example.com">
+                </label>
+
+                <label class="p1-form-field">
+                    <span>Business address</span>
+                    <input type="text" id="p1SupplierAddress"
+                        maxlength="250" placeholder="Street, town or city">
+                </label>
+
+                <label class="p1-form-field">
+                    <span>Supplier status</span>
+                    <select id="p1SupplierStatus">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </label>
+
+                <label class="p1-form-field p1-form-full">
+                    <span>Notes</span>
+                    <textarea id="p1SupplierNotes" rows="3"
+                        maxlength="1000"
+                        placeholder="Additional supplier information..."></textarea>
+                </label>
+            </div>
+
+            <div class="p1-form-actions">
+                <button type="button" class="p1-secondary-button"
+                    id="p1CancelSupplierBtn">Cancel</button>
+
+                <button type="submit" class="p1-primary-button"
+                    id="p1SaveSupplierBtn">Save supplier</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Supplier list -->
+    <section class="p1-supplier-list-panel">
+        <div class="p1-panel-heading">
+            <div>
+                <h3>Supplier directory</h3>
+                <p>Search and manage your registered suppliers.</p>
+            </div>
+
+            <button type="button" class="p1-secondary-button"
+                id="p1ExportSuppliersBtn">
+                <i class="fa-solid fa-download"></i>
+                Export
+            </button>
+        </div>
+
+        <div class="p1-expense-filters">
+            <label class="p1-form-field">
+                <span>Search suppliers</span>
+                <input type="search" id="p1SupplierSearch"
+                    placeholder="Search name, phone or email...">
+            </label>
+
+            <label class="p1-form-field">
+                <span>Status</span>
+                <select id="p1SupplierFilterStatus">
+                    <option value="all">All suppliers</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </label>
+        </div>
+
+        <div class="p1-supplier-record-list" id="p1SupplierRecordList">
+            <div class="p1-empty-state">
+                <i class="fa-solid fa-truck-field"></i>
+                <h3>No suppliers registered</h3>
+                <p>Your suppliers will appear here after registration.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Supplier details and history -->
+    <section class="p1-supplier-details-panel"
+        id="p1SupplierDetailsPanel" hidden>
+
+        <div class="p1-panel-heading">
+            <div>
+                <h3 id="p1SupplierDetailsName">Supplier details</h3>
+                <p id="p1SupplierDetailsContact"></p>
+            </div>
+
+            <button type="button" class="p1-secondary-button"
+                id="p1CloseSupplierDetailsBtn">Close details</button>
+        </div>
+
+        <div class="p1-supplier-detail-summary">
+            <article class="p1-expense-stat">
+                <span>Purchase total</span>
+                <strong id="p1SupplierDetailPurchases">₦0.00</strong>
+            </article>
+
+            <article class="p1-expense-stat">
+                <span>Payments made</span>
+                <strong id="p1SupplierDetailPayments">₦0.00</strong>
+            </article>
+
+            <article class="p1-expense-stat">
+                <span>Outstanding balance</span>
+                <strong id="p1SupplierDetailBalance">₦0.00</strong>
+            </article>
+        </div>
+
+        <div class="p1-panel-heading">
+            <div>
+                <h3>Supplier transaction history</h3>
+                <p>Purchases and payments associated with this supplier.</p>
+            </div>
+        </div>
+
+        <div id="p1SupplierTransactionHistory"
+            class="p1-supplier-transaction-history">
+            <div class="p1-empty-state">
+                <p>No supplier transactions recorded yet.</p>
+            </div>
+        </div>
+    </section>
+
+</section>
+
+<!-- END PHASE 1 SUPPLIER MANAGEMENT --> 
 
     </div>
 
@@ -9384,6 +11216,30 @@
         <i class="fa-solid fa-chevron-down nexodra-workspace-arrow"></i>
     </button>
 
+  <!-- WORKSPACE DROPDOWN -->
+<div
+    class="nexodra-workspace-dropdown"
+    id="nexodraWorkspaceDropdown"
+    hidden
+>
+    <button
+        type="button"
+        class="nexodra-workspace-dropdown-item"
+        data-target="postScreen"
+    >
+        <i class="fa-solid fa-plus"></i>
+        <span>Post</span>
+    </button>
+
+    <button
+        type="button"
+        class="nexodra-workspace-dropdown-item"
+        data-workspace-page="inventory-management"
+    >
+        <i class="fa-solid fa-boxes-stacked"></i>
+        <span>Inventory Management</span>
+    </button>
+</div>
 
     <!-- 3. MAIN WORKSPACE NAVIGATION -->
     <nav class="nexodra-sidebar-navigation">
@@ -9441,6 +11297,15 @@
             <i class="fa-solid fa-file-lines"></i>
             <span class="nexodra-sidebar-link-label">Reports</span>
         </a>
+
+      <a
+    href="#"
+    class="nexodra-sidebar-link"
+    data-page="cashbook"
+>
+    <i class="fa-solid fa-book-open"></i>
+    <span class="nexodra-sidebar-link-label">Cashbook</span>
+</a>
 
 
         <!-- 4. TOOLS -->
@@ -9547,90 +11412,7 @@
 
 <!-- End NEXODRA Sidebar -->
 
- <!-- =========================================
-     BRICK 2H — NOTIFICATION TEST PANEL
-========================================= -->
 
-<section
-    id="nexodra-notification-test"
-    style="
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 999999;
-        background: #ffffff;
-        color: #222222;
-        border: 2px solid #2563eb;
-        border-radius: 12px;
-        padding: 16px;
-        width: 300px;
-        max-width: calc(100vw - 40px);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-    "
->
-    <h3 style="margin-top: 0;">
-        Nexodra Notification Diagnostics
-    </h3>
-
-    <button
-        id="nexodra-run-notification-test"
-        type="button"
-        style="
-            background: #2563eb;
-            color: #ffffff;
-            border: none;
-            border-radius: 6px;
-            padding: 12px 16px;
-            cursor: pointer;
-            width: 100%;
-        "
-    >
-        Run Notification Self-Test
-    </button>
-
-    <pre
-        id="nexodra-notification-test-results"
-        aria-live="polite"
-        style="
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
-            max-height: 200px;
-            overflow-y: auto;
-            font-size: 12px;
-        "
-    >Tests have not run yet.</pre>
-
-
-<button
-    id="nexodra-test-real-notification"
-    type="button"
-    style="
-        margin-top: 10px;
-        background: #16803c;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        padding: 12px;
-        width: 100%;
-        cursor: pointer;
-    "
->
-    Test Real Notification
-</button>
-
-<p
-    id="nexodra-real-notification-result"
-    aria-live="polite"
->
-    Real notification not tested yet.
-</p>
-
-  
-</section>
-
- 
-
-  
 <!-- =====================================
      FEEDBACK-1 — FEEDBACK MODAL HTML
 ===================================== -->
@@ -9826,6 +11608,322 @@
 
     </section>
 </div>
+
+<!-- =====================================================
+     NEXODRA PHASE 1 — PURCHASE MANAGEMENT
+     BRICK P1-08 — STANDALONE HTML SCREEN
+===================================================== -->
+
+<section id="p1PurchasesScreen" class="screen p1-purchases-screen">
+
+    <div class="p1-purchase-workspace">
+
+        <!-- PAGE HEADER -->
+        <header class="p1-purchase-header">
+            <div class="p1-purchase-heading">
+                <span class="p1-purchase-eyebrow">INVENTORY OPERATIONS</span>
+                <h1>Purchases</h1>
+                <p>Manage supplier orders, purchase costs and incoming stock.</p>
+            </div>
+
+            <button type="button" id="p1NewPurchaseBtn"
+                class="p1-purchase-primary-btn">
+                <i class="fa-solid fa-plus"></i>
+                New purchase
+            </button>
+        </header>
+
+        <!-- OVERVIEW -->
+        <div class="p1-purchase-overview">
+            <article class="p1-purchase-metric">
+                <span class="p1-purchase-metric-icon purple">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </span>
+                <div>
+                    <small>Total purchases</small>
+                    <strong id="p1PurchaseTotalValue">₦0.00</strong>
+                    <span>Recorded purchase value</span>
+                </div>
+            </article>
+
+            <article class="p1-purchase-metric">
+                <span class="p1-purchase-metric-icon blue">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                </span>
+                <div>
+                    <small>Items received</small>
+                    <strong id="p1PurchaseItemsReceived">0</strong>
+                    <span>Total units received</span>
+                </div>
+            </article>
+
+            <article class="p1-purchase-metric">
+                <span class="p1-purchase-metric-icon amber">
+                    <i class="fa-solid fa-clock"></i>
+                </span>
+                <div>
+                    <small>Pending receiving</small>
+                    <strong id="p1PurchasePendingCount">0</strong>
+                    <span>Purchases awaiting receipt</span>
+                </div>
+            </article>
+
+            <article class="p1-purchase-metric">
+                <span class="p1-purchase-metric-icon green">
+                    <i class="fa-solid fa-wallet"></i>
+                </span>
+                <div>
+                    <small>Outstanding</small>
+                    <strong id="p1PurchaseOutstanding">₦0.00</strong>
+                    <span>Unpaid purchase balances</span>
+                </div>
+            </article>
+        </div>
+
+        <!-- PURCHASE FORM -->
+        <section id="p1PurchaseFormPanel"
+            class="p1-purchase-form-panel" hidden>
+
+            <div class="p1-purchase-form-header">
+                <div>
+                    <span class="p1-purchase-eyebrow">PURCHASE ENTRY</span>
+                    <h2 id="p1PurchaseFormTitle">Create purchase</h2>
+                    <p>Enter the supplier and items being purchased.</p>
+                </div>
+
+                <button type="button" id="p1ClosePurchaseFormBtn"
+                    class="p1-purchase-close-btn" aria-label="Close purchase form">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="p1PurchaseForm">
+
+                <input type="hidden" id="p1PurchaseRecordId">
+
+                <!-- PURCHASE DETAILS -->
+                <div class="p1-purchase-section">
+                    <div class="p1-purchase-section-heading">
+                        <span>01</span>
+                        <div>
+                            <h3>Purchase details</h3>
+                            <p>Identify the supplier and purchase reference.</p>
+                        </div>
+                    </div>
+
+                    <div class="p1-purchase-fields">
+                        <label>
+                            <span>Supplier *</span>
+                            <select id="p1PurchaseSupplier" required>
+                                <option value="">Select supplier</option>
+                            </select>
+                        </label>
+
+                        <label>
+                            <span>Purchase date *</span>
+                            <input type="date" id="p1PurchaseDate" required>
+                        </label>
+
+                        <label>
+                            <span>Invoice / reference</span>
+                            <input type="text" id="p1PurchaseReference"
+                                maxlength="100" placeholder="e.g. INV-001">
+                        </label>
+
+                        <label>
+                            <span>Expected delivery date</span>
+                            <input type="date" id="p1PurchaseExpectedDate">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- PURCHASE ITEMS -->
+                <div class="p1-purchase-section">
+                    <div class="p1-purchase-section-heading">
+                        <span>02</span>
+                        <div>
+                            <h3>Purchase items</h3>
+                            <p>Select existing inventory products and enter quantities and costs.</p>
+                        </div>
+                    </div>
+
+                    <div class="p1-purchase-items-table-wrap">
+                        <table class="p1-purchase-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Unit cost</th>
+                                    <th>Line total</th>
+                                    <th aria-label="Remove item"></th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="p1PurchaseItemsBody">
+                                <tr class="p1-purchase-empty-row">
+                                    <td colspan="5">
+                                        Add a product to begin this purchase.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button type="button" id="p1AddPurchaseItemBtn"
+                        class="p1-purchase-add-item-btn">
+                        <i class="fa-solid fa-plus"></i>
+                        Add product
+                    </button>
+
+                    <div class="p1-purchase-total-panel">
+                        <div>
+                            <span>Purchase subtotal</span>
+                            <strong id="p1PurchaseSubtotal">₦0.00</strong>
+                        </div>
+
+                        <div>
+                            <label for="p1PurchaseExtraCost">Additional costs</label>
+                            <input type="number" id="p1PurchaseExtraCost"
+                                min="0" step="0.01" value="0">
+                        </div>
+
+                        <div class="p1-purchase-grand-total">
+                            <span>Grand total</span>
+                            <strong id="p1PurchaseGrandTotal">₦0.00</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAYMENT DETAILS -->
+                <div class="p1-purchase-section">
+                    <div class="p1-purchase-section-heading">
+                        <span>03</span>
+                        <div>
+                            <h3>Payment details</h3>
+                            <p>Record how much has been paid to the supplier.</p>
+                        </div>
+                    </div>
+
+                    <div class="p1-purchase-fields">
+                        <label>
+                            <span>Amount paid</span>
+                            <input type="number" id="p1PurchaseAmountPaid"
+                                min="0" step="0.01" value="0">
+                        </label>
+
+                        <label>
+                            <span>Payment method</span>
+                            <select id="p1PurchasePaymentMethod">
+                                <option value="">Not paid yet</option>
+                                <option value="cash">Cash</option>
+                                <option value="bank">Bank transfer</option>
+                                <option value="mobile-money">Mobile money</option>
+                                <option value="card">Card</option>
+                            </select>
+                        </label>
+
+                        <label>
+                            <span>Payment reference</span>
+                            <input type="text" id="p1PurchasePaymentReference"
+                                maxlength="120" placeholder="Transaction reference">
+                        </label>
+
+                        <label>
+                            <span>Receiving status</span>
+                            <select id="p1PurchaseReceivingStatus">
+                                <option value="pending">Not received yet</option>
+                                <option value="received">Fully received</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="p1-purchase-balance-preview">
+                        <span>Remaining supplier balance</span>
+                        <strong id="p1PurchaseRemainingBalance">₦0.00</strong>
+                    </div>
+                </div>
+
+                <!-- NOTES -->
+                <div class="p1-purchase-section">
+                    <label class="p1-purchase-notes-field">
+                        <span>Purchase notes</span>
+                        <textarea id="p1PurchaseNotes" rows="3"
+                            maxlength="1000"
+                            placeholder="Delivery details, condition of goods or other notes..."></textarea>
+                    </label>
+                </div>
+
+                <!-- FORM ACTIONS -->
+                <div class="p1-purchase-form-actions">
+                    <button type="button" id="p1CancelPurchaseBtn"
+                        class="p1-purchase-secondary-btn">Cancel</button>
+
+                    <button type="submit" id="p1SavePurchaseBtn"
+                        class="p1-purchase-primary-btn">
+                        Save purchase
+                    </button>
+                </div>
+
+            </form>
+        </section>
+
+        <!-- PURCHASE HISTORY -->
+        <section class="p1-purchase-history-panel">
+
+            <div class="p1-purchase-history-header">
+                <div>
+                    <span class="p1-purchase-eyebrow">RECORDS</span>
+                    <h2>Purchase history</h2>
+                    <p>Review purchase orders, receiving status and supplier balances.</p>
+                </div>
+
+                <button type="button" id="p1ExportPurchasesBtn"
+                    class="p1-purchase-secondary-btn">
+                    <i class="fa-solid fa-download"></i>
+                    Export
+                </button>
+            </div>
+
+            <div class="p1-purchase-filters">
+                <label>
+                    <span>Search purchases</span>
+                    <input type="search" id="p1PurchaseSearch"
+                        placeholder="Search supplier or reference">
+                </label>
+
+                <label>
+                    <span>Receiving status</span>
+                    <select id="p1PurchaseFilterStatus">
+                        <option value="all">All statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="received">Received</option>
+                    </select>
+                </label>
+
+                <label>
+                    <span>From date</span>
+                    <input type="date" id="p1PurchaseFilterFrom">
+                </label>
+
+                <label>
+                    <span>To date</span>
+                    <input type="date" id="p1PurchaseFilterTo">
+                </label>
+            </div>
+
+            <div id="p1PurchaseRecordList" class="p1-purchase-record-list">
+                <div class="p1-purchase-empty-state">
+                    <i class="fa-solid fa-box-open"></i>
+                    <h3>No purchases recorded</h3>
+                    <p>Your purchase records will appear here.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</section>
+
+<!-- END P1-08 PURCHASE MANAGEMENT SCREEN -->
   
   
 <!-- Supabase -->

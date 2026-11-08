@@ -16,19 +16,20 @@ body {
 }
 
 /* App Container (Phone Frame Simulation) */
+/* App Container - Full Screen */
 .app-container {
     width: 100%;
-    max-width: 420px;
+    max-width: none;
 
     height: 100vh;
-    max-height: 850px;
+    max-height: none;
 
-    margin: 0 auto;
+    margin: 0;
 
     background-color: #ffffff;
-    border-radius: 24px;
+    border-radius: 0;
 
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: none;
 
     overflow: hidden;
 
@@ -39,6 +40,8 @@ body {
 
     box-sizing: border-box;
 }
+
+
 /* Keep every screen inside the app frame */
 .app-container > * {
     max-width: 100%;
@@ -94,19 +97,35 @@ body {
     border-radius: 50%;
 }
 
-/* App Body (Scrollable Area) */
-.app-body {
-    flex: 1;
+/* APP BODY — FULL WIDTH WITH RESPONSIVE SIDE GUTTERS */
 
+.app-body {
+    flex: 1 1 auto;
     position: relative;
 
-    overflow-y: auto;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 
-    padding: 16px;
-    padding-bottom: 80px;
+    padding: 12px 12px 110px;
+
+    box-sizing: border-box;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    -webkit-overflow-scrolling: touch;
 }
 
+/* SCREEN WRAPPERS — USE AVAILABLE APP WIDTH */
 
+.app-body > .screen,
+.app-container .screen {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
 /* =========================================
    BRICK E — LOCK APP BODY WHILE CHAT IS OPEN
    ========================================= */
@@ -335,138 +354,169 @@ body {
    5 ITEMS
    Store | Sell | Post | Inbox | Profile
 ========================================= */
+/* =========================================
+   NEXODRA — FLOATING PILL NAVIGATION
+========================================= */
 
 .bottom-nav {
     position: fixed;
-left: 0;
-right: 0;
-bottom: 0;
-top: auto;
+    left: 50%;
+    right: auto;
+    bottom: 16px;
+    top: auto;
 
-    width: 100%;
-    height: 70px;
+    transform: translateX(-50%);
+
+    width: calc(100% - 32px);
+    max-width: 460px;
+    height: 68px;
 
     display: flex;
     align-items: center;
-    justify-content: stretch;
+    justify-content: space-between;
 
     box-sizing: border-box;
 
-    background: #ffffff;
-    border-top: 1px solid #f1f5f9;
+    padding: 6px;
 
-    padding: 0 4px 10px;
-    z-index: 100;
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 999px;
+
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.14);
+
+    z-index: 1000;
 }
 
 
-/* Every navigation button gets exactly 20% */
+/* Navigation buttons */
 
 .bottom-nav .nav-btn {
-    flex: 1 1 20%;
-    width: 20%;
+    flex: 1 1 0;
+    width: auto;
     min-width: 0;
-    max-width: 20%;
+    max-width: none;
+    height: 54px;
 
-    height: 60px;
-
-    padding: 5px 2px 0;
     margin: 0;
+    padding: 0 8px;
 
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
 
-    gap: 4px;
+    gap: 8px;
 
     box-sizing: border-box;
 
     border: none;
-    background: transparent;
+    border-radius: 999px;
 
-    color: #94a3b8;
-    font-size: 0.68rem;
+    background: transparent;
+    color: #64748b;
+
+    font-size: 0.78rem;
+    font-weight: 500;
 
     cursor: pointer;
+
+    transition:
+        flex 0.3s ease,
+        background 0.3s ease,
+        color 0.3s ease;
 }
 
 
 /* Icons */
 
 .bottom-nav .nav-btn > i {
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     line-height: 1;
+    flex-shrink: 0;
 }
 
 
-/* Labels */
+/* Inactive labels hidden */
 
+/* Hide all navigation labels */
 .bottom-nav .nav-btn > span {
-    display: block;
-
-    width: 100%;
-    max-width: 100%;
-
-    text-align: center;
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: none !important;
 }
 
 
-/* Active */
+/* Active tab */
 
 .bottom-nav .nav-btn.active {
-    color: #0f172a;
+    flex: 1 1 0;
+
+    background: #0f172a;
+    color: #ffffff;
+
     font-weight: 600;
 }
 
 
-/* =========================================
-   POST BUTTON
-========================================= */
+/* Active label */
 
-.bottom-nav .post-nav-btn {
-    flex: 1 1 20%;
-    width: 20%;
-    max-width: 20%;
+.bottom-nav .nav-btn.active > span {
+    display: block;
 }
 
+
+/* Post button */
 
 .bottom-nav .post-nav-btn .plus-circle {
     width: 36px;
     height: 36px;
 
-    margin-top: -8px;
+    margin: 0;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
+    flex-shrink: 0;
+
     border-radius: 50%;
 
-    background-color: #0f172a;
+    background: #0f172a;
     color: #ffffff;
 
     font-size: 0.9rem;
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease;
 }
 
 
-/* =========================================
-   SELL BUTTON
-========================================= */
+/* Post button when active */
+
+.bottom-nav .post-nav-btn.active .plus-circle {
+    background: transparent;
+    color: #ffffff;
+}
+
+
+/* Keep sell icon consistent */
 
 .bottom-nav .nav-btn[data-target="sellScreen"] {
     color: #64748b;
 }
 
-
 .bottom-nav .nav-btn[data-target="sellScreen"].active {
-    color: #0f172a;
+    color: #ffffff;
 }
 
+
+/* Mobile safe area */
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .bottom-nav {
+        bottom: calc(12px + env(safe-area-inset-bottom));
+    }
+}
 
 /* =========================================
    PREVENT HORIZONTAL OVERFLOW
@@ -1265,6 +1315,11 @@ body {
     transform: scale(0.96);
 }
 
+/* Post Product — Category and Cost Price row */
+.product-form-card .form-row > .form-group {
+    flex: 1;
+    min-width: 0;
+}
 
 /* Description */
 
@@ -27063,6 +27118,68 @@ body,
 }
 
 /* -----------------------------------------------------
+   WORKSPACE DROPDOWN
+   ----------------------------------------------------- */
+
+.nexodra-workspace-dropdown {
+    width: 100%;
+    margin-top: 8px;
+    padding: 6px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    border: 1px solid var(--nx-sidebar-border);
+    border-radius: 12px;
+    background: var(--nx-sidebar-card);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
+}
+
+.nexodra-workspace-dropdown[hidden] {
+    display: none;
+}
+
+.nexodra-workspace-dropdown-item {
+    width: 100%;
+    min-height: 42px;
+    padding: 0 11px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--nx-sidebar-text);
+
+    text-align: left;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background 0.2s ease,
+                color 0.2s ease;
+}
+
+.nexodra-workspace-dropdown-item i {
+    width: 18px;
+    color: var(--nx-sidebar-muted);
+    text-align: center;
+}
+
+.nexodra-workspace-dropdown-item:hover {
+    background: var(--nx-sidebar-hover);
+    color: var(--nx-sidebar-accent);
+}
+
+.nexodra-workspace-dropdown-item:hover i {
+    color: var(--nx-sidebar-accent);
+}
+
+/* -----------------------------------------------------
    3. NAVIGATION
    ----------------------------------------------------- */
 
@@ -28669,6 +28786,3853 @@ body:not(.store-theme-dark) #salesOverviewScreen .text-action:hover {
         font-size: 21px;
     }
 }
+
+/* =========================================================
+   NEXODRA PHASE 1 — EXPENSE MANAGEMENT
+   BRICK P1-03 — CSS STYLING
+========================================================= */
+
+.p1-expense-manager {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    width: 100%;
+    padding: 20px 0;
+    color: var(--text-primary, #172033);
+}
+
+.p1-expense-manager[hidden],
+.p1-expense-form-panel[hidden] {
+    display: none !important;
+}
+
+.p1-module-header,
+.p1-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.p1-module-header {
+    align-items: flex-start;
+}
+
+.p1-module-header h2 {
+    margin: 8px 0;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 750;
+}
+
+.p1-module-header p,
+.p1-panel-heading p {
+    margin: 5px 0 0;
+    color: var(--text-secondary, #718096);
+    font-size: 0.9rem;
+}
+
+.p1-back-button,
+.p1-primary-button,
+.p1-secondary-button,
+.p1-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 10px;
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.p1-back-button {
+    padding: 8px 0;
+    color: var(--text-secondary, #64748b);
+    background: transparent;
+}
+
+.p1-back-button:hover {
+    color: var(--primary-color, #2563eb);
+}
+
+.p1-primary-button {
+    min-height: 43px;
+    padding: 11px 17px;
+    color: #fff;
+    background: var(--primary-color, #2563eb);
+}
+
+.p1-primary-button:hover {
+    background: var(--primary-dark, #1d4ed8);
+    transform: translateY(-1px);
+}
+
+.p1-secondary-button {
+    min-height: 40px;
+    padding: 9px 14px;
+    color: var(--text-primary, #334155);
+    background: var(--surface-secondary, #f1f5f9);
+    border: 1px solid var(--border-color, #e2e8f0);
+}
+
+.p1-secondary-button:hover {
+    background: var(--surface-hover, #e8eef6);
+}
+
+.p1-icon-button {
+    width: 38px;
+    height: 38px;
+    color: var(--text-secondary, #64748b);
+    background: var(--surface-secondary, #f1f5f9);
+}
+
+.p1-expense-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.p1-expense-stat,
+.p1-expense-form-panel,
+.p1-expense-list-panel {
+    padding: 20px;
+    background: var(--card-background, #fff);
+    border: 1px solid var(--border-color, #e5eaf1);
+    border-radius: 15px;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.035);
+}
+
+.p1-expense-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.p1-expense-stat span {
+    color: var(--text-secondary, #64748b);
+    font-size: 0.88rem;
+}
+
+.p1-expense-stat strong {
+    font-size: clamp(1.25rem, 2.5vw, 1.8rem);
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+
+.p1-expense-stat small {
+    color: var(--text-secondary, #94a3b8);
+    font-size: 0.78rem;
+}
+
+.p1-panel-heading {
+    margin-bottom: 18px;
+}
+
+.p1-panel-heading h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.p1-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.p1-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.p1-form-field > span {
+    color: var(--text-primary, #334155);
+    font-size: 0.85rem;
+    font-weight: 650;
+}
+
+.p1-form-field input,
+.p1-form-field select,
+.p1-form-field textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 43px;
+    padding: 10px 12px;
+    color: var(--text-primary, #1e293b);
+    background: var(--input-background, #fff);
+    border: 1px solid var(--border-color, #dbe2ea);
+    border-radius: 9px;
+    font: inherit;
+    font-size: 0.9rem;
+}
+
+.p1-form-field textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.p1-form-field input:focus,
+.p1-form-field select:focus,
+.p1-form-field textarea:focus {
+    outline: none;
+    border-color: var(--primary-color, #2563eb);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.p1-form-field small {
+    color: var(--text-secondary, #94a3b8);
+    font-size: 0.75rem;
+}
+
+.p1-form-full {
+    grid-column: 1 / -1;
+}
+
+.p1-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.p1-expense-filters {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    align-items: end;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.p1-expense-record-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.p1-empty-state {
+    padding: 35px 15px;
+    text-align: center;
+    color: var(--text-secondary, #64748b);
+}
+
+.p1-empty-state > i {
+    margin-bottom: 12px;
+    font-size: 2rem;
+    color: var(--text-secondary, #94a3b8);
+}
+
+.p1-empty-state h3 {
+    margin: 0 0 7px;
+    color: var(--text-primary, #334155);
+}
+
+.p1-empty-state p {
+    margin: 0;
+    font-size: 0.88rem;
+}
+
+/* Expense rows created by the JavaScript brick */
+
+.p1-expense-record {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 14px;
+    background: var(--surface-secondary, #f8fafc);
+    border: 1px solid var(--border-color, #edf0f5);
+    border-radius: 11px;
+}
+
+.p1-expense-record-main {
+    min-width: 0;
+}
+
+.p1-expense-record-main strong {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.p1-expense-record-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 13px;
+    margin-top: 6px;
+    color: var(--text-secondary, #64748b);
+    font-size: 0.78rem;
+}
+
+.p1-expense-record-amount {
+    flex-shrink: 0;
+    font-weight: 750;
+}
+
+.p1-expense-record-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.p1-expense-record-actions button {
+    min-height: 34px;
+    padding: 6px 9px;
+    color: var(--text-secondary, #475569);
+    background: var(--card-background, #fff);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.p1-expense-record-actions button:hover {
+    color: var(--primary-color, #2563eb);
+    border-color: var(--primary-color, #2563eb);
+}
+
+@media (max-width: 800px) {
+    .p1-expense-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .p1-expense-filters .p1-form-field:first-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 600px) {
+    .p1-expense-manager {
+        gap: 15px;
+    }
+
+    .p1-module-header {
+        flex-direction: column;
+    }
+
+    .p1-module-header > .p1-primary-button {
+        width: 100%;
+    }
+
+    .p1-expense-summary {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .p1-expense-stat {
+        padding: 15px;
+    }
+
+    .p1-expense-form-panel,
+    .p1-expense-list-panel {
+        padding: 15px;
+    }
+
+    .p1-form-grid,
+    .p1-expense-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .p1-form-full,
+    .p1-expense-filters .p1-form-field:first-child {
+        grid-column: auto;
+    }
+
+    .p1-panel-heading {
+        align-items: flex-start;
+    }
+
+    .p1-expense-record {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .p1-expense-record-actions {
+        width: 100%;
+    }
+
+    .p1-expense-record-actions button {
+        flex: 1;
+    }
+}
+
+/* P1-04 FIX — Keep the expense manager visible inside Reports */
+.reports-dashboard.p1-expense-mode > :not(#p1ExpenseManager) {
+    display: none !important;
+}
+
+.reports-dashboard.p1-expense-mode > #p1ExpenseManager {
+    display: flex !important;
+}
+
+/* =========================================================
+   NEXODRA PHASE 1 — SUPPLIER MANAGEMENT
+   BRICK P1-06 — CSS STYLING
+========================================================= */
+
+.p1-supplier-manager {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    width: 100%;
+    padding: 20px 0;
+    color: var(--text-primary, #172033);
+}
+
+.p1-supplier-manager[hidden],
+.p1-supplier-form-panel[hidden],
+.p1-supplier-details-panel[hidden] {
+    display: none !important;
+}
+
+.p1-supplier-summary,
+.p1-supplier-detail-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.p1-supplier-form-panel,
+.p1-supplier-list-panel,
+.p1-supplier-details-panel {
+    padding: 20px;
+    background: var(--card-background, #fff);
+    border: 1px solid var(--border-color, #e5eaf1);
+    border-radius: 15px;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.035);
+}
+
+.p1-supplier-record-list,
+.p1-supplier-transaction-history {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.p1-supplier-record {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 15px;
+    background: var(--surface-secondary, #f8fafc);
+    border: 1px solid var(--border-color, #edf0f5);
+    border-radius: 11px;
+}
+
+.p1-supplier-record-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.p1-supplier-record-main strong {
+    display: block;
+    overflow-wrap: anywhere;
+    color: var(--text-primary, #1e293b);
+}
+
+.p1-supplier-record-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px 14px;
+    margin-top: 7px;
+    color: var(--text-secondary, #64748b);
+    font-size: 0.8rem;
+}
+
+.p1-supplier-record-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+}
+
+.p1-supplier-record-actions button {
+    min-height: 35px;
+    padding: 7px 10px;
+    color: var(--text-secondary, #475569);
+    background: var(--card-background, #fff);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 8px;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.p1-supplier-record-actions button:hover {
+    color: var(--primary-color, #2563eb);
+    border-color: var(--primary-color, #2563eb);
+}
+
+.p1-supplier-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.p1-supplier-status-active {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.p1-supplier-status-inactive {
+    color: #64748b;
+    background: #e2e8f0;
+}
+
+.p1-supplier-transaction {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px;
+    background: var(--surface-secondary, #f8fafc);
+    border: 1px solid var(--border-color, #edf0f5);
+    border-radius: 10px;
+}
+
+.p1-supplier-transaction-main {
+    min-width: 0;
+}
+
+.p1-supplier-transaction-main strong {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.p1-supplier-transaction-main small {
+    display: block;
+    margin-top: 5px;
+    color: var(--text-secondary, #64748b);
+}
+
+.p1-supplier-transaction-amount {
+    flex-shrink: 0;
+    font-weight: 750;
+}
+
+.p1-supplier-transaction-purchase {
+    color: #b45309;
+}
+
+.p1-supplier-transaction-payment {
+    color: #15803d;
+}
+
+@media (max-width: 800px) {
+    .p1-supplier-record {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .p1-supplier-record-actions {
+        width: 100%;
+    }
+
+    .p1-supplier-record-actions button {
+        flex: 1;
+    }
+}
+
+@media (max-width: 600px) {
+    .p1-supplier-manager {
+        gap: 15px;
+    }
+
+    .p1-supplier-summary,
+    .p1-supplier-detail-summary {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .p1-supplier-form-panel,
+    .p1-supplier-list-panel,
+    .p1-supplier-details-panel {
+        padding: 15px;
+    }
+
+    .p1-supplier-transaction {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+/* P1-07 — Supplier screen navigation */
+.reports-dashboard.p1-supplier-mode > :not(#p1SupplierManager) {
+    display: none !important;
+}
+
+.reports-dashboard.p1-supplier-mode > #p1SupplierManager {
+    display: flex !important;
+}
+
+/* =========================================================
+   NEXODRA PHASE 1 — PURCHASE WORKSPACE
+   BRICK P1-09 — Dedicated purchase screen styling
+========================================================= */
+
+.p1-purchases-screen {
+    width: 100%;
+    min-height: 100%;
+    padding: clamp(14px, 2.5vw, 28px);
+    box-sizing: border-box;
+    color: var(--text-primary, #172033);
+}
+
+.p1-purchases-screen[hidden],
+#p1PurchaseFormPanel[hidden] {
+    display: none !important;
+}
+
+.p1-purchase-workspace {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.p1-purchase-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.p1-purchase-header h1,
+.p1-purchase-header h2 {
+    margin: 0;
+    font-size: clamp(1.45rem, 2.5vw, 2rem);
+    font-weight: 750;
+    letter-spacing: -0.04em;
+}
+
+.p1-purchase-header p {
+    margin: 6px 0 0;
+    color: var(--text-secondary, #718096);
+    font-size: 0.9rem;
+}
+
+.p1-purchase-primary-btn,
+#p1SavePurchaseBtn {
+    min-height: 44px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--primary-color, #2563eb);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.p1-purchase-primary-btn:hover,
+#p1SavePurchaseBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 18px rgba(37, 99, 235, .2);
+}
+
+/* Overview — horizontal financial snapshot */
+
+.p1-purchase-overview {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 13px;
+}
+
+.p1-purchase-metric {
+    position: relative;
+    min-width: 0;
+    padding: 18px;
+    overflow: hidden;
+    border: 1px solid var(--border-color, #e7ebf2);
+    border-radius: 15px;
+    background: var(--card-background, #fff);
+}
+
+.p1-purchase-metric::after {
+    content: "";
+    position: absolute;
+    right: -22px;
+    bottom: -32px;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: var(--primary-color, #2563eb);
+    opacity: .045;
+}
+
+.p1-purchase-metric-label {
+    display: block;
+    margin-bottom: 9px;
+    color: var(--text-secondary, #718096);
+    font-size: .78rem;
+    font-weight: 650;
+    letter-spacing: .025em;
+}
+
+.p1-purchase-metric-value {
+    display: block;
+    overflow-wrap: anywhere;
+    font-size: clamp(1.15rem, 2vw, 1.55rem);
+    font-weight: 780;
+    letter-spacing: -.035em;
+    color: var(--text-primary, #172033);
+}
+
+/* Main panels */
+
+.p1-purchase-panel {
+    min-width: 0;
+    border: 1px solid var(--border-color, #e7ebf2);
+    border-radius: 16px;
+    background: var(--card-background, #fff);
+    box-shadow: 0 5px 20px rgba(25, 40, 70, .035);
+}
+
+.p1-purchase-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 19px 21px;
+    border-bottom: 1px solid var(--border-color, #e7ebf2);
+    flex-wrap: wrap;
+}
+
+.p1-purchase-panel-header h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 750;
+}
+
+.p1-purchase-panel-body {
+    padding: 21px;
+}
+
+/* Purchase form */
+
+#p1PurchaseForm {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.p1-purchase-form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.p1-purchase-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color, #e7ebf2);
+}
+
+.p1-purchase-section-heading h3 {
+    margin: 0;
+    font-size: .94rem;
+    font-weight: 750;
+}
+
+.p1-purchase-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.p1-purchase-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.p1-purchase-field label {
+    color: var(--text-secondary, #596579);
+    font-size: .8rem;
+    font-weight: 680;
+}
+
+.p1-purchase-field input,
+.p1-purchase-field select,
+.p1-purchase-field textarea {
+    width: 100%;
+    min-height: 43px;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color, #dce2eb);
+    border-radius: 9px;
+    background: var(--input-background, #fff);
+    color: var(--text-primary, #172033);
+    font: inherit;
+    font-size: .88rem;
+    outline: none;
+    transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+.p1-purchase-field textarea {
+    min-height: 88px;
+    resize: vertical;
+}
+
+.p1-purchase-field input:focus,
+.p1-purchase-field select:focus,
+.p1-purchase-field textarea:focus {
+    border-color: var(--primary-color, #2563eb);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+}
+
+/* Purchase item table */
+
+.p1-purchase-items-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border-color, #e7ebf2);
+    border-radius: 11px;
+}
+
+#p1PurchaseItemsBody {
+    background: var(--card-background, #fff);
+}
+
+.p1-purchase-items-wrap table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+}
+
+.p1-purchase-items-wrap th {
+    padding: 12px 13px;
+    background: var(--surface-muted, #f6f8fb);
+    color: var(--text-secondary, #64748b);
+    font-size: .75rem;
+    font-weight: 750;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.p1-purchase-items-wrap td {
+    padding: 10px 12px;
+    border-top: 1px solid var(--border-color, #edf0f5);
+    vertical-align: middle;
+}
+
+.p1-purchase-items-wrap input,
+.p1-purchase-items-wrap select {
+    width: 100%;
+    min-width: 75px;
+    min-height: 37px;
+    padding: 7px 9px;
+    border: 1px solid var(--border-color, #dce2eb);
+    border-radius: 7px;
+    background: var(--input-background, #fff);
+    color: var(--text-primary, #172033);
+    font: inherit;
+    font-size: .83rem;
+}
+
+.p1-purchase-items-wrap input:focus,
+.p1-purchase-items-wrap select:focus {
+    outline: 2px solid rgba(37, 99, 235, .17);
+    border-color: var(--primary-color, #2563eb);
+}
+
+.p1-purchase-add-item-btn {
+    align-self: flex-start;
+    min-height: 37px;
+    padding: 0 12px;
+    border: 1px dashed var(--primary-color, #2563eb);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--primary-color, #2563eb);
+    font-size: .82rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Totals and payment area */
+
+.p1-purchase-calculation {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.p1-purchase-calculation-inner {
+    width: min(100%, 390px);
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    padding: 16px;
+    border: 1px solid var(--border-color, #e7ebf2);
+    border-radius: 12px;
+    background: var(--surface-muted, #f8fafc);
+}
+
+.p1-purchase-total-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    color: var(--text-secondary, #64748b);
+    font-size: .86rem;
+}
+
+.p1-purchase-total-row strong {
+    color: var(--text-primary, #172033);
+    font-weight: 750;
+}
+
+.p1-purchase-total-row.is-grand-total {
+    padding-top: 11px;
+    border-top: 1px solid var(--border-color, #dce2eb);
+    color: var(--text-primary, #172033);
+    font-size: 1rem;
+    font-weight: 750;
+}
+
+.p1-purchase-total-row.is-grand-total strong {
+    color: var(--primary-color, #2563eb);
+    font-size: 1.15rem;
+}
+
+.p1-purchase-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    padding-top: 17px;
+    border-top: 1px solid var(--border-color, #e7ebf2);
+    flex-wrap: wrap;
+}
+
+#p1CancelPurchaseBtn {
+    min-height: 43px;
+    padding: 0 16px;
+    border: 1px solid var(--border-color, #dce2eb);
+    border-radius: 9px;
+    background: transparent;
+    color: var(--text-primary, #334155);
+    font-weight: 650;
+    cursor: pointer;
+}
+
+/* History toolbar */
+
+.p1-purchase-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color, #e7ebf2);
+}
+
+.p1-purchase-toolbar input,
+.p1-purchase-toolbar select {
+    min-height: 39px;
+    padding: 8px 11px;
+    border: 1px solid var(--border-color, #dce2eb);
+    border-radius: 8px;
+    background: var(--input-background, #fff);
+    color: var(--text-primary, #172033);
+    font: inherit;
+    font-size: .83rem;
+}
+
+#p1PurchaseSearch {
+    flex: 1 1 210px;
+}
+
+#p1ExportPurchasesBtn {
+    min-height: 39px;
+    padding: 0 13px;
+    border: 1px solid var(--border-color, #dce2eb);
+    border-radius: 8px;
+    background: var(--card-background, #fff);
+    color: var(--text-primary, #334155);
+    font-size: .82rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Purchase record list */
+
+#p1PurchaseRecordList {
+    display: flex;
+    flex-direction: column;
+}
+
+.p1-purchase-record {
+    display: grid;
+    grid-template-columns: minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(90px, .8fr) auto;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color, #edf0f5);
+}
+
+.p1-purchase-record:last-child {
+    border-bottom: 0;
+}
+
+.p1-purchase-record-title {
+    color: var(--text-primary, #172033);
+    font-size: .88rem;
+    font-weight: 750;
+}
+
+.p1-purchase-record-meta {
+    margin-top: 4px;
+    color: var(--text-secondary, #718096);
+    font-size: .76rem;
+}
+
+.p1-purchase-record-amount {
+    font-size: .9rem;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.p1-purchase-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 5px 9px;
+    border-radius: 30px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-size: .7rem;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.p1-purchase-status.is-received {
+    background: #e8f7ef;
+    color: #16804a;
+}
+
+.p1-purchase-status.is-pending {
+    background: #fff5df;
+    color: #9a6500;
+}
+
+.p1-purchase-status.is-cancelled {
+    background: #fff0f0;
+    color: #c03939;
+}
+
+/* Responsive layouts */
+
+@media (max-width: 1000px) {
+    .p1-purchase-overview {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .p1-purchase-form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .p1-purchases-screen {
+        padding: 12px;
+    }
+
+    .p1-purchase-workspace {
+        gap: 15px;
+    }
+
+    .p1-purchase-overview {
+        gap: 9px;
+    }
+
+    .p1-purchase-metric {
+        padding: 13px;
+        border-radius: 12px;
+    }
+
+    .p1-purchase-panel-header,
+    .p1-purchase-panel-body {
+        padding: 15px;
+    }
+
+    .p1-purchase-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .p1-purchase-calculation-inner {
+        width: 100%;
+    }
+
+    .p1-purchase-form-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .p1-purchase-form-actions button {
+        width: 100%;
+    }
+
+    .p1-purchase-record {
+        grid-template-columns: 1fr auto;
+        gap: 8px 12px;
+        padding: 14px;
+    }
+
+    .p1-purchase-record > :nth-child(2) {
+        grid-column: 1;
+    }
+
+    .p1-purchase-record > :nth-child(3) {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+    }
+
+    .p1-purchase-record > :nth-child(4) {
+        grid-column: 2;
+        grid-row: 2;
+        justify-self: end;
+    }
+
+    .p1-purchase-toolbar {
+        padding: 13px;
+    }
+
+    .p1-purchase-toolbar input,
+    .p1-purchase-toolbar select {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+}
+
+/* =========================================================
+   NEXODRA — PURCHASE SCREEN MOBILE LAYOUT CORRECTION
+   P1-09A
+========================================================= */
+
+#p1PurchasesScreen {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+#p1PurchasesScreen *,
+#p1PurchasesScreen *::before,
+#p1PurchasesScreen *::after {
+    box-sizing: border-box;
+}
+
+#p1PurchasesScreen h1 {
+    font-size: clamp(22px, 5vw, 30px) !important;
+    line-height: 1.2 !important;
+    margin: 0;
+}
+
+#p1PurchasesScreen h2 {
+    font-size: 18px !important;
+    line-height: 1.3 !important;
+}
+
+#p1PurchasesScreen h3 {
+    font-size: 15px !important;
+    line-height: 1.35 !important;
+}
+
+#p1PurchasesScreen p {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+}
+
+#p1PurchasesScreen label {
+    display: block;
+    width: 100%;
+    margin: 0 0 6px;
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+    font-weight: 650;
+}
+
+#p1PurchasesScreen input,
+#p1PurchasesScreen select,
+#p1PurchasesScreen textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    margin: 0;
+    padding: 9px 11px;
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+    border-radius: 9px;
+}
+
+#p1PurchasesScreen button {
+    max-width: 100%;
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+/* Keep form controls from sitting beside their labels. */
+#p1PurchaseForm label {
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: 12px;
+}
+
+#p1PurchaseForm label input,
+#p1PurchaseForm label select,
+#p1PurchaseForm label textarea {
+    display: block !important;
+    width: 100% !important;
+    margin-top: 6px !important;
+}
+
+/* If fields are separate siblings, make their labels readable too. */
+#p1PurchaseForm > label {
+    margin-bottom: 12px;
+}
+
+/* Form sections should fit the phone width. */
+#p1PurchaseForm,
+#p1PurchaseFormPanel,
+.p1-purchase-panel,
+.p1-purchase-panel-body,
+.p1-purchase-form-section {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.p1-purchase-form-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 13px !important;
+}
+
+/* Purchase items: keep the table scrollable inside its own area. */
+#p1PurchaseForm table,
+.p1-purchase-items-wrap table {
+    width: 100%;
+    min-width: 570px;
+    font-size: 12px;
+}
+
+#p1PurchaseForm table th,
+#p1PurchaseForm table td {
+    padding: 8px 7px;
+    font-size: 12px !important;
+}
+
+#p1PurchaseForm table input,
+#p1PurchaseForm table select {
+    min-height: 38px;
+    font-size: 12px !important;
+}
+
+/* Prevent item rows from stretching the whole page. */
+#p1PurchaseItemsBody {
+    max-width: 100%;
+}
+
+#p1PurchaseItemsBody input,
+#p1PurchaseItemsBody select {
+    min-width: 65px;
+}
+
+/* Compact totals area. */
+.p1-purchase-calculation {
+    width: 100%;
+    justify-content: stretch;
+}
+
+.p1-purchase-calculation-inner {
+    width: 100%;
+    padding: 13px;
+}
+
+.p1-purchase-total-row {
+    font-size: 13px !important;
+}
+
+/* Phone-sized metric cards. */
+.p1-purchase-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 9px !important;
+}
+
+.p1-purchase-metric {
+    padding: 12px !important;
+}
+
+.p1-purchase-metric-label {
+    font-size: 11px !important;
+}
+
+.p1-purchase-metric-value {
+    font-size: 17px !important;
+}
+
+/* Phone layout. */
+@media (max-width: 600px) {
+    .p1-purchases-screen {
+        padding: 12px !important;
+    }
+
+    .p1-purchase-workspace {
+        gap: 14px !important;
+    }
+
+    .p1-purchase-header {
+        align-items: flex-start;
+    }
+
+    .p1-purchase-header p {
+        max-width: 280px;
+    }
+
+    .p1-purchase-panel-header,
+    .p1-purchase-panel-body {
+        padding: 13px !important;
+    }
+
+    .p1-purchase-form-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .p1-purchase-form-actions button {
+        min-width: 0;
+        padding: 0 8px;
+    }
+
+    .p1-purchase-toolbar {
+        display: grid !important;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .p1-purchase-toolbar input,
+    .p1-purchase-toolbar select,
+    #p1ExportPurchasesBtn {
+        width: 100%;
+    }
+
+    .p1-purchase-record {
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        gap: 8px !important;
+        padding: 13px !important;
+    }
+}
+
+/* =========================================================
+   NEXODRA PHASE 1 — CASHBOOK & FINANCIAL LEDGER
+   BRICK P1-12 — RESPONSIVE PROFESSIONAL STYLING
+========================================================= */
+
+#p1CashbookScreen {
+    width: 100%;
+    min-height: 100%;
+    padding: clamp(13px, 2.4vw, 28px);
+    overflow-x: hidden;
+    color: var(--text-primary, #172033);
+    font-size: 14px;
+    line-height: 1.45;
+    box-sizing: border-box;
+}
+
+#p1CashbookScreen *,
+#p1CashbookScreen *::before,
+#p1CashbookScreen *::after {
+    box-sizing: border-box;
+}
+
+#p1CashbookScreen[hidden],
+#p1CashbookAccountPanel[hidden],
+#p1CashbookEntryPanel[hidden] {
+    display: none !important;
+}
+
+.p1-cashbook-workspace {
+    width: 100%;
+    max-width: 1480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 23px;
+}
+
+/* Header */
+
+.p1-cashbook-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.p1-cashbook-eyebrow {
+    display: inline-block;
+    margin-bottom: 7px;
+    color: var(--primary-color, #2563eb);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .13em;
+}
+
+.p1-cashbook-header h1 {
+    margin: 0;
+    font-size: clamp(23px, 3vw, 31px);
+    font-weight: 780;
+    line-height: 1.2;
+    letter-spacing: -.04em;
+}
+
+.p1-cashbook-header p,
+.p1-cashbook-section-heading p,
+.p1-cashbook-panel-header p {
+    margin: 5px 0 0;
+    color: var(--text-secondary, #718096);
+    font-size: 13px;
+}
+
+.p1-cashbook-primary-btn {
+    min-height: 43px;
+    padding: 0 17px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--primary-color, #2563eb);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.p1-cashbook-primary-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, .2);
+}
+
+.p1-cashbook-secondary-btn {
+    min-height: 38px;
+    padding: 0 13px;
+    border: 1px solid var(--border-color, #dce2eb);
+    border-radius: 9px;
+    background: var(--card-background, #fff);
+    color: var(--text-primary, #334155);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.p1-cashbook-secondary-btn:hover {
+    border-color: var(--primary-color, #2563eb);
+    color: var(--primary-color, #2563eb);
+}
+
+/* Account overview */
+
+.p1-cashbook-balance-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.p1-cashbook-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.p1-cashbook-section-heading h2 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 760;
+}
+
+.p1-cashbook-account-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 13px;
+}
+
+.p1-cashbook-account-card {
+    position: relative;
+    min-width: 0;
+    padding: 17px;
+    overflow: hidden;
+    border: 1px solid var(--border-color, #e5eaf1);
+    border-radius: 14px;
+    background: var(--card-background, #fff);
+}
+
+.p1-cashbook-account-card::after {
+    content: "";
+    position: absolute;
+    right: -25px;
+    bottom: -38px;
+    width: 105px;
+    height: 105px;
+    border-radius: 50%;
+    background: var(--primary-color, #2563eb);
+    opacity: .045;
+}
+
+.p1-cashbook-account-card h3 {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 750;
+}
+
+.p1-cashbook-account-type {
+    display: inline-block;
+    margin-top: 5px;
+    color: var(--text-secondary, #718096);
+    font-size: 10px;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+}
+
+.p1-cashbook-account-balance {
+    position: relative;
+    z-index: 1;
+    display: block;
+    margin-top: 17px;
+    overflow-wrap: anywhere;
+    font-size: clamp(19px, 2.2vw, 25px);
+    font-weight: 800;
+    letter-spacing: -.04em;
+}
+
+.p1-cashbook-account-card button {
+    position: relative;
+    z-index: 1;
+    margin-top: 12px;
+}
+
+/* Empty state */
+
+.p1-cashbook-empty {
+    padding: 22px;
+    color: var(--text-secondary, #718096);
+    text-align: center;
+    font-size: 13px;
+}
+
+.p1-cashbook-account-grid > .p1-cashbook-empty {
+    grid-column: 1 / -1;
+    border: 1px dashed var(--border-color, #dce2eb);
+    border-radius: 12px;
+}
+
+/* Money movement summary */
+
+.p1-cashbook-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.p1-cashbook-summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    padding: 17px;
+    border: 1px solid var(--border-color, #e5eaf1);
+    border-radius: 13px;
+    background: var(--surface-muted, #f8fafc);
+}
+
+.p1-cashbook-summary-card span {
+    color: var(--text-secondary, #64748b);
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.p1-cashbook-summary-card strong {
+    overflow-wrap: anywhere;
+    font-size: clamp(19px, 2vw, 24px);
+    font-weight: 800;
+    letter-spacing: -.035em;
+}
+
+.p1-cashbook-summary-card:nth-child(1) strong {
+    color: #16804a;
+}
+
+.p1-cashbook-summary-card:nth-child(2) strong {
+    color: #c04444;
+}
+
+.p1-cashbook-summary-card small {
+    color: var(--text-secondary, #8792a3);
+    font-size: 10px;
+}
+
+/* Panels */
+
+.p1-cashbook-panel {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--border-color, #e5eaf1);
+    border-radius: 15px;
+    background: var(--card-background, #fff);
+    box-shadow: 0 5px 20px rgba(25, 40, 70, .035);
+}
+
+.p1-cashbook-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border-color, #e9edf3);
+    flex-wrap: wrap;
+}
+
+.p1-cashbook-panel-header h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 780;
+}
+
+.p1-cashbook-panel-body {
+    padding: 20px;
+}
+
+.p1-cashbook-close-btn {
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border-color, #e5eaf1);
+    border-radius: 9px;
+    background: transparent;
+    color: var(--text-secondary, #64748b);
+    font-size: 21px;
+    cursor: pointer;
+}
+
+/* Forms */
+
+.p1-cashbook-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.p1-cashbook-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.p1-cashbook-field-full {
+    grid-column: 1 / -1;
+}
+
+.p1-cashbook-field label {
+    color: var(--text-secondary, #596579);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.p1-cashbook-field input,
+.p1-cashbook-field select,
+.p1-cashbook-field textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color, #dce2eb);
+    border-radius: 9px;
+    background: var(--input-background, #fff);
+    color: var(--text-primary, #172033);
+    font: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+.p1-cashbook-field textarea {
+    min-height: 85px;
+    resize: vertical;
+}
+
+.p1-cashbook-field input:focus,
+.p1-cashbook-field select:focus,
+.p1-cashbook-field textarea:focus {
+    border-color: var(--primary-color, #2563eb);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+}
+
+.p1-cashbook-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    flex-wrap: wrap;
+    padding-top: 18px;
+    margin-top: 19px;
+    border-top: 1px solid var(--border-color, #e9edf3);
+}
+
+.p1-cashbook-cancel-btn {
+    min-height: 42px;
+    padding: 0 15px;
+    border: 1px solid var(--border-color, #dce2eb);
+    border-radius: 9px;
+    background: transparent;
+    color: var(--text-primary, #334155);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Transaction type selector */
+
+.p1-cashbook-entry-type-selector {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.p1-cashbook-type-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid var(--border-color, #e5eaf1);
+    border-radius: 11px;
+    background: var(--surface-muted, #f8fafc);
+    cursor: pointer;
+}
+
+.p1-cashbook-type-option:has(input:checked) {
+    border-color: var(--primary-color, #2563eb);
+    background: rgba(37, 99, 235, .055);
+}
+
+.p1-cashbook-type-option input {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--primary-color, #2563eb);
+}
+
+.p1-cashbook-type-option span {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.p1-cashbook-type-option strong {
+    font-size: 12px;
+}
+
+.p1-cashbook-type-option small {
+    color: var(--text-secondary, #718096);
+    font-size: 10px;
+}
+
+/* Ledger filters */
+
+.p1-cashbook-toolbar {
+    display: grid;
+    grid-template-columns: minmax(170px, 2fr) repeat(4, minmax(110px, 1fr));
+    gap: 9px;
+    padding: 14px 17px;
+    border-bottom: 1px solid var(--border-color, #e9edf3);
+}
+
+.p1-cashbook-toolbar input,
+.p1-cashbook-toolbar select {
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color, #dce2eb);
+    border-radius: 8px;
+    background: var(--input-background, #fff);
+    color: var(--text-primary, #334155);
+    font: inherit;
+    font-size: 11px;
+}
+
+/* Ledger table */
+
+.p1-cashbook-ledger-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+}
+
+.p1-cashbook-ledger-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.p1-cashbook-ledger-table th {
+    padding: 12px 13px;
+    background: var(--surface-muted, #f6f8fb);
+    color: var(--text-secondary, #64748b);
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.p1-cashbook-ledger-table td {
+    padding: 13px;
+    border-top: 1px solid var(--border-color, #edf0f5);
+    color: var(--text-primary, #334155);
+    font-size: 11px;
+    vertical-align: middle;
+}
+
+.p1-cashbook-ledger-table tbody tr:hover {
+    background: var(--surface-muted, #fafbfd);
+}
+
+.p1-cashbook-ledger-table .p1-cashbook-money-in {
+    color: #16804a;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.p1-cashbook-ledger-table .p1-cashbook-money-out {
+    color: #c04444;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.p1-cashbook-ledger-table .p1-cashbook-running-balance {
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.p1-cashbook-ledger-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 17px;
+    border-top: 1px solid var(--border-color, #e9edf3);
+    color: var(--text-secondary, #718096);
+    font-size: 11px;
+    flex-wrap: wrap;
+}
+
+.p1-cashbook-ledger-footer strong {
+    color: var(--text-primary, #334155);
+}
+
+/* Reconciliation */
+
+.p1-cashbook-reconciliation-result {
+    margin-top: 17px;
+    padding: 14px;
+    border: 1px solid var(--border-color, #e5eaf1);
+    border-radius: 10px;
+    background: var(--surface-muted, #f8fafc);
+    color: var(--text-secondary, #64748b);
+    font-size: 12px;
+}
+
+.p1-cashbook-reconciliation-result.is-matched {
+    border-color: #b7e5ca;
+    background: #effaf3;
+    color: #16804a;
+}
+
+.p1-cashbook-reconciliation-result.is-different {
+    border-color: #f0d7a6;
+    background: #fff8e9;
+    color: #946200;
+}
+
+.p1-cashbook-reconciliation-history {
+    margin-top: 23px;
+    padding-top: 17px;
+    border-top: 1px solid var(--border-color, #e9edf3);
+}
+
+.p1-cashbook-reconciliation-history h3 {
+    margin: 0 0 12px;
+    font-size: 13px;
+    font-weight: 750;
+}
+
+.p1-cashbook-reconciliation-history p {
+    color: var(--text-secondary, #718096);
+    font-size: 12px;
+}
+
+/* Tablet */
+
+@media (max-width: 1000px) {
+    .p1-cashbook-account-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .p1-cashbook-toolbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .p1-cashbook-toolbar input:first-child {
+        grid-column: 1 / -1;
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+    #p1CashbookScreen {
+        padding: 12px;
+    }
+
+    .p1-cashbook-workspace {
+        gap: 15px;
+    }
+
+    .p1-cashbook-header {
+        align-items: flex-start;
+    }
+
+    .p1-cashbook-header .p1-cashbook-primary-btn {
+        width: 100%;
+    }
+
+    .p1-cashbook-account-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .p1-cashbook-account-card {
+        padding: 12px;
+        border-radius: 11px;
+    }
+
+    .p1-cashbook-account-balance {
+        margin-top: 12px;
+        font-size: 17px;
+    }
+
+    .p1-cashbook-summary-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .p1-cashbook-summary-card {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 4px 10px;
+        padding: 12px;
+    }
+
+    .p1-cashbook-summary-card span {
+        grid-column: 1;
+    }
+
+    .p1-cashbook-summary-card strong {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        align-self: center;
+        font-size: 19px;
+        text-align: right;
+    }
+
+    .p1-cashbook-summary-card small {
+        grid-column: 1;
+    }
+
+    .p1-cashbook-panel-header,
+    .p1-cashbook-panel-body {
+        padding: 14px;
+    }
+
+    .p1-cashbook-form-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .p1-cashbook-field-full {
+        grid-column: auto;
+    }
+
+    .p1-cashbook-entry-type-selector {
+        gap: 7px;
+    }
+
+    .p1-cashbook-type-option {
+        padding: 10px;
+    }
+
+    .p1-cashbook-form-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .p1-cashbook-form-actions button {
+        width: 100%;
+        padding: 0 8px;
+    }
+
+    .p1-cashbook-toolbar {
+        grid-template-columns: 1fr;
+        padding: 12px;
+    }
+
+    .p1-cashbook-toolbar input:first-child {
+        grid-column: auto;
+    }
+
+    .p1-cashbook-toolbar input,
+    .p1-cashbook-toolbar select {
+        min-height: 41px;
+        font-size: 12px;
+    }
+
+    .p1-cashbook-section-heading {
+        align-items: flex-start;
+    }
+}
+
+/* Small phones */
+
+@media (max-width: 360px) {
+    .p1-cashbook-account-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .p1-cashbook-entry-type-selector {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* End P1-12 */
+
+
+/* =====================================================
+   PHASE 2 — P2-02
+   CUSTOMER MANAGEMENT SCREEN STYLING
+   ===================================================== */
+
+/* MAIN SCREEN */
+
+.p2-customers-screen {
+    width: 100%;
+    min-height: 100%;
+    padding: 28px;
+    box-sizing: border-box;
+    background: #f6f8fc;
+    color: #1e293b;
+}
+
+.p2-customers-workspace {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+/* PAGE HEADER */
+
+.p2-customers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.p2-customers-eyebrow {
+    display: block;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+}
+
+.p2-customers-header h1 {
+    font-size: 27px;
+    font-weight: 800;
+    margin: 0 0 8px;
+    color: #172033;
+}
+
+.p2-customers-header p,
+.p2-customer-directory p,
+.p2-customer-panel-header p {
+    color: #64748b;
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* BUTTONS */
+
+.p2-primary-button,
+.p2-secondary-button {
+    min-height: 46px;
+    padding: 0 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.p2-primary-button {
+    background: #111827;
+    color: #fff;
+    border: 1px solid #111827;
+}
+
+.p2-primary-button:hover {
+    background: #273449;
+}
+
+.p2-secondary-button {
+    background: #fff;
+    color: #475569;
+    border: 1px solid #dbe3ef;
+}
+
+.p2-secondary-button:hover {
+    background: #f1f5f9;
+}
+
+.p2-icon-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #475569;
+    cursor: pointer;
+    font-size: 17px;
+}
+
+/* CUSTOMER SUMMARY CARDS */
+
+.p2-customer-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.p2-customer-stat {
+    background: #fff;
+    border: 1px solid #e7edf5;
+    border-radius: 15px;
+    padding: 21px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 0;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.025);
+}
+
+.p2-stat-icon {
+    width: 47px;
+    height: 47px;
+    min-width: 47px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+}
+
+.p2-stat-purple {
+    background: #f0eaff;
+    color: #7953d2;
+}
+
+.p2-stat-blue {
+    background: #e8f1ff;
+    color: #3675d6;
+}
+
+.p2-stat-green {
+    background: #e6f8ef;
+    color: #15965a;
+}
+
+.p2-stat-orange {
+    background: #fff1df;
+    color: #e58a22;
+}
+
+.p2-customer-stat span {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.p2-customer-stat strong {
+    display: block;
+    color: #172033;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.p2-customer-stat small {
+    display: block;
+    color: #94a3b8;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+/* CUSTOMER DIRECTORY */
+
+.p2-customer-directory,
+.p2-customer-panel {
+    background: #fff;
+    border: 1px solid #e5eaf2;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.025);
+}
+
+.p2-directory-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.p2-directory-heading h2,
+.p2-customer-panel-header h2 {
+    margin: 0 0 7px;
+    color: #172033;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.p2-customer-count {
+    background: #f1f5f9;
+    padding: 8px 13px;
+    border-radius: 20px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* SEARCH AND FILTERS */
+
+.p2-customer-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.p2-customer-search {
+    flex: 1;
+    min-width: 180px;
+    height: 46px;
+    border: 1px solid #dce4ef;
+    background: #f8fafc;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 0 14px;
+}
+
+.p2-customer-search i {
+    color: #94a3b8;
+}
+
+.p2-customer-search input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    min-width: 0;
+    font-size: 13px;
+    color: #1e293b;
+}
+
+.p2-customer-toolbar select,
+.p2-customer-field input,
+.p2-customer-field select,
+.p2-customer-field textarea {
+    min-height: 46px;
+    padding: 0 13px;
+    border: 1px solid #dce4ef;
+    border-radius: 10px;
+    background: #fff;
+    color: #334155;
+    font-size: 13px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.p2-customer-toolbar select:focus,
+.p2-customer-field input:focus,
+.p2-customer-field select:focus,
+.p2-customer-field textarea:focus {
+    border-color: #647cf0;
+    box-shadow: 0 0 0 3px rgba(100, 124, 240, 0.1);
+}
+
+/* CUSTOMER TABLE */
+
+.p2-customer-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.p2-customer-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 650px;
+    text-align: left;
+}
+
+.p2-customer-table thead {
+    background: #f8fafc;
+}
+
+.p2-customer-table th {
+    padding: 15px 13px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    border-bottom: 1px solid #e8edf4;
+}
+
+.p2-customer-table td {
+    padding: 16px 13px;
+    border-bottom: 1px solid #edf1f6;
+    color: #475569;
+    font-size: 13px;
+}
+
+.p2-customer-table tbody tr:hover {
+    background: #fafbff;
+}
+
+.p2-customer-empty {
+    text-align: center !important;
+    padding: 55px 15px !important;
+}
+
+.p2-customer-empty i {
+    display: block;
+    font-size: 32px;
+    color: #cbd5e1;
+    margin-bottom: 13px;
+}
+
+.p2-customer-empty strong {
+    display: block;
+    color: #334155;
+    font-size: 15px;
+    margin-bottom: 7px;
+}
+
+.p2-customer-empty span {
+    display: block;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+/* CUSTOMER FORMS */
+
+.p2-customer-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.p2-customer-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.p2-customer-field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+}
+
+.p2-customer-field label {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.p2-customer-field input,
+.p2-customer-field select,
+.p2-customer-field textarea {
+    width: 100%;
+}
+
+.p2-customer-field textarea {
+    padding: 13px;
+    min-height: 100px;
+    resize: vertical;
+}
+
+.p2-customer-field-full {
+    grid-column: 1 / -1;
+}
+
+.p2-customer-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #edf1f6;
+}
+
+/* CUSTOMER PROFILE */
+
+.p2-customer-profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.p2-customer-profile-stats > div {
+    background: #f8fafc;
+    border: 1px solid #e9eef5;
+    border-radius: 12px;
+    padding: 19px;
+}
+
+.p2-customer-profile-stats span {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+    margin-bottom: 9px;
+}
+
+.p2-customer-profile-stats strong {
+    color: #172033;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.p2-customer-profile-details,
+.p2-customer-profile-history {
+    margin-top: 25px;
+}
+
+.p2-customer-profile-details h3,
+.p2-customer-profile-history h3 {
+    color: #172033;
+    font-size: 16px;
+    margin-bottom: 15px;
+    font-weight: 800;
+}
+
+/* RESPONSIVE TABLET */
+
+@media (max-width: 1000px) {
+
+    .p2-customer-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .p2-customers-screen {
+        padding: 20px;
+    }
+
+}
+
+/* RESPONSIVE MOBILE */
+
+@media (max-width: 600px) {
+
+    .p2-customers-screen {
+        padding: 14px;
+    }
+
+    .p2-customers-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .p2-customers-header h1 {
+        font-size: 22px;
+    }
+
+    .p2-customers-header .p2-primary-button {
+        width: 100%;
+    }
+
+    .p2-customer-summary {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .p2-customer-stat {
+        padding: 13px;
+        gap: 9px;
+    }
+
+    .p2-stat-icon {
+        width: 37px;
+        height: 37px;
+        min-width: 37px;
+        font-size: 15px;
+    }
+
+    .p2-customer-stat strong {
+        font-size: 20px;
+    }
+
+    .p2-customer-stat span {
+        font-size: 10px;
+    }
+
+    .p2-customer-stat small {
+        font-size: 10px;
+    }
+
+    .p2-customer-directory,
+    .p2-customer-panel {
+        padding: 16px;
+        border-radius: 13px;
+    }
+
+    .p2-directory-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .p2-customer-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .p2-customer-search {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .p2-customer-toolbar select {
+        width: 100%;
+    }
+
+    .p2-customer-form-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .p2-customer-field-full {
+        grid-column: auto;
+    }
+
+    .p2-customer-profile-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .p2-customer-profile-stats > div {
+        padding: 15px;
+    }
+
+    .p2-customer-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .p2-customer-form-actions button {
+        width: 100%;
+    }
+
+}
+
+/* END P2-02 */
+
+/* =========================================================
+   NEXODRA — INBOX OUTER WIDTH CORRECTION
+========================================================= */
+
+#inboxScreen {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
+#inboxScreen .inbox-page.inbox-chat-layout {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
+#inboxScreen .inbox-chat-header,
+#inboxScreen .inbox-chat-tabs,
+#inboxScreen .inbox-chat-list {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
+#inboxScreen .inbox-chat-search {
+    width: calc(100% - 24px) !important;
+    margin-left: 12px !important;
+    margin-right: 12px !important;
+    box-sizing: border-box !important;
+}
+
+#inboxScreen .inbox-chat-list {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+}
+
+/* =========================================================
+   NEXODRA — INBOX FULL-WIDTH MOBILE CORRECTION
+   Scoped to Inbox only
+========================================================= */
+
+#inboxScreen {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+    box-sizing: border-box;
+}
+
+#inboxScreen .inbox-page,
+#inboxScreen .inbox-chat-layout {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-left: 0;
+    margin-right: 0;
+    box-sizing: border-box;
+}
+
+/* Search fills available width */
+#inboxScreen .inbox-chat-search {
+    width: calc(100% - 24px);
+    max-width: none;
+    margin-left: 12px;
+    margin-right: 12px;
+    box-sizing: border-box;
+}
+
+/* Chat list uses the full available width */
+#inboxScreen .inbox-chat-list {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    box-sizing: border-box;
+}
+
+/* Conversation cards fill their list */
+#inboxScreen .inbox-chat-list > *,
+#inboxScreen .conversation-list,
+#inboxScreen .conversation-card {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#inboxScreen .conversation-card {
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    #inboxScreen .inbox-chat-header {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #inboxScreen .inbox-chat-tabs {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+/* =========================================================
+   NEXODRA — NOTIFICATIONS FULL-WIDTH CORRECTION
+   Matches corrected Inbox and Cashbook screens
+========================================================= */
+
+@media (max-width: 600px) {
+
+    /* Main Notifications screen */
+    #notificationsScreen {
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 0 !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+
+        box-sizing: border-box !important;
+    }
+
+    #notificationsScreen .notifications-page {
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 0 !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        box-sizing: border-box !important;
+    }
+
+    /* Notification cards */
+    #notificationsScreen .notification-settings-card,
+    #notificationsScreen .notifications-list-section {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    /* Separate Notification Preferences screen */
+    #notificationPreferencesScreen {
+        width: 100% !important;
+        max-width: none !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+
+        box-sizing: border-box !important;
+    }
+
+    #notificationPreferencesScreen .notifications-page {
+        width: 100% !important;
+        max-width: none !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        box-sizing: border-box !important;
+    }
+}
+
+/* =========================================================
+   NEXODRA — CUSTOMER MANAGEMENT FULL-WIDTH CORRECTION
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .p2-customers-screen {
+        width: 100% !important;
+        max-width: none !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+
+        box-sizing: border-box !important;
+        min-width: 0;
+    }
+
+    .p2-customers-workspace {
+        width: 100% !important;
+        max-width: none !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        min-width: 0;
+        box-sizing: border-box !important;
+    }
+
+    .p2-customer-directory,
+    .p2-customer-panel,
+    .p2-customer-summary {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+}
+
+/* =========================================================
+   NEXODRA — CASHBOOK & LEDGER FULL-WIDTH CORRECTION
+   Matches the Inbox screen's outer spacing
+========================================================= */
+
+@media (max-width: 600px) {
+
+    #p1CashbookScreen {
+        width: 100% !important;
+        max-width: none !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        /* Let the app body provide the outer screen spacing */
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+
+        box-sizing: border-box !important;
+    }
+
+    #p1CashbookScreen .p1-cashbook-workspace {
+        width: 100% !important;
+        max-width: none !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+}
+
+/* =====================================================
+   P2-05C FIX — FULL-SCREEN POS CUSTOMER SELECTOR
+   ===================================================== */
+
+.p2-pos-customer-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 10050;
+    width: 100%;
+    height: 100%;
+    min-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    padding: 24px 18px 110px;
+    background: #f8fafc;
+}
+
+.p2-pos-customer-screen[hidden] {
+    display: none !important;
+}
+
+.p2-pos-customer-screen.active {
+    display: block;
+}
+
+.p2-pos-customer-panel {
+    width: 100%;
+    max-width: 760px;
+    min-height: calc(100dvh - 134px);
+    margin: 0 auto;
+    padding: 24px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+}
+
+.p2-pos-customer-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.p2-pos-customer-header h2 {
+    margin: 10px 0 6px;
+    color: #1e293b;
+    font-size: clamp(25px, 5vw, 34px);
+    line-height: 1.2;
+}
+
+.p2-pos-customer-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.p2-pos-customer-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 54px;
+    padding: 0 16px;
+    box-sizing: border-box;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.p2-pos-customer-search i {
+    color: #64748b;
+}
+
+.p2-pos-customer-search input {
+    flex: 1;
+    min-width: 0;
+    height: 52px;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: #1e293b;
+    font-size: 16px;
+}
+
+.p2-pos-customer-results {
+    margin-top: 20px;
+}
+
+.p2-pos-customer-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 38px 18px;
+    text-align: center;
+    color: #64748b;
+}
+
+.p2-pos-customer-empty i {
+    font-size: 30px;
+}
+
+.p2-pos-customer-empty strong {
+    color: #1e293b;
+    font-size: 18px;
+}
+
+.p2-pos-customer-empty span {
+    font-size: 14px;
+}
+
+.p2-pos-customer-register {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 28px;
+    padding: 20px 0;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.p2-pos-customer-register > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.p2-pos-customer-register strong {
+    color: #1e293b;
+}
+
+.p2-pos-customer-register span {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.p2-pos-add-customer-btn,
+.p2-pos-walkin-btn {
+    min-height: 46px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.p2-pos-add-customer-btn {
+    background: #111827;
+    color: #ffffff;
+}
+
+.p2-pos-customer-footer {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 24px;
+}
+
+.p2-pos-walkin-btn {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+@media (max-width: 520px) {
+    .p2-pos-customer-screen {
+        padding: 18px 12px 100px;
+    }
+
+    .p2-pos-customer-panel {
+        min-height: calc(100dvh - 118px);
+        padding: 18px;
+        border-radius: 16px;
+    }
+
+    .p2-pos-customer-register {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .p2-pos-add-customer-btn {
+        width: 100%;
+    }
+}
+
+/* END P2-05C CUSTOMER SCREEN FIX */
+/* P2-05G — POS CUSTOMER CARDS */
+
+.p2-pos-customer-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px;
+    margin-bottom: 12px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+}
+
+.p2-pos-customer-card-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.p2-pos-customer-card-details strong {
+    color: #1e293b;
+    font-size: 17px;
+    overflow-wrap: anywhere;
+}
+
+.p2-pos-customer-card-details span {
+    color: #64748b;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.p2-pos-select-customer-btn {
+    flex-shrink: 0;
+    min-height: 44px;
+    padding: 0 16px;
+    color: #ffffff;
+    background: #111827;
+    border: 0;
+    border-radius: 9px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+@media (max-width: 520px) {
+    .p2-pos-customer-card {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .p2-pos-select-customer-btn {
+        width: 100%;
+    }
+}
+
+/* END P2-05G */
+
+/* P2-05H — ATTACHED POS CUSTOMER */
+
+.p2-pos-attached-customer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0 0 14px;
+    padding: 14px 16px;
+    background: #f1f5f9;
+    border: 1px solid #dbe4ef;
+    border-radius: 12px;
+}
+
+.p2-pos-attached-label {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.p2-pos-attached-customer strong {
+    color: #1e293b;
+    font-size: 17px;
+}
+
+.p2-pos-attached-customer > span:not(.p2-pos-attached-label) {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.p2-pos-attached-customer button {
+    min-height: 36px;
+    margin-top: 5px;
+    padding: 0 14px;
+    color: #ffffff;
+    background: #111827;
+    border: 0;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* END P2-05H */
+
+/* P2-05J — REMOVE CUSTOMER CONTROL */
+
+.p2-pos-attached-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.p2-pos-remove-customer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid #fecaca;
+    border-radius: 50%;
+    background: #fff1f2;
+    color: #be123c;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.p2-pos-remove-customer:active {
+    transform: scale(.94);
+}
+
+
+/* =====================================================
+   NEXODRA — R1: RESPONSIVE LANDSCAPE SIDEBAR FOUNDATION
+   CSS ONLY — PRESERVE EXISTING NAVIGATION
+   ===================================================== */
+
+:root {
+    --nx-landscape-sidebar-width: 238px;
+}
+
+/* Landscape layout foundation */
+@media (orientation: landscape) and (min-width: 600px) {
+
+    /* Hide the five-button bottom navigation */
+    body.nexodra-landscape-mode .bottom-nav {
+        display: none !important;
+    }
+
+    /* Sidebar occupies its own reserved screen space */
+    body.nexodra-landscape-mode #nexodraSideNav {
+        position: fixed !important;
+
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+
+        width: var(--nx-landscape-sidebar-width) !important;
+        min-width: var(--nx-landscape-sidebar-width) !important;
+        max-width: var(--nx-landscape-sidebar-width) !important;
+
+        height: 100vh !important;
+        height: 100dvh !important;
+
+        box-sizing: border-box !important;
+
+        z-index: 10001 !important;
+
+        border-radius: 0 !important;
+
+        box-shadow: none !important;
+    }
+
+    /* Sidebar open state */
+    body.nexodra-landscape-mode
+    #nexodraSideNav.is-open {
+        visibility: visible !important;
+        transform: translateX(0) !important;
+        pointer-events: auto !important;
+    }
+
+    /* No floating backdrop in landscape */
+    body.nexodra-landscape-mode
+    .nexodra-sidebar-backdrop {
+        display: none !important;
+    }
+
+    /* Reserve actual space for the sidebar */
+    body.nexodra-landscape-mode
+    .app-container {
+        transition:
+            margin-left 0.25s ease,
+            width 0.25s ease;
+
+        box-sizing: border-box !important;
+    }
+
+    body.nexodra-landscape-mode
+    .nexodra-landscape-sidebar-visible
+    .app-container {
+        margin-left: var(--nx-landscape-sidebar-width) !important;
+        width: calc(
+            100% - var(--nx-landscape-sidebar-width)
+        ) !important;
+    }
+
+}
+
+/* End R1 */
+
+/* =====================================================
+   BRICK R2 — WIDTH-BASED RESPONSIVE SIDEBAR
+   Narrow screens: Floating sidebar + bottom navigation
+   Wide screens: Docked sidebar + reserved content space
+===================================================== */
+
+/* WIDE SCREEN MODE — orientation independent */
+@media (min-width: 900px) {
+
+    /* 1. Hide bottom navigation */
+    body.nexodra-wide-mode .bottom-nav {
+        display: none !important;
+    }
+
+    /* 2. Docked sidebar dimensions */
+    body.nexodra-wide-mode #nexodraSideNav {
+        position: fixed !important;
+
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+
+        width: 238px !important;
+        min-width: 238px !important;
+        max-width: 72vw !important;
+
+        height: 100vh !important;
+        height: 100dvh !important;
+
+        box-sizing: border-box !important;
+        z-index: 10001 !important;
+
+        border-radius: 0 !important;
+        box-shadow: none !important;
+
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+
+        transition:
+            transform 0.25s ease,
+            visibility 0.25s ease;
+    }
+
+    /* 3. Sidebar closed */
+    body.nexodra-wide-mode:not(.nexodra-sidebar-open)
+    #nexodraSideNav {
+        transform: translateX(-105%) !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+    /* 4. Sidebar open */
+    body.nexodra-wide-mode.nexodra-sidebar-open
+    #nexodraSideNav.is-open {
+        transform: translateX(0) !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+
+    /* 5. Light theme */
+    body.nexodra-wide-mode:not(.store-theme-dark)
+    #nexodraSideNav {
+        background: #ffffff !important;
+    }
+
+    /* 6. Dark theme */
+    body.store-theme-dark.nexodra-wide-mode
+    #nexodraSideNav {
+        background: #101426 !important;
+    }
+
+    /* 7. Reserve space for the docked sidebar */
+    body.nexodra-wide-mode .app-container {
+        box-sizing: border-box !important;
+        transition:
+            margin-left 0.25s ease,
+            width 0.25s ease;
+    }
+
+    /* Sidebar open: content moves right */
+    body.nexodra-wide-mode.nexodra-landscape-sidebar-visible
+    .app-container {
+        margin-left: 238px !important;
+        width: calc(100% - 238px) !important;
+        max-width: none !important;
+    }
+
+    /* Sidebar closed: content uses full width */
+    body.nexodra-wide-mode:not(.nexodra-landscape-sidebar-visible)
+    .app-container {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    /* 8. No floating backdrop in docked mode */
+    body.nexodra-wide-mode .nexodra-sidebar-backdrop {
+        display: none !important;
+        pointer-events: none !important;
+    }
+
+    /* 9. Normal page scrolling */
+    body.nexodra-wide-mode.nexodra-sidebar-open {
+        overflow: auto !important;
+    }
+}
+
+/* =====================================================
+   END BRICK R2
+===================================================== */
+
+
+/* =====================================================
+   P2-08 — INVENTORY MANAGEMENT WORKSPACE
+===================================================== */
+
+.inventory-workspace {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px;
+    color: var(--text-color, inherit);
+}
+
+.inventory-header,
+.inventory-panel-heading,
+.inventory-section-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.inventory-header {
+    margin-bottom: 28px;
+}
+
+.inventory-eyebrow {
+    display: inline-block;
+    margin-bottom: 8px;
+    color: var(--primary-color, #64748b);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.inventory-header h1 {
+    margin: 0 0 8px;
+    font-size: clamp(24px, 3vw, 32px);
+    font-weight: 800;
+}
+
+.inventory-header p,
+.inventory-section-heading p,
+.inventory-panel-heading p {
+    margin: 0;
+    color: var(--text-muted, #888);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.inventory-header-actions button,
+.inventory-panel-heading > button {
+    min-height: 42px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--primary-color, #2563eb);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* OVERVIEW */
+
+.inventory-overview-section {
+    margin-bottom: 28px;
+}
+
+.inventory-section-heading {
+    margin-bottom: 14px;
+}
+
+.inventory-section-heading h2,
+.inventory-panel-heading h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.inventory-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.inventory-stat-card {
+    min-width: 0;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 14px;
+    background: var(--card-background, #fff);
+}
+
+.inventory-stat-card span {
+    color: var(--text-muted, #888);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.inventory-stat-card strong {
+    overflow-wrap: anywhere;
+    font-size: clamp(19px, 2vw, 25px);
+    font-weight: 800;
+}
+
+.inventory-stat-card small {
+    color: var(--text-muted, #888);
+    font-size: 11px;
+}
+
+/* SECTION TABS */
+
+.inventory-section-navigation {
+    margin-bottom: 20px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 12px;
+    background: var(--card-background, #fff);
+}
+
+.inventory-section-tab {
+    min-height: 42px;
+    padding: 0 14px;
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted, #777);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.inventory-section-tab:hover {
+    background: var(--hover-background, #f3f4f6);
+    color: var(--text-color, #222);
+}
+
+.inventory-section-tab.active {
+    background: var(--primary-color, #2563eb);
+    color: #fff;
+}
+
+/* CONTENT PANELS */
+
+.inventory-content-panel {
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 14px;
+    background: var(--card-background, #fff);
+}
+
+.inventory-content-panel[hidden] {
+    display: none !important;
+}
+
+.inventory-panel-heading {
+    margin-bottom: 20px;
+}
+
+/* SEARCH AND FILTERS */
+
+.inventory-product-toolbar,
+.inventory-filter-row {
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.inventory-search {
+    min-width: 220px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0 12px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 9px;
+    background: var(--input-background, transparent);
+}
+
+.inventory-search i {
+    color: var(--text-muted, #888);
+}
+
+.inventory-search input {
+    width: 100%;
+    min-height: 42px;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 13px;
+}
+
+.inventory-product-toolbar select,
+.inventory-filter-row select,
+.inventory-filter-row input {
+    min-width: 150px;
+    min-height: 42px;
+    padding: 0 12px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 9px;
+    background: var(--input-background, transparent);
+    color: inherit;
+    font: inherit;
+    font-size: 12px;
+}
+
+.inventory-filter-row input {
+    flex: 1;
+}
+
+/* TABLES */
+
+.inventory-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 10px;
+}
+
+.inventory-products-table,
+.inventory-history-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.inventory-history-table {
+    min-width: 900px;
+}
+
+.inventory-products-table th,
+.inventory-history-table th {
+    padding: 13px 14px;
+    background: var(--table-header-background, #f8fafc);
+    color: var(--text-muted, #777);
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.inventory-products-table td,
+.inventory-history-table td {
+    padding: 14px;
+    border-top: 1px solid var(--border-color, #eee);
+    color: var(--text-color, inherit);
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.inventory-products-table tbody tr:hover,
+.inventory-history-table tbody tr:hover {
+    background: var(--hover-background, #f8fafc);
+}
+
+.inventory-products-table tbody td[colspan],
+.inventory-history-table tbody td[colspan] {
+    padding: 28px 14px;
+    color: var(--text-muted, #888);
+    text-align: center;
+}
+
+/* INFORMATION NOTE */
+
+.inventory-information-note {
+    margin-top: 18px;
+    padding: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 10px;
+    color: var(--text-muted, #777);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.inventory-information-note i {
+    margin-top: 2px;
+    color: var(--primary-color, #2563eb);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1100px) {
+    .inventory-overview-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .inventory-workspace {
+        padding: 16px;
+    }
+
+    .inventory-header {
+        flex-direction: column;
+    }
+
+    .inventory-header-actions {
+        width: 100%;
+    }
+
+    .inventory-header-actions button {
+        width: 100%;
+    }
+
+    .inventory-overview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .inventory-stat-card {
+        padding: 14px;
+    }
+
+    .inventory-section-navigation {
+        margin-right: -4px;
+    }
+
+    .inventory-content-panel {
+        padding: 14px;
+    }
+
+    .inventory-panel-heading {
+        flex-direction: column;
+    }
+
+    .inventory-panel-heading > button {
+        width: 100%;
+    }
+
+    .inventory-product-toolbar,
+    .inventory-filter-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .inventory-product-toolbar select,
+    .inventory-filter-row select,
+    .inventory-filter-row input,
+    .inventory-search {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 380px) {
+    .inventory-overview-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =========================================================
+   NEXODRA BRICK — P2-07 INVENTORY SCREEN WIDTH ALIGNMENT
+   Match the Profile screen's available content width
+========================================================= */
+
+/* Inventory screen uses the same available width as Profile */
+.app-body > #inventoryManagementScreen {
+    display: block;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Remove the centered, constrained workspace layout */
+#inventoryManagementScreen > .inventory-workspace {
+    display: block;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Make inventory sections use the full available content width */
+#inventoryManagementScreen .inventory-header,
+#inventoryManagementScreen .inventory-overview-section,
+#inventoryManagementScreen .inventory-section-navigation,
+#inventoryManagementScreen .inventory-content-panel {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Keep tables scrollable without widening the screen */
+#inventoryManagementScreen .inventory-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    box-sizing: border-box;
+}
+
+/* =====================================================
+   BRICK P2-10
+   INVENTORY SCREEN VISIBILITY ISOLATION
+   Prevent inventory from appearing on other screens
+===================================================== */
+
+/* Inventory must remain hidden when inactive */
+#inventoryManagementScreen:not(.active) {
+    display: none !important;
+}
+
+/* Display inventory only when explicitly activated */
+#inventoryManagementScreen.active {
+    display: block !important;
+}
+
+/* Prevent pseudo-elements from creating visual overlays */
+#inventoryManagementScreen:not(.active)::before,
+#inventoryManagementScreen:not(.active)::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Keep inventory contained within the application body */
+.app-body #inventoryManagementScreen {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Prevent inactive inventory content from affecting layout */
+#inventoryManagementScreen:not(.active) * {
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* END BRICK P2-10 */
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -15,9 +15,6 @@ window.addEventListener('unhandledrejection', function(event) {
     );
 });
 
-
-
-
 /* =========================================================
    NEXODRA AUTH GATE — BRICK 1 REPAIRED
    Shared authentication readiness controller
@@ -389,6 +386,10 @@ function verifyNexodraOnboardingState() {
 // C8-E — ONBOARDING BUTTONS
 // =========================================
 
+
+// Shared authentication screen reference
+const authScreen =
+    document.getElementById('authScreen');
 // =========================================
 // C8-H — ONBOARDING COMPLETION TRANSITION
 // =========================================
@@ -23277,10 +23278,11 @@ setTimeout(() => {
         return;
     }
 
-    // Hide authentication screen
-    const authScreen =
-        document.getElementById('authScreen');
+// Hide authentication screen
+const authScreen =
+    document.getElementById('authScreen');
 
+    
     if (authScreen) {
         authScreen.style.display = 'none';
     }
@@ -23471,7 +23473,9 @@ return;
 
 
         
-if (error) {
+
+
+  if (error) {
 
     // Keep seller-data functions paused.
     window.NEXODRA_AUTH_GATE.pause();
@@ -23480,6 +23484,10 @@ if (error) {
         "Session check error:",
         error
     );
+
+    // Release the startup splash even when
+    // the session lookup fails.
+    completeNexodraStartup();
 
     return;
 }
@@ -28833,9 +28841,17 @@ function makeGradient(context, color) {
   return gradient;
 }
 
+
 function initializeCharts() {
-  // Chart.js canvases.
+
+  // NEXUS owns every chart inside its dashboard.
+  // Nexodra's original chart engine must not create
+  // competing Chart.js instances on those canvases.
+
   document.querySelectorAll("canvas[data-chart]").forEach((canvas) => {
+
+    if (canvas.closest("#nexusDashboard")) return;
+
     const type = canvas.dataset.chart;
 
     const labels = (
@@ -28846,13 +28862,9 @@ function initializeCharts() {
     const values = (
       canvas.dataset.values ||
       "18,28,23,39,32,48,42"
-    )
-      .split(",")
-      .map(Number);
+    ).split(",").map(Number);
 
-    const color =
-      canvas.dataset.color ||
-      chartPalette.purple;
+    const color = canvas.dataset.color || chartPalette.purple;
 
     createChart(canvas, {
       type,
@@ -28860,8 +28872,12 @@ function initializeCharts() {
       values,
       color
     });
+
   });
-    // Automatically initialize common chart IDs.
+
+  // Original Nexodra charts remain available
+  // outside the NEXUS dashboard.
+
   const defaultCharts = [
     {
       selectors: ["#revenueChart", "#mainChart"],
@@ -28887,22 +28903,27 @@ function initializeCharts() {
   ];
 
   defaultCharts.forEach((config) => {
+
     for (const selector of config.selectors) {
+
       const canvas = document.querySelector(selector);
 
-      console.log(
-  'CHART DEBUG — Canvas lookup:',
-  selector,
-  canvas
-);
-
-      if (!canvas || chartInstances.has(canvas)) continue;
+      if (
+        !canvas ||
+        canvas.closest("#nexusDashboard") ||
+        chartInstances.has(canvas)
+      ) continue;
 
       createChart(canvas, config);
       break;
+
     }
+
   });
+
 }
+
+
 
 /* =========================================================
    BRICK 1 — PREPARE REAL REVENUE CHART DATA
@@ -29050,6 +29071,12 @@ function updateRevenueChart(canvas, chartData) {
 }
 
 function createChartJS(canvas, config) {
+
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  
   const context = canvas.getContext("2d");
 
   const theme = getChartTheme();
@@ -41220,3 +41247,3092 @@ currentSalePanel.addEventListener('click', event => {
     });
 
 })();
+
+
+
+
+
+/* ==========================================================
+   NEXUS ANALYTICS THIS BLOCK NEEDS SERIOUS ATTENTION 
+   Advanced Analytics & Visualization Engine
+   Version 1.0.0
+========================================================== */
+
+"use strict";
+
+
+/* ==========================================================
+   01. CONFIGURATION
+========================================================== */
+
+const NEXUS = {
+
+    currency: "USD",
+
+    locale: "en-US",
+
+    animationDuration: 1100,
+
+    refreshInterval: 5000,
+
+    liveInterval: 3000,
+
+    defaultRange: 30,
+
+    charts: {},
+
+    state: {
+        dateRange: 30,
+        comparison: "previous",
+        revenueType: "line",
+        isRefreshing: false,
+        activePage: "overview"
+    }
+
+};
+
+
+const COLORS = {
+
+    purple: "#8b5cf6",
+    purpleLight: "#a78bfa",
+    purpleDark: "#6d28d9",
+
+    cyan: "#22d3ee",
+    blue: "#3b82f6",
+
+    green: "#10b981",
+    orange: "#f59e0b",
+    red: "#f87171",
+    pink: "#ec4899",
+
+    muted: "#64748b",
+    grid: "rgba(148, 163, 184, 0.09)",
+
+    previous: "#596579"
+
+};
+
+
+const nexusQuery = selector => document.querySelector(selector);
+
+const nexusQueryAll = selector => document.querySelectorAll(selector);
+
+
+const numberFormat = new Intl.NumberFormat("en-US");
+
+const currencyFormat = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0
+});
+
+
+/* ==========================================================
+   02. SAMPLE DATA ENGINE
+========================================================== */
+
+const DATA = {
+
+    metrics: {
+        revenue: 284592,
+        users: 48294,
+        conversions: 4.82,
+        sessions: 126847
+    },
+
+
+    revenueSources: [
+        {
+            label: "Direct Sales",
+            value: 38,
+            color: COLORS.purple
+        },
+        {
+            label: "Organic Search",
+            value: 27,
+            color: COLORS.cyan
+        },
+        {
+            label: "Social Media",
+            value: 19,
+            color: COLORS.blue
+        },
+        {
+            label: "Referral",
+            value: 10,
+            color: COLORS.orange
+        },
+        {
+            label: "Other",
+            value: 6,
+            color: COLORS.pink
+        }
+    ],
+
+
+    devices: [
+        {
+            label: "Desktop",
+            value: 52,
+            color: COLORS.purple
+        },
+        {
+            label: "Mobile",
+            value: 36,
+            color: COLORS.cyan
+        },
+        {
+            label: "Tablet",
+            value: 12,
+            color: COLORS.orange
+        }
+    ],
+
+
+    traffic: [
+        {
+            name: "Google Search",
+            icon: "ri-google-fill",
+            visitors: 28450,
+            change: 18.4
+        },
+        {
+            name: "Direct Traffic",
+            icon: "ri-global-line",
+            visitors: 19620,
+            change: 12.7
+        },
+        {
+            name: "Social Media",
+            icon: "ri-instagram-line",
+            visitors: 14820,
+            change: 24.3
+        },
+        {
+            name: "Referral",
+            icon: "ri-links-line",
+            visitors: 8420,
+            change: -3.2
+        },
+        {
+            name: "Email Campaigns",
+            icon: "ri-mail-line",
+            visitors: 6240,
+            change: 9.8
+        }
+    ],
+
+
+    regions: [
+        {
+            country: "United States",
+            flag: "🇺🇸",
+            visitors: 18420,
+            percentage: 38
+        },
+        {
+            country: "United Kingdom",
+            flag: "🇬🇧",
+            visitors: 8240,
+            percentage: 17
+        },
+        {
+            country: "Germany",
+            flag: "🇩🇪",
+            visitors: 6278,
+            percentage: 13
+        },
+        {
+            country: "France",
+            flag: "🇫🇷",
+            visitors: 4829,
+            percentage: 10
+        },
+        {
+            country: "Canada",
+            flag: "🇨🇦",
+            visitors: 3863,
+            percentage: 8
+        },
+        {
+            country: "Other",
+            flag: "🌍",
+            visitors: 6664,
+            percentage: 14
+        }
+    ],
+
+
+    products: [
+        {
+            name: "Enterprise Plan",
+            sales: 1240,
+            revenue: 124000
+        },
+        {
+            name: "Professional Plan",
+            sales: 980,
+            revenue: 78400
+        },
+        {
+            name: "Starter Plan",
+            sales: 1520,
+            revenue: 45600
+        },
+        {
+            name: "Analytics Add-on",
+            sales: 640,
+            revenue: 25600
+        },
+        {
+            name: "Premium Support",
+            sales: 280,
+            revenue: 11000
+        }
+    ],
+
+
+    funnel: [
+        {
+            label: "Website Visitors",
+            value: 48294,
+            percentage: 100
+        },
+        {
+            label: "Product Views",
+            value: 32840,
+            percentage: 68
+        },
+        {
+            label: "Added to Cart",
+            value: 12480,
+            percentage: 26
+        },
+        {
+            label: "Completed Purchase",
+            value: 2329,
+            percentage: 4.82
+        }
+    ]
+
+};
+
+
+/* ==========================================================
+   03. UTILITY FUNCTIONS
+========================================================== */
+
+function random(min, max) {
+
+    return Math.floor(
+        Math.random() * (max - min + 1)
+    ) + min;
+
+}
+
+
+function formatNumber(value) {
+
+    return numberFormat.format(Math.round(value));
+
+}
+
+
+function formatNexusCurrency(value) {
+
+    return currencyFormat.format(value);
+
+}
+
+
+function formatCompact(value) {
+
+    return new Intl.NumberFormat("en-US", {
+        notation: "compact",
+        maximumFractionDigits: 1
+    }).format(value);
+
+}
+
+
+function percentageChange(current, previous) {
+
+    if (!previous) return 0;
+
+    return ((current - previous) / previous) * 100;
+
+}
+
+
+function getElement(id) {
+
+    return document.getElementById(id);
+
+}
+
+
+function setText(id, value) {
+
+    const element = getElement(id);
+
+    if (element) {
+        element.textContent = value;
+    }
+
+}
+
+
+function getDateLabels(days) {
+
+    const labels = [];
+
+    const today = new Date();
+
+    for (let i = days - 1; i >= 0; i--) {
+
+        const date = new Date(today);
+
+        date.setDate(today.getDate() - i);
+
+        labels.push(
+            date.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric"
+            })
+        );
+
+    }
+
+    return labels;
+
+}
+
+
+function generateSeries(length, base, volatility = 0.15) {
+
+    const values = [];
+
+    let current = base;
+
+    for (let i = 0; i < length; i++) {
+
+        current +=
+            (Math.random() - 0.43) *
+            base *
+            volatility;
+
+        current = Math.max(base * 0.4, current);
+
+        values.push(Math.round(current));
+
+    }
+
+    return values;
+
+}
+
+
+function smoothDataset(values) {
+
+    return values.map((value, index) => {
+
+        if (index === 0) return value;
+
+        return Math.round(
+            (values[index - 1] + value) / 2
+        );
+
+    });
+
+}
+
+
+function hexToRgba(hex, opacity) {
+
+    const clean = hex.replace("#", "");
+
+    const r = parseInt(clean.substring(0, 2), 16);
+    const g = parseInt(clean.substring(2, 4), 16);
+    const b = parseInt(clean.substring(4, 6), 16);
+
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+
+}
+
+
+/* ==========================================================
+   04. ANIMATED COUNTERS
+========================================================== */
+
+function animateCounter(element, target, options = {}) {
+
+    if (!element) return;
+
+    const duration = options.duration || 1200;
+
+    const prefix = options.prefix || "";
+
+    const suffix = options.suffix || "";
+
+    const decimals = options.decimals || 0;
+
+    const start = Number(
+        element.dataset.currentValue || 0
+    );
+
+    const difference = target - start;
+
+    const startTime = performance.now();
+
+    function update(now) {
+
+        const progress = Math.min(
+            (now - startTime) / duration,
+            1
+        );
+
+        const eased =
+            1 - Math.pow(1 - progress, 4);
+
+        const current =
+            start + difference * eased;
+
+        element.textContent =
+            prefix +
+            current.toLocaleString("en-US", {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            }) +
+            suffix;
+
+        if (progress < 1) {
+
+            requestAnimationFrame(update);
+
+        } else {
+
+            element.dataset.currentValue = target;
+
+        }
+
+    }
+
+    requestAnimationFrame(update);
+
+}
+
+
+/* ==========================================================
+   05. CHART.JS GLOBAL CONFIGURATION
+========================================================== */
+
+function initializeChartDefaults() {
+
+    if (typeof Chart === "undefined") {
+
+        console.error(
+            "NEXUS requires Chart.js. Check your CDN connection."
+        );
+
+        showToast("Chart.js could not be loaded.");
+
+        return false;
+
+    }
+
+
+    Chart.defaults.color = "#8290a8";
+
+    Chart.defaults.font.family = "'DM Sans', sans-serif";
+
+    Chart.defaults.font.size = 10;
+
+    Chart.defaults.animation.duration =
+        NEXUS.animationDuration;
+
+    Chart.defaults.animation.easing = "easeOutQuart";
+
+    Chart.defaults.responsive = true;
+
+    Chart.defaults.maintainAspectRatio = false;
+
+    Chart.defaults.plugins.legend.display = false;
+
+    Chart.defaults.plugins.tooltip.backgroundColor =
+        "#19233a";
+
+    Chart.defaults.plugins.tooltip.titleColor = "#ffffff";
+
+    Chart.defaults.plugins.tooltip.bodyColor = "#cbd5e1";
+
+    Chart.defaults.plugins.tooltip.borderColor =
+        "rgba(148, 163, 184, 0.18)";
+
+    Chart.defaults.plugins.tooltip.borderWidth = 1;
+
+    Chart.defaults.plugins.tooltip.padding = 12;
+
+    Chart.defaults.plugins.tooltip.cornerRadius = 8;
+
+    Chart.defaults.plugins.tooltip.displayColors = true;
+
+    Chart.defaults.elements.line.borderWidth = 2.5;
+
+    Chart.defaults.elements.point.radius = 0;
+
+    Chart.defaults.elements.point.hoverRadius = 5;
+
+    Chart.defaults.elements.point.hoverBorderWidth = 2;
+
+    Chart.defaults.elements.bar.borderRadius = 5;
+
+    Chart.defaults.elements.bar.borderSkipped = false;
+
+    return true;
+
+}
+
+
+/* ==========================================================
+   06. CHART HELPERS
+========================================================== */
+
+function createGradient(ctx, color, opacity = 0.22) {
+
+    const gradient = ctx.createLinearGradient(
+        0,
+        0,
+        0,
+        ctx.canvas.height || 250
+    );
+
+    gradient.addColorStop(
+        0,
+        hexToRgba(color, opacity)
+    );
+
+    gradient.addColorStop(
+        1,
+        hexToRgba(color, 0)
+    );
+
+    return gradient;
+
+}
+
+
+function commonScales(options = {}) {
+
+    return {
+
+        x: {
+
+            grid: {
+                display: false,
+                drawBorder: false
+            },
+
+            border: {
+                display: false
+            },
+
+            ticks: {
+                color: "#64748b",
+                maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: options.maxTicks || 7,
+                padding: 10
+            }
+
+        },
+
+
+        y: {
+
+            beginAtZero: options.beginAtZero ?? true,
+
+            grid: {
+                color: COLORS.grid,
+                drawBorder: false
+            },
+
+            border: {
+                display: false,
+                dash: [4, 5]
+            },
+
+            ticks: {
+                color: "#64748b",
+                padding: 10,
+                maxTicksLimit: 5,
+
+                callback(value) {
+
+                    return options.currency
+                        ? "$" + formatCompact(value)
+                        : formatCompact(value);
+
+                }
+
+            }
+
+        }
+
+    };
+
+}
+
+
+function createChart(id, config) {
+
+    const canvas = getElement(id);
+
+    if (!canvas) return null;
+
+    if (NEXUS.charts[id]) {
+
+        NEXUS.charts[id].destroy();
+
+    }
+
+    const chart = new Chart(canvas, config);
+
+    NEXUS.charts[id] = chart;
+
+    return chart;
+
+}
+
+
+/* ==========================================================
+   07. REVENUE ANALYTICS CHART
+========================================================== */
+
+function createRevenueChart() {
+
+    const canvas = getElement("revenueChart");
+
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+
+    const days = NEXUS.state.dateRange;
+
+    const labels = getDateLabels(days);
+
+    const revenue = generateSeries(
+        days,
+        9200,
+        0.24
+    );
+
+    const previous = revenue.map(value =>
+        Math.round(value * random(79, 91) / 100)
+    );
+
+
+    const gradient = createGradient(
+        ctx,
+        COLORS.purple,
+        0.28
+    );
+
+
+    createChart("revenueChart", {
+
+        type: NEXUS.state.revenueType,
+
+        data: {
+
+            labels,
+
+            datasets: [
+
+                {
+
+                    label: "This period",
+
+                    data: revenue,
+
+                    borderColor: COLORS.purpleLight,
+
+                    backgroundColor:
+                        NEXUS.state.revenueType === "line"
+                            ? gradient
+                            : COLORS.purple,
+
+                    fill: NEXUS.state.revenueType === "line",
+
+                    tension: 0.42,
+
+                    pointRadius: 0,
+
+                    pointHoverRadius: 6,
+
+                    pointHoverBackgroundColor: "#ffffff",
+
+                    pointHoverBorderColor: COLORS.purple,
+
+                    borderWidth: 2.5
+
+                },
+
+
+                {
+
+                    label: "Previous period",
+
+                    data: previous,
+
+                    borderColor: COLORS.previous,
+
+                    backgroundColor:
+                        hexToRgba(COLORS.previous, 0.16),
+
+                    fill: false,
+
+                    tension: 0.4,
+
+                    borderDash: [5, 5],
+
+                    borderWidth: 1.7,
+
+                    pointRadius: 0
+
+                }
+
+            ]
+
+        },
+
+
+        options: {
+
+            interaction: {
+                intersect: false,
+                mode: "index"
+            },
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label(context) {
+
+                            return context.dataset.label +
+                                ": " +
+                                formatCurrency(context.parsed.y);
+
+                        }
+
+                    }
+
+                }
+
+            },
+
+
+            scales: commonScales({
+                currency: true,
+                maxTicks: 7
+            })
+
+        }
+
+    });
+
+}
+
+
+/* ==========================================================
+   08. REVENUE SOURCES DOUGHNUT
+========================================================== */
+
+function createRevenueSourceChart() {
+
+    createChart("revenueSourceChart", {
+
+        type: "doughnut",
+
+        data: {
+
+            labels: DATA.revenueSources.map(item => item.label),
+
+            datasets: [
+
+                {
+
+                    data: DATA.revenueSources.map(item => item.value),
+
+                    backgroundColor:
+                        DATA.revenueSources.map(item => item.color),
+
+                    borderColor: "#111728",
+
+                    borderWidth: 4,
+
+                    hoverOffset: 12,
+
+                    spacing: 3
+
+                }
+
+            ]
+
+        },
+
+
+        options: {
+
+            cutout: "76%",
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            animation: {
+
+                animateRotate: true,
+                animateScale: true,
+                duration: 1500
+
+            },
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label(context) {
+
+                            return `${context.label}: ${context.parsed}%`;
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+
+    renderLegend(
+        "revenueSourceLegend",
+        DATA.revenueSources,
+        "$",
+        true
+    );
+
+}
+
+
+/* ==========================================================
+   09. USER ACTIVITY CHART
+========================================================== */
+
+function createUserActivityChart() {
+
+    const days = NEXUS.state.dateRange;
+
+    const labels = getDateLabels(days);
+
+    const active = generateSeries(
+        days,
+        2400,
+        0.19
+    );
+
+    const newUsers = active.map(value =>
+        Math.round(value * random(20, 34) / 100)
+    );
+
+
+    createChart("userActivityChart", {
+
+        type: "line",
+
+        data: {
+
+            labels,
+
+            datasets: [
+
+                {
+
+                    label: "Active users",
+
+                    data: active,
+
+                    borderColor: COLORS.purpleLight,
+
+                    backgroundColor: "rgba(139, 92, 246, 0.14)",
+
+                    fill: true,
+
+                    tension: 0.42,
+
+                    borderWidth: 2.5,
+
+                    pointRadius: 0,
+
+                    pointHoverRadius: 5
+
+                },
+
+
+                {
+
+                    label: "New users",
+
+                    data: newUsers,
+
+                    borderColor: COLORS.cyan,
+
+                    backgroundColor: "rgba(34, 211, 238, 0.08)",
+
+                    fill: true,
+
+                    tension: 0.42,
+
+                    borderWidth: 2,
+
+                    pointRadius: 0,
+
+                    pointHoverRadius: 5
+
+                }
+
+            ]
+
+        },
+
+
+        options: {
+
+            interaction: {
+                intersect: false,
+                mode: "index"
+            },
+
+            plugins: {
+
+                legend: {
+                    display: false
+                }
+
+            },
+
+            scales: commonScales({
+                maxTicks: 7
+            })
+
+        }
+
+    });
+
+}
+
+
+/* ==========================================================
+   10. DEVICE DISTRIBUTION
+========================================================== */
+
+function createDeviceChart() {
+
+    createChart("deviceChart", {
+
+        type: "polarArea",
+
+        data: {
+
+            labels: DATA.devices.map(item => item.label),
+
+            datasets: [
+
+                {
+
+                    data: DATA.devices.map(item => item.value),
+
+                    backgroundColor: DATA.devices.map(item =>
+                        hexToRgba(item.color, 0.72)
+                    ),
+
+                    borderColor: "#111728",
+
+                    borderWidth: 3,
+
+                    hoverBorderColor: "#ffffff"
+
+                }
+
+            ]
+
+        },
+
+
+        options: {
+
+            scales: {
+
+                r: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+                        display: false,
+                        backdropColor: "transparent"
+                    },
+
+                    grid: {
+                        color: COLORS.grid
+                    }
+
+                }
+
+            },
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label(context) {
+
+                            return `${context.label}: ${context.parsed.r}%`;
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+
+    renderLegend(
+        "deviceLegend",
+        DATA.devices,
+        "%",
+        false
+    );
+
+}
+
+
+/* ==========================================================
+   11. TRAFFIC CHANNEL CHART
+========================================================== */
+
+function createTrafficChart() {
+
+    const trafficLabels = [
+        "Organic",
+        "Direct",
+        "Social",
+        "Referral",
+        "Email",
+        "Paid"
+    ];
+
+    const trafficValues = [
+        28450,
+        19620,
+        14820,
+        8420,
+        6240,
+        4280
+    ];
+
+
+    createChart("trafficChart", {
+
+        type: "bar",
+
+        data: {
+
+            labels: trafficLabels,
+
+            datasets: [
+
+                {
+
+                    label: "Visitors",
+
+                    data: trafficValues,
+
+                    backgroundColor: [
+
+                        "#8b5cf6",
+                        "#22d3ee",
+                        "#3b82f6",
+                        "#10b981",
+                        "#f59e0b",
+                        "#ec4899"
+
+                    ],
+
+                    borderRadius: 7,
+
+                    barThickness: 24,
+
+                    maxBarThickness: 35
+
+                }
+
+            ]
+
+        },
+
+
+        options: {
+
+            indexAxis: "y",
+
+            interaction: {
+                intersect: false
+            },
+
+            plugins: {
+
+                legend: {
+                    display: false
+                }
+
+            },
+
+            scales: {
+
+                x: {
+
+                    grid: {
+                        color: COLORS.grid,
+                        drawBorder: false
+                    },
+
+                    border: {
+                        display: false
+                    },
+
+                    ticks: {
+                        color: "#64748b",
+                        callback: value => formatCompact(value)
+                    }
+
+                },
+
+
+                y: {
+
+                    grid: {
+                        display: false
+                    },
+
+                    border: {
+                        display: false
+                    },
+
+                    ticks: {
+                        color: "#94a3b8"
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+
+/* ==========================================================
+   12. PRODUCT PERFORMANCE CHART
+========================================================== */
+
+function createProductChart() {
+
+    const sorted = [...DATA.products].sort((a, b) =>
+        b.revenue - a.revenue
+    );
+
+    createChart("productChart", {
+
+        type: "bar",
+
+        data: {
+
+            labels: sorted.map(item => item.name),
+
+            datasets: [
+
+                {
+
+                    label: "Revenue",
+
+                    data: sorted.map(item => item.revenue),
+
+                    backgroundColor: [
+
+                        "rgba(139, 92, 246, 0.9)",
+                        "rgba(99, 102, 241, 0.85)",
+                        "rgba(59, 130, 246, 0.85)",
+                        "rgba(34, 211, 238, 0.8)",
+                        "rgba(16, 185, 129, 0.8)"
+
+                    ],
+
+                    borderRadius: 7,
+
+                    maxBarThickness: 42
+
+                }
+
+            ]
+
+        },
+
+
+        options: {
+
+            indexAxis: "y",
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label(context) {
+
+                            return formatCurrency(context.parsed.x);
+
+                        }
+
+                    }
+
+                }
+
+            },
+
+
+            scales: {
+
+                x: {
+
+                    grid: {
+                        color: COLORS.grid
+                    },
+
+                    border: {
+                        display: false
+                    },
+
+                    ticks: {
+
+                        color: "#64748b",
+
+                        callback: value =>
+                            "$" + formatCompact(value)
+
+                    }
+
+                },
+
+
+                y: {
+
+                    grid: {
+                        display: false
+                    },
+
+                    border: {
+                        display: false
+                    },
+
+                    ticks: {
+                        color: "#94a3b8"
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+
+/* ==========================================================
+   13. REALTIME ACTIVITY CHART
+========================================================== */
+
+function createRealtimeChart() {
+
+    const values = Array.from(
+        { length: 24 },
+        () => random(800, 1500)
+    );
+
+    createChart("realtimeChart", {
+
+        type: "line",
+
+        data: {
+
+            labels: values.map((_, i) => i),
+
+            datasets: [
+
+                {
+
+                    label: "Active users",
+
+                    data: values,
+
+                    borderColor: COLORS.green,
+
+                    backgroundColor:
+                        "rgba(16, 185, 129, 0.14)",
+
+                    fill: true,
+
+                    tension: 0.45,
+
+                    borderWidth: 2,
+
+                    pointRadius: 0,
+
+                    pointHoverRadius: 4
+
+                }
+
+            ]
+
+        },
+
+
+        options: {
+
+            animation: {
+                duration: 800
+            },
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+                    enabled: false
+                }
+
+            },
+
+
+            scales: {
+
+                x: {
+                    display: false
+                },
+
+                y: {
+                    display: false
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+
+/* ==========================================================
+   14. CHART INITIALIZATION
+========================================================== */
+
+function initializeAllCharts() {
+
+    createRevenueChart();
+
+    createRevenueSourceChart();
+
+    createUserActivityChart();
+
+    createDeviceChart();
+
+    createTrafficChart();
+
+    createProductChart();
+
+    createRealtimeChart();
+
+}
+
+
+/* ==========================================================
+   15. DYNAMIC LEGEND GENERATOR
+========================================================== */
+
+function renderLegend(
+    containerId,
+    items,
+    symbol = "",
+    currencyMode = false
+) {
+
+    const container = getElement(containerId);
+
+    if (!container) return;
+
+    container.innerHTML = items.map(item => {
+
+        const value = currencyMode
+            ? `${symbol}${item.value}%`
+            : `${item.value}${symbol}`;
+
+        return `
+
+            <div class="legend-row">
+
+                <div class="legend-row-left">
+
+                    <span
+                        class="legend-color"
+                        style="background:${item.color}">
+                    </span>
+
+                    <span>${item.label}</span>
+
+                </div>
+
+                <div class="legend-row-right">
+                    ${value}
+                </div>
+
+            </div>
+
+        `;
+
+    }).join("");
+
+}
+
+
+/* ==========================================================
+   16. TRAFFIC TABLE
+========================================================== */
+
+function renderTrafficTable() {
+
+    const tbody = getElement("trafficTableBody");
+
+    if (!tbody) return;
+
+    tbody.innerHTML = DATA.traffic.map(item => {
+
+        const changeClass =
+            item.change >= 0 ? "positive" : "negative";
+
+        const arrow =
+            item.change >= 0
+                ? "ri-arrow-up-line"
+                : "ri-arrow-down-line";
+
+        return `
+
+            <tr>
+
+                <td>
+
+                    <div class="table-source">
+
+                        <span class="table-source-icon">
+                            <i class="${item.icon}"></i>
+                        </span>
+
+                        ${item.name}
+
+                    </div>
+
+                </td>
+
+
+                <td>
+                    ${formatNumber(item.visitors)}
+                </td>
+
+
+                <td>
+
+                    <span class="table-change ${changeClass}">
+
+                        <i class="${arrow}"></i>
+
+                        ${Math.abs(item.change)}%
+
+                    </span>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }).join("");
+
+}
+
+
+/* ==========================================================
+   17. PRODUCT TABLE
+========================================================== */
+
+function renderProductTable(sortBy = "revenue") {
+
+    const tbody = getElement("productTableBody");
+
+    if (!tbody) return;
+
+    const products = [...DATA.products].sort((a, b) => {
+
+        return b[sortBy] - a[sortBy];
+
+    });
+
+    tbody.innerHTML = products.map((item, index) => {
+
+        return `
+
+            <tr>
+
+                <td>
+
+                    <div class="table-source">
+
+                        <span class="table-source-icon">
+                            ${index + 1}
+                        </span>
+
+                        ${item.name}
+
+                    </div>
+
+                </td>
+
+
+                <td>${formatNumber(item.sales)}</td>
+
+
+                <td>
+                    <strong>${formatCurrency(item.revenue)}</strong>
+                </td>
+
+            </tr>
+
+        `;
+
+    }).join("");
+
+}
+
+
+/* ==========================================================
+   18. GEOGRAPHIC REGION LIST
+========================================================== */
+
+function renderRegions() {
+
+    const container = getElement("regionList");
+
+    if (!container) return;
+
+    container.innerHTML = DATA.regions.map(region => {
+
+        return `
+
+            <div class="region-item">
+
+                <div class="region-top">
+
+                    <div class="region-country">
+
+                        <span class="region-flag">
+                            ${region.flag}
+                        </span>
+
+                        <span>${region.country}</span>
+
+                    </div>
+
+
+                    <span class="region-value">
+                        ${formatNumber(region.visitors)}
+                    </span>
+
+                </div>
+
+
+                <div class="region-bar">
+
+                    <div
+                        class="region-bar-fill"
+                        style="width:${region.percentage}%">
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }).join("");
+
+}
+
+
+/* ==========================================================
+   19. CONVERSION FUNNEL
+========================================================== */
+
+function renderFunnel() {
+
+    const container = getElement("conversionFunnel");
+
+    if (!container) return;
+
+    container.innerHTML = DATA.funnel.map((item, index) => {
+
+        return `
+
+            <div class="funnel-item">
+
+                <span class="funnel-label">
+                    ${item.label}
+                </span>
+
+
+                <div class="funnel-bar-track">
+
+                    <div
+                        class="funnel-bar"
+                        style="width:${item.percentage}%">
+
+                        ${formatCompact(item.value)}
+
+                    </div>
+
+                </div>
+
+
+                <span class="funnel-percentage">
+
+                    ${item.percentage}%
+
+                </span>
+
+            </div>
+
+        `;
+
+    }).join("");
+
+}
+
+
+/* ==========================================================
+   20. KPI SPARKLINES
+========================================================== */
+
+function createSparkline(id, color, values) {
+
+    const canvas = getElement(id);
+
+    if (!canvas) return;
+
+    createChart(id, {
+
+        type: "line",
+
+        data: {
+
+            labels: values.map((_, index) => index),
+
+            datasets: [
+
+                {
+
+                    data: values,
+
+                    borderColor: color,
+
+                    backgroundColor: hexToRgba(color, 0.12),
+
+                    fill: true,
+
+                    tension: 0.45,
+
+                    borderWidth: 2,
+
+                    pointRadius: 0,
+
+                    pointHoverRadius: 0
+
+                }
+
+            ]
+
+        },
+
+
+        options: {
+
+            animation: {
+                duration: 1500
+            },
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+                    enabled: false
+                }
+
+            },
+
+            scales: {
+
+                x: {
+                    display: false
+                },
+
+                y: {
+                    display: false
+                }
+
+            },
+
+            layout: {
+                padding: 0
+            }
+
+        }
+
+    });
+
+}
+
+
+function initializeSparklines() {
+
+    createSparkline(
+        "revenueSparkline",
+        COLORS.purple,
+        generateSeries(20, 70, 0.2)
+    );
+
+    createSparkline(
+        "usersSparkline",
+        COLORS.cyan,
+        generateSeries(20, 60, 0.2)
+    );
+
+    createSparkline(
+        "conversionSparkline",
+        COLORS.green,
+        generateSeries(20, 40, 0.16)
+    );
+
+    createSparkline(
+        "sessionsSparkline",
+        COLORS.orange,
+        generateSeries(20, 55, 0.2)
+    );
+
+}
+
+
+/* ==========================================================
+   21. KPI INITIALIZATION
+========================================================== */
+
+function updateKpis(multiplier = 1) {
+
+    const metrics = DATA.metrics;
+
+    animateCounter(
+        getElement("totalRevenue"),
+        Math.round(metrics.revenue * multiplier),
+        {
+            prefix: "$",
+            duration: 1300
+        }
+    );
+
+    animateCounter(
+        getElement("totalUsers"),
+        Math.round(metrics.users * multiplier),
+        {
+            duration: 1300
+        }
+    );
+
+    animateCounter(
+        getElement("conversionRate"),
+        metrics.conversions,
+        {
+            suffix: "%",
+            decimals: 2,
+            duration: 1300
+        }
+    );
+
+    animateCounter(
+        getElement("totalSessions"),
+        Math.round(metrics.sessions * multiplier),
+        {
+            duration: 1300
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   22. LIVE ACTIVITY FEED
+========================================================== */
+
+const activityTemplates = [
+
+    {
+        type: "purchase",
+        icon: "ri-shopping-bag-line",
+        text: "completed a purchase",
+        people: [
+            "Michael Anderson",
+            "Sophia Williams",
+            "James Miller",
+            "Olivia Brown",
+            "Daniel Wilson"
+        ]
+    },
+
+    {
+        type: "signup",
+        icon: "ri-user-add-line",
+        text: "created a new account",
+        people: [
+            "Emma Johnson",
+            "Noah Davis",
+            "Isabella Garcia",
+            "Liam Martinez",
+            "Mia Robinson"
+        ]
+    },
+
+    {
+        type: "visit",
+        icon: "ri-eye-line",
+        text: "visited the platform",
+        people: [
+            "Alex Thompson",
+            "Charlotte Moore",
+            "Ethan Taylor",
+            "Amelia Thomas"
+        ]
+    },
+
+    {
+        type: "conversion",
+        icon: "ri-focus-3-line",
+        text: "completed a conversion",
+        people: [
+            "Benjamin Clark",
+            "Ava Lewis",
+            "Lucas Walker",
+            "Harper Hall"
+        ]
+    }
+
+];
+
+
+function generateActivity() {
+
+    const template = activityTemplates[
+        random(0, activityTemplates.length - 1)
+    ];
+
+    const person = template.people[
+        random(0, template.people.length - 1)
+    ];
+
+    const minutes = random(1, 15);
+
+    return {
+
+        type: template.type,
+
+        icon: template.icon,
+
+        person,
+
+        text: template.text,
+
+        time: minutes === 1
+            ? "Just now"
+            : `${minutes} min ago`
+
+    };
+
+}
+
+
+let activities = Array.from(
+    { length: 5 },
+    () => generateActivity()
+);
+
+
+function renderActivityFeed() {
+
+    const container = getElement("activityFeed");
+
+    if (!container) return;
+
+    container.innerHTML = activities.map(item => {
+
+        return `
+
+            <div class="activity-item">
+
+                <div class="activity-icon ${item.type}">
+
+                    <i class="${item.icon}"></i>
+
+                </div>
+
+
+                <div class="activity-description">
+
+                    <strong>${item.person}</strong>
+
+                    ${item.text}
+
+                </div>
+
+
+                <span class="activity-time">
+                    ${item.time}
+                </span>
+
+            </div>
+
+        `;
+
+    }).join("");
+
+}
+
+
+function addLiveActivity() {
+
+    activities.unshift(generateActivity());
+
+    activities = activities.slice(0, 5);
+
+    renderActivityFeed();
+
+}
+
+
+/* ==========================================================
+   23. REALTIME USER COUNTER
+========================================================== */
+
+let activeUsers = 1284;
+
+
+function updateRealtimeUsers() {
+
+    const variation = random(-18, 26);
+
+    activeUsers += variation;
+
+    activeUsers = Math.max(850, activeUsers);
+
+    setText(
+        "activeUsersNow",
+        formatNumber(activeUsers)
+    );
+
+
+    const chart = NEXUS.charts.realtimeChart;
+
+    if (chart) {
+
+        const data = chart.data.datasets[0].data;
+
+        data.push(activeUsers);
+
+        data.shift();
+
+        chart.update("none");
+
+    }
+
+}
+
+
+/* ==========================================================
+   24. GLOBAL REFRESH
+========================================================== */
+
+function refreshDashboard(showNotification = true) {
+
+    if (NEXUS.state.isRefreshing) return;
+
+    NEXUS.state.isRefreshing = true;
+
+    const button = getElement("refreshButton");
+
+    if (button) {
+
+        button.disabled = true;
+
+        button.innerHTML = `
+
+            <i class="ri-loader-4-line spinning"></i>
+
+            Refreshing...
+
+        `;
+
+    }
+
+
+    // Small changes to demonstrate refreshed sample data.
+
+    DATA.metrics.revenue += random(-2500, 4500);
+
+    DATA.metrics.users += random(-120, 350);
+
+    DATA.metrics.sessions += random(-500, 900);
+
+
+    updateKpis();
+
+    initializeAllCharts();
+
+    initializeSparklines();
+
+    renderTrafficTable();
+
+    renderProductTable(nexusQuery("#productSort")?.value || "revenue");
+
+    renderRegions();
+
+    renderFunnel();
+
+
+    setTimeout(() => {
+
+        NEXUS.state.isRefreshing = false;
+
+        if (button) {
+
+            button.disabled = false;
+
+            button.innerHTML = `
+
+                <i class="ri-refresh-line"></i>
+
+                Refresh data
+
+            `;
+
+        }
+
+        const updated = new Date();
+
+        const updatedText = updated.toLocaleTimeString(
+            "en-US",
+            {
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
+
+        const label = nexusQuery(".last-updated");
+
+        if (label) {
+
+            label.innerHTML = `
+
+                <i class="ri-time-line"></i>
+
+                Updated at ${updatedText}
+
+            `;
+
+        }
+
+        if (showNotification) {
+
+            showToast("Analytics data refreshed successfully.");
+
+        }
+
+    }, 650);
+
+}
+
+
+/* ==========================================================
+   25. DATE RANGE FILTER
+========================================================== */
+
+function handleDateRangeChange(value) {
+
+    const days = Number(value);
+
+    if (!Number.isFinite(days) || days <= 0) return;
+
+    NEXUS.state.dateRange = days;
+
+    const multiplier = days / 30;
+
+    DATA.metrics.revenue =
+        Math.round(284592 * Math.pow(multiplier, 0.65));
+
+    DATA.metrics.users =
+        Math.round(48294 * Math.pow(multiplier, 0.58));
+
+    DATA.metrics.sessions =
+        Math.round(126847 * Math.pow(multiplier, 0.62));
+
+    updateKpis();
+
+    createRevenueChart();
+
+    createUserActivityChart();
+
+    showToast(
+        `Analytics updated for the last ${days} days.`
+    );
+
+}
+
+
+/* ==========================================================
+   26. CHART TYPE SWITCHING
+========================================================== */
+
+function handleChartTypeChange(button) {
+
+    const chartName = button.dataset.chart;
+
+    const type = button.dataset.type;
+
+    if (chartName !== "revenue") return;
+
+    NEXUS.state.revenueType = type;
+
+    nexusQueryAll('.chart-type-button[data-chart="revenue"]').forEach(
+        item => item.classList.remove("active")
+    );
+
+    button.classList.add("active");
+
+    createRevenueChart();
+
+    showToast(
+        `Revenue chart changed to ${type} visualization.`
+    );
+
+}
+
+
+/* ==========================================================
+   27. PRODUCT SORTING
+========================================================== */
+
+function handleProductSort(value) {
+
+    renderProductTable(value);
+
+    const sorted = [...DATA.products].sort((a, b) =>
+        b[value] - a[value]
+    );
+
+    const chart = NEXUS.charts.productChart;
+
+    if (chart) {
+
+        chart.data.labels = sorted.map(item => item.name);
+
+        chart.data.datasets[0].data =
+            sorted.map(item => item[value]);
+
+        chart.data.datasets[0].label =
+            value === "revenue" ? "Revenue" : "Units sold";
+
+        chart.update();
+
+    }
+
+}
+
+
+/* ==========================================================
+   28. TOAST NOTIFICATION SYSTEM
+========================================================== */
+
+function showToast(message, type = "success") {
+
+    const container = getElement("toastContainer");
+
+    if (!container) return;
+
+    const toast = document.createElement("div");
+
+    toast.className = "toast";
+
+    const icon = type === "error"
+        ? "ri-error-warning-line"
+        : "ri-checkbox-circle-line";
+
+    const iconColor = type === "error"
+        ? COLORS.red
+        : COLORS.green;
+
+    const messageElement = document.createElement("span");
+
+    messageElement.textContent = message;
+
+    const iconElement = document.createElement("i");
+
+    iconElement.className = icon;
+
+    iconElement.style.color = iconColor;
+
+    toast.append(iconElement, messageElement);
+
+    container.appendChild(toast);
+
+
+    setTimeout(() => {
+
+        toast.classList.add("removing");
+
+        setTimeout(() => toast.remove(), 350);
+
+    }, 3200);
+
+}
+
+
+/* ==========================================================
+   29. MODAL SYSTEM
+========================================================== */
+
+function openModal(title, description) {
+
+    const overlay = getElement("modalOverlay");
+
+    const body = getElement("modalBody");
+
+    if (!overlay || !body) return;
+
+    body.replaceChildren();
+
+    const heading = document.createElement("h2");
+
+    heading.textContent = title;
+
+    heading.style.fontFamily = "Space Grotesk";
+
+    heading.style.fontSize = "21px";
+
+    heading.style.marginBottom = "12px";
+
+    const paragraph = document.createElement("p");
+
+    paragraph.textContent = description;
+
+    paragraph.style.color = "#94a3b8";
+
+    paragraph.style.fontSize = "12px";
+
+    paragraph.style.lineHeight = "1.8";
+
+    body.append(heading, paragraph);
+
+    overlay.classList.add("active");
+
+}
+
+
+function closeModal() {
+
+    getElement("modalOverlay")?.classList.remove("active");
+
+}
+
+
+/* ==========================================================
+   30. SIDEBAR NAVIGATION
+========================================================== */
+
+const pageSections = {
+
+    overview: 0,
+    revenue: 1,
+    audience: 2,
+    traffic: 3,
+    geography: 4,
+    products: 5,
+    conversions: 6,
+    realtime: 7,
+    reports: 8
+
+};
+
+
+function navigateToPage(page) {
+
+    NEXUS.state.activePage = page;
+
+    nexusQueryAll(".nav-item").forEach(item => {
+
+        item.classList.toggle(
+            "active",
+            item.dataset.page === page
+        );
+
+    });
+
+
+    const index = pageSections[page];
+
+    if (index !== undefined) {
+
+        const sections = nexusQueryAll(".analytics-section");
+
+        const target = sections[index];
+
+        if (page === "overview") {
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        } else if (target) {
+
+            target.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }
+
+        const breadcrumb = nexusQuery(".breadcrumb strong");
+
+        if (breadcrumb) {
+
+            const activeItem = nexusQuery(
+                `.nav-item[data-page="${page}"]`
+            );
+
+            breadcrumb.textContent =
+                activeItem?.querySelector("span:not(.live-dot)")?.textContent
+                || page.charAt(0).toUpperCase() + page.slice(1);
+
+        }
+
+    } else {
+
+        showToast(
+            `${page.charAt(0).toUpperCase() + page.slice(1)} module is a demonstration placeholder.`
+        );
+
+    }
+
+
+    getElement("sidebar")?.classList.remove("open");
+
+}
+
+
+
+
+/* ==========================================================
+   33. KEYBOARD SHORTCUTS
+========================================================== */
+
+function initializeKeyboardShortcuts() {
+
+    document.addEventListener("keydown", event => {
+
+
+        if (event.key === "Escape") {
+
+    closeModal();
+
+}
+
+    });
+
+}
+
+
+/* ==========================================================
+   34. CSV EXPORT ENGINE
+========================================================== */
+
+function exportAnalyticsCSV() {
+
+    const rows = [
+
+        ["NEXUS ANALYTICS REPORT"],
+
+        ["Generated at", new Date().toISOString()],
+
+        ["Data type", "Synthetic demonstration dataset"],
+
+        [],
+
+        ["KEY PERFORMANCE INDICATORS"],
+
+        ["Metric", "Value"],
+
+        ["Total Revenue", DATA.metrics.revenue],
+
+        ["Total Users", DATA.metrics.users],
+
+        ["Conversion Rate", DATA.metrics.conversions + "%"],
+
+        ["Total Sessions", DATA.metrics.sessions],
+
+
+        [],
+
+        ["REVENUE SOURCES"],
+
+        ["Source", "Percentage"],
+
+        ...DATA.revenueSources.map(item => [
+            item.label,
+            item.value + "%"
+        ]),
+
+
+        [],
+
+        ["TRAFFIC SOURCES"],
+
+        ["Source", "Visitors", "Change"],
+
+        ...DATA.traffic.map(item => [
+            item.name,
+            item.visitors,
+            item.change + "%"
+        ]),
+
+
+        [],
+
+        ["GEOGRAPHIC DISTRIBUTION"],
+
+        ["Country", "Visitors", "Share"],
+
+        ...DATA.regions.map(item => [
+            item.country,
+            item.visitors,
+            item.percentage + "%"
+        ]),
+
+
+        [],
+
+        ["PRODUCT PERFORMANCE"],
+
+        ["Product", "Sales", "Revenue"],
+
+        ...DATA.products.map(item => [
+            item.name,
+            item.sales,
+            item.revenue
+        ])
+
+    ];
+
+
+    const csv = rows.map(row => {
+
+        return row.map(value => {
+
+            const text = String(value ?? "");
+
+            return `"${text.replace(/"/g, '""')}"`;
+
+        }).join(",");
+
+    }).join("\n");
+
+
+    const blob = new Blob(
+        ["\uFEFF" + csv],
+        {
+            type: "text/csv;charset=utf-8;"
+        }
+    );
+
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+
+    link.download =
+        `nexus-analytics-${new Date().toISOString().slice(0, 10)}.csv`;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    URL.revokeObjectURL(url);
+
+    showToast("Analytics CSV report exported successfully.");
+
+}
+
+
+/* ==========================================================
+   36. FILTER BUTTON
+========================================================== */
+
+function initializeFilterButton() {
+
+    const button = getElement("filterButton");
+
+    if (!button) return;
+
+    button.addEventListener("click", () => {
+
+        openModal(
+            "Advanced Filters",
+            "Advanced filtering is available as a future extension. The current dashboard supports date-range selection and comparison-period controls."
+        );
+
+    });
+
+}
+
+
+/* ==========================================================
+   37. WORKSPACE BUTTONS
+========================================================== */
+
+function initializeWorkspaceButtons() {
+
+
+    nexusQueryAll(".card-menu").forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            showToast(
+                "Additional card options will be available in a future version."
+            );
+
+        });
+
+    });
+
+
+    nexusQueryAll("[data-page-link]").forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            navigateToPage(button.dataset.pageLink);
+
+        });
+
+    });
+
+}
+
+
+/* ==========================================================
+   38. INTERACTIVE CONTROL INITIALIZATION
+========================================================== */
+
+function initializeControls() {
+
+
+    // Date filter
+
+    getElement("dateRange")?.addEventListener(
+        "change",
+        event => handleDateRangeChange(event.target.value)
+    );
+
+
+    // Comparison period
+
+    getElement("comparisonRange")?.addEventListener(
+        "change",
+        event => {
+
+            NEXUS.state.comparison = event.target.value;
+
+            showToast(
+                event.target.value === "year"
+                    ? "Comparing with the previous year."
+                    : "Comparing with the previous period."
+            );
+
+        }
+    );
+
+
+    // Chart switching
+
+    nexusQueryAll(".chart-type-button").forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            handleChartTypeChange(button);
+
+        });
+
+    });
+
+
+    // Product sorting
+
+    getElement("productSort")?.addEventListener(
+        "change",
+        event => handleProductSort(event.target.value)
+    );
+
+
+    // Refresh
+
+    getElement("refreshButton")?.addEventListener(
+        "click",
+        () => refreshDashboard()
+    );
+
+
+    // Export
+
+    getElement("exportButton")?.addEventListener(
+        "click",
+        exportAnalyticsCSV
+    );
+
+
+    // Modal
+
+    getElement("modalClose")?.addEventListener(
+        "click",
+        closeModal
+    );
+
+
+    getElement("modalOverlay")?.addEventListener(
+        "click",
+        event => {
+
+            if (event.target.id === "modalOverlay") {
+                closeModal();
+            }
+
+        }
+    );
+
+
+    // Additional controls
+
+    initializeFilterButton();
+
+    initializeWorkspaceButtons();
+
+}
+
+
+/* ==========================================================
+   39. REALTIME SIMULATION
+========================================================== */
+
+function startRealtimeEngine() {
+
+    setInterval(() => {
+
+        updateRealtimeUsers();
+
+    }, NEXUS.liveInterval);
+
+
+    setInterval(() => {
+
+        addLiveActivity();
+
+    }, 6500);
+
+}
+
+
+/* ==========================================================
+   40. DASHBOARD REFRESH INDICATOR
+========================================================== */
+
+function startDashboardClock() {
+
+    const updateClock = () => {
+
+        const element = nexusQuery(".last-updated");
+
+        if (!element) return;
+
+        const time = new Date().toLocaleTimeString(
+            "en-US",
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            }
+        );
+
+        element.innerHTML = `
+
+            <i class="ri-time-line"></i>
+
+            Updated ${time}
+
+        `;
+
+    };
+
+    updateClock();
+
+}
+
+
+/* ==========================================================
+   41. CHART RESIZE OBSERVER
+========================================================== */
+
+function initializeChartResize() {
+
+    if (!("ResizeObserver" in window)) return;
+
+    const observer = new ResizeObserver(() => {
+
+        Object.values(NEXUS.charts).forEach(chart => {
+
+            if (chart && typeof chart.resize === "function") {
+
+                chart.resize();
+
+            }
+
+        });
+
+    });
+
+
+    const dashboard = getElement("nexusDashboard");
+
+if (!dashboard) return;
+
+dashboard.querySelectorAll(".chart-card").forEach(card => {
+
+    observer.observe(card);
+
+});
+
+}
+
+
+/* ==========================================================
+   42. SCROLL REVEAL EFFECTS
+========================================================== */
+
+function initializeScrollAnimations() {
+
+    const dashboard = getElement("nexusDashboard");
+
+if (!dashboard) return;
+
+const elements = dashboard.querySelectorAll(
+    ".analytics-section, .summary-card"
+);
+
+    if (!("IntersectionObserver" in window)) {
+
+        elements.forEach(element => {
+
+            element.style.opacity = "1";
+
+        });
+
+        return;
+
+    }
+
+
+    const observer = new IntersectionObserver(
+        (entries, currentObserver) => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+
+                    entry.target.classList.add("visible");
+
+                    currentObserver.unobserve(entry.target);
+
+                }
+
+            });
+
+        },
+        {
+            threshold: 0.08
+        }
+    );
+
+
+    elements.forEach(element => {
+
+        observer.observe(element);
+
+    });
+
+}
+
+
+/* ==========================================================
+   43. MOBILE CHART RANGE
+========================================================== */
+
+function initializeUserActivityRange() {
+
+    const selector = getElement("userActivityRange");
+
+    if (!selector) return;
+
+    selector.addEventListener("change", event => {
+
+        const value = Number(event.target.value);
+
+        const oldRange = NEXUS.state.dateRange;
+
+        NEXUS.state.dateRange = value;
+
+        createUserActivityChart();
+
+        NEXUS.state.dateRange = oldRange;
+
+        showToast(
+            `User activity displayed for ${value} days.`
+        );
+
+    });
+
+}
+
+
+/* ==========================================================
+   44. LOADER
+========================================================== */
+
+function hideLoader() {
+
+    const loader = getElement("appLoader");
+
+    if (!loader) return;
+
+    loader.classList.add("hidden");
+
+    setTimeout(() => {
+
+        loader.style.display = "none";
+
+    }, 750);
+
+}
+
+
+/* ==========================================================
+   45. INITIAL DASHBOARD RENDER
+========================================================== */
+
+function renderDashboard() {
+
+    updateKpis();
+
+    initializeAllCharts();
+
+    initializeSparklines();
+
+    renderTrafficTable();
+
+    renderProductTable();
+
+    renderRegions();
+
+    renderFunnel();
+
+    renderActivityFeed();
+
+    setText(
+        "activeUsersNow",
+        formatNumber(activeUsers)
+    );
+
+}
+
+
+/* ==========================================================
+   46. MAIN APPLICATION INITIALIZATION
+========================================================== */
+
+
+function initializeNexus() {
+
+    console.log(
+        "%c NEXUS ANALYTICS ",
+        "background:#8b5cf6;color:white;padding:8px 15px;font-weight:bold;border-radius:5px;"
+    );
+
+    console.log(
+        "Initializing Analytics Intelligence Center..."
+    );
+
+    let initializationSuccessful = false;
+
+    try {
+
+        if (!initializeChartDefaults()) {
+            throw new Error("Chart.js initialization failed.");
+        }
+
+        renderDashboard();
+        initializeKeyboardShortcuts();
+        initializeControls();
+        initializeUserActivityRange();
+        initializeChartResize();
+        initializeScrollAnimations();
+        startRealtimeEngine();
+        startDashboardClock();
+
+        initializationSuccessful = true;
+
+        console.log(
+            "NEXUS Analytics successfully initialized."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "NEXUS INITIALIZATION ERROR:",
+            error
+        );
+
+    } finally {
+
+        setTimeout(() => {
+
+            hideLoader();
+
+            if (initializationSuccessful) {
+
+                showToast(
+                    "Welcome to NEXUS Analytics Intelligence Center."
+                );
+
+            } else {
+
+                console.error(
+                    "NEXUS loaded with initialization errors. Check the console."
+                );
+
+            }
+
+        }, 1300);
+
+    }
+
+}
+
+
+
+
+/* ==========================================================
+   47. APPLICATION START
+========================================================== */
+
+if (document.readyState === "loading") {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeNexus
+    );
+
+} else {
+
+    initializeNexus();
+
+}
+
+
+/* ==========================================================
+   END OF NEXUS ANALYTICS ENGINE
+========================================================== */
+
+
+

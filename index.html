@@ -6,7 +6,22 @@
     <link rel="stylesheet" href="style.css">
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+<!-- Remix Icons -->
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+    rel="stylesheet">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Chart.js Date Adapter -->
+<script src="https://cdn.jsdelivr.net/npm/date-fns@3.6.0/cdn.min.js"></script>
   <!-- Cropper.js CSS -->
 <link
     rel="stylesheet"
@@ -8366,53 +8381,404 @@
     class="screen"
 >
 
-        <button
-            type="button"
-            id="closeSalesOverview"
-            class="sales-overview-back-btn"
-        >
-
-            <i class="fa-solid fa-arrow-left"></i>
-
-        </button>
-
     <!-- Prepared dashboard content begins. NOTE: figures in this template are sample/demo values. -->
     <div class="sales-overview-dashboard">
-<!-- =================================
-                     STATISTICS CARDS
-                ================================== -->
 
-                <section class="stats-section" aria-label="Key performance metrics">
+   <div id="nexusDashboard" data-theme="light">
+
+    <!-- PASTE THE NEXUS dashboardContent BLOCK HERE -->
+
+
+            <!-- ==================================
+                 DASHBOARD CONTENT
+            =================================== -->
+
+            <div class="dashboard-content" id="dashboardContent">
+
+
+                <!-- ==================================
+                     DASHBOARD INTRO
+                =================================== -->
+
+                <section class="dashboard-intro">
+
+                    <div class="intro-left">
+
+                        <div class="eyebrow">
+
+                            <span class="eyebrow-line"></span>
+
+                            ANALYTICS OVERVIEW
+
+                            <span class="live-badge">
+                                <span></span>
+                                LIVE DATA
+                            </span>
+
+                        </div>
+
+
+                        <h1>
+                            Intelligence
+                            <span class="gradient-text">at a glance.</span>
+                        </h1>
+
+
+                        <p>
+                            Monitor your business performance,
+                            uncover patterns, and transform
+                            complex data into meaningful insights.
+                        </p>
+
+                    </div>
+
+
+                    <div class="intro-actions">
+
+                        <button class="secondary-button"
+                            id="exportButton">
+
+                            <i class="ri-download-2-line"></i>
+
+                            Export report
+
+                        </button>
+
+
+                        <button class="primary-button"
+                            id="refreshButton">
+
+                            <i class="ri-refresh-line"></i>
+
+                            Refresh data
+
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ==================================
+                     DATE FILTER TOOLBAR
+                =================================== -->
+
+                <section class="filter-toolbar">
+
+                    <div class="filter-left">
+
+                        <div class="date-filter">
+
+                            <i class="ri-calendar-line"></i>
+
+                            <select id="dateRange">
+
+                                <option value="7">Last 7 days</option>
+
+                                <option value="30" selected>
+                                    Last 30 days
+                                </option>
+
+                                <option value="90">
+                                    Last 90 days
+                                </option>
+
+                                <option value="365">
+                                    Last 12 months
+                                </option>
+
+                            </select>
+
+                            <i class="ri-arrow-down-s-line"></i>
+
+                        </div>
+
+
+                        <div class="comparison-filter">
+
+                            <span>Compared to</span>
+
+                            <select id="comparisonRange">
+
+                                <option value="previous">
+                                    Previous period
+                                </option>
+
+                                <option value="year">
+                                    Previous year
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="filter-right">
+
+                        <span class="last-updated">
+                            <i class="ri-time-line"></i>
+                            Updated just now
+                        </span>
+
+                        <button class="icon-button"
+                            id="filterButton"
+                            aria-label="More filters">
+
+                            <i class="ri-equalizer-2-line"></i>
+
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ==================================
+                     KPI METRIC CARDS
+                =================================== -->
+
+                <section class="metrics-grid">
+
+
+                    <!-- REVENUE -->
+
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+                                <span class="metric-icon revenue-icon">
+                                    <i class="ri-wallet-3-line"></i>
+                                </span>
+
+                                Total Revenue
+                            </div>
+
+                            <button class="card-menu">
+                                <i class="ri-more-fill"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="metric-value"
+                            id="totalRevenue">
+
+                            $284,592
+
+                        </div>
+
+
+                        <div class="metric-bottom">
+
+                            <div class="metric-change positive">
+                                <i class="ri-arrow-up-line"></i>
+                                18.42%
+                            </div>
+
+                            <span>vs previous period</span>
+
+                        </div>
+
+
+                        <div class="metric-sparkline">
+                            <canvas id="revenueSparkline"></canvas>
+                        </div>
+
+                    </article>
+
+
+
+                    <!-- USERS -->
+
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+
+                                <span class="metric-icon users-icon">
+                                    <i class="ri-user-3-line"></i>
+                                </span>
+
+                                Total Users
+
+                            </div>
+
+                            <button class="card-menu">
+                                <i class="ri-more-fill"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="metric-value"
+                            id="totalUsers">
+
+                            48,294
+
+                        </div>
+
+
+                        <div class="metric-bottom">
+
+                            <div class="metric-change positive">
+                                <i class="ri-arrow-up-line"></i>
+                                12.86%
+                            </div>
+
+                            <span>vs previous period</span>
+
+                        </div>
+
+
+                        <div class="metric-sparkline">
+                            <canvas id="usersSparkline"></canvas>
+                        </div>
+
+                    </article>
+
+
+
+                    <!-- CONVERSIONS -->
+
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+
+                                <span class="metric-icon conversion-icon">
+                                    <i class="ri-focus-2-line"></i>
+                                </span>
+
+                                Conversion Rate
+
+                            </div>
+
+                            <button class="card-menu">
+                                <i class="ri-more-fill"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="metric-value"
+                            id="conversionRate">
+
+                            4.82%
+
+                        </div>
+
+
+                        <div class="metric-bottom">
+
+                            <div class="metric-change positive">
+                                <i class="ri-arrow-up-line"></i>
+                                0.64%
+                            </div>
+
+                            <span>vs previous period</span>
+
+                        </div>
+
+
+                        <div class="metric-sparkline">
+                            <canvas id="conversionSparkline"></canvas>
+                        </div>
+
+                    </article>
+
+
+
+                    <!-- SESSIONS -->
+
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+
+                                <span class="metric-icon sessions-icon">
+                                    <i class="ri-pulse-line"></i>
+                                </span>
+
+                                Total Sessions
+
+                            </div>
+
+                            <button class="card-menu">
+                                <i class="ri-more-fill"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="metric-value"
+                            id="totalSessions">
+
+                            126,847
+
+                        </div>
+
+
+                        <div class="metric-bottom">
+
+                            <div class="metric-change negative">
+                                <i class="ri-arrow-down-line"></i>
+                                2.14%
+                            </div>
+
+                            <span>vs previous period</span>
+
+                        </div>
+
+
+                        <div class="metric-sparkline">
+                            <canvas id="sessionsSparkline"></canvas>
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+
+                <!-- ==================================
+                     REVENUE PERFORMANCE SECTION
+                =================================== -->
+
+                <section class="analytics-section">
 
 
                     <div class="section-heading">
 
                         <div>
 
-                            <h2>Performance overview</h2>
+                            <div class="section-eyebrow">
+                                PERFORMANCE
+                            </div>
+
+                            <h2>Revenue Analytics</h2>
+
+                            <p>
+                                Understand your revenue growth
+                                and financial performance.
+                            </p>
 
                         </div>
 
 
-                        <button
-                            class="period-selector"
-                            id="statsPeriod"
-                            type="button"
-                            data-period="7d"
-                        >
+                        <button class="text-button"
+                            data-page-link="revenue">
 
-                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                <rect x="3" y="5" width="18" height="16" rx="2"/>
-                                <path d="M16 3v4"/>
-                                <path d="M8 3v4"/>
-                                <path d="M3 11h18"/>
-                            </svg>
+                            Detailed analytics
 
-                            Last 7 days
-
-                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="m7 10 5 5 5-5"/>
-                            </svg>
+                            <i class="ri-arrow-right-line"></i>
 
                         </button>
 
@@ -8420,126 +8786,858 @@
 
 
 
-                    <div class="stats-grid">
+                    <div class="chart-grid revenue-grid">
 
 
-                        <!-- REVENUE -->
+                        <!-- MAIN REVENUE CHART -->
 
-                        <article class="stat-card" data-stat="revenue">
+                        <article class="chart-card revenue-chart-card">
 
-                            <div class="stat-card-top">
+                            <div class="chart-header">
 
-                                <span class="stat-label">
-                                    Total revenue
-                                </span>
+                                <div>
 
-                                <span class="stat-icon stat-icon-purple">
+                                    <h3>Revenue Overview</h3>
 
-                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <rect x="2" y="5" width="20" height="14" rx="3"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                        <path d="M6 9h.01"/>
-                                        <path d="M18 15h.01"/>
-                                    </svg>
+                                    <span class="chart-subtitle">
+                                        Revenue performance over time
+                                    </span>
 
+                                </div>
+
+
+                                <div class="chart-controls">
+
+                                    <button class="chart-type-button active"
+                                        data-chart="revenue"
+                                        data-type="line">
+
+                                        <i class="ri-line-chart-line"></i>
+
+                                    </button>
+
+
+                                    <button class="chart-type-button"
+                                        data-chart="revenue"
+                                        data-type="bar">
+
+                                        <i class="ri-bar-chart-line"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="chart-main-stat">
+
+                                <strong>$284,592</strong>
+
+                                <span class="positive">
+                                    <i class="ri-arrow-up-line"></i>
+                                    18.42%
                                 </span>
 
                             </div>
 
 
-                            <div class="stat-value-row">
+                            <div class="chart-container revenue-chart-container">
 
-                                <h3 class="stat-value" data-count="24850" data-prefix="$" data-format="currency">
-                                    $24,850
-                                </h3>
-
-                                <span class="stat-trend trend-up">
-
-                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="m7 14 5-5 5 5"/>
-                                    </svg>
-
-                                    12.8%
-
-                                </span>
+                                <canvas id="revenueChart"></canvas>
 
                             </div>
 
 
-                            <p class="stat-comparison">
-                                <span class="comparison-muted">vs. previous period</span>
-                            </p>
+                            <div class="chart-footer">
+
+                                <div class="chart-legend">
+
+                                    <span class="legend-item">
+                                        <span class="legend-dot purple"></span>
+                                        This period
+                                    </span>
+
+                                    <span class="legend-item">
+                                        <span class="legend-dot gray"></span>
+                                        Previous period
+                                    </span>
+
+                                </div>
 
 
-                            <div class="mini-chart mini-chart-purple">
-
-                                <canvas
-                                    class="sparkline"
-                                    id="revenueSparkline"
-                                    aria-label="Revenue trend chart"
-                                ></canvas>
+                                <span class="chart-footer-note">
+                                    Values in USD
+                                </span>
 
                             </div>
 
                         </article>
 
+
+
+                        <!-- REVENUE SOURCES -->
+
+                        <article class="chart-card revenue-source-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Revenue Sources</h3>
+
+                                    <span class="chart-subtitle">
+                                        Distribution by channel
+                                    </span>
+
+                                </div>
+
+
+                                <button class="card-menu">
+                                    <i class="ri-more-fill"></i>
+                                </button>
+
+                            </div>
+
+
+                            <div class="donut-chart-container">
+
+                                <canvas id="revenueSourceChart"></canvas>
+
+
+                                <div class="donut-center">
+
+                                    <span>Total Revenue</span>
+
+                                    <strong>$284.6K</strong>
+
+                                    <small>USD</small>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="source-legend"
+                                id="revenueSourceLegend">
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ==================================
+                     USER ANALYTICS
+                =================================== -->
+
+                <section class="analytics-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                AUDIENCE INTELLIGENCE
+                            </div>
+
+                            <h2>Audience Insights</h2>
+
+                            <p>
+                                Discover who interacts with your
+                                platform and how they behave.
+                            </p>
+
+                        </div>
+
+
+                        <button class="text-button"
+                            data-page-link="audience">
+
+                            Explore audience
+
+                            <i class="ri-arrow-right-line"></i>
+
+                        </button>
+
+                    </div>
+
+
+
+                    <div class="chart-grid audience-grid">
+
+
+                        <!-- USER ACTIVITY -->
+
+                        <article class="chart-card audience-chart-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>User Activity</h3>
+
+                                    <span class="chart-subtitle">
+                                        Daily active users and new users
+                                    </span>
+
+                                </div>
+
+
+                                <select class="chart-select"
+                                    id="userActivityRange">
+
+                                    <option value="7">7 days</option>
+                                    <option value="30" selected>30 days</option>
+                                    <option value="90">90 days</option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="chart-main-stat">
+
+                                <strong>32,481</strong>
+
+                                <span class="positive">
+                                    <i class="ri-arrow-up-line"></i>
+                                    14.8%
+                                </span>
+
+                            </div>
+
+
+                            <div class="chart-container">
+
+                                <canvas id="userActivityChart"></canvas>
+
+                            </div>
+
+
+                            <div class="chart-footer">
+
+                                <div class="chart-legend">
+
+                                    <span class="legend-item">
+                                        <span class="legend-dot purple"></span>
+                                        Active users
+                                    </span>
+
+                                    <span class="legend-item">
+                                        <span class="legend-dot cyan"></span>
+                                        New users
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- DEVICE DISTRIBUTION -->
+
+                        <article class="chart-card device-chart-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Device Distribution</h3>
+
+                                    <span class="chart-subtitle">
+                                        Users by device category
+                                    </span>
+
+                                </div>
+
+
+                                <button class="card-menu">
+                                    <i class="ri-more-fill"></i>
+                                </button>
+
+                            </div>
+
+
+                            <div class="device-chart-container">
+
+                                <canvas id="deviceChart"></canvas>
+
+                            </div>
+
+
+                            <div class="device-legend"
+                                id="deviceLegend">
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ==================================
+                     TRAFFIC ANALYTICS
+                =================================== -->
+
+                <section class="analytics-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                ACQUISITION
+                            </div>
+
+                            <h2>Traffic Intelligence</h2>
+
+                            <p>
+                                Analyze where your visitors
+                                originate and how they arrive.
+                            </p>
+
+                        </div>
+
+
+                        <button class="text-button"
+                            data-page-link="traffic">
+
+                            Traffic reports
+
+                            <i class="ri-arrow-right-line"></i>
+
+                        </button>
+
+                    </div>
+
+
+
+                    <div class="chart-grid traffic-grid">
+
+
+                        <!-- TRAFFIC CHANNELS -->
+
+                        <article class="chart-card traffic-channel-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Traffic Channels</h3>
+
+                                    <span class="chart-subtitle">
+                                        Acquisition channel breakdown
+                                    </span>
+
+                                </div>
+
+                                <span class="chart-tag">
+                                    All channels
+                                </span>
+
+                            </div>
+
+
+                            <div class="chart-container">
+
+                                <canvas id="trafficChart"></canvas>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- TRAFFIC SOURCES TABLE -->
+
+                        <article class="chart-card traffic-table-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Top Traffic Sources</h3>
+
+                                    <span class="chart-subtitle">
+                                        Highest performing sources
+                                    </span>
+
+                                </div>
+
+                                <button class="card-menu">
+                                    <i class="ri-more-fill"></i>
+                                </button>
+
+                            </div>
+
+
+                            <div class="table-wrapper">
+
+                                <table class="analytics-table">
+
+                                    <thead>
+
+                                        <tr>
+
+                                            <th>Source</th>
+                                            <th>Visitors</th>
+                                            <th>Change</th>
+
+                                        </tr>
+
+                                    </thead>
+
+
+                                    <tbody id="trafficTableBody">
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+
+                            <button class="table-footer-button"
+                                data-page-link="traffic">
+
+                                View all sources
+
+                                <i class="ri-arrow-right-line"></i>
+
+                            </button>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ==================================
+                     GEOGRAPHIC ANALYTICS
+                =================================== -->
+
+                <section class="analytics-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                GLOBAL REACH
+                            </div>
+
+                            <h2>Geographic Intelligence</h2>
+
+                            <p>
+                                Understand your audience's
+                                worldwide distribution.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="chart-grid geography-grid">
+
+
+                        <!-- WORLD MAP -->
+
+                        <article class="chart-card world-map-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Global Audience Distribution</h3>
+
+                                    <span class="chart-subtitle">
+                                        Visitors across geographical regions
+                                    </span>
+
+                                </div>
+
+
+                                <span class="chart-tag">
+                                    Global
+                                </span>
+
+                            </div>
+
+
+                            <div class="world-map-container">
+
+                                <div class="map-placeholder"
+                                    id="worldMap">
+
+                                    <div class="map-glow"></div>
+
+                                    <div class="map-content">
+
+                                        <i class="ri-earth-line"></i>
+
+                                        <h4>Global Analytics Map</h4>
+
+                                        <p>
+                                            Geographic visualization
+                                            will be displayed here.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- REGIONAL BREAKDOWN -->
+
+                        <article class="chart-card region-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Top Countries</h3>
+
+                                    <span class="chart-subtitle">
+                                        Visitors by country
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="region-list"
+                                id="regionList">
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ==================================
+                     PRODUCT PERFORMANCE
+                =================================== -->
+
+                <section class="analytics-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                PRODUCT INTELLIGENCE
+                            </div>
+
+                            <h2>Product Performance</h2>
+
+                            <p>
+                                Identify your most valuable
+                                products and revenue drivers.
+                            </p>
+
+                        </div>
+
+
+                        <button class="text-button"
+                            data-page-link="products">
+
+                            Product analytics
+
+                            <i class="ri-arrow-right-line"></i>
+
+                        </button>
+
+                    </div>
+
+
+
+                    <div class="chart-grid product-grid">
+
+
+                        <!-- PRODUCT PERFORMANCE CHART -->
+
+                        <article class="chart-card product-chart-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Top Performing Products</h3>
+
+                                    <span class="chart-subtitle">
+                                        Revenue generated by product
+                                    </span>
+
+                                </div>
+
+
+                                <select class="chart-select"
+                                    id="productSort">
+
+                                    <option value="revenue">
+                                        By revenue
+                                    </option>
+
+                                    <option value="units">
+                                        By units sold
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="chart-container">
+
+                                <canvas id="productChart"></canvas>
+
+                            </div>
+
+                        </article>
+
+
+
+                        <!-- PRODUCT TABLE -->
+
+                        <article class="chart-card product-table-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Product Rankings</h3>
+
+                                    <span class="chart-subtitle">
+                                        Performance leaderboard
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="table-wrapper">
+
+                                <table class="analytics-table">
+
+                                    <thead>
+
+                                        <tr>
+
+                                            <th>Product</th>
+                                            <th>Sales</th>
+                                            <th>Revenue</th>
+
+                                        </tr>
+
+                                    </thead>
+
+
+                                    <tbody id="productTableBody">
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ==================================
+                     CONVERSION FUNNEL
+                =================================== -->
+
+                <section class="analytics-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                CONVERSION INTELLIGENCE
+                            </div>
+
+                            <h2>Conversion Funnel</h2>
+
+                            <p>
+                                Track how users progress through
+                                your customer journey.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <article class="chart-card funnel-card">
+
+                        <div class="chart-header">
+
+                            <div>
+
+                                <h3>Customer Journey</h3>
+
+                                <span class="chart-subtitle">
+                                    From initial visit to completed purchase
+                                </span>
+
+                            </div>
+
+                            <span class="chart-tag">
+                                Conversion analysis
+                            </span>
+
+                        </div>
+
+
+                        <div class="funnel-container"
+                            id="conversionFunnel">
+
+                            <!-- Generated through app.js -->
+
+                        </div>
+
+
+                        <div class="funnel-footer">
+
+                            <div>
+
+                                <span>Overall conversion</span>
+
+                                <strong>4.82%</strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>Total visitors</span>
+
+                                <strong>48,294</strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>Completed purchases</span>
+
+                                <strong>2,329</strong>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+
+                <!-- ==================================
+                     REAL TIME MONITOR
+                =================================== -->
+
+                <section class="analytics-section realtime-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                LIVE MONITORING
+                            </div>
+
+                            <h2>Real-Time Intelligence</h2>
+
+                            <p>
+                                Observe live platform activity
+                                and current user engagement.
+                            </p>
+
+                        </div>
+
+
+                        <div class="live-status">
+
+                            <span class="live-pulse"></span>
+
+                            LIVE MONITORING
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="realtime-grid">
 
 
                         <!-- ACTIVE USERS -->
 
-                        <article class="stat-card" data-stat="users">
+                        <article class="chart-card realtime-users-card">
 
-                            <div class="stat-card-top">
+                            <div class="realtime-card-heading">
 
-                                <span class="stat-label">
-                                    Active users
-                                </span>
+                                <div>
 
-                                <span class="stat-icon stat-icon-cyan">
+                                    <span>ACTIVE USERS RIGHT NOW</span>
 
-                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                        <circle cx="10" cy="7" r="4"/>
-                                        <path d="M20 21v-2a4 4 0 0 0-3-3.87"/>
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                                    </svg>
+                                    <i class="ri-radar-line"></i>
 
-                                </span>
+                                </div>
 
                             </div>
 
 
-                            <div class="stat-value-row">
+                            <div class="realtime-big-number"
+                                id="activeUsersNow">
 
-                                <h3 class="stat-value" data-count="8420" data-format="number">
-                                    8,420
-                                </h3>
-
-                                <span class="stat-trend trend-up">
-
-                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="m7 14 5-5 5 5"/>
-                                    </svg>
-
-                                    8.2%
-
-                                </span>
+                                1,284
 
                             </div>
 
 
-                            <p class="stat-comparison">
-                                <span class="comparison-muted">vs. previous period</span>
-                            </p>
+                            <div class="realtime-change">
+                                <i class="ri-arrow-up-line"></i>
+                                Live activity
+                            </div>
 
 
-                            <div class="mini-chart mini-chart-cyan">
+                            <div class="realtime-chart">
 
-                                <canvas
-                                    class="sparkline"
-                                    id="usersSparkline"
-                                    aria-label="Active users trend chart"
-                                ></canvas>
+                                <canvas id="realtimeChart"></canvas>
 
                             </div>
 
@@ -8547,118 +9645,34 @@
 
 
 
-                        <!-- CONVERSION RATE -->
+                        <!-- ACTIVITY FEED -->
 
-                        <article class="stat-card" data-stat="conversion">
+                        <article class="chart-card activity-feed-card">
 
-                            <div class="stat-card-top">
+                            <div class="chart-header">
 
-                                <span class="stat-label">
-                                    Conversion rate
-                                </span>
+                                <div>
 
-                                <span class="stat-icon stat-icon-green">
+                                    <h3>Live Activity Feed</h3>
 
-                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="M3 17 9 11l4 4 8-8"/>
-                                        <path d="M15 7h6v6"/>
-                                    </svg>
+                                    <span class="chart-subtitle">
+                                        Recent platform events
+                                    </span>
 
-                                </span>
+                                </div>
 
-                            </div>
-
-
-                            <div class="stat-value-row">
-
-                                <h3 class="stat-value" data-count="3.62" data-suffix="%" data-decimals="2">
-                                    3.62%
-                                </h3>
-
-                                <span class="stat-trend trend-up">
-
-                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="m7 14 5-5 5 5"/>
-                                    </svg>
-
-                                    4.6%
-
+                                <span class="live-badge">
+                                    <span></span>
+                                    LIVE
                                 </span>
 
                             </div>
 
 
-                            <p class="stat-comparison">
-                                <span class="comparison-muted">vs. previous period</span>
-                            </p>
+                            <div class="activity-feed"
+                                id="activityFeed">
 
-
-                            <div class="mini-chart mini-chart-green">
-
-                                <canvas
-                                    class="sparkline"
-                                    id="conversionSparkline"
-                                    aria-label="Conversion rate trend chart"
-                                ></canvas>
-
-                            </div>
-
-                        </article>
-
-
-
-                        <!-- ENGAGEMENT -->
-
-                        <article class="stat-card" data-stat="engagement">
-
-                            <div class="stat-card-top">
-
-                                <span class="stat-label">
-                                    Engagement
-                                </span>
-
-                                <span class="stat-icon stat-icon-orange">
-
-                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="M12 21s-8-4.5-8-11a4.5 4.5 0 0 1 8-2.9A4.5 4.5 0 0 1 20 10c0 6.5-8 11-8 11Z"/>
-                                    </svg>
-
-                                </span>
-
-                            </div>
-
-
-                            <div class="stat-value-row">
-
-                                <h3 class="stat-value" data-count="68.4" data-suffix="%" data-decimals="1">
-                                    68.4%
-                                </h3>
-
-                                <span class="stat-trend trend-down">
-
-                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="m7 10 5 5 5-5"/>
-                                    </svg>
-
-                                    1.2%
-
-                                </span>
-
-                            </div>
-
-
-                            <p class="stat-comparison">
-                                <span class="comparison-muted">vs. previous period</span>
-                            </p>
-
-
-                            <div class="mini-chart mini-chart-orange">
-
-                                <canvas
-                                    class="sparkline"
-                                    id="engagementSparkline"
-                                    aria-label="Engagement trend chart"
-                                ></canvas>
+                                <!-- Generated through app.js -->
 
                             </div>
 
@@ -8671,434 +9685,111 @@
 
 
 
-                <!-- =================================
-                     ANALYTICS GRID
-                ================================== -->
+                <!-- ==================================
+                     PERFORMANCE SUMMARY
+                =================================== -->
 
-                <section class="analytics-section" id="analytics">
+                <section class="analytics-section">
 
+                    <div class="section-heading">
 
-                    <div class="analytics-grid">
+                        <div>
 
-
-                        <!-- MAIN ANALYTICS CHART -->
-
-                        <article class="panel revenue-panel">
-
-
-                            <div class="panel-header">
-
-                                <div>
-
-                                    <div class="panel-title-row">
-
-                                        <h2>Revenue analytics</h2>
-
-                                        <span class="chart-live-badge">
-                                            <span></span>
-                                            Updated
-                                        </span>
-
-                                    </div>
-
-                                    <p class="panel-description">
-                                        Track your financial performance over time.
-                                    </p>
-
-                                </div>
-
-
-                                <button
-                                    class="icon-button panel-menu-button"
-                                    data-menu="revenue"
-                                    type="button"
-                                    aria-label="Revenue chart options"
-                                >
-
-                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <circle cx="5" cy="12" r="1"/>
-                                        <circle cx="12" cy="12" r="1"/>
-                                        <circle cx="19" cy="12" r="1"/>
-                                    </svg>
-
-                                </button>
-
+                            <div class="section-eyebrow">
+                                BUSINESS INTELLIGENCE
                             </div>
 
+                            <h2>Performance Summary</h2>
+
+                            <p>
+                                Key indicators that define
+                                your overall business health.
+                            </p>
+
+                        </div>
+
+                    </div>
 
 
-                            <div class="revenue-summary">
 
-                                <div class="revenue-summary-main">
-
-                                    <span class="summary-overline">
-                                        TOTAL REVENUE
-                                    </span>
-
-                                    <div class="revenue-number" id="totalRevenueDisplay">
-    <span>$</span>0<span class="revenue-decimal">.00</span>
-</div>
-
-                                </div>
+                    <div class="summary-grid">
 
 
-                                <div class="revenue-summary-change">
+                        <article class="summary-card">
 
-                                    <span class="change-pill">
-
-                                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                            <path d="m7 14 5-5 5 5"/>
-                                        </svg>
-
-                                        12.8%
-
-                                    </span>
-
-                                    <span class="change-caption">
-                                        growth
-                                    </span>
-
-                                </div>
-
+                            <div class="summary-icon purple-bg">
+                                <i class="ri-time-line"></i>
                             </div>
 
+                            <span>Average Session Duration</span>
 
+                            <strong>04:32</strong>
 
-                            <div class="chart-legend">
-
-                                <span class="legend-item">
-
-                                    <span class="legend-dot legend-dot-purple"></span>
-
-                                    Revenue
-
-                                </span>
-
-                                <span class="legend-item">
-
-                                    <span class="legend-dot legend-dot-cyan"></span>
-
-                                    Previous period
-
-                                </span>
-
-
-                                <div class="chart-period-controls" role="group" aria-label="Chart time range">
-
-                                    <button
-                                        class="chart-period-button"
-                                        data-range="7d"
-                                        type="button"
-                                    >
-                                        7D
-                                    </button>
-
-                                    <button
-                                        class="chart-period-button active"
-                                        data-range="30d"
-                                        type="button"
-                                    >
-                                        30D
-                                    </button>
-
-                                    <button
-                                        class="chart-period-button"
-                                        data-range="90d"
-                                        type="button"
-                                    >
-                                        90D
-                                    </button>
-
-                                    <button
-                                        class="chart-period-button"
-                                        data-range="1y"
-                                        type="button"
-                                    >
-                                        1Y
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-
-
-                            <div class="main-chart-container">
-
-                                <div class="chart-y-axis" aria-hidden="true">
-
-                                    <span>$30k</span>
-
-                                    <span>$20k</span>
-
-                                    <span>$10k</span>
-
-                                    <span>$0</span>
-
-                                </div>
-
-
-                                <div class="main-chart-plot">
-
-                                    <div class="chart-grid-lines" aria-hidden="true">
-
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-
-                                    </div>
-
-
-                                    <canvas
-                                        id="revenueChart"
-                                        class="main-chart-canvas"
-                                        role="img"
-                                        aria-label="Revenue analytics chart showing revenue and previous period"
-                                    ></canvas>
-
-
-                                    <div
-                                        class="chart-tooltip"
-                                        id="chartTooltip"
-                                        aria-hidden="true"
-                                    >
-
-                                        <span class="tooltip-date">
-                                            Oct 12
-                                        </span>
-
-                                        <strong class="tooltip-value">
-                                            $24,850
-                                        </strong>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="chart-x-axis" id="chartXAxis" aria-hidden="true">
-
-                                <span>Oct 01</span>
-                                <span>Oct 05</span>
-                                <span>Oct 10</span>
-                                <span>Oct 15</span>
-                                <span>Oct 20</span>
-                                <span>Oct 25</span>
-                                <span>Oct 30</span>
-
-                            </div>
-
+                            <small class="positive">
+                                +8.24% compared to previous period
+                            </small>
 
                         </article>
 
 
+                        <article class="summary-card">
 
-                        <!-- TRAFFIC SOURCES -->
-
-                        <article class="panel traffic-panel" id="audience">
-
-
-                            <div class="panel-header">
-
-                                <div>
-
-                                    <h2>Traffic sources</h2>
-
-                                    <p class="panel-description">
-                                        Where your visitors come from.
-                                    </p>
-
-                                </div>
-
-
-                                <button
-                                    class="icon-button panel-menu-button"
-                                    data-menu="traffic"
-                                    type="button"
-                                    aria-label="Traffic source options"
-                                >
-
-                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <circle cx="5" cy="12" r="1"/>
-                                        <circle cx="12" cy="12" r="1"/>
-                                        <circle cx="19" cy="12" r="1"/>
-                                    </svg>
-
-                                </button>
-
+                            <div class="summary-icon cyan-bg">
+                                <i class="ri-user-follow-line"></i>
                             </div>
 
+                            <span>Returning Visitors</span>
 
+                            <strong>62.8%</strong>
 
-                            <div class="traffic-total">
-
-                                <div>
-
-                                    <span class="summary-overline">
-                                        TOTAL VISITORS
-                                    </span>
-
-                                    <h3>18,462</h3>
-
-                                </div>
-
-
-                                <span class="stat-trend trend-up">
-
-                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="m7 14 5-5 5 5"/>
-                                    </svg>
-
-                                    9.4%
-
-                                </span>
-
-                            </div>
-
-
-
-                            <div class="donut-chart-container">
-
-                                <div
-                                    class="donut-chart"
-                                    id="trafficDonut"
-                                    role="img"
-                                    aria-label="Traffic sources distribution chart"
-                                >
-
-                                    <div class="donut-center">
-
-                                        <span class="donut-center-label">
-                                            TOTAL
-                                        </span>
-
-                                        <strong>18.4k</strong>
-
-                                        <span class="donut-center-caption">
-                                            visitors
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-
-                            <div class="traffic-legend">
-
-
-                                <div class="traffic-source-row">
-
-                                    <span class="traffic-source-name">
-
-                                        <span class="source-dot source-purple"></span>
-
-                                        Organic search
-
-                                    </span>
-
-                                    <div class="traffic-source-data">
-
-                                        <strong>42%</strong>
-
-                                        <span>7,754</span>
-
-                                    </div>
-
-                                </div>
-
-
-
-                                <div class="traffic-source-row">
-
-                                    <span class="traffic-source-name">
-
-                                        <span class="source-dot source-cyan"></span>
-
-                                        Direct
-
-                                    </span>
-
-                                    <div class="traffic-source-data">
-
-                                        <strong>28%</strong>
-
-                                        <span>5,169</span>
-
-                                    </div>
-
-                                </div>
-
-
-
-                                <div class="traffic-source-row">
-
-                                    <span class="traffic-source-name">
-
-                                        <span class="source-dot source-pink"></span>
-
-                                        Social media
-
-                                    </span>
-
-                                    <div class="traffic-source-data">
-
-                                        <strong>18%</strong>
-
-                                        <span>3,323</span>
-
-                                    </div>
-
-                                </div>
-
-
-
-                                <div class="traffic-source-row">
-
-                                    <span class="traffic-source-name">
-
-                                        <span class="source-dot source-orange"></span>
-
-                                        Referrals
-
-                                    </span>
-
-                                    <div class="traffic-source-data">
-
-                                        <strong>12%</strong>
-
-                                        <span>2,216</span>
-
-                                    </div>
-
-                                </div>
-
-
-                            </div>
-
-
-                            <button
-                                class="text-action"
-                                id="trafficDetailsButton"
-                                type="button"
-                            >
-
-                                View traffic details
-
-                                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M5 12h14"/>
-                                    <path d="m12 5 7 7-7 7"/>
-                                </svg>
-
-                            </button>
-
+                            <small class="positive">
+                                +4.12% compared to previous period
+                            </small>
 
                         </article>
+
+
+                        <article class="summary-card">
+
+                            <div class="summary-icon orange-bg">
+                                <i class="ri-eye-line"></i>
+                            </div>
+
+                            <span>Pages Per Session</span>
+
+                            <strong>5.42</strong>
+
+                            <small class="positive">
+                                +2.67% compared to previous period
+                            </small>
+
+                        </article>
+
+
+                        <article class="summary-card">
+
+                            <div class="summary-icon green-bg">
+                                <i class="ri-shopping-bag-line"></i>
+                            </div>
+
+                            <span>Average Order Value</span>
+
+                            <strong>$122.40</strong>
+
+                            <small class="positive">
+                                +6.83% compared to previous period
+                            </small>
+
+                        </article>
+
+
+                    </div>
+
+                </section>
+
+        </div>                
+
+    </div>
 
                 <!-- =========================================
      SALES OVERVIEW — SALES HISTORY PANEL
@@ -9149,9 +9840,6 @@
 
 
                 </section>
-
-    </div>
-</section>
 <!-- END NEXODRA SALES OVERVIEW -->
 
  
@@ -10775,6 +11463,40 @@
             
 </main>
 
+  <!-- ==========================================
+         NOTIFICATION TOAST
+    =========================================== -->
+
+    <div class="toast-container"
+        id="toastContainer">
+
+    </div>
+
+
+
+    <!-- ==========================================
+         MODAL OVERLAY
+    =========================================== -->
+
+    <div class="modal-overlay"
+        id="modalOverlay">
+
+        <div class="modal-content"
+            id="modalContent">
+
+            <button class="modal-close"
+                id="modalClose">
+
+                <i class="ri-close-line"></i>
+
+            </button>
+
+            <div id="modalBody"></div>
+
+        </div>
+
+    </div>
+
 <!-- =========================================
      NEXODRA FOUNDER ENVIRONMENT
      BRICK 1 — HTML STRUCTURE
@@ -11963,8 +12685,50 @@ const NEXODRA_VAPID_PUBLIC_KEY = 'BC3vqHMDCE9pjvW_c2EE8ZSnQJjYeQgVRX4wG3nD7wIbUY
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 
-      
+   <!-- ==========================================
+         NOTIFICATION TOAST
+    =========================================== -->
+
+    <div class="toast-container"
+        id="toastContainer">
+
+    </div>
+
+
+
+    <!-- ==========================================
+         MODAL OVERLAY
+    =========================================== -->
+
+    <div class="modal-overlay"
+        id="modalOverlay">
+
+        <div class="modal-content"
+            id="modalContent">
+
+            <button class="modal-close"
+                id="modalClose">
+
+                <i class="ri-close-line"></i>
+
+            </button>
+
+            <div id="modalBody"></div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==========================================
+         JAVASCRIPT
+    =========================================== -->
+
+
     <script src="app.js"></script>
+   
+    
                   
 </body>
   

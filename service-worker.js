@@ -370,12 +370,27 @@ self.addEventListener(
 
         event.waitUntil(
 
-            self.registration.showNotification(
-                notificationTitle,
-                notificationOptions
-            )
+    self.registration.showNotification(
+        notificationTitle,
+        notificationOptions
+    ).then(() => {
 
+        console.log(
+            'BRICK PUSH 1 — Notification displayed successfully.'
         );
+
+    }).catch(error => {
+
+        console.error(
+            'BRICK PUSH 1 — NOTIFICATION DISPLAY FAILED:',
+            error
+        );
+
+        throw error;
+
+    })
+
+);
 
     }
 );

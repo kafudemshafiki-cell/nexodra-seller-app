@@ -1,4 +1,4 @@
-alert('NEXODRA APP.JS STARTED');
+alert('HIRAM APP.JS STARTED');
 window.addEventListener('error', function(event) {
     alert(
         'NEXODRA JAVASCRIPT ERROR:\n' +
@@ -797,11 +797,24 @@ function prepareNexodraSaleForOfflineCache(sale) {
 
     const compactItems = (
         Array.isArray(sale.items) ? sale.items : []
-    ).map(item => ({
-        productId: item.productId || null,
+        ).map(item => ({
+        productId: item.productId || item.product_id || null,
+
         title: item.title || item.name || 'Unnamed product',
+
         quantity: Number(item.quantity) || 0,
-        price: Number(item.price) || 0
+
+        price: Number(item.price) || 0,
+
+        // Preserve the cost snapshot for accurate future COGS.
+        costPrice:
+            item.costPrice ??
+            item.cost_price ??
+            item.unitCost ??
+            item.unit_cost ??
+            item.purchasePrice ??
+            item.purchase_price ??
+            null
     }));
 
     return {
@@ -2161,6 +2174,11 @@ if (sellProductGrid) {
 
                     price:
                         Number(product.price || 0),
+
+                    costPrice:
+    product.cost_price !== '' && product.cost_price != null
+        ? Number(product.cost_price)
+        : null,
 
                     image:
                         product.image || '',
@@ -3784,12 +3802,7 @@ if (totalRevenueDisplay) {
     return total + (Number(sale.total) || 0);
   }, 0);
 
-  totalRevenueDisplay.innerHTML = `
-    <span>$</span>${Math.floor(totalRevenue).toLocaleString("en-US")}
-    <span class="revenue-decimal">.${(totalRevenue % 1)
-      .toFixed(2)
-      .slice(2)}</span>
-  `;
+  totalRevenueDisplay.textContent = formatCurrency(totalRevenue);
 
   console.log("BRICK 6 — Total Revenue updated:", totalRevenue);
 }
@@ -6464,17 +6477,32 @@ if (saveLanguageCurrencyBtn) {
 
                 if (!updatedStore) {
 
-                    throw new Error(
-                        'No store row was updated.'
-                    );
+    throw new Error(
+        'No store row was updated.'
+    );
 
-                }
+}
 
 
-                console.log(
-                    'BRICK C6-B — Language & currency saved:',
-                    updatedStore
-                );
+// =====================================
+// UPDATE ACTIVE GLOBAL LANGUAGE & CURRENCY
+// =====================================
+
+currentLanguageCode = languageCode;
+currentCurrencyCode = currencyCode;
+
+
+// =====================================
+// REFRESH NEXODRA SALES ANALYTICS
+// =====================================
+
+window.NexodraAnalytics?.refresh?.();
+
+
+console.log(
+    'BRICK C6-B — Language & currency saved:',
+    updatedStore
+);
 
 
                 // =====================================
@@ -10050,6 +10078,9 @@ if (postButton) {
                 'productPrice'
             );
 
+        const costPriceInput =
+            document.getElementById('productCostPrice');
+
         const stockInput =
             document.getElementById(
                 'productStock'
@@ -10090,6 +10121,16 @@ if (postButton) {
             priceInput.value =
                 product.price ?? '';
         }
+
+        if (costPriceInput) {
+        costPriceInput.value =
+        product.cost_price ??
+        product.costPrice ??
+        product.purchasePrice ??
+        product.purchase_price ??
+        product.cost ??
+        '';
+}
 
         if (stockInput) {
             stockInput.value =
@@ -16388,6 +16429,11 @@ async function showPublicStore() {
 
     sellerDashboard.style.display = 'none';
 
+// Hide seller navigation while the public storefront is open.
+document.querySelectorAll('.bottom-nav').forEach(nav => {
+    nav.style.display = 'none';
+});
+  
     publicStore.style.display = 'block';
 
       const previewBanner =
@@ -16577,13 +16623,11 @@ if (publicBackBtn) {
 
     /*
      * Customer/shared-store mode:
-     *
      * Hide the seller-style back button.
      */
     if (!isStorePreviewMode) {
 
-        publicBackBtn.style.display =
-            'none';
+        publicBackBtn.style.display = 'none';
 
         console.log(
             'BRICK D — Customer public store: seller back button hidden.'
@@ -16593,28 +16637,24 @@ if (publicBackBtn) {
 
         /*
          * Seller preview mode:
-         *
          * Keep the back button available.
          */
-        publicBackBtn.style.display =
-            'inline-flex';
+        publicBackBtn.style.display = 'inline-flex';
 
-        publicBackBtn.addEventListener(
-            'click',
-            () => {
+        publicBackBtn.addEventListener('click', () => {
 
-                publicStore.style.display =
-                    'none';
+            publicStore.style.display = 'none';
+            sellerDashboard.style.display = '';
 
-                sellerDashboard.style.display =
-                    '';
+            document.querySelectorAll('.bottom-nav').forEach(nav => {
+                nav.style.display = '';
+            });
 
-                console.log(
-                    'BRICK D — Seller preview exited to dashboard.'
-                );
+            console.log(
+                'BRICK D — Seller preview exited to dashboard.'
+            );
 
-            }
-        );
+        });
 
     }
 
@@ -17127,6 +17167,11 @@ if (exitStorePreviewBtn) {
 
             sellerDashboard.style.display =
                 '';
+
+            // Restore seller bottom navigation
+            document.querySelectorAll('.bottom-nav').forEach(nav => {
+            nav.style.display = '';
+            });
 
         }
     );
@@ -22841,18 +22886,31 @@ function nexodraShowFounderCheckStatus(status) {
     }
 }
 
-async function nexodraCheckFounderAccess() {
+async function nexodraCheckFounderAccess(existingSession = null) {
     window.nexodraFounderAuthorized = false;
     window.nexodraFounderUserId = null;
     nexodraShowFounderCheckStatus('checking');
 
     try {
-        const {
-            data: { session },
-            error: sessionError
-        } = await supabaseClient.auth.getSession();
+        let session = existingSession;
 
-        if (sessionError || !session) {
+        // Only retrieve the session if the caller
+        // did not already provide one.
+        if (!session) {
+            const {
+                data,
+                error: sessionError
+            } = await supabaseClient.auth.getSession();
+
+            if (sessionError || !data.session) {
+                nexodraShowFounderCheckStatus('signed_out');
+                return false;
+            }
+
+            session = data.session;
+        }
+
+        if (!session.user || !session.access_token) {
             nexodraShowFounderCheckStatus('signed_out');
             return false;
         }
@@ -23203,7 +23261,7 @@ if (!data.session) {
 
 // Check Founder access before opening seller features.
 const founderAuthorizedAfterLogin =
-    await nexodraCheckFounderAccess();
+    await nexodraCheckFounderAccess(data.session);
 
 // Founder accounts must not release the seller gate.
 if (founderAuthorizedAfterLogin) {
@@ -23478,6 +23536,8 @@ return;
   if (error) {
 
     // Keep seller-data functions paused.
+    // A failed session check must never grant
+    // access without a valid Supabase session.
     window.NEXODRA_AUTH_GATE.pause();
 
     console.error(
@@ -23485,8 +23545,34 @@ return;
         error
     );
 
-    // Release the startup splash even when
-    // the session lookup fails.
+    // BRICK 1 — OFFLINE SESSION RECOVERY
+    if (!navigator.onLine) {
+
+        console.warn(
+            'BRICK 1 — Device is offline. Waiting for reconnection.'
+        );
+
+        // Release the startup splash.
+        // Do not clear saved Supabase authentication data.
+        completeNexodraStartup();
+
+        // Retry startup automatically when connectivity returns.
+        window.addEventListener(
+            'online',
+            () => {
+                console.log(
+                    'BRICK 1 — Connection restored. Retrying session restoration.'
+                );
+
+                window.location.reload();
+            },
+            { once: true }
+        );
+
+        return;
+    }
+
+    // Preserve existing handling for other session errors.
     completeNexodraStartup();
 
     return;
@@ -23617,7 +23703,8 @@ completeNexodraStartup();
 return;
 }
 
-const founderAuthorizedOnRestore = await nexodraCheckFounderAccess();
+const founderAuthorizedOnRestore =
+    await nexodraCheckFounderAccess(session);
 
         if (founderAuthorizedOnRestore) {
             showNexodraFounderSampleScreen();
@@ -27801,6 +27888,11 @@ if (!product) {
                     product.price || 0
                 ),
 
+            costPrice:
+                  product.cost_price !== '' && product.cost_price != null
+               ? Number(product.cost_price)
+                 : null,
+
             image:
                 product.image || '',
 
@@ -31577,11 +31669,7 @@ document.getElementById('hpConfirmAgreementBtn')
         fulfilled: 'Fulfilled'
     };
 
-    const money = amount =>
-        'UGX ' + Number(amount || 0).toLocaleString('en-US', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2
-        });
+    const money = amount => formatCurrency(Number(amount) || 0);
 
     const dateLabel = value => {
         if (!value) return 'Not scheduled';
@@ -31879,15 +31967,7 @@ function updateHirePurchaseMetrics() {
     // -------------------------------------
 
     const formatPortfolioMoney = amount => {
-
-        return new Intl.NumberFormat(
-            undefined,
-            {
-                style: 'currency',
-                currency: 'USD'
-            }
-        ).format(amount);
-
+    return formatCurrency(amount);
     };
 
     // -------------------------------------
@@ -32486,7 +32566,7 @@ document.querySelectorAll(
 
         const screens = [listScreen, resumeScreen, deleteScreen];
 
-        const money = value => 'UGX ' + Number(value || 0).toLocaleString('en-US');
+        const money = value => formatCurrency(Number(value) || 0);
 
         const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({
             '&': '&amp;',
@@ -32876,6 +32956,11 @@ if (holdSaleButton) {
 
                     price: Number(item.price) || 0,
 
+                    costPrice:
+                             item.costPrice ??
+                             item.cost_price ??
+                     null,
+               
                     image: item.image || '',
 
                     emoji: item.emoji || '📦',
@@ -34455,12 +34540,8 @@ document.addEventListener('keydown', (event) => {
     }
 
     const money = value => {
-        const number = Number(value) || 0;
-        return '₦' + number.toLocaleString('en-NG', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-    };
+    return formatCurrency(Number(value) || 0);
+};
 
     const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({
         '&': '&amp;',
@@ -34685,7 +34766,7 @@ function closeManager() {
             notes: elements.notes?.value.trim() || '',
             paid: paymentMethod !== 'credit',
             status: paymentMethod === 'credit' ? 'unpaid' : 'paid',
-            currency: 'NGN'
+            currency: currentCurrencyCode
         };
 
         try {
@@ -34695,9 +34776,13 @@ function closeManager() {
                 financial.createRecord('expenses', expenseData);
             }
 
+      window.NEXODRA_SYNC_FINANCIAL_RECORDS?.();  
+          
             resetForm();
             render();
 
+        
+          
             alert(editingId ? 'Expense updated successfully.' : 'Expense saved successfully.');
         } catch (error) {
             console.error('P1-04 — Expense save failed:', error);
@@ -34897,10 +34982,9 @@ function closeManager() {
         return;
     }
 
-    const money = value => '₦' + (Number(value) || 0).toLocaleString('en-NG', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
+    const money = value => {
+    return formatCurrency(Number(value) || 0);
+};
 
     const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({
         '&': '&amp;',
@@ -35383,14 +35467,22 @@ function closeManager() {
         return;
     }
 
+    
+    // P1-10 FIX — Place Purchases inside the main
+    // seller screen container with the other screens.
+    const mainScreenContainer = document.querySelector('.app-body');
+
+    if (mainScreenContainer && screen.parentElement !== mainScreenContainer) {
+        mainScreenContainer.appendChild(screen);
+
+        console.log(
+            'P1-10 FIX — Purchase screen attached to main app body.'
+        );
+    }
+
+
     const $ = id => document.getElementById(id);
-    const money = value => {
-        const amount = Number(value || 0);
-        return new Intl.NumberFormat(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(amount);
-    };
+    const money = value => formatCurrency(Number(value) || 0);
     const today = () => new Date().toISOString().slice(0, 10);
     const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;',
@@ -35537,8 +35629,9 @@ function closeManager() {
     }
 
     function openForm(record = null) {
-        resetForm();
-        formPanel.hidden = false;
+    resetForm();
+    renderPaymentAccounts();
+    formPanel.hidden = false;
 
         if (record) {
             editingId = record.id;
@@ -35549,6 +35642,7 @@ function closeManager() {
             $('p1PurchaseExpectedDate').value = record.expectedDate || '';
             $('p1PurchaseExtraCost').value = Number(record.extraCost || 0);
             $('p1PurchaseAmountPaid').value = Number(record.amountPaid || 0);
+            $('p1PurchasePaidFromAccount').value =  record.accountId || '';
             $('p1PurchasePaymentMethod').value = record.paymentMethod || '';
             $('p1PurchasePaymentReference').value = record.paymentReference || '';
             $('p1PurchaseReceivingStatus').value = record.status || 'pending';
@@ -35580,6 +35674,35 @@ function closeManager() {
         if (current) select.value = current;
     }
 
+function renderPaymentAccounts() {
+    const select = $('p1PurchasePaidFromAccount');
+    if (!select) return;
+
+    const current = select.value;
+
+    const accounts = getRecords('accounts')
+        .filter(account => account.status !== 'inactive');
+
+    select.innerHTML =
+        '<option value="">Select cashbook account</option>' +
+        accounts.map(account => `
+            <option value="${escapeHtml(account.id)}">
+                ${escapeHtml(account.name)}
+            </option>
+        `).join('');
+
+    if (current && accounts.some(account =>
+        String(account.id) === String(current)
+    )) {
+        select.value = current;
+    }
+
+    if (!accounts.length) {
+        select.innerHTML =
+            '<option value="">No active cashbook accounts available</option>';
+    }
+}
+  
     function renderOverview() {
         const purchases = getRecords('purchases');
         const payments = getRecords('supplierPayments');
@@ -35620,7 +35743,7 @@ function closeManager() {
                 const matchesSearch =
                     supplier.includes(search) ||
                     String(record.reference || '').toLowerCase().includes(search);
-                const matchesStatus = !status || record.status === status;
+                const matchesStatus = status === 'all' || !status || record.status === status;
                 const matchesFrom = !from || record.date >= from;
                 const matchesTo = !to || record.date <= to;
                 return matchesSearch && matchesStatus && matchesFrom && matchesTo;
@@ -35689,8 +35812,9 @@ function closeManager() {
 
         const supplierId = $('p1PurchaseSupplier').value;
         const items = readItems();
-        const extraCost = Number($('p1PurchaseExtraCost').value || 0);
+        const extraCost = Number($('p1PurchaseExtraCost').value || 0);   
         const amountPaid = Number($('p1PurchaseAmountPaid').value || 0);
+        const paidFromAccountId =  $('p1PurchasePaidFromAccount')?.value || '';
         const subtotal = items.reduce((sum, item) => sum + item.total, 0);
         const total = subtotal + extraCost;
 
@@ -35713,6 +35837,18 @@ function closeManager() {
             return;
         }
 
+if (amountPaid > 0) {
+    const paidFromAccount = getRecords('accounts').find(account =>
+        String(account.id) === String(paidFromAccountId) &&
+        account.status !== 'inactive'
+    );
+
+    if (!paidFromAccount) {
+        alert('Please select an active Cashbook account for this payment.');
+        return;
+    }
+}
+      
         busy = true;
         const saveButton = $('p1SavePurchaseBtn');
         if (saveButton) saveButton.disabled = true;
@@ -35728,7 +35864,7 @@ function closeManager() {
                 extraCost,
                 total,
                 amountPaid,
-                paymentMethod: $('p1PurchasePaymentMethod').value,
+                accountId: paidFromAccountId || null, paymentMethod: $('p1PurchasePaymentMethod').value,          
                 paymentReference: $('p1PurchasePaymentReference').value.trim(),
                 status: $('p1PurchaseReceivingStatus').value || 'pending',
                 notes: $('p1PurchaseNotes').value.trim(),
@@ -35747,16 +35883,17 @@ function closeManager() {
             }
 
             if (amountPaid > 0) {
-                api.createRecord('supplierPayments', {
-                    supplierId,
-                    purchaseId: saved.id,
-                    amount: amountPaid,
-                    date: record.date,
-                    method: record.paymentMethod,
-                    reference: record.paymentReference,
-                    source: 'purchase-entry'
-                });
-            }
+    api.createRecord('supplierPayments', {
+        supplierId,
+        purchaseId: saved.id,
+        accountId: paidFromAccountId,
+        amount: amountPaid,
+        date: record.date,
+        method: record.paymentMethod,
+        reference: record.paymentReference,
+        source: 'purchase-entry'
+    });
+}
 
             formPanel.hidden = true;
             resetForm();
@@ -35973,6 +36110,7 @@ function closeManager() {
 })();
 
 
+
 /* =========================================================
    NEXODRA PHASE 1 — CASHBOOK & FINANCIAL LEDGER
    BRICK P1-13
@@ -35990,10 +36128,7 @@ function closeManager() {
     }
 
     const $ = id => document.getElementById(id);
-    const money = value => new Intl.NumberFormat(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(Number(value || 0));
+    const money = value => formatCurrency(Number(value) || 0);
 
     const today = () => {
         const date = new Date();
@@ -36624,16 +36759,43 @@ if (cashbookLink) {
 
     $('p1ExportCashbookBtn')?.addEventListener('click', exportLedger);
 
-    // Initial render.
-    try {
-        $('p1CashbookEntryDate').value = today();
-        $('p1ReconcileDate').value = today();
-        updateCategoryOptions();
-        refresh();
-        console.log('P1-13: Cashbook and ledger registered.');
-    } catch (error) {
-        console.error('P1-13: Initialisation failed:', error);
-    }
+        // Initial render — wait for the authenticated seller.
+    $('p1CashbookEntryDate').value = today();
+    $('p1ReconcileDate').value = today();
+    updateCategoryOptions();
+
+    window.NEXODRA_AUTH_GATE.wait()
+        .then(user => {
+
+            // Never load financial records without a valid seller.
+            if (!user || !user.id) {
+                throw new Error(
+                    'Cashbook cannot initialise without an authenticated seller.'
+                );
+            }
+
+            // Confirm the financial foundation is scoped to this seller.
+            if (api.getUserId() !== String(user.id)) {
+                throw new Error(
+                    'Cashbook seller session does not match the financial storage account.'
+                );
+            }
+
+            refresh();
+
+            console.log(
+                'P1-13: Cashbook and ledger registered for authenticated seller.'
+            );
+
+        })
+        .catch(error => {
+            console.error(
+                'P1-13: Cashbook initialisation failed:',
+                error
+            );
+        });
+
+  
 })();
 
 
@@ -36665,10 +36827,7 @@ if (cashbookLink) {
         return;
     }
 
-    const money = value => new Intl.NumberFormat(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(Number(value || 0));
+    const money = value => formatCurrency(Number(value) || 0);
 
     const escapeHtml = value => String(value ?? '').replace(
         /[&<>"']/g,
@@ -37018,15 +37177,34 @@ if (cashbookLink) {
         }
     }
 
-    // Run after the other app modules have loaded.
+        // Run only after the authenticated seller is ready.
+    function startFinancialSync() {
+        window.NEXODRA_AUTH_GATE.wait()
+            .then(user => {
+                if (!user || !user.id) {
+                    throw new Error(
+                        'Financial sync requires an authenticated seller.'
+                    );
+                }
+
+                syncFinancialRecords();
+            })
+            .catch(error => {
+                console.error(
+                    'P1-15: Could not start financial sync:',
+                    error
+                );
+            });
+    }
+
     if (document.readyState === 'loading') {
         document.addEventListener(
             'DOMContentLoaded',
-            syncFinancialRecords,
+            startFinancialSync,
             { once: true }
         );
     } else {
-        syncFinancialRecords();
+        startFinancialSync();
     }
 
     // Allow other modules to request a refresh after saving records.
@@ -37101,29 +37279,9 @@ if (cashbookLink) {
 
         refreshAccounts();
 
-        // Attach the selected account to supplier payments created
-        // by the existing purchase workflow.
-        if (!financial.__p1PurchasePaymentWrapped) {
-            const originalCreateRecord = financial.createRecord.bind(financial);
-
-            financial.createRecord = function (collection, data) {
-                if (collection === 'supplierPayments' &&
-                    data &&
-                    data.source === 'purchase-entry') {
-                    const selectedAccount =
-                        document.getElementById('p1PurchasePaymentAccount')?.value || '';
-
-                    data = {
-                        ...data,
-                        accountId: selectedAccount
-                    };
-                }
-
-                return originalCreateRecord(collection, data);
-            };
-
-            financial.__p1PurchasePaymentWrapped = true;
-        }
+                // The purchase workflow already saves accountId
+        // directly with each supplier payment.
+        // Do not modify the frozen financial API.
 
         // Refresh the account list whenever the purchase form is opened.
         const openButton = document.getElementById('p1NewPurchaseBtn');
@@ -41250,12 +41408,3480 @@ currentSalePanel.addEventListener('click', event => {
 
 
 
+/* =========================================================
+   NEXODRA — BRICK 1A
+   LONG-PRESS AND MULTI-SELECTION
+   Chats + Notifications
+   Selection only — no deletion in this brick.
+========================================================= */
+
+(() => {
+    'use strict';
+
+    function initializeBulkSelection(config) {
+
+        const container = document.getElementById(config.containerId);
+
+        if (!container || container.dataset.bulkSelectionReady === 'true') {
+            return;
+        }
+
+        container.dataset.bulkSelectionReady = 'true';
+
+        const selected = new Set();
+
+        let selectionMode = false;
+        let pressTimer = null;
+        let longPressTriggered = false;
+        let activeCard = null;
+
+        const LONG_PRESS_DELAY = 600;
+
+        // -----------------------------------------
+        // TOOLBAR
+        // -----------------------------------------
+
+        const toolbar = document.createElement('div');
+
+        toolbar.className = 'nx-bulk-selection-toolbar';
+        toolbar.hidden = true;
+
+        toolbar.innerHTML = `
+    <div class="nx-bulk-selection-info">
+        <strong class="nx-bulk-selection-count">0 selected</strong>
+    </div>
+
+    <div class="nx-bulk-selection-actions">
+
+        <button type="button" data-selection-action="all">
+            Select all
+        </button>
+
+        <button
+            type="button"
+            data-selection-action="delete"
+            class="nx-bulk-delete-button"
+            style="background:#dc2626;color:#fff;border-color:#dc2626;"
+            disabled
+        >
+            <i class="fa-solid fa-trash"></i>
+            Delete
+        </button>
+
+        <button type="button" data-selection-action="cancel">
+            Cancel
+        </button>
+
+    </div>
+`;
+
+        container.insertAdjacentElement('beforebegin', toolbar);
+
+        const countElement = toolbar.querySelector(
+            '.nx-bulk-selection-count'
+        );
+
+      const deleteButton = toolbar.querySelector(
+    '[data-selection-action="delete"]'
+);
+
+        // -----------------------------------------
+        // FIND CARDS
+        // -----------------------------------------
+
+        function getCards() {
+            return Array.from(
+                container.querySelectorAll(config.cardSelector)
+            ).filter(card => {
+                return card.dataset[config.idDataset] &&
+                    !card.hidden;
+            });
+        }
+
+        // -----------------------------------------
+        // UPDATE SELECTION DISPLAY
+        // -----------------------------------------
+
+        function updateDisplay() {
+
+            const cards = getCards();
+
+            countElement.textContent =
+                `${selected.size} selected`;
+
+            toolbar.hidden = !selectionMode;
+
+          deleteButton.disabled = selected.size === 0;
+
+            cards.forEach(card => {
+
+                const id = String(
+                    card.dataset[config.idDataset]
+                );
+
+                const isSelected = selected.has(id);
+
+                card.classList.toggle(
+                    'nx-bulk-selected',
+                    isSelected
+                );
+
+                let indicator = card.querySelector(
+                    '.nx-bulk-selection-indicator'
+                );
+
+                if (!indicator) {
+
+                    indicator = document.createElement('span');
+
+                    indicator.className =
+                        'nx-bulk-selection-indicator';
+
+                    indicator.setAttribute(
+                        'aria-hidden',
+                        'true'
+                    );
+
+                    card.appendChild(indicator);
+                }
+
+                indicator.innerHTML = isSelected
+                    ? '<i class="fa-solid fa-check"></i>'
+                    : '';
+
+                indicator.hidden = !selectionMode;
+
+            });
+
+            if (selected.size === 0 && selectionMode) {
+                selectionMode = false;
+                toolbar.hidden = true;
+                updateDisplay();
+            }
+        }
+
+        // -----------------------------------------
+        // ENTER SELECTION MODE
+        // -----------------------------------------
+
+        function enterSelectionMode(card) {
+
+            if (!card) return;
+
+            selectionMode = true;
+
+            const id = String(
+                card.dataset[config.idDataset]
+            );
+
+            selected.add(id);
+
+            updateDisplay();
+        }
+
+        // -----------------------------------------
+        // TOGGLE CARD
+        // -----------------------------------------
+
+        function toggleCard(card) {
+
+            const id = String(
+                card.dataset[config.idDataset]
+            );
+
+            if (selected.has(id)) {
+                selected.delete(id);
+            } else {
+                selected.add(id);
+            }
+
+            updateDisplay();
+        }
+
+        // -----------------------------------------
+        // CANCEL SELECTION
+        // -----------------------------------------
+
+        function cancelSelection() {
+
+            selected.clear();
+
+            selectionMode = false;
+
+            updateDisplay();
+        }
+
+      // -----------------------------------------
+// BRICK 2 — DELETE SELECTED RECORDS
+// -----------------------------------------
+
+async function deleteSelectedRecords() {
+
+    const ids = Array.from(selected);
+
+    if (ids.length === 0) {
+        return;
+    }
+
+    const confirmed = confirm(
+        `Permanently delete ${ids.length} selected ${config.itemLabel}?\n\n` +
+        (
+            config.table === 'conversations'
+                ? 'All messages in these conversations will also be permanently deleted for both participants.'
+                : 'These notifications will be permanently deleted from your account.'
+        ) +
+        '\n\nThis action cannot be undone.'
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    deleteButton.disabled = true;
+
+    try {
+
+        const {
+            data: { user },
+            error: userError
+        } = await supabaseClient.auth.getUser();
+
+        if (userError || !user) {
+            throw userError || new Error(
+                'Authenticated user not found.'
+            );
+        }
+
+        let deleteQuery = supabaseClient
+            .from(config.table)
+            .delete()
+            .in('id', ids)
+            .eq(config.ownerColumn, user.id);
+
+        const {
+            data: deletedRows,
+            error: deleteError
+        } = await deleteQuery.select('id');
+
+        if (deleteError) {
+            throw deleteError;
+        }
+
+        const deletedCount = (deletedRows || []).length;
+
+        console.log(
+            'BRICK 2 — Bulk deletion result:',
+            {
+                type: config.name,
+                requested: ids.length,
+                deleted: deletedCount
+            }
+        );
+
+        selected.clear();
+        selectionMode = false;
+
+        updateDisplay();
+
+        await config.refresh();
+
+        if (deletedCount === 0) {
+
+            alert(
+                'No selected records were deleted. The list has been refreshed.'
+            );
+
+            return;
+        }
+
+        if (deletedCount < ids.length) {
+
+            alert(
+                `${deletedCount} of ${ids.length} selected ${config.itemLabel} were deleted.`
+            );
+
+            return;
+        }
+
+        alert(
+            `Successfully deleted ${deletedCount} ${config.itemLabel}.`
+        );
+
+    } catch (error) {
+
+        console.error(
+            'BRICK 2 — Bulk deletion failed:',
+            error
+        );
+
+        alert(
+            'Deletion failed. Your selected items have not been cleared.\n\n' +
+            (error?.message || String(error))
+        );
+
+    } finally {
+
+        deleteButton.disabled = selected.size === 0;
+
+    }
+}
+
+        // -----------------------------------------
+        // LONG PRESS
+        // -----------------------------------------
+
+        container.addEventListener(
+            'pointerdown',
+            event => {
+
+                const card = event.target.closest(
+                    config.cardSelector
+                );
+
+                if (!card || !container.contains(card)) return;
+
+                if (event.pointerType === 'mouse' &&
+                    event.button !== 0) return;
+
+                activeCard = card;
+                longPressTriggered = false;
+
+                clearTimeout(pressTimer);
+
+                pressTimer = setTimeout(() => {
+
+                    longPressTriggered = true;
+
+                    if (!selectionMode) {
+                        enterSelectionMode(card);
+                    }
+
+                }, LONG_PRESS_DELAY);
+
+            },
+            true
+        );
+
+        function stopPress() {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+        }
+
+        container.addEventListener(
+            'pointerup',
+            stopPress,
+            true
+        );
+
+        container.addEventListener(
+            'pointercancel',
+            stopPress,
+            true
+        );
+
+        container.addEventListener(
+            'pointerleave',
+            stopPress,
+            true
+        );
+
+        // -----------------------------------------
+        // CARD CLICK
+        // Capture phase protects the existing
+        // conversation-opening click listener.
+        // -----------------------------------------
+
+        container.addEventListener(
+            'click',
+            event => {
+
+                const card = event.target.closest(
+                    config.cardSelector
+                );
+
+                if (!card || !container.contains(card)) return;
+
+                if (longPressTriggered) {
+
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+
+                    longPressTriggered = false;
+                    return;
+                }
+
+                if (!selectionMode) return;
+
+                event.preventDefault();
+                event.stopImmediatePropagation();
+
+                toggleCard(card);
+
+            },
+            true
+        );
+
+        // -----------------------------------------
+        // TOOLBAR ACTIONS
+        // -----------------------------------------
+
+        toolbar.addEventListener('click', event => {
+
+            const button = event.target.closest(
+                '[data-selection-action]'
+            );
+
+            if (!button) return;
+
+            const action = button.dataset.selectionAction;
+
+            if (action === 'cancel') {
+                cancelSelection();
+            }
+
+          if (action === 'delete') {
+                deleteSelectedRecords();
+          }
+
+            if (action === 'all') {
+
+                getCards().forEach(card => {
+
+                    selected.add(
+                        String(card.dataset[config.idDataset])
+                    );
+
+                });
+
+                updateDisplay();
+            }
+
+        });
+
+        // -----------------------------------------
+        // CLEAN UP WHEN SCREEN CONTENT CHANGES
+        // -----------------------------------------
+
+        const observer = new MutationObserver(() => {
+
+            if (!selectionMode) return;
+
+            const existingIds = new Set(
+                getCards().map(card =>
+                    String(card.dataset[config.idDataset])
+                )
+            );
+
+            Array.from(selected).forEach(id => {
+
+                if (!existingIds.has(id)) {
+                    selected.delete(id);
+                }
+
+            });
+
+            updateDisplay();
+
+        });
+
+        observer.observe(container, {
+            childList: true,
+            subtree: false
+        });
+
+        console.log(
+            `NEXODRA BRICK 1A: ${config.name} selection initialized.`
+        );
+
+    }
+
+    // SELLER CHAT CONVERSATIONS
+    initializeBulkSelection({
+    name: 'Chats',
+    containerId: 'notificationList',
+    cardSelector: '.chat-conversation-card',
+    idDataset: 'conversationId',
+
+    table: 'conversations',
+    ownerColumn: 'seller_id',
+    itemLabel: 'conversations',
+
+    refresh: async () => {
+
+        const conversations =
+            await loadSellerConversations();
+
+        renderSellerConversations(conversations);
+
+    }
+});
+
+    // NOTIFICATION CENTER
+    initializeBulkSelection({
+    name: 'Notifications',
+    containerId: 'notificationsCenterList',
+    cardSelector: '.notification-item',
+    idDataset: 'notificationId',
+
+    table: 'notifications',
+    ownerColumn: 'user_id',
+    itemLabel: 'notifications',
+
+    refresh: async () => {
+
+        await loadNotifications();
+
+    }
+});
+
+})();
+
+
+/* =====================================================
+   NEXODRA GLOBAL SEARCH — BRICK 3
+   Top Bar Search Interaction
+===================================================== */
+
+(function initNexodraGlobalSearch() {
+
+    'use strict';
+
+    function initializeSearch() {
+
+        const header = document.querySelector('.app-header');
+
+        const searchWrap = document.getElementById(
+            'nexodraGlobalSearch'
+        );
+
+        const toggleButton = document.getElementById(
+            'nexodraGlobalSearchToggle'
+        );
+
+        const searchInput = document.getElementById(
+            'nexodraGlobalSearchInput'
+        );
+
+        const clearButton = document.getElementById(
+            'nexodraGlobalSearchClear'
+        );
+
+        if (
+            !header ||
+            !searchWrap ||
+            !toggleButton ||
+            !searchInput ||
+            !clearButton
+        ) {
+            console.warn(
+                'NEXODRA Global Search: Required elements not found.'
+            );
+            return;
+        }
+
+        // Prevent duplicate initialization.
+        if (searchWrap.dataset.initialized === 'true') {
+            return;
+        }
+
+        searchWrap.dataset.initialized = 'true';
+
+        function isMobile() {
+            return window.matchMedia('(max-width: 768px)').matches;
+        }
+
+        function updateClearButton() {
+            clearButton.hidden = !searchInput.value;
+        }
+
+        function openSearch() {
+
+            if (!isMobile()) {
+                searchInput.focus();
+                return;
+            }
+
+            searchWrap.classList.add('is-open');
+            header.classList.add('nexodra-search-open');
+
+            toggleButton.setAttribute(
+                'aria-expanded',
+                'true'
+            );
+
+            searchInput.focus();
+        }
+
+        function closeSearch() {
+
+            searchWrap.classList.remove('is-open');
+            header.classList.remove('nexodra-search-open');
+
+            toggleButton.setAttribute(
+                'aria-expanded',
+                'false'
+            );
+
+            toggleButton.focus();
+        }
+
+        // Open or close search on mobile.
+        toggleButton.addEventListener('click', function () {
+
+            if (searchWrap.classList.contains('is-open')) {
+                closeSearch();
+            } else {
+                openSearch();
+            }
+
+        });
+
+        // Update clear button as the user types.
+        searchInput.addEventListener('input', function () {
+            updateClearButton();
+        });
+
+        // Clear search input.
+        clearButton.addEventListener('click', function () {
+
+            searchInput.value = '';
+
+            updateClearButton();
+
+            searchInput.focus();
+
+            searchInput.dispatchEvent(
+                new Event('input', { bubbles: true })
+            );
+
+        });
+
+        // Close expanded mobile search when clicking outside.
+        document.addEventListener('click', function (event) {
+
+            if (
+                isMobile() &&
+                searchWrap.classList.contains('is-open') &&
+                !searchWrap.contains(event.target)
+            ) {
+                closeSearch();
+            }
+
+        });
+
+        // Escape key closes mobile search.
+        document.addEventListener('keydown', function (event) {
+
+            if (
+                event.key === 'Escape' &&
+                isMobile() &&
+                searchWrap.classList.contains('is-open')
+            ) {
+                closeSearch();
+            }
+
+        });
+
+        // Reset mobile expanded state when switching to desktop.
+        window.addEventListener('resize', function () {
+
+            if (!isMobile()) {
+                searchWrap.classList.remove('is-open');
+                header.classList.remove('nexodra-search-open');
+
+                toggleButton.setAttribute(
+                    'aria-expanded',
+                    'false'
+                );
+            }
+
+        });
+
+        updateClearButton();
+
+        console.log(
+            'NEXODRA Global Search — Brick 3 initialized.'
+        );
+
+    }
+
+    if (document.readyState === 'loading') {
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            initializeSearch,
+            { once: true }
+        );
+
+    } else {
+
+        initializeSearch();
+
+    }
+
+})();
+
+
+// =========================================
+// NEXODRA LOCAL SEARCH — BRICK 1
+// Read-only, seller-scoped local data access
+// =========================================
+
+(function initNexodraLocalSearchData() {
+    'use strict';
+
+    if (window.NEXODRA_LOCAL_SEARCH_DATA) {
+        console.warn('Local Search Brick 1 is already initialized.');
+        return;
+    }
+
+    function getCurrentSellerId() {
+        try {
+            const id = window.NEXODRA_AUTH_GATE?.getUserId?.();
+            return id ? String(id) : null;
+        } catch (error) {
+            console.warn('Local Search: seller identity unavailable.', error);
+            return null;
+        }
+    }
+
+    function readLocalProducts(sellerId) {
+        if (!sellerId) return [];
+
+        try {
+            const raw = localStorage.getItem(
+                'nexodraProducts_' + sellerId
+            );
+
+            const records = raw ? JSON.parse(raw) : [];
+            return Array.isArray(records) ? records : [];
+        } catch (error) {
+            console.warn('Local Search: products cache could not be read.', error);
+            return [];
+        }
+    }
+
+    function readOfflineSales(sellerId) {
+        if (!sellerId) return [];
+
+        try {
+            const raw = localStorage.getItem('odropOfflineSalesQueueV1');
+            const records = raw ? JSON.parse(raw) : [];
+
+            if (!Array.isArray(records)) return [];
+
+            return records.filter(sale =>
+                sale &&
+                String(sale.userId || '') === sellerId
+            );
+        } catch (error) {
+            console.warn('Local Search: offline sales could not be read.', error);
+            return [];
+        }
+    }
+
+    async function readCompletedSales(sellerId) {
+        if (!sellerId) return [];
+
+        try {
+            if (typeof loadNexodraSalesBatchFromIndexedDB !== 'function') {
+                return [];
+            }
+
+            return await loadNexodraSalesBatchFromIndexedDB(sellerId);
+        } catch (error) {
+            console.warn('Local Search: completed sales could not be read.', error);
+            return [];
+        }
+    }
+
+    function readFinancialCollection(sellerId, collectionName) {
+        if (!sellerId || getCurrentSellerId() !== sellerId) {
+            return [];
+        }
+
+        try {
+            const financial = window.NEXODRA_FINANCIAL;
+
+            if (
+                !financial ||
+                typeof financial.getUserId !== 'function' ||
+                String(financial.getUserId() || '') !== sellerId ||
+                typeof financial.getCollection !== 'function'
+            ) {
+                return [];
+            }
+
+            const records = financial.getCollection(collectionName);
+            return Array.isArray(records) ? records : [];
+        } catch (error) {
+            console.warn(
+                'Local Search: financial collection could not be read:',
+                collectionName,
+                error
+            );
+            return [];
+        }
+    }
+
+    window.NEXODRA_LOCAL_SEARCH_DATA = Object.freeze({
+        getCurrentSellerId,
+        readLocalProducts,
+        readOfflineSales,
+        readCompletedSales,
+        readFinancialCollection
+    });
+
+    console.log('NEXODRA Local Search — Brick 1 initialized.');
+})();
+
+
+
+/* =========================================================
+   NEXODRA GLOBAL SEARCH — BRICK 2
+   Local-only search engine
+   ========================================================= */
+
+(function () {
+  'use strict';
+
+  if (window.NEXODRA_LOCAL_SEARCH_ENGINE) {
+    console.warn('NEXODRA Local Search Engine already initialized.');
+    return;
+  }
+
+  const DATA = window.NEXODRA_LOCAL_SEARCH_DATA;
+
+  if (!DATA) {
+    console.error('Brick 2 stopped: Brick 1 data foundation not found.');
+    return;
+  }
+
+  function normalize(value) {
+    return String(value ?? '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function searchableText(record) {
+    if (!record || typeof record !== 'object') return '';
+
+    const values = [];
+
+    Object.entries(record).forEach(([key, value]) => {
+      if (value === null || value === undefined) return;
+      if (typeof value === 'object') return;
+
+      values.push(key);
+      values.push(String(value));
+    });
+
+    return normalize(values.join(' '));
+  }
+
+  function scoreRecord(record, query) {
+    const text = searchableText(record);
+    const terms = normalize(query).split(' ').filter(Boolean);
+
+    if (!terms.length || !text) return 0;
+
+    let score = 0;
+
+    terms.forEach(term => {
+      if (text.includes(term)) score += 1;
+    });
+
+    return score === terms.length ? score : 0;
+  }
+
+  function searchRecords(records, query, category) {
+    if (!Array.isArray(records)) return [];
+
+    return records
+      .filter(record => record && typeof record === 'object')
+      .map(record => ({
+        record,
+        score: scoreRecord(record, query),
+        category
+      }))
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score);
+  }
+
+  window.NEXODRA_LOCAL_SEARCH_ENGINE = Object.freeze({
+    normalize,
+    searchRecords,
+    searchText: searchableText
+  });
+
+  console.info('NEXODRA Local Search Engine — Brick 2 initialized.');
+})();
+
+
+/* =========================================================
+   NEXODRA GLOBAL SEARCH — BRICK 3
+   Connect local records and display live results
+   LOCAL ONLY — NO SUPABASE REQUESTS
+   ========================================================= */
+
+(function initNexodraGlobalSearchResults() {
+    'use strict';
+
+    if (window.NEXODRA_GLOBAL_SEARCH_BRICK3) {
+        console.warn('Global Search Brick 3 already initialized.');
+        return;
+    }
+
+    const DATA = window.NEXODRA_LOCAL_SEARCH_DATA;
+    const ENGINE = window.NEXODRA_LOCAL_SEARCH_ENGINE;
+
+    const input = document.getElementById(
+        'nexodraGlobalSearchInput'
+    );
+
+    const wrapper = document.getElementById(
+        'nexodraGlobalSearch'
+    );
+
+    if (!DATA || !ENGINE || !input || !wrapper) {
+        console.error(
+            'Global Search Brick 3: Required search components are missing.'
+        );
+        return;
+    }
+
+    let timer = null;
+    let requestNumber = 0;
+    let currentResults = [];
+
+    const MAX_RESULTS = 30;
+    const MAX_RECENT = 8;
+
+    const CATEGORY_LABELS = {
+        products: 'Products',
+        sales: 'Sales and orders',
+        suppliers: 'Suppliers and purchases',
+        expenses: 'Expenses',
+        financial: 'Financial records'
+    };
+
+    /* -----------------------------------------
+       CREATE RESULTS PANEL
+    ----------------------------------------- */
+
+    const panel = document.createElement('div');
+
+    panel.id = 'nexodraGlobalSearchResults';
+    panel.setAttribute('role', 'region');
+    panel.setAttribute('aria-label', 'Global search results');
+    panel.hidden = true;
+
+    wrapper.insertAdjacentElement('afterend', panel);
+
+    const style = document.createElement('style');
+
+    style.textContent = `
+        .app-header {
+            position: relative;
+        }
+
+        #nexodraGlobalSearchResults {
+            position: absolute;
+            z-index: 10000;
+            top: calc(100% + 8px);
+            right: 12px;
+            width: min(480px, calc(100vw - 24px));
+            max-height: min(65vh, 520px);
+            overflow-y: auto;
+            background: var(--card-bg, #fff);
+            color: var(--text-primary, #202938);
+            border: 1px solid var(--border-color, #e5e7eb);
+            border-radius: 12px;
+            box-shadow: 0 12px 32px rgba(0,0,0,.16);
+            padding: 8px;
+        }
+
+        #nexodraGlobalSearchResults[hidden] {
+            display: none;
+        }
+
+        .nexodra-search-section-title {
+            padding: 9px 10px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            opacity: .65;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .nexodra-search-result,
+        .nexodra-search-recent {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            gap: 3px;
+            padding: 11px 10px;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: inherit;
+            text-align: left;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .nexodra-search-result:hover,
+        .nexodra-search-recent:hover {
+            background: var(--hover-bg, rgba(100,100,100,.10));
+        }
+
+        .nexodra-search-result-title {
+            font-size: 13px;
+            font-weight: 650;
+            overflow-wrap: anywhere;
+        }
+
+        .nexodra-search-result-meta {
+            font-size: 11px;
+            opacity: .68;
+            overflow-wrap: anywhere;
+        }
+
+        .nexodra-search-empty {
+            padding: 18px 10px;
+            text-align: center;
+            font-size: 13px;
+            opacity: .7;
+        }
+
+        .nexodra-search-result-category {
+            margin-left: 5px;
+            font-size: 10px;
+            opacity: .65;
+        }
+
+        @media (max-width: 768px) {
+            #nexodraGlobalSearchResults {
+                position: fixed;
+                top: 64px;
+                left: 8px;
+                right: 8px;
+                width: auto;
+                max-height: 65vh;
+            }
+        }
+    `;
+
+    document.head.appendChild(style);
+
+    /* -----------------------------------------
+       SAFE TEXT HELPERS
+    ----------------------------------------- */
+
+    function firstValue(record, fields) {
+        for (const field of fields) {
+            const value = record?.[field];
+
+            if (
+                value !== null &&
+                value !== undefined &&
+                String(value).trim() !== ''
+            ) {
+                return String(value);
+            }
+        }
+
+        return '';
+    }
+
+    function getRecordTitle(record, category) {
+        const fields = {
+            products: ['title', 'name', 'productName'],
+            sales: [
+                'reference',
+                'localSaleId',
+                'id',
+                'customer_name',
+                'customerName'
+            ],
+            suppliers: ['name', 'supplierName'],
+            purchases: [
+                'reference',
+                'description',
+                'id',
+                'supplierName'
+            ],
+            expenses: ['title', 'description', 'category', 'id'],
+            financial: [
+                'description',
+                'name',
+                'reference',
+                'category',
+                'id'
+            ]
+        };
+
+        return firstValue(
+            record,
+            fields[category] || ['name', 'title', 'id']
+        ) || 'Unnamed record';
+    }
+
+    function getRecordSubtitle(record, category) {
+        const values = [];
+
+        const fields = [
+            'sku',
+            'barcode',
+            'phone',
+            'email',
+            'reference',
+            'date',
+            'created_at',
+            'createdAt',
+            'status',
+            'total',
+            'amount'
+        ];
+
+        fields.forEach(field => {
+            const value = record?.[field];
+
+            if (
+                value !== null &&
+                value !== undefined &&
+                String(value).trim() !== ''
+            ) {
+                values.push(
+                    field.replace(/_/g, ' ') + ': ' + String(value)
+                );
+            }
+        });
+
+        return values.slice(0, 3).join(' · ') ||
+            CATEGORY_LABELS[category] ||
+            'Local record';
+    }
+
+    /* -----------------------------------------
+       LOCAL DATA COLLECTION
+    ----------------------------------------- */
+
+    async function collectLocalRecords(sellerId) {
+        const groups = [];
+
+        // PRODUCTS — seller-specific local cache.
+        const products = DATA.readLocalProducts(sellerId);
+
+        groups.push({
+            category: 'products',
+            records: products
+        });
+
+        // SALES — completed IndexedDB cache.
+        const completedSales =
+            await DATA.readCompletedSales(sellerId);
+
+        // SALES — offline queue belonging to this seller.
+        const offlineSales =
+            DATA.readOfflineSales(sellerId);
+
+        const salesById = new Map();
+
+        [...completedSales, ...offlineSales].forEach(sale => {
+            if (!sale) return;
+
+            const id = String(
+                sale.id ||
+                sale.localSaleId ||
+                ''
+            );
+
+            if (!id) return;
+
+            salesById.set(id, sale);
+        });
+
+        groups.push({
+            category: 'sales',
+            records: Array.from(salesById.values())
+        });
+
+        // SUPPLIERS AND PURCHASES — seller-scoped financial store.
+        groups.push({
+            category: 'suppliers',
+            records: DATA.readFinancialCollection(
+                sellerId,
+                'suppliers'
+            )
+        });
+
+        groups.push({
+            category: 'purchases',
+            records: DATA.readFinancialCollection(
+                sellerId,
+                'purchases'
+            )
+        });
+
+        // EXPENSES — seller-scoped financial store.
+        groups.push({
+            category: 'expenses',
+            records: DATA.readFinancialCollection(
+                sellerId,
+                'expenses'
+            )
+        });
+
+        // OTHER FINANCIAL RECORDS.
+        [
+            'supplierPayments',
+            'accounts',
+            'cashbook',
+            'reconciliations'
+        ].forEach(collectionName => {
+            groups.push({
+                category: 'financial',
+                records: DATA.readFinancialCollection(
+                    sellerId,
+                    collectionName
+                )
+            });
+        });
+
+        return groups;
+    }
+
+    /* -----------------------------------------
+       RECENT SEARCHES — PER SELLER
+    ----------------------------------------- */
+
+    function recentKey(sellerId) {
+        return 'nexodraGlobalSearchRecent:' + sellerId;
+    }
+
+    function getRecentSearches(sellerId) {
+        if (!sellerId) return [];
+
+        try {
+            const saved = localStorage.getItem(
+                recentKey(sellerId)
+            );
+
+            const parsed = saved ? JSON.parse(saved) : [];
+
+            return Array.isArray(parsed)
+                ? parsed.filter(item => typeof item === 'string')
+                    .slice(0, MAX_RECENT)
+                : [];
+        } catch (error) {
+            console.warn(
+                'Global Search: recent searches could not be read.',
+                error
+            );
+
+            return [];
+        }
+    }
+
+    function saveRecentSearch(sellerId, query) {
+        if (!sellerId || !query) return;
+
+        try {
+            const normalized = ENGINE.normalize(query);
+
+            if (normalized.length < 2) return;
+
+            const updated = [
+                query.trim(),
+                ...getRecentSearches(sellerId).filter(
+                    item => ENGINE.normalize(item) !== normalized
+                )
+            ].slice(0, MAX_RECENT);
+
+            localStorage.setItem(
+                recentKey(sellerId),
+                JSON.stringify(updated)
+            );
+        } catch (error) {
+            console.warn(
+                'Global Search: recent search could not be saved.',
+                error
+            );
+        }
+    }
+
+    /* -----------------------------------------
+       RESULTS DISPLAY
+    ----------------------------------------- */
+
+    function clearPanel() {
+        panel.replaceChildren();
+        currentResults = [];
+    }
+
+    function showEmpty(message) {
+        clearPanel();
+
+        const empty = document.createElement('div');
+        empty.className = 'nexodra-search-empty';
+        empty.textContent = message;
+
+        panel.appendChild(empty);
+        panel.hidden = false;
+    }
+
+    function addSectionTitle(title) {
+        const heading = document.createElement('div');
+
+        heading.className = 'nexodra-search-section-title';
+        heading.textContent = title;
+
+        panel.appendChild(heading);
+    }
+
+    function showRecentSearches(sellerId) {
+        clearPanel();
+
+        const recent = getRecentSearches(sellerId);
+
+        if (!recent.length) {
+            showEmpty('Your recent searches will appear here.');
+            return;
+        }
+
+        addSectionTitle('Recent searches');
+
+        recent.forEach(query => {
+            const button = document.createElement('button');
+
+            button.type = 'button';
+            button.className = 'nexodra-search-recent';
+            button.textContent = '↻  ' + query;
+
+            button.addEventListener('click', () => {
+                input.value = query;
+                input.dispatchEvent(
+                    new Event('input', { bubbles: true })
+                );
+                input.focus();
+            });
+
+            panel.appendChild(button);
+        });
+
+        panel.hidden = false;
+    }
+
+    function showResults(results) {
+        clearPanel();
+
+        if (!results.length) {
+            showEmpty('No matching local records found.');
+            return;
+        }
+
+        addSectionTitle(
+            results.length + ' local result' +
+            (results.length === 1 ? '' : 's')
+        );
+
+        results.forEach(item => {
+            const button = document.createElement('button');
+
+            button.type = 'button';
+            button.className = 'nexodra-search-result';
+
+            const title = document.createElement('span');
+            title.className = 'nexodra-search-result-title';
+            title.textContent = getRecordTitle(
+                item.record,
+                item.category
+            );
+
+            const category = document.createElement('span');
+            category.className = 'nexodra-search-result-category';
+            category.textContent =
+                CATEGORY_LABELS[item.category] || item.category;
+
+            title.appendChild(category);
+
+            const meta = document.createElement('span');
+            meta.className = 'nexodra-search-result-meta';
+            meta.textContent = getRecordSubtitle(
+                item.record,
+                item.category
+            );
+
+            button.append(title, meta);
+
+            button.addEventListener('click', () => {
+                saveRecentSearch(
+                    DATA.getCurrentSellerId(),
+                    input.value
+                );
+
+                openResultSection(item);
+            });
+
+            panel.appendChild(button);
+        });
+
+        panel.hidden = false;
+    }
+
+    /* -----------------------------------------
+       OPEN THE RELEVANT APP SECTION
+    ----------------------------------------- */
+
+    function openResultSection(item) {
+        const targets = {
+            products: ['storeScreen'],
+            sales: ['salesOverviewScreen', 'sellScreen'],
+            suppliers: ['reportsScreen'],
+            purchases: ['reportsScreen'],
+            expenses: ['reportsScreen'],
+            financial: ['p1CashbookScreen', 'reportsScreen']
+        };
+
+        const possibleTargets = targets[item.category] || [];
+
+        let opened = false;
+
+        for (const target of possibleTargets) {
+            const button = document.querySelector(
+                '.nav-btn[data-target="' + target + '"]'
+            );
+
+            if (button) {
+                button.click();
+                opened = true;
+                break;
+            }
+
+            const screen = document.getElementById(target);
+
+            if (screen) {
+                document.querySelectorAll('.screen').forEach(
+                    element => element.classList.remove('active')
+                );
+
+                screen.classList.add('active');
+                opened = true;
+                break;
+            }
+        }
+
+        // Let other app modules respond to a selected record later.
+        document.dispatchEvent(
+            new CustomEvent('nexodra:global-search-select', {
+                detail: {
+                    category: item.category,
+                    record: item.record
+                }
+            })
+        );
+
+        panel.hidden = true;
+
+        if (!opened) {
+            console.warn(
+                'Global Search: section navigation target not found:',
+                item.category
+            );
+        }
+    }
+
+    /* -----------------------------------------
+       SEARCH EXECUTION
+    ----------------------------------------- */
+
+    async function runSearch(query) {
+        const currentRequest = ++requestNumber;
+        const sellerId = DATA.getCurrentSellerId();
+
+        if (!sellerId) {
+            showEmpty('Sign in to search your local seller records.');
+            return;
+        }
+
+        if (!query || ENGINE.normalize(query).length < 2) {
+            showRecentSearches(sellerId);
+            return;
+        }
+
+        try {
+            const groups = await collectLocalRecords(sellerId);
+
+            // Ignore an older search if the user typed again.
+            if (currentRequest !== requestNumber) return;
+
+            const results = [];
+
+            groups.forEach(group => {
+                const matches = ENGINE.searchRecords(
+                    group.records,
+                    query,
+                    group.category
+                );
+
+                results.push(...matches);
+            });
+
+            results.sort((a, b) => b.score - a.score);
+
+            currentResults = results.slice(0, MAX_RESULTS);
+
+            showResults(currentResults);
+
+        } catch (error) {
+            console.error(
+                'Global Search: local search failed.',
+                error
+            );
+
+            showEmpty('Could not search local records.');
+        }
+    }
+
+    /* -----------------------------------------
+       INPUT EVENTS
+    ----------------------------------------- */
+
+    input.addEventListener('input', () => {
+        clearTimeout(timer);
+
+        const query = input.value.trim();
+
+        if (query.length < 2) {
+            requestNumber++;
+            showRecentSearches(DATA.getCurrentSellerId());
+            return;
+        }
+
+        timer = setTimeout(() => {
+            runSearch(query);
+        }, 220);
+    });
+
+    input.addEventListener('focus', () => {
+        if (input.value.trim().length < 2) {
+            showRecentSearches(DATA.getCurrentSellerId());
+        }
+    });
+
+    input.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+            const query = input.value.trim();
+
+            saveRecentSearch(
+                DATA.getCurrentSellerId(),
+                query
+            );
+
+            if (currentResults.length) {
+                openResultSection(currentResults[0]);
+            }
+        }
+
+        if (event.key === 'Escape') {
+            panel.hidden = true;
+        }
+    });
+
+    // Close results when clicking outside the search and results.
+    document.addEventListener('click', event => {
+        if (
+            !wrapper.contains(event.target) &&
+            !panel.contains(event.target)
+        ) {
+            panel.hidden = true;
+        }
+    });
+
+    // Keep results hidden when the mobile search is closed.
+    document.getElementById(
+        'nexodraGlobalSearchToggle'
+    )?.addEventListener('click', () => {
+        if (wrapper.classList.contains('is-open')) {
+            panel.hidden = false;
+
+            if (input.value.trim().length < 2) {
+                showRecentSearches(DATA.getCurrentSellerId());
+            }
+        }
+    });
+
+    window.NEXODRA_GLOBAL_SEARCH_BRICK3 = Object.freeze({
+        search: runSearch,
+        close: () => {
+            panel.hidden = true;
+        }
+    });
+
+    console.log(
+        'NEXODRA Global Search — Brick 3 initialized.'
+    );
+
+})();
+
+
+
+
+
+
+
+/* =========================================================
+   NEXODRA REPORTS TOOLS
+   BRICK RPT-03 — JAVASCRIPT FUNCTIONALITY
+
+   1. Customer Debts
+   2. Business Calculator
+   3. Sales Report
+   4. Profit & Loss
+
+   Uses:
+   - Existing NEXODRA_FINANCIAL API
+   - Existing POS customer debt register
+   - Existing Nexodra sales cache
+   - Existing offline sales queue
+
+   No demo records are written into live storage.
+========================================================= */
+
+(() => {
+    'use strict';
+
+    if (window.NEXODRA_REPORTS_TOOLS_READY) {
+        console.warn('RPT-03 is already initialized.');
+        return;
+    }
+
+    const api = window.NEXODRA_FINANCIAL;
+
+    const SCREEN_IDS = [
+        'nexodraCustomerDebtsScreen',
+        'nexodraBusinessCalculatorScreen',
+        'nexodraSalesReportScreen',
+        'nexodraProfitLossScreen'
+    ];
+
+    const DEBT_KEY = 'odropCustomerDebts_local';
+    const OFFLINE_SALES_KEY = 'odropOfflineSalesQueueV1';
+
+    const $ = id => document.getElementById(id);
+
+    const money = value => {
+        const amount = Number(value) || 0;
+
+        try {
+            return typeof formatCurrency === 'function'
+                ? formatCurrency(amount)
+                : new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'NGN'
+                }).format(amount);
+        } catch (_) {
+            return '₦' + amount.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+    };
+
+    const number = value =>
+        Number.isFinite(Number(value)) ? Number(value) : 0;
+
+    const today = () => {
+        const date = new Date();
+        const local = new Date(
+            date.getTime() - date.getTimezoneOffset() * 60000
+        );
+        return local.toISOString().slice(0, 10);
+    };
+
+    const escapeHTML = value =>
+        String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        })[char]);
+
+    const roundMoney = value =>
+        Math.round((number(value) + Number.EPSILON) * 100) / 100;
+
+    const dateOf = record =>
+        String(
+            record?.date ||
+            record?.createdAt ||
+            record?.created_at ||
+            ''
+        ).slice(0, 10);
+
+    const isValidDate = value =>
+        /^\d{4}-\d{2}-\d{2}$/.test(String(value || ''));
+
+    function readJSON(key, fallback = []) {
+        try {
+            const value = localStorage.getItem(key);
+            if (!value) return fallback;
+
+            const parsed = JSON.parse(value);
+            return parsed ?? fallback;
+        } catch (error) {
+            console.error('RPT-03: Could not read storage:', key, error);
+            return fallback;
+        }
+    }
+
+    function saveJSON(key, value) {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+            return true;
+        } catch (error) {
+            console.error('RPT-03: Could not save storage:', key, error);
+            alert('Your changes could not be saved. Check available device storage.');
+            return false;
+        }
+    }
+
+    function getFinancialRecords(collection) {
+        if (!api) {
+            throw new Error('Nexodra financial foundation is unavailable.');
+        }
+
+        return api.getCollection(collection) || [];
+    }
+
+    
+function showRPTScreen(id) {
+    const target = $(id);
+
+    if (!target) {
+        console.error('RPT-03: Screen not found:', id);
+        return;
+    }
+
+    // Follow Nexodra's existing navigation system.
+    // Do not set hidden=true on every other screen.
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+
+    // Only reveal the requested report screen.
+    target.hidden = false;
+    target.classList.add('active');
+
+    const appBody = document.querySelector('.app-body');
+    if (appBody) appBody.scrollTop = 0;
+
+    target.scrollTop = 0;
+    window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+
+    
+function showReportsHome() {
+    const reports = $('reportsScreen');
+
+    if (!reports) {
+        console.error('RPT-03: Reports home screen not found.');
+        return;
+    }
+
+    // Restore the normal Nexodra screen navigation.
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+
+    reports.hidden = false;
+    reports.classList.add('active');
+
+    const appBody = document.querySelector('.app-body');
+    if (appBody) appBody.scrollTop = 0;
+
+    reports.scrollTop = 0;
+    window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+
+    function downloadCSV(filename, rows) {
+        if (!Array.isArray(rows) || !rows.length) {
+            alert('There is no data available to export.');
+            return;
+        }
+
+        const csv = rows.map(row =>
+            row.map(value => {
+                let safe = String(value ?? '');
+
+                // Prevent spreadsheet formula injection.
+                if (/^[=+\-@\t\r]/.test(safe)) {
+                    safe = "'" + safe;
+                }
+
+                return '"' + safe.replace(/"/g, '""') + '"';
+            }).join(',')
+        ).join('\r\n');
+
+        const blob = new Blob(
+            ['\uFEFF' + csv],
+            { type: 'text/csv;charset=utf-8;' }
+        );
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function emptyState(icon, title, description) {
+        return `
+            <div class="nex-rpt-empty">
+                <i class="fa-solid ${escapeHTML(icon)}"></i>
+                <strong>${escapeHTML(title)}</strong>
+                <p>${escapeHTML(description)}</p>
+            </div>
+        `;
+    }
+
+    function statusForDebt(debt) {
+        const total = Math.max(0, number(debt.total));
+        const paid = Math.max(0, number(debt.amountPaid));
+        const balance = Math.max(
+            0,
+            number(
+                debt.outstandingBalance !== undefined
+                    ? debt.outstandingBalance
+                    : total - paid
+            )
+        );
+
+        if (balance <= 0.009) return 'paid';
+        if (paid > 0) return 'partial';
+        return 'unpaid';
+    }
+
+    function getDebtBalance(debt) {
+        return Math.max(
+            0,
+            roundMoney(
+                debt.outstandingBalance !== undefined
+                    ? debt.outstandingBalance
+                    : number(debt.total) - number(debt.amountPaid)
+            )
+        );
+    }
+
+    function normaliseDebt(debt) {
+        return {
+            ...debt,
+            amountPaid: number(debt.amountPaid),
+            outstandingBalance: getDebtBalance(debt),
+            payments: Array.isArray(debt.payments)
+                ? debt.payments
+                : [],
+            status: statusForDebt(debt)
+        };
+    }
+
+    /* =====================================================
+       01. CUSTOMER DEBTS
+    ===================================================== */
+
+    const debtState = {
+        records: [],
+        selectedId: null
+    };
+
+    function loadDebts() {
+        const saved = readJSON(DEBT_KEY, []);
+
+        if (!Array.isArray(saved)) {
+            throw new Error('The customer debt register is not a valid list.');
+        }
+
+        debtState.records = saved.map(normaliseDebt);
+        return debtState.records;
+    }
+
+    function getDebtCustomerName(debt) {
+        return debt.customerName || 'Unnamed customer';
+    }
+
+    function renderDebtMetrics(records) {
+        const original = records.reduce(
+            (sum, debt) => sum + number(debt.total), 0
+        );
+
+        const collected = records.reduce(
+            (sum, debt) => sum + number(debt.amountPaid), 0
+        );
+
+        const outstanding = records.reduce(
+            (sum, debt) => sum + getDebtBalance(debt), 0
+        );
+
+        const owing = new Set(
+            records
+                .filter(debt => getDebtBalance(debt) > 0)
+                .map(debt => String(debt.customerId || debt.customerName))
+        );
+
+        $('nexDebtOutstanding').textContent = money(outstanding);
+        $('nexDebtOriginal').textContent = money(original);
+        $('nexDebtCollected').textContent = money(collected);
+        $('nexDebtCustomers').textContent = owing.size.toLocaleString();
+    }
+
+    function getFilteredDebts() {
+        const search = $('nexDebtSearch')?.value.trim().toLowerCase() || '';
+        const status = $('nexDebtStatus')?.value || '';
+        const from = $('nexDebtFrom')?.value || '';
+        const to = $('nexDebtTo')?.value || '';
+
+        return debtState.records.filter(debt => {
+            const customer = getDebtCustomerName(debt).toLowerCase();
+            const phone = String(debt.customerPhone || '').toLowerCase();
+            const id = String(debt.id || '').toLowerCase();
+            const reference = String(debt.reference || '').toLowerCase();
+
+            const matchesSearch =
+                !search ||
+                customer.includes(search) ||
+                phone.includes(search) ||
+                id.includes(search) ||
+                reference.includes(search);
+
+            const debtStatus = statusForDebt(debt);
+            const date = dateOf(debt);
+
+            return matchesSearch &&
+                (!status || debtStatus === status) &&
+                (!from || (date && date >= from)) &&
+                (!to || (date && date <= to));
+        });
+    }
+
+    function renderDebtTable() {
+        const records = getFilteredDebts();
+        const body = $('nexDebtTableBody');
+        const mobile = $('nexDebtMobileList');
+
+        if (!body || !mobile) return;
+
+        if (!records.length) {
+            body.innerHTML = `
+                <tr><td colspan="8">
+                    No matching debt records found.
+                </td></tr>
+            `;
+
+            mobile.innerHTML = emptyState(
+                'fa-wallet',
+                'No debt records found',
+                'Customer debts recorded through POS will appear here.'
+            );
+            return;
+        }
+
+        body.innerHTML = records.map(debt => {
+            const status = statusForDebt(debt);
+            const balance = getDebtBalance(debt);
+
+            return `
+                <tr>
+                    <td>${escapeHTML(getDebtCustomerName(debt))}<br>
+                        <small>${escapeHTML(debt.customerPhone || '')}</small>
+                    </td>
+                    <td>${escapeHTML(debt.reference || debt.id)}</td>
+                    <td>${escapeHTML(dateOf(debt) || '—')}</td>
+                    <td>${money(debt.total)}</td>
+                    <td>${money(debt.amountPaid)}</td>
+                    <td><strong>${money(balance)}</strong></td>
+                    <td><span class="nex-rpt-status ${status}">
+                        ${status === 'partial' ? 'Partially paid' : status}
+                    </span></td>
+                    <td><button type="button"
+                        class="nex-rpt-row-action"
+                        data-debt-open="${escapeHTML(debt.id)}">
+                        View / Pay
+                    </button></td>
+                </tr>
+            `;
+        }).join('');
+
+        mobile.innerHTML = records.map(debt => {
+            const status = statusForDebt(debt);
+
+            return `
+                <article class="nex-rpt-mobile-card">
+                    <div class="nex-rpt-mobile-card-head">
+                        <div>
+                            <strong>${escapeHTML(getDebtCustomerName(debt))}</strong>
+                            <small>${escapeHTML(dateOf(debt) || 'No date')}</small>
+                        </div>
+                        <span class="nex-rpt-status ${status}">
+                            ${status === 'partial' ? 'Partially paid' : status}
+                        </span>
+                    </div>
+                    <div class="nex-rpt-mobile-card-grid">
+                        <div><span>Original debt</span><strong>${money(debt.total)}</strong></div>
+                        <div><span>Paid</span><strong>${money(debt.amountPaid)}</strong></div>
+                        <div><span>Outstanding</span><strong>${money(getDebtBalance(debt))}</strong></div>
+                        <div><span>Reference</span><strong>${escapeHTML(debt.reference || debt.id)}</strong></div>
+                    </div>
+                    <button type="button" class="nex-rpt-row-action"
+                        data-debt-open="${escapeHTML(debt.id)}">
+                        View details and record payment
+                    </button>
+                </article>
+            `;
+        }).join('');
+    }
+
+    function renderDebtDetails(id) {
+        const debt = debtState.records.find(
+            item => String(item.id) === String(id)
+        );
+
+        if (!debt) {
+            alert('This debt record could not be found.');
+            return;
+        }
+
+        debtState.selectedId = debt.id;
+
+        $('nexDebtDetailPanel').hidden = false;
+        $('nexDebtDetailTitle').textContent = getDebtCustomerName(debt);
+        $('nexDebtDetailSubtitle').textContent =
+            `${debt.customerPhone || 'No phone number'} · ${debt.reference || debt.id}`;
+
+        $('nexDebtDetailSummary').innerHTML = `
+            <div><span>Original debt</span><strong>${money(debt.total)}</strong></div>
+            <div><span>Payments received</span><strong>${money(debt.amountPaid)}</strong></div>
+            <div><span>Outstanding balance</span><strong>${money(getDebtBalance(debt))}</strong></div>
+        `;
+
+        const history = $('nexDebtPaymentHistory');
+
+        if (!debt.payments.length) {
+            history.innerHTML = emptyState(
+                'fa-receipt',
+                'No payments recorded',
+                'Payments made against this debt will appear here.'
+            );
+        } else {
+            history.innerHTML = debt.payments.map(payment => `
+                <div class="nex-rpt-payment-row">
+                    <div>
+                        <strong>${escapeHTML(payment.method || 'Payment')}</strong>
+                        <small>${escapeHTML(payment.date || '')}
+                            ${payment.note ? ' · ' + escapeHTML(payment.note) : ''}
+                        </small>
+                    </div>
+                    <strong>+${money(payment.amount)}</strong>
+                </div>
+            `).join('');
+        }
+
+        $('nexDebtPaymentRecordId').value = debt.id;
+        $('nexDebtPaymentDate').value = today();
+        $('nexDebtPaymentAmount').value = '';
+        $('nexDebtPaymentNote').value = '';
+
+        const amountInput = $('nexDebtPaymentAmount');
+        amountInput.max = getDebtBalance(debt);
+        amountInput.disabled = getDebtBalance(debt) <= 0;
+
+        $('nexDebtPaymentMethod').disabled = getDebtBalance(debt) <= 0;
+        $('nexDebtPaymentForm').querySelector('[type="submit"]').disabled =
+            getDebtBalance(debt) <= 0;
+
+        $('nexDebtDetailPanel').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+
+    function recordDebtPayment(event) {
+        event.preventDefault();
+
+        const id = $('nexDebtPaymentRecordId').value;
+        const debt = debtState.records.find(
+            item => String(item.id) === String(id)
+        );
+
+        if (!debt) {
+            alert('Debt record not found.');
+            return;
+        }
+
+        const amount = roundMoney($('nexDebtPaymentAmount').value);
+        const method = $('nexDebtPaymentMethod').value;
+        const date = $('nexDebtPaymentDate').value;
+        const note = $('nexDebtPaymentNote').value.trim();
+        const balance = getDebtBalance(debt);
+
+        if (!Number.isFinite(amount) || amount <= 0) {
+            alert('Enter a valid payment amount.');
+            return;
+        }
+
+        if (!method || !isValidDate(date)) {
+            alert('Choose a payment method and valid payment date.');
+            return;
+        }
+
+        if (amount > balance + 0.009) {
+            alert(`Payment cannot exceed the outstanding balance of ${money(balance)}.`);
+            return;
+        }
+
+        const payments = Array.isArray(debt.payments)
+            ? [...debt.payments]
+            : [];
+
+        payments.push({
+            id: 'payment_' + Date.now() + '_' +
+                Math.random().toString(36).slice(2, 7),
+            amount,
+            method,
+            date,
+            note,
+            createdAt: new Date().toISOString()
+        });
+
+        const updatedPaid = roundMoney(number(debt.amountPaid) + amount);
+        const updatedBalance = Math.max(
+            0,
+            roundMoney(number(debt.total) - updatedPaid)
+        );
+
+        const updated = {
+            ...debt,
+            payments,
+            amountPaid: updatedPaid,
+            outstandingBalance: updatedBalance,
+            status: updatedBalance <= 0.009
+                ? 'paid'
+                : 'partial',
+            lastPaymentAt: new Date().toISOString()
+        };
+
+        const nextRecords = debtState.records.map(item =>
+            String(item.id) === String(id) ? updated : item
+        );
+
+        // Persist before updating the UI.
+        if (!saveJSON(DEBT_KEY, nextRecords)) return;
+
+        debtState.records = nextRecords;
+
+        renderDebtMetrics(debtState.records);
+        renderDebtTable();
+        renderDebtDetails(id);
+
+        alert('Customer payment recorded successfully.');
+    }
+
+    function exportDebts() {
+        const rows = [[
+            'Customer',
+            'Phone',
+            'Reference',
+            'Date',
+            'Original debt',
+            'Amount paid',
+            'Outstanding balance',
+            'Status'
+        ]];
+
+        getFilteredDebts().forEach(debt => rows.push([
+            getDebtCustomerName(debt),
+            debt.customerPhone || '',
+            debt.reference || debt.id,
+            dateOf(debt),
+            number(debt.total),
+            number(debt.amountPaid),
+            getDebtBalance(debt),
+            statusForDebt(debt)
+        ]));
+
+        downloadCSV(`nexodra-customer-debts-${today()}.csv`, rows);
+    }
+
+    function refreshDebts() {
+        try {
+            loadDebts();
+            renderDebtMetrics(debtState.records);
+            renderDebtTable();
+
+            if (debtState.selectedId) {
+                const stillExists = debtState.records.some(
+                    debt => String(debt.id) === String(debtState.selectedId)
+                );
+
+                if (stillExists) {
+                    renderDebtDetails(debtState.selectedId);
+                }
+            }
+        } catch (error) {
+            console.error('RPT-03: Debt loading failed:', error);
+            $('nexDebtTableBody').innerHTML = `
+                <tr><td colspan="8">${escapeHTML(error.message)}</td></tr>
+            `;
+        }
+    }
+
+    /* =====================================================
+       02. BUSINESS CALCULATOR
+    ===================================================== */
+
+    const calculatorModes = {
+        profit: {
+            title: 'Profit calculator',
+            description: 'Enter your product cost and selling price.',
+            fields: [
+                { id: 'cost', label: 'Cost price', type: 'number', min: '0', value: '5000' },
+                { id: 'selling', label: 'Selling price', type: 'number', min: '0', value: '7500' },
+                { id: 'quantity', label: 'Quantity', type: 'number', min: '1', value: '1' }
+            ],
+            calculate(v) {
+                const profit = (v.selling - v.cost) * v.quantity;
+                return {
+                    main: money(profit),
+                    description: 'Total profit',
+                    secondary: [
+                        ['Profit per unit', money(v.selling - v.cost)],
+                        ['Profit margin', percent(v.selling > 0 ? (v.selling - v.cost) / v.selling * 100 : 0)],
+                        ['Total sales value', money(v.selling * v.quantity)]
+                    ]
+                };
+            }
+        },
+
+        margin: {
+            title: 'Profit margin calculator',
+            description: 'Find the percentage of selling price retained as profit.',
+            fields: [
+                { id: 'cost', label: 'Cost price', type: 'number', min: '0', value: '5000' },
+                { id: 'selling', label: 'Selling price', type: 'number', min: '0', value: '7500' }
+            ],
+            calculate(v) {
+                const profit = v.selling - v.cost;
+                return {
+                    main: percent(v.selling > 0 ? profit / v.selling * 100 : 0),
+                    description: 'Profit margin',
+                    secondary: [
+                        ['Profit per unit', money(profit)],
+                        ['Markup', percent(v.cost > 0 ? profit / v.cost * 100 : 0)]
+                    ]
+                };
+            }
+        },
+
+        markup: {
+            title: 'Markup calculator',
+            description: 'Calculate the selling price from cost and markup percentage.',
+            fields: [
+                { id: 'cost', label: 'Cost price', type: 'number', min: '0', value: '5000' },
+                { id: 'markup', label: 'Markup percentage (%)', type: 'number', min: '0', value: '30' }
+            ],
+            calculate(v) {
+                const profit = v.cost * v.markup / 100;
+                return {
+                    main: money(v.cost + profit),
+                    description: 'Suggested selling price',
+                    secondary: [
+                        ['Markup amount', money(profit)],
+                        ['Profit margin', percent(v.cost + profit > 0 ? profit / (v.cost + profit) * 100 : 0)]
+                    ]
+                };
+            }
+        },
+
+        discount: {
+            title: 'Discount calculator',
+            description: 'Find the final price after applying a discount.',
+            fields: [
+                { id: 'price', label: 'Original price', type: 'number', min: '0', value: '10000' },
+                { id: 'discount', label: 'Discount percentage (%)', type: 'number', min: '0', max: '100', value: '15' }
+            ],
+            calculate(v) {
+                const discount = v.price * v.discount / 100;
+                return {
+                    main: money(v.price - discount),
+                    description: 'Final selling price',
+                    secondary: [
+                        ['Amount saved', money(discount)],
+                        ['Discount applied', percent(v.discount)]
+                    ]
+                };
+            }
+        },
+
+        price: {
+            title: 'Selling price calculator',
+            description: 'Set a selling price using a target profit margin.',
+            fields: [
+                { id: 'cost', label: 'Product cost', type: 'number', min: '0', value: '5000' },
+                { id: 'margin', label: 'Target profit margin (%)', type: 'number', min: '0', max: '99.99', value: '30' }
+            ],
+            calculate(v) {
+                const selling = v.margin < 100
+                    ? v.cost / (1 - v.margin / 100)
+                    : 0;
+
+                return {
+                    main: money(selling),
+                    description: 'Required selling price',
+                    secondary: [
+                        ['Expected profit', money(selling - v.cost)],
+                        ['Target margin', percent(v.margin)]
+                    ]
+                };
+            }
+        },
+
+        breakeven: {
+            title: 'Break-even calculator',
+            description: 'Calculate the sales quantity needed to cover fixed costs.',
+            fields: [
+                { id: 'fixed', label: 'Fixed costs', type: 'number', min: '0', value: '100000' },
+                { id: 'price', label: 'Selling price per unit', type: 'number', min: '0', value: '7500' },
+                { id: 'variable', label: 'Variable cost per unit', type: 'number', min: '0', value: '4500' }
+            ],
+            calculate(v) {
+                const contribution = v.price - v.variable;
+
+                if (contribution <= 0) {
+                    return {
+                        main: 'Not achievable',
+                        description: 'Selling price must exceed variable cost.',
+                        secondary: []
+                    };
+                }
+
+                const units = Math.ceil(v.fixed / contribution);
+
+                return {
+                    main: units.toLocaleString() + ' units',
+                    description: 'Units needed to break even',
+                    secondary: [
+                        ['Contribution per unit', money(contribution)],
+                        ['Break-even sales value', money(units * v.price)],
+                        ['Fixed costs', money(v.fixed)]
+                    ]
+                };
+            }
+        }
+    };
+
+    let activeCalcMode = 'profit';
+
+    function percent(value) {
+        return number(value).toFixed(2) + '%';
+    }
+
+    function renderCalculatorResult() {
+        const mode = calculatorModes[activeCalcMode];
+        const values = {};
+
+        mode.fields.forEach(field => {
+            const input = $('nexCalc_' + field.id);
+            values[field.id] = number(input?.value);
+        });
+
+        const result = mode.calculate(values);
+
+        $('nexCalcResult').innerHTML = `
+            <strong>${escapeHTML(result.main)}</strong>
+            <p>${escapeHTML(result.description)}</p>
+            ${(result.secondary || []).map(item => `
+                <div class="nex-calc-secondary-result">
+                    <span>${escapeHTML(item[0])}</span>
+                    <strong>${escapeHTML(item[1])}</strong>
+                </div>
+            `).join('')}
+        `;
+    }
+
+    function renderCalculator(modeName) {
+        if (!calculatorModes[modeName]) return;
+
+        activeCalcMode = modeName;
+
+        const mode = calculatorModes[modeName];
+
+        $('nexCalcTitle').textContent = mode.title;
+        $('nexCalcDescription').textContent = mode.description;
+
+        $('nexCalcTabs').querySelectorAll('[data-calc-mode]')
+            .forEach(button => {
+                button.classList.toggle(
+                    'active',
+                    button.dataset.calcMode === modeName
+                );
+            });
+
+        $('nexCalcFields').innerHTML = mode.fields.map(field => `
+            <label>
+                <span>${escapeHTML(field.label)}</span>
+                <input
+                    id="nexCalc_${escapeHTML(field.id)}"
+                    type="number"
+                    min="${field.min || '0'}"
+                    ${field.max ? `max="${field.max}"` : ''}
+                    step="any"
+                    value="${escapeHTML(field.value)}"
+                    inputmode="decimal"
+                >
+            </label>
+        `).join('');
+
+        $('nexCalcFields').querySelectorAll('input')
+            .forEach(input => {
+                input.addEventListener('input', renderCalculatorResult);
+            });
+
+        renderCalculatorResult();
+    }
+
+    /* =====================================================
+       03. SALES REPORT
+    ===================================================== */
+
+    const salesState = {
+        records: [],
+        filtered: [],
+        from: '',
+        to: ''
+    };
+
+    function getOfflineSales() {
+        const queue = readJSON(OFFLINE_SALES_KEY, []);
+        return Array.isArray(queue) ? queue : [];
+    }
+
+    function getCachedSales() {
+        try {
+            const userId = api?.getUserId?.();
+
+            if (
+                userId &&
+                typeof loadNexodraSalesCache === 'function'
+            ) {
+                const cached = loadNexodraSalesCache(userId);
+                return Array.isArray(cached) ? cached : [];
+            }
+        } catch (error) {
+            console.warn('RPT-03: Sales cache unavailable:', error);
+        }
+
+        return [];
+    }
+
+    function normaliseSale(sale) {
+        const items = Array.isArray(sale.items) ? sale.items : [];
+
+        const total = number(
+            sale.total ??
+            sale.total_amount ??
+            sale.grandTotal ??
+            sale.amount
+        );
+
+        return {
+            ...sale,
+            items,
+            total,
+            date: dateOf(sale),
+            customerName:
+                sale.customerName ||
+                sale.customer_name ||
+                'Walk-in Customer',
+            paymentMethod:
+                sale.paymentMethod ||
+                sale.payment_method ||
+                'Unknown',
+            reference:
+                sale.reference ||
+                sale.id ||
+                sale.localSaleId ||
+                '—',
+            units: items.reduce(
+                (sum, item) => sum + number(item.quantity),
+                0
+            )
+        };
+    }
+
+    function deduplicateSales(records) {
+        const seen = new Set();
+
+        return records.filter(sale => {
+            const key = String(
+                sale.id ||
+                sale.localSaleId ||
+                sale.reference ||
+                `${sale.date}-${sale.total}-${sale.customerName}`
+            );
+
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+    }
+
+    async function loadSalesRecords() {
+        let records = [
+            ...getCachedSales(),
+            ...getOfflineSales()
+        ];
+
+        // Try the existing full-history loader when online.
+        // It uses the app's established seller-scoped sales query.
+        if (
+            navigator.onLine &&
+            typeof cacheAllSellerSales === 'function'
+        ) {
+            try {
+                await cacheAllSellerSales();
+                records = [
+                    ...getCachedSales(),
+                    ...getOfflineSales()
+                ];
+            } catch (error) {
+                console.warn(
+                    'RPT-03: Could not refresh sales history. Showing cached records.',
+                    error
+                );
+            }
+        }
+
+        salesState.records = deduplicateSales(
+            records.map(normaliseSale)
+        );
+
+        return salesState.records;
+    }
+
+    function getPeriodDates(prefix) {
+        const period = $(prefix + 'Period')?.value || '30';
+        const now = new Date();
+        const end = today();
+
+        let from = '';
+
+        if (period === 'today') {
+            from = end;
+        } else if (period === '7' || period === '30') {
+            const start = new Date(now);
+            start.setDate(start.getDate() - (Number(period) - 1));
+            from = start.toISOString().slice(0, 10);
+        } else if (period === 'month') {
+            from = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+        } else if (period === 'year') {
+            from = `${now.getFullYear()}-01-01`;
+        } else if (period === 'custom') {
+            from = $(prefix + 'From').value;
+            return {
+                from,
+                to: $(prefix + 'To').value
+            };
+        }
+
+        return {
+            from,
+            to: period === 'all' ? '' : end
+        };
+    }
+
+    function applySalesFilters() {
+        const dates = getPeriodDates('nexSales');
+
+        salesState.from = dates.from;
+        salesState.to = dates.to;
+
+        const search = $('nexSalesSearch')?.value.trim().toLowerCase() || '';
+        const payment = $('nexSalesPaymentFilter')?.value || '';
+
+        salesState.filtered = salesState.records.filter(sale => {
+            const date = sale.date;
+            const matchesDate =
+                (!dates.from || (date && date >= dates.from)) &&
+                (!dates.to || (date && date <= dates.to));
+
+            const itemNames = sale.items
+                .map(item => item.title || item.name || item.product_name || '')
+                .join(' ')
+                .toLowerCase();
+
+            const matchesSearch =
+                !search ||
+                sale.customerName.toLowerCase().includes(search) ||
+                String(sale.reference).toLowerCase().includes(search) ||
+                itemNames.includes(search);
+
+            const matchesPayment =
+                !payment ||
+                String(sale.paymentMethod).toLowerCase() === payment;
+
+            return matchesDate && matchesSearch && matchesPayment;
+        });
+
+        renderSalesReport();
+    }
+
+    function renderSalesMetrics(records) {
+        const revenue = records.reduce(
+            (sum, sale) => sum + sale.total, 0
+        );
+
+        const units = records.reduce(
+            (sum, sale) => sum + sale.units, 0
+        );
+
+        $('nexSalesRevenue').textContent = money(revenue);
+        $('nexSalesCount').textContent = records.length.toLocaleString();
+        $('nexSalesAverage').textContent = money(
+            records.length ? revenue / records.length : 0
+        );
+        $('nexSalesUnits').textContent = units.toLocaleString();
+    }
+
+    function renderSalesTrend(records) {
+        const container = $('nexSalesTrend');
+        if (!container) return;
+
+        if (!records.length) {
+            container.innerHTML = `
+                <div class="nex-sales-chart-empty">
+                    No sales data is available for this period.
+                </div>
+            `;
+            return;
+        }
+
+        const totals = {};
+
+        records.forEach(sale => {
+            const key = sale.date || 'Undated';
+            totals[key] = (totals[key] || 0) + sale.total;
+        });
+
+        const entries = Object.entries(totals)
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .slice(-14);
+
+        const max = Math.max(...entries.map(entry => entry[1]), 1);
+
+        container.innerHTML = entries.map(([date, value]) => {
+            const height = Math.max(3, value / max * 125);
+
+            return `
+                <div class="nex-sales-bar-group"
+                    title="${escapeHTML(date)}: ${money(value)}">
+                    <span class="nex-sales-bar-value">${money(value)}</span>
+                    <div class="nex-sales-bar" style="height:${height}px"></div>
+                    <span class="nex-sales-bar-label">${escapeHTML(date.slice(5))}</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderPaymentBreakdown(records) {
+        const container = $('nexSalesPaymentBreakdown');
+
+        const totals = {};
+
+        records.forEach(sale => {
+            const method = String(sale.paymentMethod || 'Unknown');
+            totals[method] = (totals[method] || 0) + sale.total;
+        });
+
+        const entries = Object.entries(totals)
+            .sort((a, b) => b[1] - a[1]);
+
+        const total = entries.reduce((sum, entry) => sum + entry[1], 0);
+
+        if (!entries.length) {
+            container.innerHTML = emptyState(
+                'fa-credit-card',
+                'No payment data',
+                'Payment method breakdown will appear when sales are available.'
+            );
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="nex-rpt-breakdown">
+                ${entries.map(([method, amount]) => {
+                    const ratio = total > 0 ? amount / total * 100 : 0;
+
+                    return `
+                        <div class="nex-rpt-breakdown-row">
+                            <div class="nex-rpt-breakdown-heading">
+                                <span>${escapeHTML(method)}</span>
+                                <strong>${money(amount)}</strong>
+                            </div>
+                            <div class="nex-rpt-progress">
+                                <span style="width:${ratio}%"></span>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+
+    function renderTopProducts(records) {
+        const container = $('nexSalesTopProducts');
+        const totals = {};
+
+        records.forEach(sale => {
+            sale.items.forEach(item => {
+                const name =
+                    item.title ||
+                    item.name ||
+                    item.product_name ||
+                    'Unnamed product';
+
+                totals[name] = (totals[name] || 0) + number(item.quantity);
+            });
+        });
+
+        const entries = Object.entries(totals)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 7);
+
+        if (!entries.length) {
+            container.innerHTML = emptyState(
+                'fa-box-open',
+                'No product sales',
+                'Product rankings will appear after completed sales are recorded.'
+            );
+            return;
+        }
+
+        const max = Math.max(...entries.map(entry => entry[1]), 1);
+
+        container.innerHTML = `
+            <div class="nex-rpt-breakdown">
+                ${entries.map(([name, quantity]) => `
+                    <div class="nex-rpt-breakdown-row">
+                        <div class="nex-rpt-breakdown-heading">
+                            <span>${escapeHTML(name)}</span>
+                            <strong>${quantity.toLocaleString()} units</strong>
+                        </div>
+                        <div class="nex-rpt-progress">
+                            <span style="width:${quantity / max * 100}%"></span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    function renderSalesTransactions(records) {
+        const body = $('nexSalesTableBody');
+        const mobile = $('nexSalesMobileList');
+
+        if (!records.length) {
+            body.innerHTML = '<tr><td colspan="6">No sales found for this period.</td></tr>';
+
+            mobile.innerHTML = emptyState(
+                'fa-chart-column',
+                'No sales found',
+                'Completed sales will appear here when they are available in the sales history.'
+            );
+            return;
+        }
+
+        body.innerHTML = records.map(sale => {
+            const itemNames = sale.items
+                .map(item => item.title || item.name || item.product_name || 'Product')
+                .slice(0, 2)
+                .join(', ');
+
+            return `
+                <tr>
+                    <td>${escapeHTML(sale.date || '—')}</td>
+                    <td>${escapeHTML(sale.reference)}</td>
+                    <td>${escapeHTML(sale.customerName)}</td>
+                    <td>${escapeHTML(itemNames || '—')}</td>
+                    <td>${escapeHTML(sale.paymentMethod)}</td>
+                    <td><strong>${money(sale.total)}</strong></td>
+                </tr>
+            `;
+        }).join('');
+
+        mobile.innerHTML = records.map(sale => `
+            <article class="nex-rpt-mobile-card">
+                <div class="nex-rpt-mobile-card-head">
+                    <div>
+                        <strong>${escapeHTML(sale.customerName)}</strong>
+                        <small>${escapeHTML(sale.date || 'Undated')} · ${escapeHTML(sale.reference)}</small>
+                    </div>
+                    <strong>${money(sale.total)}</strong>
+                </div>
+                <div class="nex-rpt-mobile-card-grid">
+                    <div><span>Units</span><strong>${sale.units}</strong></div>
+                    <div><span>Payment</span><strong>${escapeHTML(sale.paymentMethod)}</strong></div>
+                </div>
+            </article>
+        `).join('');
+    }
+
+    function renderSalesReport() {
+        const records = salesState.filtered;
+
+        renderSalesMetrics(records);
+        renderSalesTrend(records);
+        renderPaymentBreakdown(records);
+        renderTopProducts(records);
+        renderSalesTransactions(records);
+
+        $('nexSalesTableCount').textContent =
+            `${records.length} transaction${records.length === 1 ? '' : 's'} found`;
+
+        if (!records.length && salesState.records.length) {
+            $('nexSalesTableCount').textContent =
+                'No transactions match the selected filters.';
+        }
+    }
+
+    function exportSales() {
+        const rows = [[
+            'Date',
+            'Reference',
+            'Customer',
+            'Payment method',
+            'Units',
+            'Total'
+        ]];
+
+        salesState.filtered.forEach(sale => rows.push([
+            sale.date,
+            sale.reference,
+            sale.customerName,
+            sale.paymentMethod,
+            sale.units,
+            sale.total
+        ]));
+
+        downloadCSV(`nexodra-sales-report-${today()}.csv`, rows);
+    }
+
+    async function refreshSales() {
+        $('nexSalesTableBody').innerHTML =
+            '<tr><td colspan="6">Loading sales history...</td></tr>';
+
+        try {
+            await loadSalesRecords();
+            applySalesFilters();
+        } catch (error) {
+            console.error('RPT-03: Sales report failed:', error);
+            $('nexSalesTableBody').innerHTML = `
+                <tr><td colspan="6">${escapeHTML(error.message)}</td></tr>
+            `;
+        }
+    }
+
+    /* =====================================================
+       04. PROFIT AND LOSS
+    ===================================================== */
+
+    const plState = {
+        revenue: 0,
+        cogs: 0,
+        gross: 0,
+        expenses: 0,
+        net: 0,
+        categories: {},
+        missingCostItems: 0
+    };
+
+    function getProductCost(productId, title) {
+        try {
+            const list = typeof products !== 'undefined'
+                ? products
+                : [];
+
+            if (!Array.isArray(list)) return null;
+
+            const product = list.find(item =>
+                (
+                    productId &&
+                    String(item.id) === String(productId)
+                ) ||
+                (
+                    title &&
+                    String(item.title || item.name).toLowerCase() ===
+                    String(title).toLowerCase()
+                )
+            );
+
+            if (!product) return null;
+
+            const cost = product.costPrice ??
+                product.cost_price ??
+                product.purchasePrice ??
+                product.purchase_price ??
+                product.cost;
+
+            return cost === undefined || cost === null || cost === ''
+                ? null
+                : number(cost);
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function calculateCOGS(records) {
+        let cogs = 0;
+        let missing = 0;
+
+        records.forEach(sale => {
+            sale.items.forEach(item => {
+                const directCost =
+                    item.costPrice ??
+                    item.cost_price ??
+                    item.unitCost ??
+                    item.unit_cost ??
+                    item.purchasePrice ??
+                    item.purchase_price;
+
+                let cost = directCost !== undefined &&
+                    directCost !== null &&
+                    directCost !== ''
+                    ? number(directCost)
+                    : getProductCost(
+                        item.productId || item.product_id,
+                        item.title || item.name || item.product_name
+                    );
+
+                if (cost === null || !Number.isFinite(cost)) {
+                    missing++;
+                    return;
+                }
+
+                cogs += cost * number(item.quantity);
+            });
+        });
+
+        return {
+            total: roundMoney(cogs),
+            missing
+        };
+    }
+
+    function getPLExpenses(from, to) {
+        const expenses = getFinancialRecords('expenses');
+
+        return expenses.filter(expense => {
+            const date = dateOf(expense);
+
+            return (
+                (!from || (date && date >= from)) &&
+                (!to || (date && date <= to))
+            );
+        });
+    }
+
+    function renderExpenseCategories(expenses) {
+        const container = $('nexPLExpenseCategories');
+        const categories = {};
+
+        expenses.forEach(expense => {
+            const category = expense.category || 'other';
+            categories[category] =
+                (categories[category] || 0) + number(expense.amount);
+        });
+
+        const entries = Object.entries(categories)
+            .sort((a, b) => b[1] - a[1]);
+
+        const total = entries.reduce((sum, entry) => sum + entry[1], 0);
+
+        if (!entries.length) {
+            container.innerHTML = emptyState(
+                'fa-receipt',
+                'No recorded expenses',
+                'Your existing Expense Manager records will be grouped here.'
+            );
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="nex-rpt-breakdown">
+                ${entries.map(([category, amount]) => `
+                    <div class="nex-rpt-breakdown-row">
+                        <div class="nex-rpt-breakdown-heading">
+                            <span>${escapeHTML(
+                                category.replace(/[-_]/g, ' ')
+                            )}</span>
+                            <strong>${money(amount)}</strong>
+                        </div>
+                        <div class="nex-rpt-progress">
+                            <span style="width:${total ? amount / total * 100 : 0}%"></span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    function renderPLPerformance() {
+        const container = $('nexPLPerformance');
+
+        const values = [
+            ['Revenue', plState.revenue],
+            ['Cost of goods sold', plState.cogs],
+            ['Operating expenses', plState.expenses],
+            ['Net profit / loss', plState.net]
+        ];
+
+        const maximum = Math.max(
+            ...values.map(item => Math.abs(item[1])),
+            1
+        );
+
+        container.innerHTML = `
+            <div class="nex-rpt-breakdown">
+                ${values.map(([label, value]) => `
+                    <div class="nex-rpt-breakdown-row">
+                        <div class="nex-rpt-breakdown-heading">
+                            <span>${escapeHTML(label)}</span>
+                            <strong>${money(value)}</strong>
+                        </div>
+                        <div class="nex-rpt-progress">
+                            <span style="width:${Math.abs(value) / maximum * 100}%"></span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    async function refreshProfitLoss() {
+        try {
+            const dates = getPeriodDates('nexPL');
+            const sales = await loadSalesRecords();
+
+            const selectedSales = sales.filter(sale =>
+                (!dates.from || (sale.date && sale.date >= dates.from)) &&
+                (!dates.to || (sale.date && sale.date <= dates.to))
+            );
+
+            const expenses = getPLExpenses(dates.from, dates.to);
+
+            const revenue = roundMoney(
+                selectedSales.reduce((sum, sale) => sum + sale.total, 0)
+            );
+
+            const cogsResult = calculateCOGS(selectedSales);
+
+            const expenseTotal = roundMoney(
+                expenses.reduce((sum, expense) => sum + number(expense.amount), 0)
+            );
+
+            const gross = roundMoney(revenue - cogsResult.total);
+            const net = roundMoney(gross - expenseTotal);
+            const margin = revenue > 0 ? net / revenue * 100 : 0;
+
+            Object.assign(plState, {
+                revenue,
+                cogs: cogsResult.total,
+                gross,
+                expenses: expenseTotal,
+                net,
+                missingCostItems: cogsResult.missing
+            });
+
+            $('nexPLRevenue').textContent = money(revenue);
+            $('nexPLCOGS').textContent = money(cogsResult.total);
+            $('nexPLGross').textContent = money(gross);
+            $('nexPLNet').textContent = money(net);
+
+            $('nexPLLineRevenue').textContent = money(revenue);
+            $('nexPLLineCOGS').textContent = money(cogsResult.total);
+            $('nexPLLineGross').textContent = money(gross);
+            $('nexPLLineExpenses').textContent = money(expenseTotal);
+            $('nexPLLineNet').textContent = money(net);
+            $('nexPLMargin').textContent = percent(margin);
+
+            $('nexPLPeriodLabel').textContent =
+                dates.from || dates.to
+                    ? `${dates.from || 'Beginning'} to ${dates.to || 'Present'}`
+                    : 'All available history';
+
+            const warning = $('nexPLDataWarning');
+
+            if (cogsResult.missing > 0) {
+                warning.hidden = false;
+                warning.innerHTML =
+                    `<strong>Cost data incomplete:</strong> ` +
+                    `${cogsResult.missing} sold item line(s) have no recorded product cost. ` +
+                    `The displayed gross and net profit may therefore be overstated. ` +
+                    `Add product cost prices to improve this estimate.`;
+            } else {
+                warning.hidden = true;
+                warning.textContent = '';
+            }
+
+            renderExpenseCategories(expenses);
+            renderPLPerformance();
+
+        } catch (error) {
+            console.error('RPT-03: Profit and loss calculation failed:', error);
+
+            $('nexPLDataWarning').hidden = false;
+            $('nexPLDataWarning').textContent =
+                'Unable to calculate this statement: ' + error.message;
+        }
+    }
+
+    function exportProfitLoss() {
+        const rows = [
+            ['Profit and loss statement', 'Amount'],
+            ['Sales revenue', plState.revenue],
+            ['Cost of goods sold', plState.cogs],
+            ['Gross profit', plState.gross],
+            ['Operating expenses', plState.expenses],
+            ['Estimated net profit / loss', plState.net],
+            [
+                'Net profit margin',
+                plState.revenue > 0
+                    ? (plState.net / plState.revenue * 100).toFixed(2) + '%'
+                    : '0%'
+            ],
+            ['Items with missing cost data', plState.missingCostItems]
+        ];
+
+        downloadCSV(`nexodra-profit-loss-${today()}.csv`, rows);
+    }
+
+    /* =====================================================
+       05. EVENT WIRING AND NAVIGATION
+    ===================================================== */
+
+    function openTool(tool) {
+        const screens = {
+            'customer-debts': 'nexodraCustomerDebtsScreen',
+            'business-calculator': 'nexodraBusinessCalculatorScreen',
+            'sales-report': 'nexodraSalesReportScreen',
+            'profit-loss': 'nexodraProfitLossScreen'
+        };
+
+        const targetId = screens[tool];
+        if (!targetId) return;
+
+        showRPTScreen(targetId);
+
+        if (tool === 'customer-debts') {
+            refreshDebts();
+        } else if (tool === 'business-calculator') {
+            renderCalculator(activeCalcMode);
+        } else if (tool === 'sales-report') {
+            refreshSales();
+        } else if (tool === 'profit-loss') {
+            refreshProfitLoss();
+        }
+    }
+
+    function bindEvents() {
+        // Reports quick-tool buttons.
+        document.querySelectorAll('#reportsScreen [data-report-view]')
+            .forEach(button => {
+                const tool = button.dataset.reportView;
+
+                if (![
+                    'customer-debts',
+                    'business-calculator',
+                    'sales-report',
+                    'profit-loss'
+                ].includes(tool)) return;
+
+                if (button.dataset.nexRptBound === 'true') return;
+                button.dataset.nexRptBound = 'true';
+
+                button.addEventListener('click', event => {
+                    event.preventDefault();
+                    openTool(tool);
+                });
+            });
+
+        // Back to Reports.
+        document.querySelectorAll('[data-rpt-back]').forEach(button => {
+            button.addEventListener('click', showReportsHome);
+        });
+
+        // Debt search and filters.
+        ['nexDebtSearch', 'nexDebtStatus', 'nexDebtFrom', 'nexDebtTo']
+            .forEach(id => {
+                $(id)?.addEventListener(
+                    id === 'nexDebtSearch' ? 'input' : 'change',
+                    renderDebtTable
+                );
+            });
+
+        $('nexDebtTableBody')?.addEventListener('click', event => {
+            const button = event.target.closest('[data-debt-open]');
+            if (button) renderDebtDetails(button.dataset.debtOpen);
+        });
+
+        $('nexDebtMobileList')?.addEventListener('click', event => {
+            const button = event.target.closest('[data-debt-open]');
+            if (button) renderDebtDetails(button.dataset.debtOpen);
+        });
+
+        $('nexDebtDetailClose')?.addEventListener('click', () => {
+            $('nexDebtDetailPanel').hidden = true;
+            debtState.selectedId = null;
+        });
+
+        $('nexDebtPaymentForm')?.addEventListener(
+            'submit',
+            recordDebtPayment
+        );
+
+        $('nexDebtExportBtn')?.addEventListener('click', exportDebts);
+
+        // Calculator tabs.
+        $('nexCalcTabs')?.addEventListener('click', event => {
+            const button = event.target.closest('[data-calc-mode]');
+            if (button) renderCalculator(button.dataset.calcMode);
+        });
+
+        $('nexCalcReset')?.addEventListener('click', event => {
+            event.preventDefault();
+            renderCalculator(activeCalcMode);
+        });
+
+        $('nexCalcForm')?.addEventListener('submit', event => {
+            event.preventDefault();
+            renderCalculatorResult();
+        });
+
+        // Sales filters.
+        $('nexSalesApply')?.addEventListener('click', applySalesFilters);
+        $('nexSalesSearch')?.addEventListener('input', applySalesFilters);
+        $('nexSalesPaymentFilter')?.addEventListener('change', applySalesFilters);
+
+        $('nexSalesPeriod')?.addEventListener('change', () => {
+            const custom = $('nexSalesPeriod').value === 'custom';
+            $('nexSalesFrom').disabled = !custom;
+            $('nexSalesTo').disabled = !custom;
+        });
+
+        $('nexSalesExport')?.addEventListener('click', exportSales);
+
+        // Profit and loss filters.
+        $('nexPLApply')?.addEventListener('click', refreshProfitLoss);
+
+        $('nexPLPeriod')?.addEventListener('change', () => {
+            const custom = $('nexPLPeriod').value === 'custom';
+            $('nexPLFrom').disabled = !custom;
+            $('nexPLTo').disabled = !custom;
+        });
+
+        $('nexPLExport')?.addEventListener('click', exportProfitLoss);
+    }
+
+    /* =====================================================
+       06. INITIALIZATION
+    ===================================================== */
+
+    function initialize() {
+        const missingScreens = SCREEN_IDS.filter(id => !$(id));
+
+        if (missingScreens.length) {
+            console.error(
+                'RPT-03: Required HTML screens are missing:',
+                missingScreens
+            );
+            return;
+        }
+
+        if (!api) {
+            console.error(
+                'RPT-03: NEXODRA_FINANCIAL is unavailable. Check P1-01.'
+            );
+        }
+
+        // Keep all new screens hidden until their Reports tool is opened.
+        SCREEN_IDS.forEach(id => {
+            $(id).hidden = true;
+            $(id).classList.remove('active');
+        });
+
+        // Initialize default date controls.
+        $('nexDebtPaymentDate').value = today();
+
+        $('nexSalesTo').value = today();
+        $('nexPLTo').value = today();
+
+        $('nexSalesFrom').disabled = true;
+        $('nexSalesTo').disabled = true;
+        $('nexPLFrom').disabled = true;
+        $('nexPLTo').disabled = true;
+
+        bindEvents();
+
+        renderCalculator('profit');
+
+        // Initial debt metrics are useful when entering the Reports area.
+        refreshDebts();
+
+        window.NEXODRA_REPORTS_TOOLS_READY = true;
+
+        console.log(
+            'RPT-03 — Customer Debts, Business Calculator, Sales Report and Profit & Loss initialized.'
+        );
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initialize, { once: true });
+    } else {
+        initialize();
+    }
+
+})();
+
+/* =========================================================
+   END BRICK RPT-03
+========================================================= */
+
+
+/* =====================================================
+   NEXODRA NAVIGATION CLEANUP
+   BRICK P1-NAV-01
+   Close Expense and Supplier managers when leaving
+   their Reports area.
+===================================================== */
+
+(() => {
+    'use strict';
+
+    document.addEventListener('click', event => {
+
+        const navigationControl = event.target.closest(
+            '.nexodra-sidebar-link, .bottom-nav .nav-btn'
+        );
+
+        if (!navigationControl) return;
+
+        // Close Expense Management if it is open.
+        if (window.NEXODRA_P1_EXPENSES?.close) {
+            window.NEXODRA_P1_EXPENSES.close();
+        }
+
+        // Close Supplier Management if it is open.
+        if (window.NEXODRA_P1_SUPPLIERS?.close) {
+            window.NEXODRA_P1_SUPPLIERS.close();
+        }
+
+    }, true);
+
+    console.log(
+        'P1-NAV-01 — Reports manager navigation cleanup ready.'
+    );
+
+})();
+
+
+/* =====================================================
+   FIX E-01 — EXPENSE ACCOUNT SELECTOR
+===================================================== */
+(() => {
+    'use strict';
+
+    const select = document.getElementById('p1ExpenseAccount');
+    const api = window.NEXODRA_FINANCIAL;
+
+    if (!select || !api || select.dataset.accountsConnected === 'true') {
+        return;
+    }
+
+    function refreshExpenseAccounts() {
+        const previous = select.value;
+
+        const accounts = api.getCollection('accounts') || [];
+
+        select.innerHTML =
+            '<option value="">Select account later</option>';
+
+        accounts
+            .filter(account =>
+                account &&
+                account.id &&
+                account.status !== 'closed' &&
+                account.status !== 'inactive'
+            )
+            .sort((a, b) =>
+                String(a.name || '').localeCompare(String(b.name || ''))
+            )
+            .forEach(account => {
+                const option = document.createElement('option');
+
+                option.value = account.id;
+                option.textContent = account.name || 'Unnamed account';
+
+                select.appendChild(option);
+            });
+
+        if (previous) {
+            select.value = previous;
+        }
+    }
+
+    // Populate before the existing Add/Edit handlers run.
+    document.addEventListener('click', event => {
+        const trigger = event.target.closest(
+            '#p1AddExpenseBtn, [data-expense-action="edit"]'
+        );
+
+        if (trigger) refreshExpenseAccounts();
+    }, true);
+
+    // Also refresh when the account selector receives focus.
+    select.addEventListener('focus', refreshExpenseAccounts);
+
+        select.dataset.accountsConnected = 'true';
+
+    // Do not load financial accounts during app startup.
+    // The existing click and focus handlers will populate
+    // the selector when the seller opens the expense form.
+
+    console.log(
+        'FIX E-01: Expense account selector connected; waiting for user interaction.'
+    );
+})();
+
+
+
+
+
+
+
 
 
 /* ==========================================================
-   NEXUS ANALYTICS THIS BLOCK NEEDS SERIOUS ATTENTION 
-   Advanced Analytics & Visualization Engine
-   Version 1.0.0
+   NEXUS FOUNDER ANALYTICS THIS BLOCK IS FOR FOUNDER
+   UPDATED
 ========================================================== */
 
 "use strict";
@@ -41267,7 +44893,7 @@ currentSalePanel.addEventListener('click', event => {
 
 const NEXUS = {
 
-    currency: "USD",
+    currency: currentCurrencyCode,
 
     locale: "en-US",
 
@@ -41321,11 +44947,9 @@ const nexusQueryAll = selector => document.querySelectorAll(selector);
 
 const numberFormat = new Intl.NumberFormat("en-US");
 
-const currencyFormat = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0
-});
+const currencyFormat = {
+    format: value => formatCurrency(value)
+};
 
 
 /* ==========================================================
@@ -41698,13 +45322,14 @@ function animateCounter(element, target, options = {}) {
         const current =
             start + difference * eased;
 
-        element.textContent =
-            prefix +
-            current.toLocaleString("en-US", {
-                minimumFractionDigits: decimals,
-                maximumFractionDigits: decimals
-            }) +
-            suffix;
+        element.textContent = options.formatter
+    ? options.formatter(current)
+    : prefix +
+      current.toLocaleString("en-US", {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals
+      }) +
+      suffix;
 
         if (progress < 1) {
 
@@ -41870,8 +45495,8 @@ function commonScales(options = {}) {
                 callback(value) {
 
                     return options.currency
-                        ? "$" + formatCompact(value)
-                        : formatCompact(value);
+    ? formatCurrency(value)
+    : formatCompact(value);
 
                 }
 
@@ -42133,11 +45758,11 @@ function createRevenueSourceChart() {
 
 
     renderLegend(
-        "revenueSourceLegend",
-        DATA.revenueSources,
-        "$",
-        true
-    );
+    "revenueSourceLegend",
+    DATA.revenueSources,
+    "%",
+    false
+);
 
 }
 
@@ -42562,7 +46187,7 @@ function createProductChart() {
                         color: "#64748b",
 
                         callback: value =>
-                            "$" + formatCompact(value)
+    formatCurrency(value)
 
                     }
 
@@ -43098,13 +46723,13 @@ function updateKpis(multiplier = 1) {
     const metrics = DATA.metrics;
 
     animateCounter(
-        getElement("totalRevenue"),
-        Math.round(metrics.revenue * multiplier),
-        {
-            prefix: "$",
-            duration: 1300
-        }
-    );
+    getElement("totalRevenue"),
+    Math.round(metrics.revenue * multiplier),
+    {
+        formatter: value => formatCurrency(value),
+        duration: 1300
+    }
+);
 
     animateCounter(
         getElement("totalUsers"),
@@ -44335,4 +47960,1065 @@ if (document.readyState === "loading") {
 ========================================================== */
 
 
+/* =====================================================
+   NEXODRA SUPPORT CENTER — NAVIGATION CONTROLLER
+===================================================== */
 
+(() => {
+    "use strict";
+
+    const overlay = document.getElementById("nexodraSupportCenter");
+
+    if (!overlay || overlay.dataset.initialized === "true") {
+        return;
+    }
+
+    overlay.dataset.initialized = "true";
+
+    const views = overlay.querySelectorAll("[data-support-view]");
+    const progressText = document.getElementById("nexSupportProgressText");
+    const progressBar = document.getElementById("nexSupportProgressBar");
+    const reviewContent = document.getElementById("nexSupportReviewContent");
+
+    let currentJourney = "";
+    let previousView = "home";
+    let activeForm = null;
+
+    const journeyNames = {
+        account: "Login & Account Assistance",
+        technical: "Technical Problem Report",
+        general: "General Support"
+    };
+
+    const progressValues = {
+        home: 12,
+        account: 35,
+        technical: 35,
+        general: 35,
+        review: 75,
+        confirmation: 100
+    };
+
+    function showView(viewName) {
+
+        views.forEach(view => {
+            view.classList.toggle(
+                "active",
+                view.dataset.supportView === viewName
+            );
+        });
+
+        const progress = progressValues[viewName] || 12;
+
+        progressBar.style.width = progress + "%";
+
+        progressText.textContent =
+            viewName === "home"
+                ? "SUPPORT CENTER"
+                : viewName === "review"
+                    ? "REVIEW YOUR REPORT"
+                    : viewName === "confirmation"
+                        ? "REPORT PREPARED"
+                        : "SUPPORT REQUEST";
+
+        overlay.querySelector(".nex-support-content").scrollTop = 0;
+    }
+
+
+    function openSupport() {
+
+        overlay.classList.add("is-open");
+        overlay.setAttribute("aria-hidden", "false");
+
+        document.body.dataset.previousOverflow =
+            document.body.style.overflow;
+
+        document.body.style.overflow = "hidden";
+
+        currentJourney = "";
+        activeForm = null;
+
+        showView("home");
+
+        const closeButton =
+            document.getElementById("nexSupportClose");
+
+        closeButton.focus();
+    }
+
+
+    function closeSupport() {
+
+        overlay.classList.remove("is-open");
+        overlay.setAttribute("aria-hidden", "true");
+
+        document.body.style.overflow =
+            document.body.dataset.previousOverflow || "";
+
+        delete document.body.dataset.previousOverflow;
+
+        showView("home");
+    }
+
+
+    function escapeHTML(value) {
+
+        return String(value).replace(/[&<>"']/g, character => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        })[character]);
+    }
+
+
+    function getFormData(form) {
+
+        const data = {};
+
+        new FormData(form).forEach((value, key) => {
+            data[key] = String(value).trim();
+        });
+
+        return data;
+    }
+
+
+    function renderReview(data) {
+
+        const rows = [
+            ["Support category", journeyNames[currentJourney]],
+            ...Object.entries(data).map(([key, value]) => [
+                key.replace(/([A-Z])/g, " $1")
+                    .replace(/^./, letter => letter.toUpperCase()),
+                value || "Not provided"
+            ])
+        ];
+
+        reviewContent.innerHTML = rows.map(([label, value]) => `
+            <div class="nex-support-review-row">
+                <strong>${escapeHTML(label)}</strong>
+                <span>${escapeHTML(value)}</span>
+            </div>
+        `).join("");
+    }
+
+
+    // OPEN SUPPORT CENTER
+
+    document.addEventListener("click", event => {
+
+        const trigger = event.target.closest("#nexodraOpenSupport");
+
+        if (trigger) {
+            event.preventDefault();
+            openSupport();
+        }
+
+    });
+
+
+    // CLOSE SUPPORT CENTER
+
+    document.getElementById("nexSupportClose")
+        .addEventListener("click", closeSupport);
+
+
+    // RETURN TO LOGIN
+
+    document.getElementById("nexSupportReturnLogin")
+        .addEventListener("click", closeSupport);
+
+    document.getElementById("nexSupportFinish")
+        .addEventListener("click", closeSupport);
+
+
+    // SELECT A JOURNEY
+
+    overlay.querySelectorAll("[data-support-journey]")
+        .forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                currentJourney = button.dataset.supportJourney;
+
+                activeForm = overlay.querySelector(
+                    `[data-support-form="${currentJourney}"]`
+                );
+
+                if (!activeForm) return;
+
+                showView(currentJourney);
+
+            });
+
+        });
+
+
+    // BACK TO SUPPORT HOME
+
+    overlay.querySelectorAll("[data-support-back]")
+        .forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                currentJourney = "";
+                activeForm = null;
+
+                showView("home");
+
+            });
+
+        });
+
+
+    // VALIDATE AND REVIEW
+
+    overlay.querySelectorAll("[data-support-review]")
+        .forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                if (!activeForm) return;
+
+                if (!activeForm.reportValidity()) {
+                    return;
+                }
+
+                const data = getFormData(activeForm);
+
+                renderReview(data);
+
+                previousView = currentJourney;
+
+                showView("review");
+
+            });
+
+        });
+
+
+    // EDIT REPORT
+
+    document.getElementById("nexSupportEditReport")
+        .addEventListener("click", () => {
+
+            showView(previousView);
+
+        });
+
+
+    
+    // SUBMIT SUPPORT TICKET TO NEXODRA API
+
+    document.getElementById("nexSupportSendReport")
+        .addEventListener("click", async () => {
+
+            if (!activeForm) return;
+
+            const button = document.getElementById("nexSupportSendReport");
+            const data = getFormData(activeForm);
+
+            const category = currentJourney;
+
+            const payload = {
+                category: category,
+                email: data.email,
+                issue: data.issue,
+                description: data.description,
+                requester_name: data.name || null,
+                device: data.device || null,
+                browser: data.browser || null,
+                error: data.error || null,
+                store: data.store || null,
+                urgency: data.urgency || "normal"
+            };
+
+            button.disabled = true;
+            button.textContent = "Submitting ticket...";
+
+            try {
+
+                let accessToken = null;
+
+                // Attach the signed-in user's token when available.
+                if (
+                    typeof supabaseClient !== "undefined" &&
+                    supabaseClient?.auth
+                ) {
+                    const { data: sessionData, error: sessionError } =
+                        await supabaseClient.auth.getSession();
+
+                    if (sessionError) throw sessionError;
+
+                    accessToken =
+                        sessionData.session?.access_token || null;
+                }
+
+                const headers = {
+                    "Content-Type": "application/json"
+                };
+
+                if (accessToken) {
+                    headers.Authorization = `Bearer ${accessToken}`;
+                }
+
+                const response = await fetch(
+                    "https://nexodra-api.onrender.com/support/tickets",
+                    {
+                        method: "POST",
+                        headers,
+                        body: JSON.stringify(payload)
+                    }
+                );
+
+                const result = await response.json().catch(() => ({}));
+
+                if (!response.ok || result.success !== true) {
+                    throw new Error(
+                        result.detail ||
+                        "Your support ticket could not be submitted."
+                    );
+                }
+
+                // Update the existing confirmation screen.
+                const heading = overlay.querySelector(
+                    '[data-support-view="confirmation"] h2'
+                );
+
+                const eyebrow = overlay.querySelector(
+                    '[data-support-view="confirmation"] .nex-support-eyebrow'
+                );
+
+                const description = overlay.querySelector(
+                    '[data-support-view="confirmation"] .nex-support-description'
+                );
+
+                const confirmationCard = overlay.querySelector(
+                    '[data-support-view="confirmation"] .nex-support-confirmation-card'
+                );
+
+                if (heading) {
+                    heading.textContent = "Your support ticket is submitted";
+                }
+
+                if (eyebrow) {
+                    eyebrow.textContent = "TICKET CREATED";
+                }
+
+                if (description) {
+                    description.textContent =
+                        "Your request has been received by Nexodra Support. Keep your ticket number for future reference.";
+                }
+
+                if (confirmationCard) {
+                    confirmationCard.innerHTML = `
+                        <strong>Support ticket number</strong>
+                        <span>${escapeHTML(result.ticket_number)}</span>
+                        <small>Status: ${escapeHTML(result.status)}</small>
+                    `;
+                }
+
+                console.info(
+                    "NEXODRA SUPPORT — Ticket created:",
+                    result
+                );
+
+                showView("confirmation");
+
+            } catch (error) {
+
+                console.error(
+                    "NEXODRA SUPPORT — Submission failed:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Unable to submit your support request. Please try again."
+                );
+
+            } finally {
+
+                button.disabled = false;
+                button.innerHTML =
+                    'Submit support ticket <i class="fa-solid fa-paper-plane"></i>';
+
+            }
+
+        });
+
+
+    // RETURN TO SUPPORT HOME
+
+    document.getElementById("nexSupportBackHome")
+        .addEventListener("click", () => {
+
+            currentJourney = "";
+            activeForm = null;
+
+            showView("home");
+
+        });
+
+
+    // ESCAPE KEY
+
+    document.addEventListener("keydown", event => {
+
+        if (
+            event.key === "Escape" &&
+            overlay.classList.contains("is-open")
+        ) {
+            closeSupport();
+        }
+
+    });
+
+})();
+
+
+
+// ==========================================
+// NEXODRA FOUNDER ANALYTICS — GLOBAL MAP
+// ==========================================
+
+function loadLeaflet() {
+    return new Promise((resolve, reject) => {
+        // Reuse Leaflet if it is already loaded correctly
+        if (window.L && typeof window.L.map === "function") {
+            resolve(window.L);
+            return;
+        }
+
+        // Load Leaflet CSS once
+        if (!document.querySelector('link[data-leaflet-css]')) {
+            const css = document.createElement("link");
+            css.rel = "stylesheet";
+            css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+            css.dataset.leafletCss = "true";
+            document.head.appendChild(css);
+        }
+
+        // Load Leaflet JavaScript
+        const existingScript = document.querySelector(
+            'script[data-leaflet-js]'
+        );
+
+        if (existingScript) {
+            existingScript.addEventListener("load", () => {
+                if (window.L && typeof window.L.map === "function") {
+                    resolve(window.L);
+                } else {
+                    reject(new Error("Leaflet loaded, but L.map is unavailable."));
+                }
+            }, { once: true });
+
+            existingScript.addEventListener("error", () => {
+                reject(new Error("Could not load Leaflet."));
+            }, { once: true });
+
+            return;
+        }
+
+        const script = document.createElement("script");
+        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+        script.dataset.leafletJs = "true";
+
+        script.onload = () => {
+            if (window.L && typeof window.L.map === "function") {
+                resolve(window.L);
+            } else {
+                reject(new Error("Leaflet loaded, but L.map is unavailable."));
+            }
+        };
+
+        script.onerror = () => {
+            reject(new Error("Failed to download Leaflet JavaScript."));
+        };
+
+        document.body.appendChild(script);
+    });
+}
+
+async function initializeGeographicMap() {
+    const mapElement = document.getElementById("worldMap");
+
+    if (!mapElement) {
+        console.warn('NEXUS map: Could not find an element with id="worldMap".');
+        return;
+    }
+
+    // Prevent duplicate map initialization
+    if (mapElement.dataset.mapInitialized === "true") {
+        return;
+    }
+
+    try {
+        const L = await loadLeaflet();
+
+        mapElement.style.height = "270px";
+        mapElement.style.width = "100%";
+
+        const map = L.map(mapElement, {
+            zoomControl: true,
+            scrollWheelZoom: false
+        }).setView([25, 10], 2);
+
+        L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19
+    }
+).addTo(map);
+
+        const locations = [
+            { name: "United States", lat: 37.0902, lng: -95.7129, users: "8,420 users" },
+            { name: "United Kingdom", lat: 55.3781, lng: -3.4360, users: "3,210 users" },
+            { name: "Germany", lat: 51.1657, lng: 10.4515, users: "2,840 users" },
+            { name: "France", lat: 46.2276, lng: 2.2137, users: "2,120 users" },
+            { name: "Canada", lat: 56.1304, lng: -106.3468, users: "1,950 users" }
+        ];
+
+        locations.forEach(location => {
+            L.circleMarker([location.lat, location.lng], {
+                radius: 8,
+                color: "#8b7cff",
+                weight: 2,
+                fillColor: "#8b7cff",
+                fillOpacity: 0.8
+            })
+            .addTo(map)
+            .bindPopup(
+                `<strong>${location.name}</strong><br>${location.users}`
+            );
+        });
+
+        mapElement.dataset.mapInitialized = "true";
+
+        // Correct map sizing after the dashboard has rendered
+        requestAnimationFrame(() => map.invalidateSize());
+        setTimeout(() => map.invalidateSize(), 300);
+
+        // Keep a reference in case you need to update the map later
+        window.nexusGlobalMap = map;
+
+    } catch (error) {
+        console.error("NEXUS map initialization failed:", error);
+        mapElement.innerHTML =
+            '<div style="padding:20px;color:#fca5a5;font-size:13px;">Map could not load. Check your internet connection and browser console.</div>';
+    }
+}
+
+// Run after the page markup is ready
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeGeographicMap);
+} else {
+    initializeGeographicMap();
+}
+
+
+
+
+
+/* =========================================================
+   NEXODRA SALES ANALYTICS ENGINE
+   Self-contained module. No external chart dependency.
+   ========================================================= */
+(function (window, document) {
+  "use strict";
+
+  const ROOT_ID = "salesOverviewScreen";
+  const root = document.getElementById(ROOT_ID);
+  if (!root || root.dataset.nxInitialized === "true") return;
+  root.dataset.nxInitialized = "true";
+
+  const $ = (selector) => root.querySelector(selector); 
+  const money = value => formatCurrency(value);
+  const number = (value) => new Intl.NumberFormat("en-IE").format(value);
+  const percent = (value) => `${value.toFixed(1)}%`;
+
+  /* ---------------------------------------------------------
+     SAMPLE DATA
+     Replace this object with values from your Nexodra API.
+     --------------------------------------------------------- */
+  const DATA = {
+    kpis: {
+      sales: 48294,
+      profit: 14870,
+      orders: 1284,
+      aov: 37.61
+    },
+    revenue: [2100, 2800, 2450, 3900, 3300, 4200, 3700, 4600, 4100, 5200, 4900, 7044],
+    orders:  [72, 89, 81, 105, 94, 120, 110, 132, 124, 145, 139, 173],
+    channels: [
+      { name: "Online store", value: 48, color: "#7168df" },
+      { name: "Direct orders", value: 27, color: "#42b99a" },
+      { name: "Social media", value: 16, color: "#eaa04c" },
+      { name: "Other", value: 9, color: "#8c9aaf" }
+    ],
+    statuses: [
+      { name: "Fulfilled", value: 846, color: "#25b486" },
+      { name: "Pending", value: 284, color: "#e9a34e" },
+      { name: "Processing", value: 154, color: "#6498e9" }
+    ],
+    products: [
+      { name: "Classic Leather Bag", sku: "NX-PRD-001", units: 284, revenue: 8520, stock: 76, icon: "B" },
+      { name: "Minimalist Watch", sku: "NX-PRD-014", units: 216, revenue: 7560, stock: 42, icon: "W" },
+      { name: "Everyday Sneakers", sku: "NX-PRD-008", units: 193, revenue: 6755, stock: 18, icon: "S" },
+      { name: "Premium Backpack", sku: "NX-PRD-021", units: 156, revenue: 6240, stock: 9, icon: "P" },
+      { name: "Wireless Earbuds", sku: "NX-PRD-032", units: 142, revenue: 4970, stock: 63, icon: "E" }
+    ],
+    recentOrders: [
+      { id: "#NX-10482", customer: "Olivia Martin", initials: "OM", date: "Today, 14:32", amount: 129.00, status: "Fulfilled" },
+      { id: "#NX-10481", customer: "Lucas Bernard", initials: "LB", date: "Today, 13:18", amount: 84.50, status: "Processing" },
+      { id: "#NX-10480", customer: "Emma Wilson", initials: "EW", date: "Today, 11:46", amount: 215.00, status: "Pending" },
+      { id: "#NX-10479", customer: "Noah Anderson", initials: "NA", date: "Yesterday", amount: 56.90, status: "Fulfilled" },
+      { id: "#NX-10478", customer: "Mia Thompson", initials: "MT", date: "Yesterday", amount: 172.00, status: "Fulfilled" }
+    ],
+    activities: [
+      { icon: "↗", text: "A new order <strong>#NX-10482</strong> was received.", time: "12 minutes ago" },
+      { icon: "▣", text: "<strong>Classic Leather Bag</strong> stock was updated.", time: "38 minutes ago" },
+      { icon: "＋", text: "A new customer <strong>Olivia Martin</strong> was added.", time: "1 hour ago" },
+      { icon: "↔", text: "A supplier payment was recorded.", time: "3 hours ago" }
+    ]
+  };
+
+  let currentPeriod = 30;
+  let toastTimer = null;
+
+  /* ---------------------------------------------------------
+     HELPERS
+     --------------------------------------------------------- */
+  function randomVariation(value, amount) {
+    return Math.max(0, value * (1 + (Math.random() - 0.5) * amount));
+  }
+
+  function toast(message) {
+    const el = $("#nx-toast");
+    if (!el) return;
+    el.textContent = message;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
+  }
+
+  function animateNumber(element, target, formatter) {
+    if (!element) return;
+    const start = Number(element.dataset.current || 0);
+    const duration = 750;
+    const startTime = performance.now();
+
+    function frame(now) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = start + (target - start) * eased;
+      element.textContent = formatter(value);
+      if (progress < 1) requestAnimationFrame(frame);
+      else element.dataset.current = String(target);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function scaledKpis() {
+    const factor = currentPeriod === 7 ? 0.25 :
+      currentPeriod === 90 ? 2.75 :
+      currentPeriod === 365 ? 10.8 : 1;
+
+    return {
+      sales: Math.round(DATA.kpis.sales * factor),
+      profit: Math.round(DATA.kpis.profit * factor),
+      orders: Math.round(DATA.kpis.orders * factor),
+      aov: DATA.kpis.aov
+    };
+  }
+
+  /* ---------------------------------------------------------
+     KPI CARDS
+     --------------------------------------------------------- */
+  function renderKpis() {
+    const values = scaledKpis();
+    animateNumber($("#nx-sales"), values.sales, money);
+    animateNumber($("#nx-profit"), values.profit, money);
+    animateNumber($("#nx-orders"), values.orders, number);
+    animateNumber($("#nx-aov"), values.aov, money);
+    const total = $("#nx-chart-total");
+    if (total) total.textContent = money(values.sales);
+    const chartTotal = $("#nx-chart-total");
+    if (chartTotal) chartTotal.textContent = money(values.sales);
+    const channelTotal = root.querySelector(".nx-donut-center strong");
+    if (channelTotal) channelTotal.textContent = number(values.orders);
+    const orderTotal = root.querySelector(".nx-order-total strong");
+    if (orderTotal) orderTotal.textContent = number(values.orders);
+  }
+
+  /* ---------------------------------------------------------
+     SVG LINE CHART
+     --------------------------------------------------------- */
+  function renderRevenueChart() {
+    const svg = $("#nx-revenue-chart");
+    if (!svg) return;
+
+    const revenue = DATA.revenue.map(v => v * (currentPeriod === 7 ? .24 : currentPeriod === 90 ? 2.6 : currentPeriod === 365 ? 10 : 1));
+    const orders = DATA.orders.map(v => v * (currentPeriod === 7 ? .24 : currentPeriod === 90 ? 2.6 : currentPeriod === 365 ? 10 : 1));
+    const width = 720, height = 205;
+    const left = 42, right = 12, top = 12, bottom = 27;
+    const chartW = width - left - right;
+    const chartH = height - top - bottom;
+    const maxValue = Math.max(...revenue) * 1.18;
+
+    const x = i => left + (i / (revenue.length - 1)) * chartW;
+    const y = v => top + chartH - (v / maxValue) * chartH;
+
+    const points = revenue.map((v, i) => `${x(i)},${y(v)}`).join(" ");
+    const area = `M ${x(0)} ${top + chartH} L ${points.replaceAll(",", " ")} L ${x(revenue.length - 1)} ${top + chartH} Z`;
+
+    const grid = [0, .25, .5, .75, 1].map(t => {
+      const gy = top + chartH - t * chartH;
+      return `<line x1="${left}" y1="${gy}" x2="${width-right}" y2="${gy}" stroke="var(--nx-border)" stroke-dasharray="3 5"/>
+        <text x="${left-8}" y="${gy+3}" text-anchor="end" fill="var(--nx-muted)" font-size="9">${Math.round(maxValue*t/1000)}k</text>`;
+    }).join("");
+
+    const orderPoints = orders.map((v, i) => {
+      const normalized = v / Math.max(...orders);
+      return `${x(i)},${top + chartH - normalized * chartH * .68}`;
+    }).join(" ");
+
+    const labels = ["01", "04", "07", "10", "13", "16", "19", "22", "25", "28"];
+    const xLabels = labels.map((label, i) => {
+      const lx = left + (i / (labels.length - 1)) * chartW;
+      return `<text x="${lx}" y="${height-5}" text-anchor="middle" fill="var(--nx-muted)" font-size="9">${label}</text>`;
+    }).join("");
+
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="nx-revenue-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#7168df" stop-opacity=".22"/>
+          <stop offset="100%" stop-color="#7168df" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      ${grid}
+      <path d="${area}" fill="url(#nx-revenue-fill)"/>
+      <polyline points="${points}" fill="none" stroke="#7168df" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline points="${orderPoints}" fill="none" stroke="#42b99a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 4"/>
+      ${revenue.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="#7168df" stroke="var(--nx-surface)" stroke-width="2"><title>${money(v)}</title></circle>`).join("")}
+      ${xLabels}
+    `;
+
+    const end = $("#nx-chart-end");
+    const start = $("#nx-chart-start");
+    const labelsByPeriod = {
+      7: ["7 days ago", "Today"],
+      30: ["30 days ago", "Today"],
+      90: ["90 days ago", "Today"],
+      365: ["Jan 1", "Today"]
+    };
+    if (start) start.textContent = labelsByPeriod[currentPeriod][0];
+    if (end) end.textContent = labelsByPeriod[currentPeriod][1];
+  }
+
+  /* ---------------------------------------------------------
+     CHANNEL DONUT
+     --------------------------------------------------------- */
+  function renderChannels() {
+    const svg = $("#nx-channel-chart");
+    const legend = $("#nx-channel-legend");
+    if (!svg || !legend) return;
+
+    let offset = 0;
+    const circumference = 2 * Math.PI * 76;
+    const circles = DATA.channels.map(item => {
+      const dash = circumference * item.value / 100;
+      const circle = `<circle cx="110" cy="110" r="76" fill="none" stroke="${item.color}"
+        stroke-width="19" stroke-dasharray="${dash} ${circumference-dash}"
+        stroke-dashoffset="${-offset}" />`;
+      offset += dash;
+      return circle;
+    }).join("");
+
+    svg.innerHTML = `<circle cx="110" cy="110" r="76" fill="none" stroke="var(--nx-surface-2)" stroke-width="19"/>${circles}`;
+    legend.innerHTML = DATA.channels.map(item => `
+      <div class="nx-channel-item">
+        <i style="background:${item.color}"></i>
+        <span>${item.name}</span><strong>${item.value}%</strong>
+      </div>
+    `).join("");
+  }
+
+  /* ---------------------------------------------------------
+     ORDER STATUS
+     --------------------------------------------------------- */
+  function renderOrderStatus() {
+    const bar = $("#nx-order-bar");
+    const list = $("#nx-order-status");
+    if (!bar || !list) return;
+
+    const total = DATA.statuses.reduce((sum, item) => sum + item.value, 0);
+    bar.innerHTML = DATA.statuses.map(item =>
+      `<span style="width:${item.value / total * 100}%;background:${item.color}" title="${item.name}: ${item.value}"></span>`
+    ).join("");
+
+    list.innerHTML = DATA.statuses.map(item => `
+      <div class="nx-status-row">
+        <i style="background:${item.color}"></i>
+        <span>${item.name}</span>
+        <strong>${number(item.value)}</strong>
+      </div>
+    `).join("");
+  }
+
+  /* ---------------------------------------------------------
+     SPARKLINES
+     --------------------------------------------------------- */
+  function renderSparklines() {
+    const sparkData = {
+      "nx-sales-spark": [5, 7, 6, 9, 8, 12, 10, 14, 13, 17, 15, 20],
+      "nx-profit-spark": [4, 6, 5, 7, 8, 7, 11, 10, 13, 12, 15, 18],
+      "nx-orders-spark": [4, 5, 8, 7, 10, 9, 12, 11, 14, 16, 15, 19],
+      "nx-aov-spark": [14, 13, 15, 12, 14, 11, 13, 12, 14, 13, 12, 11]
+    };
+
+    Object.entries(sparkData).forEach(([id, values]) => {
+      const el = $("#" + id);
+      if (!el) return;
+      const max = Math.max(...values);
+      const min = Math.min(...values);
+      const points = values.map((v, i) =>
+        `${(i / (values.length - 1)) * 100},${25 - ((v - min) / (max - min || 1)) * 20}`
+      ).join(" ");
+      el.innerHTML = `<svg viewBox="0 0 100 28" preserveAspectRatio="none">
+        <polyline points="${points}" fill="none" stroke="#766ce5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+    });
+  }
+
+  /* ---------------------------------------------------------
+     PRODUCT TABLE
+     --------------------------------------------------------- */
+  function renderProducts() {
+    const body = $("#nx-product-rows");
+    if (!body) return;
+
+    body.innerHTML = DATA.products.map(product => {
+      const stockClass = product.stock < 15 ? "low" : "";
+      const stockLabel = product.stock < 15 ? "Low stock" : "In stock";
+      const performance = Math.min(100, product.units / DATA.products[0].units * 100);
+
+      return `<tr>
+        <td><div class="nx-product-cell">
+          <div class="nx-product-thumb">${product.icon}</div>
+          <div><div class="nx-product-name">${product.name}</div><div class="nx-product-sku">${product.sku}</div></div>
+        </div></td>
+        <td>${number(product.units)}</td>
+        <td><strong>${money(product.revenue)}</strong></td>
+        <td><span class="nx-stock ${stockClass}"><i></i>${product.stock} · ${stockLabel}</span></td>
+        <td><div class="nx-mini-bar"><i style="width:${performance}%"></i></div></td>
+      </tr>`;
+    }).join("");
+  }
+
+  /* ---------------------------------------------------------
+     RECENT ORDERS
+     --------------------------------------------------------- */
+  function renderRecentOrders() {
+    const body = $("#nx-recent-orders");
+    if (!body) return;
+
+    const statusClass = {
+      Fulfilled: "nx-status-completed",
+      Pending: "nx-status-pending",
+      Processing: "nx-status-processing"
+    };
+
+    body.innerHTML = DATA.recentOrders.map(order => `
+      <tr>
+        <td><strong>${order.id}</strong></td>
+        <td>${order.customer}</td>
+        <td>${order.date}</td>
+        <td><strong>${money(order.amount)}</strong></td>
+        <td><span class="nx-status-pill ${statusClass[order.status] || ""}">${order.status}</span></td>
+      </tr>
+    `).join("");
+  }
+
+  /* ---------------------------------------------------------
+     ACTIVITY FEED
+     --------------------------------------------------------- */
+  function renderActivities() {
+    const list = $("#nx-activity-list");
+    if (!list) return;
+    list.innerHTML = DATA.activities.map(item => `
+      <div class="nx-activity-item">
+        <div class="nx-activity-icon">${item.icon}</div>
+        <div class="nx-activity-copy"><p>${item.text}</p><span>${item.time}</span></div>
+      </div>
+    `).join("");
+  }
+
+  /* ---------------------------------------------------------
+     PERIOD FILTER
+     --------------------------------------------------------- */
+  function updatePeriod() {
+    currentPeriod = Number($("#nx-period")?.value || 30);
+    renderKpis();
+    renderRevenueChart();
+    toast(`Showing analytics for ${$("#nx-period").selectedOptions[0].text.toLowerCase()}.`);
+  }
+
+  /* ---------------------------------------------------------
+     THEME SWITCH
+     --------------------------------------------------------- */
+  function setTheme(theme) {
+    const dark = theme === "dark";
+    root.classList.toggle("nx-dark", dark);
+    const button = $("#nx-theme-toggle");
+    if (button) {
+      button.title = dark ? "Switch to light mode" : "Switch to dark mode";
+      button.setAttribute("aria-label", button.title);
+      button.innerHTML = dark
+        ? `<svg viewBox="0 0 24 24"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"/></svg>`
+        : `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>`;
+    }
+    try { localStorage.setItem("nexodra-analytics-theme", theme); } catch (_) {}
+  }
+
+  function initializeTheme() {
+    let saved = "light";
+    try { saved = localStorage.getItem("nexodra-analytics-theme") || "light"; } catch (_) {}
+    setTheme(saved);
+    $("#nx-theme-toggle")?.addEventListener("click", () => {
+      setTheme(root.classList.contains("nx-dark") ? "light" : "dark");
+    });
+  }
+
+  /* ---------------------------------------------------------
+     CSV EXPORT
+     --------------------------------------------------------- */
+  function exportCsv() {
+    const rows = [
+      ["Nexodra Analytics Export"],
+      ["Period", $("#nx-period")?.selectedOptions[0]?.text || "Last 30 days"],
+      [],
+      ["Metric", "Value"],
+      ["Total sales", scaledKpis().sales],
+      ["Estimated profit", scaledKpis().profit],
+      ["Total orders", scaledKpis().orders],
+      ["Average order value", DATA.kpis.aov],
+      [],
+      ["Product", "SKU", "Units sold", "Revenue", "Stock"],
+      ...DATA.products.map(p => [p.name, p.sku, p.units, p.revenue, p.stock])
+    ];
+
+    const csv = rows.map(row => row.map(value => {
+      const text = String(value ?? "");
+      return `"${text.replace(/"/g, '""')}"`;
+    }).join(",")).join("\r\n");
+
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `nexodra-analytics-${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    toast("Analytics report exported successfully.");
+  }
+
+  /* ---------------------------------------------------------
+     REFRESH — sample-data preview animation
+     --------------------------------------------------------- */
+  function refreshDashboard() {
+    const button = $("#nx-refresh");
+    if (button) {
+      button.classList.add("nx-refreshing");
+      button.disabled = true;
+    }
+
+    setTimeout(() => {
+      renderKpis();
+      renderRevenueChart();
+      renderChannels();
+      renderOrderStatus();
+      renderSparklines();
+      renderProducts();
+      renderRecentOrders();
+      renderActivities();
+
+      if (button) {
+        button.classList.remove("nx-refreshing");
+        button.disabled = false;
+      }
+      toast("Dashboard refreshed.");
+    }, 650);
+  }
+
+  /* ---------------------------------------------------------
+     DATA ADAPTER
+     Call NexodraAnalytics.setData(yourAnalyticsObject) after
+     loading your authenticated seller's real data.
+     --------------------------------------------------------- */
+  function setData(newData) {
+    if (!newData || typeof newData !== "object") {
+      console.warn("Nexodra Analytics: invalid data object.");
+      return;
+    }
+
+    if (newData.kpis) Object.assign(DATA.kpis, newData.kpis);
+    if (Array.isArray(newData.revenue)) DATA.revenue = newData.revenue;
+    if (Array.isArray(newData.orders)) DATA.orders = newData.orders;
+    if (Array.isArray(newData.channels)) DATA.channels = newData.channels;
+    if (Array.isArray(newData.statuses)) DATA.statuses = newData.statuses;
+    if (Array.isArray(newData.products)) DATA.products = newData.products;
+    if (Array.isArray(newData.recentOrders)) DATA.recentOrders = newData.recentOrders;
+    if (Array.isArray(newData.activities)) DATA.activities = newData.activities;
+
+    renderAll();
+    toast("Analytics data updated.");
+  }
+
+  function renderAll() {
+    renderKpis();
+    renderRevenueChart();
+    renderChannels();
+    renderOrderStatus();
+    renderSparklines();
+    renderProducts();
+    renderRecentOrders();
+    renderActivities();
+  }
+
+  /* ---------------------------------------------------------
+     INITIALIZE
+     --------------------------------------------------------- */
+  function initialize() {
+    initializeTheme();
+    $("#nx-period")?.addEventListener("change", updatePeriod);
+    $("#nx-refresh")?.addEventListener("click", refreshDashboard);
+    $("#nx-export")?.addEventListener("click", exportCsv);
+
+    renderAll();
+  }
+
+  initialize();
+
+  /* Public API — namespaced to avoid global collisions */
+  window.NexodraAnalytics = {
+    setData,
+    refresh: refreshDashboard,
+    show: function () {
+      root.hidden = false;
+      root.scrollIntoView({ behavior: "smooth", block: "start" });
+      renderAll();
+    },
+    hide: function () {
+      root.hidden = true;
+    },
+    setTheme
+  };
+
+})(window, document);

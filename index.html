@@ -1127,7 +1127,18 @@
 
     <div class="auth-card">
 
-        <!-- Logo -->
+    <!-- SUPPORT BUTTON -->
+    <button
+    type="button"
+    id="nexodraOpenSupport"
+    class="auth-support-btn"
+    aria-label="Open Nexodra Support Center"
+    title="Contact Support"
+>
+    <i class="fa-solid fa-headset"></i>
+</button>
+
+    <!-- Logo -->
         <div class="auth-logo">
             <div class="auth-logo-icon">
                 <i class="fa-solid fa-store"></i>
@@ -1745,6 +1756,48 @@
   
     <h1 id="screenTitle">Store</h1>
 
+  
+<!-- NEXODRA GLOBAL SEARCH -->
+<div class="nexodra-global-search" id="nexodraGlobalSearch">
+
+    <!-- Search icon: used on small screens -->
+    <button
+        type="button"
+        id="nexodraGlobalSearchToggle"
+        class="nexodra-global-search-toggle"
+        aria-label="Open global search"
+        aria-expanded="false"
+        aria-controls="nexodraGlobalSearchInput"
+    >
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
+
+    <!-- Search field -->
+    <div class="nexodra-global-search-field">
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+        <input
+            type="search"
+            id="nexodraGlobalSearchInput"
+            placeholder="Search products, orders, customers, suppliers..."
+            autocomplete="off"
+            aria-label="Search Nexodra records"
+        />
+
+        <button
+            type="button"
+            id="nexodraGlobalSearchClear"
+            aria-label="Clear search"
+            hidden
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+</div>
+<!-- END NEXODRA GLOBAL SEARCH -->
+
+  
     <div class="header-right">
 
         <button
@@ -3329,7 +3382,7 @@
             Outstanding balance
         </span>
 
-        <strong id="hpMetricOutstanding">$0.00</strong>
+        <strong id="hpMetricOutstanding">0.00</strong>
 
         <small>Remaining to collect</small>
 
@@ -3399,7 +3452,7 @@
 
         <span>Real portfolio</span>
 
-        <strong id="hpMetricPortfolioOutstanding">$0.00</strong>
+        <strong id="hpMetricPortfolioOutstanding">0.00</strong>
 
         <small>Outstanding balance</small>
 
@@ -7715,7 +7768,7 @@
                 </span>
             </div>
 
-            <h2>₹24,850.00</h2>
+            <h2>24,850.00</h2>
 
             <div class="payments-account-row">
                 <i class="fa-solid fa-building-columns"></i>
@@ -7785,7 +7838,7 @@
 
                     <div>
                         <p>Pending payouts</p>
-                        <h4>₹3,200</h4>
+                        <h4>3,200</h4>
                     </div>
 
                 </article>
@@ -7798,7 +7851,7 @@
 
                     <div>
                         <p>Paid this month</p>
-                        <h4>₹18,450</h4>
+                        <h4>18,450</h4>
                     </div>
 
                 </article>
@@ -7833,7 +7886,7 @@
                     </div>
 
                     <div class="payments-transaction-amount">
-                        <strong class="positive">+₹2,500</strong>
+                        <strong class="positive">+2,500</strong>
                         <span class="payments-status completed">
                             Completed
                         </span>
@@ -7853,7 +7906,7 @@
                     </div>
 
                     <div class="payments-transaction-amount">
-                        <strong>−₹120</strong>
+                        <strong>−120</strong>
                         <span class="payments-status completed">
                             Completed
                         </span>
@@ -7873,7 +7926,7 @@
                     </div>
 
                     <div class="payments-transaction-amount">
-                        <strong>₹3,200</strong>
+                        <strong>3,200</strong>
                         <span class="payments-status pending">
                             Pending
                         </span>
@@ -8372,6 +8425,7 @@
 </section>
 
               
+
 <!-- =========================================
      SALES OVERVIEW SCREEN
 ========================================= -->
@@ -8381,1467 +8435,410 @@
     class="screen"
 >
 
-    <!-- Prepared dashboard content begins. NOTE: figures in this template are sample/demo values. -->
     <div class="sales-overview-dashboard">
 
-   <div id="nexusDashboard" data-theme="light">
+        <!-- =========================================
+             NEXODRA ANALYTICS DASHBOARD
+             Paste the analytics content here.
+             IMPORTANT:
+             Do not include another outer <section>.
+             Do not include id="analytics".
+        ========================================= -->
 
-    <!-- PASTE THE NEXUS dashboardContent BLOCK HERE -->
+        <div class="nx-analytics" aria-label="Business analytics">
 
+            <!-- ANALYTICS HEADER -->
+            <div class="nx-topbar">
+                <div class="nx-heading">
+                    <div class="nx-eyebrow">
+                        <span class="nx-live-dot"></span>
+                        BUSINESS OVERVIEW
+                    </div>
+                    <h1>Analytics</h1>
+                    <p>Track performance, understand your customers, and grow your business.</p>
+                </div>
 
-            <!-- ==================================
-                 DASHBOARD CONTENT
-            =================================== -->
-
-            <div class="dashboard-content" id="dashboardContent">
-
-
-                <!-- ==================================
-                     DASHBOARD INTRO
-                =================================== -->
-
-                <section class="dashboard-intro">
-
-                    <div class="intro-left">
-
-                        <div class="eyebrow">
-
-                            <span class="eyebrow-line"></span>
-
-                            ANALYTICS OVERVIEW
-
-                            <span class="live-badge">
-                                <span></span>
-                                LIVE DATA
-                            </span>
-
-                        </div>
-
-
-                        <h1>
-                            Intelligence
-                            <span class="gradient-text">at a glance.</span>
-                        </h1>
-
-
-                        <p>
-                            Monitor your business performance,
-                            uncover patterns, and transform
-                            complex data into meaningful insights.
-                        </p>
-
+                <div class="nx-actions">
+                    <div class="nx-date-control">
+                        <span>Period</span>
+                        <select id="nx-period">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                            <option value="365">This year</option>
+                        </select>
                     </div>
 
+                    <button class="nx-icon-btn" id="nx-theme-toggle" type="button">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="4"/>
+                            <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>
+                        </svg>
+                    </button>
 
-                    <div class="intro-actions">
+                    <button class="nx-btn nx-btn-light" id="nx-export" type="button">
+                        Export
+                    </button>
 
-                        <button class="secondary-button"
-                            id="exportButton">
+                    <button class="nx-btn nx-btn-primary" id="nx-refresh" type="button">
+                        Refresh
+                    </button>
+                </div>
+            </div>
 
-                            <i class="ri-download-2-line"></i>
+            <!-- DEMO NOTICE -->
+            <div class="nx-demo-note">
+                Preview dashboard — figures shown are sample data. Connect your Nexodra data source to display live business performance.
+            </div>
 
-                            Export report
+            <!-- KPI CARDS -->
+            <div class="nx-kpi-grid">
 
-                        </button>
+                <article class="nx-kpi-card">
+                    <div class="nx-kpi-top">
+                        <span>Total sales</span>
+                        <span class="nx-kpi-icon nx-purple">↗</span>
+                    </div>
+                    <div class="nx-kpi-value" id="nx-sales">48,294</div>
+                    <div class="nx-kpi-bottom">
+                        <span class="nx-change positive">↑ 12.8%</span>
+                        <span>vs previous period</span>
+                    </div>
+                    <div class="nx-spark" id="nx-sales-spark"></div>
+                </article>
 
+                <article class="nx-kpi-card">
+                    <div class="nx-kpi-top">
+                        <span>Estimated profit</span>
+                        <span class="nx-kpi-icon nx-green">◈</span>
+                    </div>
+                    <div class="nx-kpi-value" id="nx-profit">14,870</div>
+                    <div class="nx-kpi-bottom">
+                        <span class="nx-change positive">↑ 8.4%</span>
+                        <span>vs previous period</span>
+                    </div>
+                    <div class="nx-spark" id="nx-profit-spark"></div>
+                </article>
 
-                        <button class="primary-button"
-                            id="refreshButton">
+                <article class="nx-kpi-card">
+                    <div class="nx-kpi-top">
+                        <span>Total orders</span>
+                        <span class="nx-kpi-icon nx-blue">▤</span>
+                    </div>
+                    <div class="nx-kpi-value" id="nx-orders">1,284</div>
+                    <div class="nx-kpi-bottom">
+                        <span class="nx-change positive">↑ 16.2%</span>
+                        <span>vs previous period</span>
+                    </div>
+                    <div class="nx-spark" id="nx-orders-spark"></div>
+                </article>
 
-                            <i class="ri-refresh-line"></i>
+                <article class="nx-kpi-card">
+                    <div class="nx-kpi-top">
+                        <span>Average order value</span>
+                        <span class="nx-kpi-icon nx-orange">◎</span>
+                    </div>
+                    <div class="nx-kpi-value" id="nx-aov">37.61</div>
+                    <div class="nx-kpi-bottom">
+                        <span class="nx-change negative">↓ 2.1%</span>
+                        <span>vs previous period</span>
+                    </div>
+                    <div class="nx-spark" id="nx-aov-spark"></div>
+                </article>
 
-                            Refresh data
+            </div>
 
-                        </button>
+            <!-- SALES PERFORMANCE AND CHANNELS -->
+            <div class="nx-main-grid">
 
+                <article class="nx-panel nx-revenue-panel">
+                    <div class="nx-panel-head">
+                        <div>
+                            <h2>Sales performance</h2>
+                            <p>Revenue and order trends over time</p>
+                        </div>
+                        <div class="nx-legend">
+                            <span><i class="nx-legend-dot revenue-dot"></i> Revenue</span>
+                            <span><i class="nx-legend-dot orders-dot"></i> Orders</span>
+                        </div>
                     </div>
 
-                </section>
-
-
-
-                <!-- ==================================
-                     DATE FILTER TOOLBAR
-                =================================== -->
-
-                <section class="filter-toolbar">
-
-                    <div class="filter-left">
-
-                        <div class="date-filter">
-
-                            <i class="ri-calendar-line"></i>
-
-                            <select id="dateRange">
-
-                                <option value="7">Last 7 days</option>
-
-                                <option value="30" selected>
-                                    Last 30 days
-                                </option>
-
-                                <option value="90">
-                                    Last 90 days
-                                </option>
-
-                                <option value="365">
-                                    Last 12 months
-                                </option>
-
-                            </select>
-
-                            <i class="ri-arrow-down-s-line"></i>
-
-                        </div>
-
-
-                        <div class="comparison-filter">
-
-                            <span>Compared to</span>
-
-                            <select id="comparisonRange">
-
-                                <option value="previous">
-                                    Previous period
-                                </option>
-
-                                <option value="year">
-                                    Previous year
-                                </option>
-
-                            </select>
-
-                        </div>
-
+                    <div class="nx-chart-summary">
+                        <strong id="nx-chart-total">48,294</strong>
+                        <span class="nx-change positive">↑ 12.8%</span>
                     </div>
 
-
-                    <div class="filter-right">
-
-                        <span class="last-updated">
-                            <i class="ri-time-line"></i>
-                            Updated just now
-                        </span>
-
-                        <button class="icon-button"
-                            id="filterButton"
-                            aria-label="More filters">
-
-                            <i class="ri-equalizer-2-line"></i>
-
-                        </button>
-
+                    <div class="nx-chart-wrap">
+                        <svg id="nx-revenue-chart"></svg>
                     </div>
 
-                </section>
+                    <div class="nx-chart-foot">
+                        <span id="nx-chart-start">30 days ago</span>
+                        <span id="nx-chart-end">Today</span>
+                    </div>
+                </article>
 
-
-
-                <!-- ==================================
-                     KPI METRIC CARDS
-                =================================== -->
-
-                <section class="metrics-grid">
-
-
-                    <!-- REVENUE -->
-
-                    <article class="metric-card">
-
-                        <div class="metric-top">
-
-                            <div class="metric-label">
-                                <span class="metric-icon revenue-icon">
-                                    <i class="ri-wallet-3-line"></i>
-                                </span>
-
-                                Total Revenue
-                            </div>
-
-                            <button class="card-menu">
-                                <i class="ri-more-fill"></i>
-                            </button>
-
+                <article class="nx-panel nx-channel-panel">
+                    <div class="nx-panel-head">
+                        <div>
+                            <h2>Sales channels</h2>
+                            <p>Where your orders come from</p>
                         </div>
+                    </div>
 
-
-                        <div class="metric-value"
-                            id="totalRevenue">
-
-                            $284,592
-
+                    <div class="nx-donut-wrap">
+                        <svg id="nx-channel-chart" viewBox="0 0 220 220"></svg>
+                        <div class="nx-donut-center">
+                            <strong>1,284</strong>
+                            <span>Total orders</span>
                         </div>
+                    </div>
 
+                    <div class="nx-channel-legend" id="nx-channel-legend"></div>
+                </article>
 
-                        <div class="metric-bottom">
+            </div>
 
-                            <div class="metric-change positive">
-                                <i class="ri-arrow-up-line"></i>
-                                18.42%
-                            </div>
+            <!-- ORDER, CUSTOMER AND CONVERSION INSIGHTS -->
+            <div class="nx-insight-grid">
 
-                            <span>vs previous period</span>
-
+                <article class="nx-panel">
+                    <div class="nx-panel-head">
+                        <div>
+                            <h2>Order overview</h2>
+                            <p>Current order fulfilment status</p>
                         </div>
+                    </div>
 
+                    <div class="nx-order-total">
+                        <strong>1,284</strong>
+                        <span>orders received</span>
+                    </div>
 
-                        <div class="metric-sparkline">
-                            <canvas id="revenueSparkline"></canvas>
+                    <div class="nx-stacked-bar" id="nx-order-bar"></div>
+                    <div class="nx-status-list" id="nx-order-status"></div>
+                </article>
+
+                <article class="nx-panel">
+                    <div class="nx-panel-head">
+                        <div>
+                            <h2>Customer insights</h2>
+                            <p>Understand your customer base</p>
                         </div>
+                    </div>
 
-                    </article>
-
-
-
-                    <!-- USERS -->
-
-                    <article class="metric-card">
-
-                        <div class="metric-top">
-
-                            <div class="metric-label">
-
-                                <span class="metric-icon users-icon">
-                                    <i class="ri-user-3-line"></i>
-                                </span>
-
-                                Total Users
-
-                            </div>
-
-                            <button class="card-menu">
-                                <i class="ri-more-fill"></i>
-                            </button>
-
+                    <div class="nx-customer-metrics">
+                        <div>
+                            <span class="nx-metric-label">Total customers</span>
+                            <strong>2,846</strong>
+                            <small class="nx-change positive">↑ 9.6%</small>
                         </div>
-
-
-                        <div class="metric-value"
-                            id="totalUsers">
-
-                            48,294
-
-                        </div>
-
-
-                        <div class="metric-bottom">
-
-                            <div class="metric-change positive">
-                                <i class="ri-arrow-up-line"></i>
-                                12.86%
-                            </div>
-
-                            <span>vs previous period</span>
-
-                        </div>
-
-
-                        <div class="metric-sparkline">
-                            <canvas id="usersSparkline"></canvas>
-                        </div>
-
-                    </article>
-
-
-
-                    <!-- CONVERSIONS -->
-
-                    <article class="metric-card">
-
-                        <div class="metric-top">
-
-                            <div class="metric-label">
-
-                                <span class="metric-icon conversion-icon">
-                                    <i class="ri-focus-2-line"></i>
-                                </span>
-
-                                Conversion Rate
-
-                            </div>
-
-                            <button class="card-menu">
-                                <i class="ri-more-fill"></i>
-                            </button>
-
-                        </div>
-
-
-                        <div class="metric-value"
-                            id="conversionRate">
-
-                            4.82%
-
-                        </div>
-
-
-                        <div class="metric-bottom">
-
-                            <div class="metric-change positive">
-                                <i class="ri-arrow-up-line"></i>
-                                0.64%
-                            </div>
-
-                            <span>vs previous period</span>
-
-                        </div>
-
-
-                        <div class="metric-sparkline">
-                            <canvas id="conversionSparkline"></canvas>
-                        </div>
-
-                    </article>
-
-
-
-                    <!-- SESSIONS -->
-
-                    <article class="metric-card">
-
-                        <div class="metric-top">
-
-                            <div class="metric-label">
-
-                                <span class="metric-icon sessions-icon">
-                                    <i class="ri-pulse-line"></i>
-                                </span>
-
-                                Total Sessions
-
-                            </div>
-
-                            <button class="card-menu">
-                                <i class="ri-more-fill"></i>
-                            </button>
-
-                        </div>
-
-
-                        <div class="metric-value"
-                            id="totalSessions">
-
-                            126,847
-
-                        </div>
-
-
-                        <div class="metric-bottom">
-
-                            <div class="metric-change negative">
-                                <i class="ri-arrow-down-line"></i>
-                                2.14%
-                            </div>
-
-                            <span>vs previous period</span>
-
-                        </div>
-
-
-                        <div class="metric-sparkline">
-                            <canvas id="sessionsSparkline"></canvas>
-                        </div>
-
-                    </article>
-
-                </section>
-
-
-
-                <!-- ==================================
-                     REVENUE PERFORMANCE SECTION
-                =================================== -->
-
-                <section class="analytics-section">
-
-
-                    <div class="section-heading">
 
                         <div>
-
-                            <div class="section-eyebrow">
-                                PERFORMANCE
-                            </div>
-
-                            <h2>Revenue Analytics</h2>
-
-                            <p>
-                                Understand your revenue growth
-                                and financial performance.
-                            </p>
-
+                            <span class="nx-metric-label">Returning customers</span>
+                            <strong>38.4%</strong>
+                            <small class="nx-change positive">↑ 4.2%</small>
                         </div>
-
-
-                        <button class="text-button"
-                            data-page-link="revenue">
-
-                            Detailed analytics
-
-                            <i class="ri-arrow-right-line"></i>
-
-                        </button>
-
                     </div>
 
-
-
-                    <div class="chart-grid revenue-grid">
-
-
-                        <!-- MAIN REVENUE CHART -->
-
-                        <article class="chart-card revenue-chart-card">
-
-                            <div class="chart-header">
-
-                                <div>
-
-                                    <h3>Revenue Overview</h3>
-
-                                    <span class="chart-subtitle">
-                                        Revenue performance over time
-                                    </span>
-
-                                </div>
-
-
-                                <div class="chart-controls">
-
-                                    <button class="chart-type-button active"
-                                        data-chart="revenue"
-                                        data-type="line">
-
-                                        <i class="ri-line-chart-line"></i>
-
-                                    </button>
-
-
-                                    <button class="chart-type-button"
-                                        data-chart="revenue"
-                                        data-type="bar">
-
-                                        <i class="ri-bar-chart-line"></i>
-
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="chart-main-stat">
-
-                                <strong>$284,592</strong>
-
-                                <span class="positive">
-                                    <i class="ri-arrow-up-line"></i>
-                                    18.42%
-                                </span>
-
-                            </div>
-
-
-                            <div class="chart-container revenue-chart-container">
-
-                                <canvas id="revenueChart"></canvas>
-
-                            </div>
-
-
-                            <div class="chart-footer">
-
-                                <div class="chart-legend">
-
-                                    <span class="legend-item">
-                                        <span class="legend-dot purple"></span>
-                                        This period
-                                    </span>
-
-                                    <span class="legend-item">
-                                        <span class="legend-dot gray"></span>
-                                        Previous period
-                                    </span>
-
-                                </div>
-
-
-                                <span class="chart-footer-note">
-                                    Values in USD
-                                </span>
-
-                            </div>
-
-                        </article>
-
-
-
-                        <!-- REVENUE SOURCES -->
-
-                        <article class="chart-card revenue-source-card">
-
-                            <div class="chart-header">
-
-                                <div>
-
-                                    <h3>Revenue Sources</h3>
-
-                                    <span class="chart-subtitle">
-                                        Distribution by channel
-                                    </span>
-
-                                </div>
-
-
-                                <button class="card-menu">
-                                    <i class="ri-more-fill"></i>
-                                </button>
-
-                            </div>
-
-
-                            <div class="donut-chart-container">
-
-                                <canvas id="revenueSourceChart"></canvas>
-
-
-                                <div class="donut-center">
-
-                                    <span>Total Revenue</span>
-
-                                    <strong>$284.6K</strong>
-
-                                    <small>USD</small>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="source-legend"
-                                id="revenueSourceLegend">
-
-                            </div>
-
-                        </article>
-
+                    <div class="nx-customer-chart">
+                        <div class="nx-chart-label-row">
+                            <span>New customers</span>
+                            <strong>684</strong>
+                        </div>
+                        <div class="nx-progress"><i style="width:68%"></i></div>
+
+                        <div class="nx-chart-label-row">
+                            <span>Returning customers</span>
+                            <strong>438</strong>
+                        </div>
+                        <div class="nx-progress nx-progress-green"><i style="width:43%"></i></div>
+
+                        <div class="nx-chart-label-row">
+                            <span>Guest checkouts</span>
+                            <strong>162</strong>
+                        </div>
+                        <div class="nx-progress nx-progress-orange"><i style="width:16%"></i></div>
                     </div>
+                </article>
 
-                </section>
-
-
-
-                <!-- ==================================
-                     USER ANALYTICS
-                =================================== -->
-
-                <section class="analytics-section">
-
-                    <div class="section-heading">
-
+                <article class="nx-panel">
+                    <div class="nx-panel-head">
                         <div>
+                            <h2>Conversion funnel</h2>
+                            <p>From store visits to completed orders</p>
+                        </div>
+                    </div>
 
-                            <div class="section-eyebrow">
-                                AUDIENCE INTELLIGENCE
-                            </div>
-
-                            <h2>Audience Insights</h2>
-
-                            <p>
-                                Discover who interacts with your
-                                platform and how they behave.
-                            </p>
-
+                    <div class="nx-funnel" id="nx-funnel">
+                        <div class="nx-funnel-row">
+                            <span>Store visits</span>
+                            <strong>12,840</strong>
+                            <div><i style="width:100%"></i></div>
                         </div>
 
+                        <div class="nx-funnel-row">
+                            <span>Product views</span>
+                            <strong>8,210</strong>
+                            <div><i style="width:64%"></i></div>
+                        </div>
 
-                        <button class="text-button"
-                            data-page-link="audience">
+                        <div class="nx-funnel-row">
+                            <span>Add to cart</span>
+                            <strong>3,420</strong>
+                            <div><i style="width:27%"></i></div>
+                        </div>
 
-                            Explore audience
+                        <div class="nx-funnel-row">
+                            <span>Checkout</span>
+                            <strong>1,860</strong>
+                            <div><i style="width:14.5%"></i></div>
+                        </div>
 
-                            <i class="ri-arrow-right-line"></i>
-
-                        </button>
-
+                        <div class="nx-funnel-row">
+                            <span>Completed orders</span>
+                            <strong>1,284</strong>
+                            <div><i style="width:10%"></i></div>
+                        </div>
                     </div>
 
-
-
-                    <div class="chart-grid audience-grid">
-
-
-                        <!-- USER ACTIVITY -->
-
-                        <article class="chart-card audience-chart-card">
-
-                            <div class="chart-header">
-
-                                <div>
-
-                                    <h3>User Activity</h3>
-
-                                    <span class="chart-subtitle">
-                                        Daily active users and new users
-                                    </span>
-
-                                </div>
-
-
-                                <select class="chart-select"
-                                    id="userActivityRange">
-
-                                    <option value="7">7 days</option>
-                                    <option value="30" selected>30 days</option>
-                                    <option value="90">90 days</option>
-
-                                </select>
-
-                            </div>
-
-
-                            <div class="chart-main-stat">
-
-                                <strong>32,481</strong>
-
-                                <span class="positive">
-                                    <i class="ri-arrow-up-line"></i>
-                                    14.8%
-                                </span>
-
-                            </div>
-
-
-                            <div class="chart-container">
-
-                                <canvas id="userActivityChart"></canvas>
-
-                            </div>
-
-
-                            <div class="chart-footer">
-
-                                <div class="chart-legend">
-
-                                    <span class="legend-item">
-                                        <span class="legend-dot purple"></span>
-                                        Active users
-                                    </span>
-
-                                    <span class="legend-item">
-                                        <span class="legend-dot cyan"></span>
-                                        New users
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        </article>
-
-
-
-                        <!-- DEVICE DISTRIBUTION -->
-
-                        <article class="chart-card device-chart-card">
-
-                            <div class="chart-header">
-
-                                <div>
-
-                                    <h3>Device Distribution</h3>
-
-                                    <span class="chart-subtitle">
-                                        Users by device category
-                                    </span>
-
-                                </div>
-
-
-                                <button class="card-menu">
-                                    <i class="ri-more-fill"></i>
-                                </button>
-
-                            </div>
-
-
-                            <div class="device-chart-container">
-
-                                <canvas id="deviceChart"></canvas>
-
-                            </div>
-
-
-                            <div class="device-legend"
-                                id="deviceLegend">
-
-                            </div>
-
-                        </article>
-
+                    <div class="nx-conversion-foot">
+                        <span>Store conversion rate</span>
+                        <strong>10.0%</strong>
                     </div>
+                </article>
 
-                </section>
+            </div>
 
+            <!-- TOP PRODUCTS -->
+            <article class="nx-panel nx-products-panel">
+                <div class="nx-panel-head nx-products-head">
+                    <div>
+                        <h2>Top-performing products</h2>
+                        <p>Products contributing most to your sales</p>
+                    </div>
+                    <a href="#products" class="nx-text-link">View products →</a>
+                </div>
 
+                <div class="nx-table-scroll">
+                    <table class="nx-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Units sold</th>
+                                <th>Revenue</th>
+                                <th>Stock level</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="nx-product-rows"></tbody>
+                    </table>
+                </div>
+            </article>
 
-                <!-- ==================================
-                     TRAFFIC ANALYTICS
-                =================================== -->
+            <!-- RECENT ORDERS AND ACTIVITY -->
+            <div class="nx-bottom-grid">
 
-                <section class="analytics-section">
-
-                    <div class="section-heading">
-
+                <article class="nx-panel">
+                    <div class="nx-panel-head">
                         <div>
-
-                            <div class="section-eyebrow">
-                                ACQUISITION
-                            </div>
-
-                            <h2>Traffic Intelligence</h2>
-
-                            <p>
-                                Analyze where your visitors
-                                originate and how they arrive.
-                            </p>
-
+                            <h2>Recent orders</h2>
+                            <p>Latest customer transactions</p>
                         </div>
-
-
-                        <button class="text-button"
-                            data-page-link="traffic">
-
-                            Traffic reports
-
-                            <i class="ri-arrow-right-line"></i>
-
-                        </button>
-
+                        <a href="#orders" class="nx-text-link">All orders →</a>
                     </div>
 
-
-
-                    <div class="chart-grid traffic-grid">
-
-
-                        <!-- TRAFFIC CHANNELS -->
-
-                        <article class="chart-card traffic-channel-card">
-
-                            <div class="chart-header">
-
-                                <div>
-
-                                    <h3>Traffic Channels</h3>
-
-                                    <span class="chart-subtitle">
-                                        Acquisition channel breakdown
-                                    </span>
-
-                                </div>
-
-                                <span class="chart-tag">
-                                    All channels
-                                </span>
-
-                            </div>
-
-
-                            <div class="chart-container">
-
-                                <canvas id="trafficChart"></canvas>
-
-                            </div>
-
-                        </article>
-
-
-
-                        <!-- TRAFFIC SOURCES TABLE -->
-
-                        <article class="chart-card traffic-table-card">
-
-                            <div class="chart-header">
-
-                                <div>
-
-                                    <h3>Top Traffic Sources</h3>
-
-                                    <span class="chart-subtitle">
-                                        Highest performing sources
-                                    </span>
-
-                                </div>
-
-                                <button class="card-menu">
-                                    <i class="ri-more-fill"></i>
-                                </button>
-
-                            </div>
-
-
-                            <div class="table-wrapper">
-
-                                <table class="analytics-table">
-
-                                    <thead>
-
-                                        <tr>
-
-                                            <th>Source</th>
-                                            <th>Visitors</th>
-                                            <th>Change</th>
-
-                                        </tr>
-
-                                    </thead>
-
-
-                                    <tbody id="trafficTableBody">
-
-                                    </tbody>
-
-                                </table>
-
-                            </div>
-
-
-                            <button class="table-footer-button"
-                                data-page-link="traffic">
-
-                                View all sources
-
-                                <i class="ri-arrow-right-line"></i>
-
-                            </button>
-
-                        </article>
-
+                    <div class="nx-table-scroll">
+                        <table class="nx-table nx-orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="nx-recent-orders"></tbody>
+                        </table>
                     </div>
+                </article>
 
-                </section>
-
-
-
-                <!-- ==================================
-                     GEOGRAPHIC ANALYTICS
-                =================================== -->
-
-                <section class="analytics-section">
-
-                    <div class="section-heading">
-
+                <article class="nx-panel">
+                    <div class="nx-panel-head">
                         <div>
-
-                            <div class="section-eyebrow">
-                                GLOBAL REACH
-                            </div>
-
-                            <h2>Geographic Intelligence</h2>
-
-                            <p>
-                                Understand your audience's
-                                worldwide distribution.
-                            </p>
-
+                            <h2>Business activity</h2>
+                            <p>Recent updates from your workspace</p>
                         </div>
-
+                        <span class="nx-live-label"><i></i> Live preview</span>
                     </div>
 
+                    <div class="nx-activity-list" id="nx-activity-list"></div>
+                </article>
 
+            </div>
 
-                    <div class="chart-grid geography-grid">
+            <footer class="nx-footer">
+                <span>© Nexodra Analytics</span>
+                <span>One workspace to manage your business.</span>
+            </footer>
 
+            <div class="nx-toast" id="nx-toast" role="status" aria-live="polite"></div>
 
-                        <!-- WORLD MAP -->
-
-                        <article class="chart-card world-map-card">
-
-                            <div class="chart-header">
-
-                                <div>
-
-                                    <h3>Global Audience Distribution</h3>
-
-                                    <span class="chart-subtitle">
-                                        Visitors across geographical regions
-                                    </span>
-
-                                </div>
-
-
-                                <span class="chart-tag">
-                                    Global
-                                </span>
-
-                            </div>
-
-
-                            <div class="world-map-container">
-
-                                <div class="map-placeholder"
-                                    id="worldMap">
-
-                                    <div class="map-glow"></div>
-
-                                    <div class="map-content">
-
-                                        <i class="ri-earth-line"></i>
-
-                                        <h4>Global Analytics Map</h4>
-
-                                        <p>
-                                            Geographic visualization
-                                            will be displayed here.
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </article>
-
-
-
-                        <!-- REGIONAL BREAKDOWN -->
-
-                        <article class="chart-card region-card">
-
-                            <div class="chart-header">
-
-                                <div>
-
-                                    <h3>Top Countries</h3>
-
-                                    <span class="chart-subtitle">
-                                        Visitors by country
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="region-list"
-                                id="regionList">
-
-                            </div>
-
-                        </article>
-
-                    </div>
-
-                </section>
-
-
-
-                <!-- ==================================
-                     PRODUCT PERFORMANCE
-                =================================== -->
-
-                <section class="analytics-section">
-
-                    <div class="section-heading">
-
-                        <div>
-
-                            <div class="section-eyebrow">
-                                PRODUCT INTELLIGENCE
-                            </div>
-
-                            <h2>Product Performance</h2>
-
-                            <p>
-                                Identify your most valuable
-                                products and revenue drivers.
-                            </p>
-
-                        </div>
-
-
-                        <button class="text-button"
-                            data-page-link="products">
-
-                            Product analytics
-
-                            <i class="ri-arrow-right-line"></i>
-
-                        </button>
-
-                    </div>
-
-
-
-                    <div class="chart-grid product-grid">
-
-
-                        <!-- PRODUCT PERFORMANCE CHART -->
-
-                        <article class="chart-card product-chart-card">
-
-                            <div class="chart-header">
-
-                                <div>
-
-                                    <h3>Top Performing Products</h3>
-
-                                    <span class="chart-subtitle">
-                                        Revenue generated by product
-                                    </span>
-
-                                </div>
-
-
-                                <select class="chart-select"
-                                    id="productSort">
-
-                                    <option value="revenue">
-                                        By revenue
-                                    </option>
-
-                                    <option value="units">
-                                        By units sold
-                                    </option>
-
-                                </select>
-
-                            </div>
-
-
-                            <div class="chart-container">
-
-                                <canvas id="productChart"></canvas>
-
-                            </div>
-
-                        </article>
-
-
-
-                        <!-- PRODUCT TABLE -->
-
-                        <article class="chart-card product-table-card">
-
-                            <div class="chart-header">
-
-                                <div>
-
-                                    <h3>Product Rankings</h3>
-
-                                    <span class="chart-subtitle">
-                                        Performance leaderboard
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="table-wrapper">
-
-                                <table class="analytics-table">
-
-                                    <thead>
-
-                                        <tr>
-
-                                            <th>Product</th>
-                                            <th>Sales</th>
-                                            <th>Revenue</th>
-
-                                        </tr>
-
-                                    </thead>
-
-
-                                    <tbody id="productTableBody">
-
-                                    </tbody>
-
-                                </table>
-
-                            </div>
-
-                        </article>
-
-                    </div>
-
-                </section>
-
-
-
-                <!-- ==================================
-                     CONVERSION FUNNEL
-                =================================== -->
-
-                <section class="analytics-section">
-
-                    <div class="section-heading">
-
-                        <div>
-
-                            <div class="section-eyebrow">
-                                CONVERSION INTELLIGENCE
-                            </div>
-
-                            <h2>Conversion Funnel</h2>
-
-                            <p>
-                                Track how users progress through
-                                your customer journey.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <article class="chart-card funnel-card">
-
-                        <div class="chart-header">
-
-                            <div>
-
-                                <h3>Customer Journey</h3>
-
-                                <span class="chart-subtitle">
-                                    From initial visit to completed purchase
-                                </span>
-
-                            </div>
-
-                            <span class="chart-tag">
-                                Conversion analysis
-                            </span>
-
-                        </div>
-
-
-                        <div class="funnel-container"
-                            id="conversionFunnel">
-
-                            <!-- Generated through app.js -->
-
-                        </div>
-
-
-                        <div class="funnel-footer">
-
-                            <div>
-
-                                <span>Overall conversion</span>
-
-                                <strong>4.82%</strong>
-
-                            </div>
-
-
-                            <div>
-
-                                <span>Total visitors</span>
-
-                                <strong>48,294</strong>
-
-                            </div>
-
-
-                            <div>
-
-                                <span>Completed purchases</span>
-
-                                <strong>2,329</strong>
-
-                            </div>
-
-                        </div>
-
-                    </article>
-
-                </section>
-
-
-
-                <!-- ==================================
-                     REAL TIME MONITOR
-                =================================== -->
-
-                <section class="analytics-section realtime-section">
-
-                    <div class="section-heading">
-
-                        <div>
-
-                            <div class="section-eyebrow">
-                                LIVE MONITORING
-                            </div>
-
-                            <h2>Real-Time Intelligence</h2>
-
-                            <p>
-                                Observe live platform activity
-                                and current user engagement.
-                            </p>
-
-                        </div>
-
-
-                        <div class="live-status">
-
-                            <span class="live-pulse"></span>
-
-                            LIVE MONITORING
-
-                        </div>
-
-                    </div>
-
-
-
-                    <div class="realtime-grid">
-
-
-                        <!-- ACTIVE USERS -->
-
-                        <article class="chart-card realtime-users-card">
-
-                            <div class="realtime-card-heading">
-
-                                <div>
-
-                                    <span>ACTIVE USERS RIGHT NOW</span>
-
-                                    <i class="ri-radar-line"></i>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="realtime-big-number"
-                                id="activeUsersNow">
-
-                                1,284
-
-                            </div>
-
-
-                            <div class="realtime-change">
-                                <i class="ri-arrow-up-line"></i>
-                                Live activity
-                            </div>
-
-
-                            <div class="realtime-chart">
-
-                                <canvas id="realtimeChart"></canvas>
-
-                            </div>
-
-                        </article>
-
-
-
-                        <!-- ACTIVITY FEED -->
-
-                        <article class="chart-card activity-feed-card">
-
-                            <div class="chart-header">
-
-                                <div>
-
-                                    <h3>Live Activity Feed</h3>
-
-                                    <span class="chart-subtitle">
-                                        Recent platform events
-                                    </span>
-
-                                </div>
-
-                                <span class="live-badge">
-                                    <span></span>
-                                    LIVE
-                                </span>
-
-                            </div>
-
-
-                            <div class="activity-feed"
-                                id="activityFeed">
-
-                                <!-- Generated through app.js -->
-
-                            </div>
-
-                        </article>
-
-
-                    </div>
-
-                </section>
-
-
-
-                <!-- ==================================
-                     PERFORMANCE SUMMARY
-                =================================== -->
-
-                <section class="analytics-section">
-
-                    <div class="section-heading">
-
-                        <div>
-
-                            <div class="section-eyebrow">
-                                BUSINESS INTELLIGENCE
-                            </div>
-
-                            <h2>Performance Summary</h2>
-
-                            <p>
-                                Key indicators that define
-                                your overall business health.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <div class="summary-grid">
-
-
-                        <article class="summary-card">
-
-                            <div class="summary-icon purple-bg">
-                                <i class="ri-time-line"></i>
-                            </div>
-
-                            <span>Average Session Duration</span>
-
-                            <strong>04:32</strong>
-
-                            <small class="positive">
-                                +8.24% compared to previous period
-                            </small>
-
-                        </article>
-
-
-                        <article class="summary-card">
-
-                            <div class="summary-icon cyan-bg">
-                                <i class="ri-user-follow-line"></i>
-                            </div>
-
-                            <span>Returning Visitors</span>
-
-                            <strong>62.8%</strong>
-
-                            <small class="positive">
-                                +4.12% compared to previous period
-                            </small>
-
-                        </article>
-
-
-                        <article class="summary-card">
-
-                            <div class="summary-icon orange-bg">
-                                <i class="ri-eye-line"></i>
-                            </div>
-
-                            <span>Pages Per Session</span>
-
-                            <strong>5.42</strong>
-
-                            <small class="positive">
-                                +2.67% compared to previous period
-                            </small>
-
-                        </article>
-
-
-                        <article class="summary-card">
-
-                            <div class="summary-icon green-bg">
-                                <i class="ri-shopping-bag-line"></i>
-                            </div>
-
-                            <span>Average Order Value</span>
-
-                            <strong>$122.40</strong>
-
-                            <small class="positive">
-                                +6.83% compared to previous period
-                            </small>
-
-                        </article>
-
-
-                    </div>
-
-                </section>
-
-        </div>                
-
-    </div>
-
-                <!-- =========================================
-     SALES OVERVIEW — SALES HISTORY PANEL
-========================================= -->
-
-<article class="panel sales-history-panel">
-
-    <div class="panel-header">
-
-        <div>
-            <h2>Sales History</h2>
-
-            <p class="panel-description">
-                Your completed sales and transactions.
-            </p>
         </div>
 
-        <span class="sales-history-header-icon">
-            <i class="fa-solid fa-receipt"></i>
-        </span>
+        <!-- =========================================
+             EXISTING SALES HISTORY PANEL
+             KEEP THIS EXACTLY AS IT IS.
+        ========================================= -->
+
+        <article class="panel sales-history-panel">
+
+            <div class="panel-header">
+
+                <div>
+                    <h2>Sales History</h2>
+
+                    <p class="panel-description">
+                        Your completed sales and transactions.
+                    </p>
+                </div>
+
+                <span class="sales-history-header-icon">
+                    <i class="fa-solid fa-receipt"></i>
+                </span>
+
+            </div>
+
+            <div
+                class="sales-history-list"
+                id="salesHistoryList"
+            >
+
+                <div class="sales-history-empty">
+                    <i class="fa-solid fa-receipt"></i>
+
+                    <strong>No sales yet</strong>
+
+                    <span>
+                        Completed sales will appear here.
+                    </span>
+                </div>
+
+            </div>
+
+        </article>
+
+        <!-- END SALES HISTORY PANEL -->
 
     </div>
 
-    <!-- Existing app.js renders sale cards here -->
-    <div
-        class="sales-history-list"
-        id="salesHistoryList"
-    >
+</section>
 
-        <div class="sales-history-empty">
-            <i class="fa-solid fa-receipt"></i>
-
-            <strong>No sales yet</strong>
-
-            <span>
-                Completed sales will appear here.
-            </span>
-        </div>
-
-    </div>
-
-</article>
-
-<!-- END SALES HISTORY PANEL --> 
-
-                      
-                    </div>
+<!-- END NEXODRA SALES OVERVIEW SCREEN -->
 
 
-                </section>
-<!-- END NEXODRA SALES OVERVIEW -->
-
+          
  
 <!-- =====================================================
      P2-07 — INVENTORY MANAGEMENT WORKSPACE
@@ -10361,7 +9358,7 @@
                     <p>Total sales</p>
 
                     <h3 id="reportsTotalSales">
-                        ₦0.00
+                        0.00
                     </h3>
 
                     <span>
@@ -10380,7 +9377,7 @@
                     <p>Estimated profit</p>
 
                     <h3 id="reportsTotalProfit">
-                        ₦0.00
+                       0.00
                     </h3>
 
                     <span>
@@ -10399,7 +9396,7 @@
                     <p>Customer debts</p>
 
                     <h3 id="reportsTotalDebt">
-                        ₦0.00
+                       0.00
                     </h3>
 
                     <span>
@@ -10418,7 +9415,7 @@
                     <p>Total expenses</p>
 
                     <h3 id="reportsTotalExpenses">
-                        ₦0.00
+                        0.00
                     </h3>
 
                     <span>
@@ -10644,6 +9641,311 @@
 
         </section>
 
+    </div>
+
+</section>
+      
+
+<!-- =========================================================
+     NEXODRA REPORTS TOOLS — FOUR FUNCTIONAL SCREENS
+     BRICK RPT-01 — HTML
+     Insert immediately before the P1-02 EXPENSE MANAGER comment
+========================================================= -->
+
+<!-- CUSTOMER DEBTS -->
+<section id="nexodraCustomerDebtsScreen" class="screen nex-rpt-screen" hidden>
+    <div class="nex-rpt-workspace">
+        <header class="nex-rpt-header">
+            <div>
+                <span class="nex-rpt-eyebrow">CUSTOMER MANAGEMENT</span>
+                <h1>Customer debts</h1>
+                <p>Track outstanding balances and record customer payments.</p>
+            </div>
+            <button type="button" class="nex-rpt-secondary" data-rpt-back>
+                <i class="fa-solid fa-arrow-left"></i> Back to Reports
+            </button>
+        </header>
+
+        <div class="nex-rpt-metrics">
+            <article class="nex-rpt-metric">
+                <span class="nex-rpt-icon orange"><i class="fa-solid fa-wallet"></i></span>
+                <div><small>Total outstanding</small><strong id="nexDebtOutstanding">₦0.00</strong><span>Unpaid balances</span></div>
+            </article>
+            <article class="nex-rpt-metric">
+                <span class="nex-rpt-icon blue"><i class="fa-solid fa-file-invoice"></i></span>
+                <div><small>Original debt</small><strong id="nexDebtOriginal">₦0.00</strong><span>Total recorded debt</span></div>
+            </article>
+            <article class="nex-rpt-metric">
+                <span class="nex-rpt-icon green"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+                <div><small>Payments received</small><strong id="nexDebtCollected">₦0.00</strong><span>Customer collections</span></div>
+            </article>
+            <article class="nex-rpt-metric">
+                <span class="nex-rpt-icon purple"><i class="fa-solid fa-users"></i></span>
+                <div><small>Customers owing</small><strong id="nexDebtCustomers">0</strong><span>With unpaid balances</span></div>
+            </article>
+        </div>
+
+        <section class="nex-rpt-panel">
+            <div class="nex-rpt-panel-heading">
+                <div><h2>Debt register</h2><p>Search and manage your customer balances.</p></div>
+                <button type="button" class="nex-rpt-primary" id="nexDebtExportBtn">
+                    <i class="fa-solid fa-download"></i> Export CSV
+                </button>
+            </div>
+
+            <div class="nex-rpt-filters">
+                <label><span>Search customer</span><input id="nexDebtSearch" type="search" placeholder="Name, phone or debt reference..."></label>
+                <label><span>Payment status</span>
+                    <select id="nexDebtStatus">
+                        <option value="">All statuses</option>
+                        <option value="unpaid">Unpaid</option>
+                        <option value="partial">Partially paid</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                </label>
+                <label><span>From date</span><input id="nexDebtFrom" type="date"></label>
+                <label><span>To date</span><input id="nexDebtTo" type="date"></label>
+            </div>
+
+            <div class="nex-rpt-table-wrap">
+                <table class="nex-rpt-table">
+                    <thead><tr>
+                        <th>Customer</th><th>Reference</th><th>Date</th>
+                        <th>Original</th><th>Paid</th><th>Balance</th><th>Status</th><th>Action</th>
+                    </tr></thead>
+                    <tbody id="nexDebtTableBody">
+                        <tr><td colspan="8">Loading debt records...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="nex-rpt-mobile-list" id="nexDebtMobileList"></div>
+        </section>
+
+        <section class="nex-rpt-panel" id="nexDebtDetailPanel" hidden>
+            <div class="nex-rpt-panel-heading">
+                <div><h2 id="nexDebtDetailTitle">Debt details</h2><p id="nexDebtDetailSubtitle"></p></div>
+                <button type="button" class="nex-rpt-close" id="nexDebtDetailClose" aria-label="Close">&times;</button>
+            </div>
+            <div class="nex-rpt-detail-summary" id="nexDebtDetailSummary"></div>
+            <h3 class="nex-rpt-subheading">Payment history</h3>
+            <div id="nexDebtPaymentHistory"></div>
+            <div class="nex-rpt-form-box">
+                <h3>Record a payment</h3>
+                <form id="nexDebtPaymentForm">
+                    <input type="hidden" id="nexDebtPaymentRecordId">
+                    <div class="nex-rpt-fields">
+                        <label><span>Amount received *</span><input id="nexDebtPaymentAmount" type="number" min="0.01" step="0.01" required></label>
+                        <label><span>Payment method *</span>
+                            <select id="nexDebtPaymentMethod" required>
+                                <option value="">Choose method</option>
+                                <option value="cash">Cash</option>
+                                <option value="bank">Bank transfer</option>
+                                <option value="mobile-money">Mobile money</option>
+                                <option value="card">Card</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </label>
+                        <label><span>Payment date *</span><input id="nexDebtPaymentDate" type="date" required></label>
+                        <label><span>Reference / note</span><input id="nexDebtPaymentNote" type="text" maxlength="150" placeholder="Optional reference"></label>
+                    </div>
+                    <div class="nex-rpt-form-actions">
+                        <button type="submit" class="nex-rpt-primary">Save payment</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</section>
+
+<!-- BUSINESS CALCULATOR -->
+<section id="nexodraBusinessCalculatorScreen" class="screen nex-rpt-screen" hidden>
+    <div class="nex-rpt-workspace">
+        <header class="nex-rpt-header">
+            <div>
+                <span class="nex-rpt-eyebrow">BUSINESS PLANNING</span>
+                <h1>Business calculator</h1>
+                <p>Calculate pricing, profit, discounts and break-even points.</p>
+            </div>
+            <button type="button" class="nex-rpt-secondary" data-rpt-back><i class="fa-solid fa-arrow-left"></i> Back to Reports</button>
+        </header>
+
+        <section class="nex-rpt-panel">
+            <div class="nex-rpt-panel-heading">
+                <div><h2>Choose a calculation</h2><p>Change modes to calculate different business figures.</p></div>
+            </div>
+            <div class="nex-calc-tabs" id="nexCalcTabs">
+                <button type="button" class="active" data-calc-mode="profit">Profit</button>
+                <button type="button" data-calc-mode="margin">Margin</button>
+                <button type="button" data-calc-mode="markup">Markup</button>
+                <button type="button" data-calc-mode="discount">Discount</button>
+                <button type="button" data-calc-mode="price">Selling price</button>
+                <button type="button" data-calc-mode="breakeven">Break-even</button>
+            </div>
+
+            <div class="nex-calc-layout">
+                <div class="nex-rpt-form-box">
+                    <h3 id="nexCalcTitle">Profit calculator</h3>
+                    <p id="nexCalcDescription">Enter your product cost and selling price.</p>
+                    <form id="nexCalcForm">
+                        <div id="nexCalcFields" class="nex-rpt-fields"></div>
+                        <div class="nex-rpt-form-actions">
+                            <button type="reset" class="nex-rpt-secondary" id="nexCalcReset">Reset values</button>
+                        </div>
+                    </form>
+                </div>
+                <aside class="nex-calc-result">
+                    <span class="nex-rpt-eyebrow">CALCULATION RESULT</span>
+                    <div id="nexCalcResult"><strong>₦0.00</strong><p>Enter values to see your result.</p></div>
+                    <p class="nex-calc-disclaimer">Planning estimate only. Calculations do not change your sales, products or financial records.</p>
+                </aside>
+            </div>
+        </section>
+    </div>
+</section>
+
+<!-- SALES REPORT -->
+<section id="nexodraSalesReportScreen" class="screen nex-rpt-screen" hidden>
+    <div class="nex-rpt-workspace">
+        <header class="nex-rpt-header">
+            <div>
+                <span class="nex-rpt-eyebrow">BUSINESS PERFORMANCE</span>
+                <h1>Sales report</h1>
+                <p>Review completed sales, collections and product performance.</p>
+            </div>
+            <button type="button" class="nex-rpt-secondary" data-rpt-back><i class="fa-solid fa-arrow-left"></i> Back to Reports</button>
+        </header>
+
+        <section class="nex-rpt-panel">
+            <div class="nex-rpt-filters nex-sales-filters">
+                <label><span>Reporting period</span>
+                    <select id="nexSalesPeriod">
+                        <option value="today">Today</option>
+                        <option value="7">Last 7 days</option>
+                        <option value="30" selected>Last 30 days</option>
+                        <option value="month">This month</option>
+                        <option value="year">This year</option>
+                        <option value="all">All time</option>
+                        <option value="custom">Custom range</option>
+                    </select>
+                </label>
+                <label><span>From date</span><input type="date" id="nexSalesFrom"></label>
+                <label><span>To date</span><input type="date" id="nexSalesTo"></label>
+                <button type="button" class="nex-rpt-primary" id="nexSalesApply">Apply filters</button>
+            </div>
+        </section>
+
+        <div class="nex-rpt-metrics">
+            <article class="nex-rpt-metric"><span class="nex-rpt-icon blue"><i class="fa-solid fa-coins"></i></span><div><small>Sales value</small><strong id="nexSalesRevenue">₦0.00</strong><span>Completed sales total</span></div></article>
+            <article class="nex-rpt-metric"><span class="nex-rpt-icon purple"><i class="fa-solid fa-receipt"></i></span><div><small>Transactions</small><strong id="nexSalesCount">0</strong><span>Completed orders</span></div></article>
+            <article class="nex-rpt-metric"><span class="nex-rpt-icon green"><i class="fa-solid fa-basket-shopping"></i></span><div><small>Average sale</small><strong id="nexSalesAverage">₦0.00</strong><span>Per transaction</span></div></article>
+            <article class="nex-rpt-metric"><span class="nex-rpt-icon orange"><i class="fa-solid fa-boxes-stacked"></i></span><div><small>Units sold</small><strong id="nexSalesUnits">0</strong><span>Recorded item quantities</span></div></article>
+        </div>
+
+        <section class="nex-rpt-panel">
+            <div class="nex-rpt-panel-heading"><div><h2>Sales trend</h2><p>Daily sales value within the selected period.</p></div></div>
+            <div class="nex-sales-chart" id="nexSalesTrend"></div>
+        </section>
+
+        <div class="nex-rpt-two-columns">
+            <section class="nex-rpt-panel">
+                <div class="nex-rpt-panel-heading"><div><h2>Payment methods</h2><p>Breakdown by recorded payment method.</p></div></div>
+                <div id="nexSalesPaymentBreakdown"></div>
+            </section>
+            <section class="nex-rpt-panel">
+                <div class="nex-rpt-panel-heading"><div><h2>Top products</h2><p>Products ranked by recorded sales quantity.</p></div></div>
+                <div id="nexSalesTopProducts"></div>
+            </section>
+        </div>
+
+        <section class="nex-rpt-panel">
+            <div class="nex-rpt-panel-heading">
+                <div><h2>Sales transactions</h2><p id="nexSalesTableCount">Completed sales in the selected period.</p></div>
+                <button type="button" class="nex-rpt-primary" id="nexSalesExport"><i class="fa-solid fa-download"></i> Export CSV</button>
+            </div>
+            <div class="nex-rpt-filters">
+                <label><span>Search sales</span><input id="nexSalesSearch" type="search" placeholder="Customer, reference or product..."></label>
+                <label><span>Payment method</span><select id="nexSalesPaymentFilter"><option value="">All methods</option><option value="cash">Cash</option><option value="bank">Bank</option><option value="mobile-money">Mobile money</option><option value="card">Card</option></select></label>
+            </div>
+            <div class="nex-rpt-table-wrap">
+                <table class="nex-rpt-table">
+                    <thead><tr><th>Date</th><th>Reference</th><th>Customer</th><th>Items</th><th>Payment</th><th>Total</th></tr></thead>
+                    <tbody id="nexSalesTableBody"><tr><td colspan="6">Loading sales...</td></tr></tbody>
+                </table>
+            </div>
+            <div class="nex-rpt-mobile-list" id="nexSalesMobileList"></div>
+        </section>
+        <p class="nex-rpt-note">Sales values are based on completed sales records. Outstanding customer debt is shown separately from payments collected.</p>
+    </div>
+</section>
+
+<!-- PROFIT AND LOSS -->
+<section id="nexodraProfitLossScreen" class="screen nex-rpt-screen" hidden>
+    <div class="nex-rpt-workspace">
+        <header class="nex-rpt-header">
+            <div>
+                <span class="nex-rpt-eyebrow">FINANCIAL PERFORMANCE</span>
+                <h1>Profit &amp; loss</h1>
+                <p>Understand your sales, product costs, expenses and estimated profit.</p>
+            </div>
+            <button type="button" class="nex-rpt-secondary" data-rpt-back><i class="fa-solid fa-arrow-left"></i> Back to Reports</button>
+        </header>
+
+        <section class="nex-rpt-panel">
+            <div class="nex-rpt-filters">
+                <label><span>Reporting period</span>
+                    <select id="nexPLPeriod">
+                        <option value="today">Today</option>
+                        <option value="7">Last 7 days</option>
+                        <option value="30" selected>Last 30 days</option>
+                        <option value="month">This month</option>
+                        <option value="year">This year</option>
+                        <option value="all">All time</option>
+                        <option value="custom">Custom range</option>
+                    </select>
+                </label>
+                <label><span>From date</span><input type="date" id="nexPLFrom"></label>
+                <label><span>To date</span><input type="date" id="nexPLTo"></label>
+                <button type="button" class="nex-rpt-primary" id="nexPLApply">Apply filters</button>
+            </div>
+        </section>
+
+        <div class="nex-rpt-metrics">
+            <article class="nex-rpt-metric"><span class="nex-rpt-icon blue"><i class="fa-solid fa-chart-line"></i></span><div><small>Sales revenue</small><strong id="nexPLRevenue">₦0.00</strong><span>Completed sales</span></div></article>
+            <article class="nex-rpt-metric"><span class="nex-rpt-icon orange"><i class="fa-solid fa-box"></i></span><div><small>Cost of goods sold</small><strong id="nexPLCOGS">₦0.00</strong><span>Estimated product cost</span></div></article>
+            <article class="nex-rpt-metric"><span class="nex-rpt-icon green"><i class="fa-solid fa-sack-dollar"></i></span><div><small>Gross profit</small><strong id="nexPLGross">₦0.00</strong><span>Revenue less product costs</span></div></article>
+            <article class="nex-rpt-metric"><span class="nex-rpt-icon purple"><i class="fa-solid fa-wallet"></i></span><div><small>Net profit</small><strong id="nexPLNet">₦0.00</strong><span>After recorded expenses</span></div></article>
+        </div>
+
+        <section class="nex-rpt-panel">
+            <div class="nex-rpt-panel-heading"><div><h2>Profit &amp; loss statement</h2><p id="nexPLPeriodLabel">Selected reporting period</p></div><button type="button" class="nex-rpt-primary" id="nexPLExport"><i class="fa-solid fa-download"></i> Export statement</button></div>
+            <div class="nex-pl-statement">
+                <div><span>Sales revenue</span><strong id="nexPLLineRevenue">₦0.00</strong></div>
+                <div><span>Less: cost of goods sold</span><strong id="nexPLLineCOGS">₦0.00</strong></div>
+                <div class="total"><span>Gross profit</span><strong id="nexPLLineGross">₦0.00</strong></div>
+                <div><span>Less: operating expenses</span><strong id="nexPLLineExpenses">₦0.00</strong></div>
+                <div class="total final"><span>Estimated net profit / (loss)</span><strong id="nexPLLineNet">₦0.00</strong></div>
+                <div><span>Net profit margin</span><strong id="nexPLMargin">0%</strong></div>
+            </div>
+            <div id="nexPLDataWarning" class="nex-rpt-warning" hidden></div>
+        </section>
+
+        <div class="nex-rpt-two-columns">
+            <section class="nex-rpt-panel">
+                <div class="nex-rpt-panel-heading"><div><h2>Expense categories</h2><p>Recorded expenses by category.</p></div></div>
+                <div id="nexPLExpenseCategories"></div>
+            </section>
+            <section class="nex-rpt-panel">
+                <div class="nex-rpt-panel-heading"><div><h2>Performance overview</h2><p>Income compared with costs.</p></div></div>
+                <div id="nexPLPerformance"></div>
+            </section>
+        </div>
+        <p class="nex-rpt-note">Profit is an estimate when product cost information is incomplete. Unpaid expenses and outstanding customer debts are not treated as cash received or paid.</p>
+    </div>
+</section>
+
+<!-- END RPT-01 -->
+
+      
       
 <!-- =========================================
      PHASE 1 — EXPENSE MANAGEMENT
@@ -10700,7 +10002,7 @@
 
         <article class="p1-expense-stat">
             <span>Total expenses</span>
-            <strong id="p1ExpenseTotal">₦0.00</strong>
+            <strong id="p1ExpenseTotal">0.00</strong>
             <small>Selected period</small>
         </article>
 
@@ -10712,7 +10014,7 @@
 
         <article class="p1-expense-stat">
             <span>Average expense</span>
-            <strong id="p1ExpenseAverage">₦0.00</strong>
+            <strong id="p1ExpenseAverage">0.00</strong>
             <small>Per transaction</small>
         </article>
 
@@ -11053,13 +10355,13 @@
 
         <article class="p1-expense-stat">
             <span>Total outstanding</span>
-            <strong id="p1SupplierOutstanding">₦0.00</strong>
+            <strong id="p1SupplierOutstanding">0.00</strong>
             <small>Unpaid supplier balances</small>
         </article>
 
         <article class="p1-expense-stat">
             <span>Total purchases</span>
-            <strong id="p1SupplierPurchases">₦0.00</strong>
+            <strong id="p1SupplierPurchases">0.00</strong>
             <small>Recorded purchase value</small>
         </article>
     </div>
@@ -11196,17 +10498,17 @@
         <div class="p1-supplier-detail-summary">
             <article class="p1-expense-stat">
                 <span>Purchase total</span>
-                <strong id="p1SupplierDetailPurchases">₦0.00</strong>
+                <strong id="p1SupplierDetailPurchases">0.00</strong>
             </article>
 
             <article class="p1-expense-stat">
                 <span>Payments made</span>
-                <strong id="p1SupplierDetailPayments">₦0.00</strong>
+                <strong id="p1SupplierDetailPayments">0.00</strong>
             </article>
 
             <article class="p1-expense-stat">
                 <span>Outstanding balance</span>
-                <strong id="p1SupplierDetailBalance">₦0.00</strong>
+                <strong id="p1SupplierDetailBalance">0.00</strong>
             </article>
         </div>
 
@@ -11633,13 +10935,1352 @@
             </section>
 
             <section
-                id="founderAnalyticsPage"
-                class="founder-page"
-                hidden
-            >
-                <h2>Analytics</h2>
-                <p>Platform analytics will be connected in a later brick.</p>
-            </section>
+    id="founderAnalyticsPage"
+    class="founder-page"
+    hidden
+>
+    <!-- FOUNDER ANALYTICS DASHBOARD -->
+    <div id="nexusDashboard" data-theme="light">
+
+        <div class="dashboard-content" id="dashboardContent">
+          
+                <!-- ==================================
+                     DASHBOARD INTRO
+                =================================== -->
+
+                <section class="dashboard-intro">
+
+                    <div class="intro-left">
+
+                        <div class="eyebrow">
+
+                            <span class="eyebrow-line"></span>
+
+                            ANALYTICS OVERVIEW
+
+                            <span class="live-badge">
+                                <span></span>
+                                LIVE DATA
+                            </span>
+
+                        </div>
+
+
+                        <h1>
+                            Intelligence
+                            <span class="gradient-text">at a glance.</span>
+                        </h1>
+
+
+                        <p>
+                            Monitor your business performance,
+                            uncover patterns, and transform
+                            complex data into meaningful insights.
+                        </p>
+
+                    </div>
+
+
+                    <div class="intro-actions">
+
+                        <button class="secondary-button"
+                            id="exportButton">
+
+                            <i class="ri-download-2-line"></i>
+
+                            Export report
+
+                        </button>
+
+
+                        <button class="primary-button"
+                            id="refreshButton">
+
+                            <i class="ri-refresh-line"></i>
+
+                            Refresh data
+
+                        </button>
+
+                    </div>
+
+                </section>
+
+       <!-- ==================================
+                     DATE FILTER TOOLBAR
+                =================================== -->
+
+                <section class="filter-toolbar">
+
+                    <div class="filter-left">
+
+                        <div class="date-filter">
+
+                            <i class="ri-calendar-line"></i>
+
+                            <select id="dateRange">
+
+                                <option value="7">Last 7 days</option>
+
+                                <option value="30" selected>
+                                    Last 30 days
+                                </option>
+
+                                <option value="90">
+                                    Last 90 days
+                                </option>
+
+                                <option value="365">
+                                    Last 12 months
+                                </option>
+
+                            </select>
+
+                            <i class="ri-arrow-down-s-line"></i>
+
+                        </div>
+
+
+                        <div class="comparison-filter">
+
+                            <span>Compared to</span>
+
+                            <select id="comparisonRange">
+
+                                <option value="previous">
+                                    Previous period
+                                </option>
+
+                                <option value="year">
+                                    Previous year
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>       
+
+            <div class="filter-right">
+
+                        <span class="last-updated">
+                            <i class="ri-time-line"></i>
+                            Updated just now
+                        </span>
+
+                        <button class="icon-button"
+                            id="filterButton"
+                            aria-label="More filters">
+
+                            <i class="ri-equalizer-2-line"></i>
+
+                        </button>
+
+                    </div>
+
+                </section>        
+
+            <!-- ==================================
+                     KPI METRIC CARDS
+                =================================== -->
+
+                <section class="metrics-grid">
+
+
+                    <!-- REVENUE -->
+
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+                                <span class="metric-icon revenue-icon">
+                                    <i class="ri-wallet-3-line"></i>
+                                </span>
+
+                                Total Revenue
+                            </div>
+
+                            <button class="card-menu">
+                                <i class="ri-more-fill"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="metric-value"
+                            id="totalRevenue">
+
+                            284,592
+
+                        </div>    
+
+                <div class="metric-bottom">
+
+                            <div class="metric-change positive">
+                                <i class="ri-arrow-up-line"></i>
+                                18.42%
+                            </div>
+
+                            <span>vs previous period</span>
+
+                        </div>
+
+
+                        <div class="metric-sparkline">
+                            <canvas id="revenueSparkline"></canvas>
+                        </div>
+
+                    </article>    
+
+                <!-- USERS -->
+
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+
+                                <span class="metric-icon users-icon">
+                                    <i class="ri-user-3-line"></i>
+                                </span>
+
+                                Total Users
+
+                            </div>
+
+                            <button class="card-menu">
+                                <i class="ri-more-fill"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="metric-value"
+                            id="totalUsers">
+
+                            48,294
+
+                        </div>
+
+
+                        <div class="metric-bottom">
+
+                            <div class="metric-change positive">
+                                <i class="ri-arrow-up-line"></i>
+                                12.86%
+                            </div>
+
+                            <span>vs previous period</span>
+
+                        </div>
+
+
+                        <div class="metric-sparkline">
+                            <canvas id="usersSparkline"></canvas>
+                        </div>
+
+                    </article>   
+
+               <!-- CONVERSIONS -->
+
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+
+                                <span class="metric-icon conversion-icon">
+                                    <i class="ri-focus-2-line"></i>
+                                </span>
+
+                                Conversion Rate
+
+                            </div>
+
+                            <button class="card-menu">
+                                <i class="ri-more-fill"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="metric-value"
+                            id="conversionRate">
+
+                            4.82%
+
+                        </div>
+
+
+                        <div class="metric-bottom">
+
+                            <div class="metric-change positive">
+                                <i class="ri-arrow-up-line"></i>
+                                0.64%
+                            </div>
+
+                            <span>vs previous period</span>
+
+                        </div>
+
+
+                        <div class="metric-sparkline">
+                            <canvas id="conversionSparkline"></canvas>
+                        </div>
+
+                    </article>  
+
+         <!-- SESSIONS -->
+
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+
+                            <div class="metric-label">
+
+                                <span class="metric-icon sessions-icon">
+                                    <i class="ri-pulse-line"></i>
+                                </span>
+
+                                Total Sessions
+
+                            </div>
+
+                            <button class="card-menu">
+                                <i class="ri-more-fill"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="metric-value"
+                            id="totalSessions">
+
+                            126,847
+
+                        </div>
+
+
+                        <div class="metric-bottom">
+
+                            <div class="metric-change negative">
+                                <i class="ri-arrow-down-line"></i>
+                                2.14%
+                            </div>
+
+                            <span>vs previous period</span>
+
+                        </div>
+
+
+                        <div class="metric-sparkline">
+                            <canvas id="sessionsSparkline"></canvas>
+                        </div>
+
+                    </article>
+
+                </section>   
+
+            <!-- ==================================
+                     REVENUE PERFORMANCE SECTION
+                =================================== -->
+
+                <section class="analytics-section">
+
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                PERFORMANCE
+                            </div>
+
+                            <h2>Revenue Analytics</h2>
+
+                            <p>
+                                Understand your revenue growth
+                                and financial performance.
+                            </p>
+
+                        </div>
+
+
+                        <button class="text-button"
+                            data-page-link="revenue">
+
+                            Detailed analytics
+
+                            <i class="ri-arrow-right-line"></i>
+
+                        </button>
+
+                    </div>
+
+
+
+                    <div class="chart-grid revenue-grid">
+
+    <!-- MAIN REVENUE CHART -->
+
+                        <article class="chart-card revenue-chart-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Revenue Overview</h3>
+
+                                    <span class="chart-subtitle">
+                                        Revenue performance over time
+                                    </span>
+
+                                </div>
+
+
+                                <div class="chart-controls">
+
+                                    <button class="chart-type-button active"
+                                        data-chart="revenue"
+                                        data-type="line">
+
+                                        <i class="ri-line-chart-line"></i>
+
+                                    </button>
+
+
+                                    <button class="chart-type-button"
+                                        data-chart="revenue"
+                                        data-type="bar">
+
+                                        <i class="ri-bar-chart-line"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                   <div class="chart-main-stat">
+
+                                <strong>284,592</strong>
+
+                                <span class="positive">
+                                    <i class="ri-arrow-up-line"></i>
+                                    18.42%
+                                </span>
+
+                            </div>
+
+
+                            <div class="chart-container revenue-chart-container">
+
+                                <canvas id="revenueChart"></canvas>
+
+                            </div>
+
+
+                            <div class="chart-footer">
+
+                                <div class="chart-legend">
+
+                                    <span class="legend-item">
+                                        <span class="legend-dot purple"></span>
+                                        This period
+                                    </span>
+
+                                    <span class="legend-item">
+                                        <span class="legend-dot gray"></span>
+                                        Previous period
+                                    </span>
+
+                                </div>
+
+
+                                <span class="chart-footer-note">
+                                    Values in USD
+                                </span>
+
+                            </div>
+
+                        </article>   
+
+              <!-- REVENUE SOURCES -->
+
+                        <article class="chart-card revenue-source-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Revenue Sources</h3>
+
+                                    <span class="chart-subtitle">
+                                        Distribution by channel
+                                    </span>
+
+                                </div>
+
+
+                                <button class="card-menu">
+                                    <i class="ri-more-fill"></i>
+                                </button>
+
+                            </div>
+
+
+                            <div class="donut-chart-container">
+
+                                <canvas id="revenueSourceChart"></canvas>
+
+
+                                <div class="donut-center">
+
+                                    <span>Total Revenue</span>
+
+                                    <strong>284.6K</strong>
+
+                                    <small>USD</small>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="source-legend"
+                                id="revenueSourceLegend">
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </section>     
+
+             <!-- ==================================
+                     USER ANALYTICS
+                =================================== -->
+
+                <section class="analytics-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                AUDIENCE INTELLIGENCE
+                            </div>
+
+                            <h2>Audience Insights</h2>
+
+                            <p>
+                                Discover who interacts with your
+                                platform and how they behave.
+                            </p>
+
+                        </div>
+
+
+                        <button class="text-button"
+                            data-page-link="audience">
+
+                            Explore audience
+
+                            <i class="ri-arrow-right-line"></i>
+
+                        </button>
+
+                    </div>   
+
+              <div class="chart-grid audience-grid">
+
+
+                        <!-- USER ACTIVITY -->
+
+                        <article class="chart-card audience-chart-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>User Activity</h3>
+
+                                    <span class="chart-subtitle">
+                                        Daily active users and new users
+                                    </span>
+
+                                </div>
+
+
+                                <select class="chart-select"
+                                    id="userActivityRange">
+
+                                    <option value="7">7 days</option>
+                                    <option value="30" selected>30 days</option>
+                                    <option value="90">90 days</option>
+
+                                </select>
+
+                            </div>   
+
+             <div class="chart-main-stat">
+
+                                <strong>32,481</strong>
+
+                                <span class="positive">
+                                    <i class="ri-arrow-up-line"></i>
+                                    14.8%
+                                </span>
+
+                            </div>
+
+
+                            <div class="chart-container">
+
+                                <canvas id="userActivityChart"></canvas>
+
+                            </div>
+
+
+                            <div class="chart-footer">
+
+                                <div class="chart-legend">
+
+                                    <span class="legend-item">
+                                        <span class="legend-dot purple"></span>
+                                        Active users
+                                    </span>
+
+                                    <span class="legend-item">
+                                        <span class="legend-dot cyan"></span>
+                                        New users
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </article> 
+
+                <!-- DEVICE DISTRIBUTION -->
+
+                        <article class="chart-card device-chart-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Device Distribution</h3>
+
+                                    <span class="chart-subtitle">
+                                        Users by device category
+                                    </span>
+
+                                </div>
+
+
+                                <button class="card-menu">
+                                    <i class="ri-more-fill"></i>
+                                </button>
+
+                            </div>
+
+
+                            <div class="device-chart-container">
+
+                                <canvas id="deviceChart"></canvas>
+
+                            </div>
+
+
+                            <div class="device-legend"
+                                id="deviceLegend">
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </section>    
+
+          <!-- ==================================
+                     TRAFFIC ANALYTICS
+                =================================== -->
+
+                <section class="analytics-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                ACQUISITION
+                            </div>
+
+                            <h2>Traffic Intelligence</h2>
+
+                            <p>
+                                Analyze where your visitors
+                                originate and how they arrive.
+                            </p>
+
+                        </div>
+
+
+                        <button class="text-button"
+                            data-page-link="traffic">
+
+                            Traffic reports
+
+                            <i class="ri-arrow-right-line"></i>
+
+                        </button>
+
+                    </div>   
+
+                <div class="chart-grid traffic-grid">
+
+
+                        <!-- TRAFFIC CHANNELS -->
+
+                        <article class="chart-card traffic-channel-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Traffic Channels</h3>
+
+                                    <span class="chart-subtitle">
+                                        Acquisition channel breakdown
+                                    </span>
+
+                                </div>
+
+                                <span class="chart-tag">
+                                    All channels
+                                </span>
+
+                            </div>
+
+
+                            <div class="chart-container">
+
+                                <canvas id="trafficChart"></canvas>
+
+                            </div>
+
+                        </article>  
+
+            <!-- TRAFFIC SOURCES TABLE -->
+
+                        <article class="chart-card traffic-table-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Top Traffic Sources</h3>
+
+                                    <span class="chart-subtitle">
+                                        Highest performing sources
+                                    </span>
+
+                                </div>
+
+                                <button class="card-menu">
+                                    <i class="ri-more-fill"></i>
+                                </button>
+
+                            </div>
+
+           <div class="table-wrapper">
+
+                                <table class="analytics-table">
+
+                                    <thead>
+
+                                        <tr>
+
+                                            <th>Source</th>
+                                            <th>Visitors</th>
+                                            <th>Change</th>
+
+                                        </tr>
+
+                                    </thead>
+
+
+                                    <tbody id="trafficTableBody">
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+
+                            <button class="table-footer-button"
+                                data-page-link="traffic">
+
+                                View all sources
+
+                                <i class="ri-arrow-right-line"></i>
+
+                            </button>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+    <!-- ==================================
+                     GEOGRAPHIC ANALYTICS
+                =================================== -->
+
+                <section class="analytics-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                GLOBAL REACH
+                            </div>
+
+                            <h2>Geographic Intelligence</h2>
+
+                            <p>
+                                Understand your audience's
+                                worldwide distribution.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="chart-grid geography-grid">
+
+<!-- WORLD MAP -->
+
+                        <article class="chart-card world-map-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Global Audience Distribution</h3>
+
+                                    <span class="chart-subtitle">
+                                        Visitors across geographical regions
+                                    </span>
+
+                                </div>
+
+
+                                <span class="chart-tag">
+                                    Global
+                                </span>
+
+                            </div>
+
+
+                            <div class="world-map-container">
+
+                                <div class="map-placeholder"
+                                    id="worldMap">
+
+                                    <div class="map-glow"></div>
+
+                                    <div class="map-content">
+
+                                        <i class="ri-earth-line"></i>
+
+                                        <h4>Global Analytics Map</h4>
+
+                                        <p>
+                                            Geographic visualization
+                                            will be displayed here.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+      <!-- REGIONAL BREAKDOWN -->
+
+                        <article class="chart-card region-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Top Countries</h3>
+
+                                    <span class="chart-subtitle">
+                                        Visitors by country
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="region-list"
+                                id="regionList">
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+            <!-- ==================================
+                     PRODUCT PERFORMANCE
+                =================================== -->
+
+                <section class="analytics-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                PRODUCT INTELLIGENCE
+                            </div>
+
+                            <h2>Product Performance</h2>
+
+                            <p>
+                                Identify your most valuable
+                                products and revenue drivers.
+                            </p>
+
+                        </div>
+
+
+                        <button class="text-button"
+                            data-page-link="products">
+
+                            Product analytics
+
+                            <i class="ri-arrow-right-line"></i>
+
+                        </button>
+
+                    </div>
+
+
+
+                    <div class="chart-grid product-grid">
+
+    <!-- PRODUCT PERFORMANCE CHART -->
+
+                        <article class="chart-card product-chart-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Top Performing Products</h3>
+
+                                    <span class="chart-subtitle">
+                                        Revenue generated by product
+                                    </span>
+
+                                </div>
+
+
+                                <select class="chart-select"
+                                    id="productSort">
+
+                                    <option value="revenue">
+                                        By revenue
+                                    </option>
+
+                                    <option value="units">
+                                        By units sold
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="chart-container">
+
+                                <canvas id="productChart"></canvas>
+
+                            </div>
+
+                        </article>
+
+              <!-- PRODUCT TABLE -->
+
+                        <article class="chart-card product-table-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Product Rankings</h3>
+
+                                    <span class="chart-subtitle">
+                                        Performance leaderboard
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="table-wrapper">
+
+                                <table class="analytics-table">
+
+                                    <thead>
+
+                                        <tr>
+
+                                            <th>Product</th>
+                                            <th>Sales</th>
+                                            <th>Revenue</th>
+
+                                        </tr>
+
+                                    </thead>
+
+
+                                    <tbody id="productTableBody">
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+          <!-- ==================================
+                     CONVERSION FUNNEL
+                =================================== -->
+
+                <section class="analytics-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                CONVERSION INTELLIGENCE
+                            </div>
+
+                            <h2>Conversion Funnel</h2>
+
+                            <p>
+                                Track how users progress through
+                                your customer journey.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+              <article class="chart-card funnel-card">
+
+                        <div class="chart-header">
+
+                            <div>
+
+                                <h3>Customer Journey</h3>
+
+                                <span class="chart-subtitle">
+                                    From initial visit to completed purchase
+                                </span>
+
+                            </div>
+
+                            <span class="chart-tag">
+                                Conversion analysis
+                            </span>
+
+                        </div>
+
+
+                        <div class="funnel-container"
+                            id="conversionFunnel">
+
+                            <!-- Generated through app.js -->
+
+                        </div>  
+
+        <div class="funnel-footer">
+
+                            <div>
+
+                                <span>Overall conversion</span>
+
+                                <strong>4.82%</strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>Total visitors</span>
+
+                                <strong>48,294</strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>Completed purchases</span>
+
+                                <strong>2,329</strong>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </section>
+
+<!-- ==================================
+                     REAL TIME MONITOR
+                =================================== -->
+
+                <section class="analytics-section realtime-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                LIVE MONITORING
+                            </div>
+
+                            <h2>Real-Time Intelligence</h2>
+
+                            <p>
+                                Observe live platform activity
+                                and current user engagement.
+                            </p>
+
+                        </div>
+
+
+                        <div class="live-status">
+
+                            <span class="live-pulse"></span>
+
+                            LIVE MONITORING
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="realtime-grid">
+
+<!-- ACTIVE USERS -->
+
+                        <article class="chart-card realtime-users-card">
+
+                            <div class="realtime-card-heading">
+
+                                <div>
+
+                                    <span>ACTIVE USERS RIGHT NOW</span>
+
+                                    <i class="ri-radar-line"></i>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="realtime-big-number"
+                                id="activeUsersNow">
+
+                                1,284
+
+                            </div>
+
+
+                            <div class="realtime-change">
+                                <i class="ri-arrow-up-line"></i>
+                                Live activity
+                            </div>
+
+
+                            <div class="realtime-chart">
+
+                                <canvas id="realtimeChart"></canvas>
+
+                            </div>
+
+                        </article>
+
+             <!-- ACTIVITY FEED -->
+
+                        <article class="chart-card activity-feed-card">
+
+                            <div class="chart-header">
+
+                                <div>
+
+                                    <h3>Live Activity Feed</h3>
+
+                                    <span class="chart-subtitle">
+                                        Recent platform events
+                                    </span>
+
+                                </div>
+
+                                <span class="live-badge">
+                                    <span></span>
+                                    LIVE
+                                </span>
+
+                            </div>
+
+
+                            <div class="activity-feed"
+                                id="activityFeed">
+
+                                <!-- Generated through app.js -->
+
+                            </div>
+
+                        </article>
+
+
+                    </div>
+
+                </section>
+
+           <!-- ==================================
+                     PERFORMANCE SUMMARY
+                =================================== -->
+
+                <section class="analytics-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <div class="section-eyebrow">
+                                BUSINESS INTELLIGENCE
+                            </div>
+
+                            <h2>Performance Summary</h2>
+
+                            <p>
+                                Key indicators that define
+                                your overall business health.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+         <div class="summary-grid">
+
+
+                        <article class="summary-card">
+
+                            <div class="summary-icon purple-bg">
+                                <i class="ri-time-line"></i>
+                            </div>
+
+                            <span>Average Session Duration</span>
+
+                            <strong>04:32</strong>
+
+                            <small class="positive">
+                                +8.24% compared to previous period
+                            </small>
+
+                        </article>
+
+
+                        <article class="summary-card">
+
+                            <div class="summary-icon cyan-bg">
+                                <i class="ri-user-follow-line"></i>
+                            </div>
+
+                            <span>Returning Visitors</span>
+
+                            <strong>62.8%</strong>
+
+                            <small class="positive">
+                                +4.12% compared to previous period
+                            </small>
+
+                        </article>
+
+                   <article class="summary-card">
+
+                            <div class="summary-icon orange-bg">
+                                <i class="ri-eye-line"></i>
+                            </div>
+
+                            <span>Pages Per Session</span>
+
+                            <strong>5.42</strong>
+
+                            <small class="positive">
+                                +2.67% compared to previous period
+                            </small>
+
+                        </article>
+
+
+                        <article class="summary-card">
+
+                            <div class="summary-icon green-bg">
+                                <i class="ri-shopping-bag-line"></i>
+                            </div>
+
+                            <span>Average Order Value</span>
+
+                            <strong>122.40</strong>
+
+                            <small class="positive">
+                                +6.83% compared to previous period
+                            </small>
+
+                        </article>  
+
+                    </div>
+
+                </section>                     
+
+        </div>
+
+    </div>
+</section>
 
             <section
                 id="founderSettingsPage"
@@ -12068,6 +12709,7 @@
 
     </nav>
 
+    
 
     <!-- 5. FEEDBACK CARD -->
     <section class="nexodra-sidebar-promo">
@@ -12135,6 +12777,660 @@
 <!-- End NEXODRA Sidebar -->
 
 
+<!-- =========================================
+     NEXODRA — PUBLIC SUPPORT CENTER
+     Works before seller login
+========================================= -->
+
+<section
+    id="nexodraSupportCenter"
+    class="nex-support-overlay"
+    aria-hidden="true"
+>
+
+    <div class="nex-support-shell">
+
+        <!-- HEADER -->
+        <header class="nex-support-header">
+
+            <div class="nex-support-brand">
+                <span class="nex-support-brand-icon">
+                    <i class="fa-solid fa-store"></i>
+                </span>
+
+                <span>NEXODRA</span>
+            </div>
+
+            <button
+                type="button"
+                id="nexSupportClose"
+                class="nex-support-close"
+                aria-label="Close support"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </header>
+
+
+        <!-- PROGRESS -->
+        <div class="nex-support-progress">
+            <span id="nexSupportProgressText">
+                SUPPORT CENTER
+            </span>
+
+            <div class="nex-support-progress-track">
+                <div
+                    id="nexSupportProgressBar"
+                    class="nex-support-progress-fill"
+                ></div>
+            </div>
+        </div>
+
+
+        <main class="nex-support-content">
+
+            <!-- =================================
+                 SCREEN 1 — HOME
+            ================================== -->
+
+            <div
+                class="nex-support-view active"
+                data-support-view="home"
+            >
+
+                <div class="nex-support-welcome-icon">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+
+                <span class="nex-support-eyebrow">
+                    SELLER ASSISTANCE
+                </span>
+
+                <h1>How can we help you?</h1>
+
+                <p class="nex-support-description">
+                    Choose the area where you need assistance.
+                    We'll guide you through the next steps.
+                </p>
+
+
+                <div class="nex-support-options">
+
+                    <button
+                        type="button"
+                        class="nex-support-option"
+                        data-support-journey="account"
+                    >
+
+                        <span class="nex-support-option-icon">
+                            <i class="fa-solid fa-key"></i>
+                        </span>
+
+                        <span class="nex-support-option-copy">
+                            <strong>Login & Account Assistance</strong>
+                            <small>
+                                Password, verification and account access.
+                            </small>
+                        </span>
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="nex-support-option"
+                        data-support-journey="technical"
+                    >
+
+                        <span class="nex-support-option-icon">
+                            <i class="fa-solid fa-bug"></i>
+                        </span>
+
+                        <span class="nex-support-option-copy">
+                            <strong>Report a Technical Problem</strong>
+                            <small>
+                                Errors, loading and application problems.
+                            </small>
+                        </span>
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="nex-support-option"
+                        data-support-journey="general"
+                    >
+
+                        <span class="nex-support-option-icon">
+                            <i class="fa-solid fa-comments"></i>
+                        </span>
+
+                        <span class="nex-support-option-copy">
+                            <strong>General Support</strong>
+                            <small>
+                                Questions, guidance and other requests.
+                            </small>
+                        </span>
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+                </div>
+
+
+                <div class="nex-support-security-note">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>
+                        Never share your password or verification codes
+                        with anyone, including support.
+                    </span>
+                </div>
+
+                <button
+                    type="button"
+                    class="nex-support-return"
+                    id="nexSupportReturnLogin"
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Return to login
+                </button>
+
+            </div>
+
+
+            <!-- =================================
+                 SCREEN 2A — ACCOUNT ASSISTANCE
+            ================================== -->
+
+            <div
+                class="nex-support-view"
+                data-support-view="account"
+            >
+
+                <button
+                    type="button"
+                    class="nex-support-back"
+                    data-support-back
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to support options
+                </button>
+
+                <span class="nex-support-eyebrow">
+                    ACCOUNT ASSISTANCE
+                </span>
+
+                <h2>What account problem are you experiencing?</h2>
+
+                <p class="nex-support-description">
+                    Select the issue that best describes your situation.
+                </p>
+
+
+                <form
+                    class="nex-support-form"
+                    data-support-form="account"
+                >
+
+                    <label class="nex-support-field">
+                        <span>Problem category</span>
+
+                        <select name="issue" required>
+                            <option value="">Choose an issue</option>
+                            <option>Forgotten password</option>
+                            <option>Password not accepted</option>
+                            <option>Email address not recognized</option>
+                            <option>Verification email not received</option>
+                            <option>Verification link expired</option>
+                            <option>Account temporarily locked</option>
+                            <option>Cannot create an account</option>
+                            <option>Other account problem</option>
+                        </select>
+                    </label>
+
+
+                    <label class="nex-support-field">
+                        <span>Account email address</span>
+
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+                    </label>
+
+
+                    <label class="nex-support-field">
+                        <span>Describe what happened</span>
+
+                        <textarea
+                            name="description"
+                            rows="5"
+                            maxlength="2000"
+                            placeholder="Tell us what happens when you try to access your account..."
+                            required
+                        ></textarea>
+                    </label>
+
+
+                    <label class="nex-support-field">
+                        <span>How urgent is this?</span>
+
+                        <select name="urgency" required>
+                            <option value="">Select urgency</option>
+                            <option value="normal">Normal — I can wait</option>
+                            <option value="high">High — I cannot access my store</option>
+                            <option value="critical">Critical — I suspect unauthorized access</option>
+                        </select>
+                    </label>
+
+
+                    <div class="nex-support-form-warning">
+                        Do not enter your password, one-time code or recovery code.
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="nex-support-primary"
+                        data-support-review
+                    >
+                        Review report
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- =================================
+                 SCREEN 2B — TECHNICAL REPORT
+            ================================== -->
+
+            <div
+                class="nex-support-view"
+                data-support-view="technical"
+            >
+
+                <button
+                    type="button"
+                    class="nex-support-back"
+                    data-support-back
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to support options
+                </button>
+
+                <span class="nex-support-eyebrow">
+                    TECHNICAL ASSISTANCE
+                </span>
+
+                <h2>Tell us what isn't working</h2>
+
+                <p class="nex-support-description">
+                    The more information you provide,
+                    the easier it is to investigate.
+                </p>
+
+
+                <form
+                    class="nex-support-form"
+                    data-support-form="technical"
+                >
+
+                    <label class="nex-support-field">
+                        <span>Problem category</span>
+
+                        <select name="issue" required>
+                            <option value="">Choose a problem</option>
+                            <option>Page not loading</option>
+                            <option>Blank or frozen screen</option>
+                            <option>Button not responding</option>
+                            <option>Unexpected error message</option>
+                            <option>Application keeps refreshing</option>
+                            <option>Mobile display problem</option>
+                            <option>Other technical problem</option>
+                        </select>
+                    </label>
+
+
+                    <label class="nex-support-field">
+                        <span>Your email address</span>
+
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+                    </label>
+
+
+                    <div class="nex-support-field-row">
+
+                        <label class="nex-support-field">
+                            <span>Device</span>
+
+                            <select name="device" required>
+                                <option value="">Choose device</option>
+                                <option>Android phone</option>
+                                <option>iPhone</option>
+                                <option>Windows computer</option>
+                                <option>Mac computer</option>
+                                <option>Tablet</option>
+                                <option>Other</option>
+                            </select>
+                        </label>
+
+
+                        <label class="nex-support-field">
+                            <span>Browser</span>
+
+                            <select name="browser" required>
+                                <option value="">Choose browser</option>
+                                <option>Chrome</option>
+                                <option>Safari</option>
+                                <option>Firefox</option>
+                                <option>Edge</option>
+                                <option>Samsung Internet</option>
+                                <option>Other</option>
+                            </select>
+                        </label>
+
+                    </div>
+
+
+                    <label class="nex-support-field">
+                        <span>Error message (if any)</span>
+
+                        <input
+                            type="text"
+                            name="error"
+                            maxlength="300"
+                            placeholder="Copy the error message here"
+                        >
+                    </label>
+
+
+                    <label class="nex-support-field">
+                        <span>Describe the problem</span>
+
+                        <textarea
+                            name="description"
+                            rows="5"
+                            maxlength="2000"
+                            placeholder="What were you doing when the problem occurred?"
+                            required
+                        ></textarea>
+                    </label>
+
+
+                    <label class="nex-support-field">
+                        <span>How urgent is this?</span>
+
+                        <select name="urgency" required>
+                            <option value="">Select urgency</option>
+                            <option value="normal">Normal</option>
+                            <option value="high">High — important function unavailable</option>
+                            <option value="critical">Critical — business operations affected</option>
+                        </select>
+                    </label>
+
+
+                    <button
+                        type="button"
+                        class="nex-support-primary"
+                        data-support-review
+                    >
+                        Review report
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- =================================
+                 SCREEN 2C — GENERAL SUPPORT
+            ================================== -->
+
+            <div
+                class="nex-support-view"
+                data-support-view="general"
+            >
+
+                <button
+                    type="button"
+                    class="nex-support-back"
+                    data-support-back
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to support options
+                </button>
+
+                <span class="nex-support-eyebrow">
+                    GENERAL SUPPORT
+                </span>
+
+                <h2>What would you like help with?</h2>
+
+                <p class="nex-support-description">
+                    Tell us what you need and our team can guide you.
+                </p>
+
+
+                <form
+                    class="nex-support-form"
+                    data-support-form="general"
+                >
+
+                    <label class="nex-support-field">
+                        <span>Request category</span>
+
+                        <select name="issue" required>
+                            <option value="">Choose a category</option>
+                            <option>Getting started with Nexodra</option>
+                            <option>Managing my store</option>
+                            <option>Products and inventory</option>
+                            <option>Orders and customers</option>
+                            <option>Payments and payouts</option>
+                            <option>Account information</option>
+                            <option>Other question</option>
+                        </select>
+                    </label>
+
+
+                    <label class="nex-support-field">
+                        <span>Your email address</span>
+
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+                    </label>
+
+
+                    <label class="nex-support-field">
+                        <span>Store name (optional)</span>
+
+                        <input
+                            type="text"
+                            name="store"
+                            maxlength="100"
+                            placeholder="Your store name"
+                        >
+                    </label>
+
+
+                    <label class="nex-support-field">
+                        <span>Your question or request</span>
+
+                        <textarea
+                            name="description"
+                            rows="6"
+                            maxlength="2000"
+                            placeholder="How can our support team help you?"
+                            required
+                        ></textarea>
+                    </label>
+
+
+                    <button
+                        type="button"
+                        class="nex-support-primary"
+                        data-support-review
+                    >
+                        Review request
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- =================================
+                 SCREEN 3 — REVIEW REPORT
+            ================================== -->
+
+            <div
+                class="nex-support-view"
+                data-support-view="review"
+            >
+
+                <button
+                    type="button"
+                    class="nex-support-back"
+                    id="nexSupportEditReport"
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Edit report
+                </button>
+
+                <span class="nex-support-eyebrow">
+                    FINAL REVIEW
+                </span>
+
+                <h2>Review your report</h2>
+
+                <p class="nex-support-description">
+                    Please check your information before opening
+                    your email application to send the report.
+                </p>
+
+
+                <div
+                    id="nexSupportReviewContent"
+                    class="nex-support-review-card"
+                ></div>
+
+
+                <div class="nex-support-form-warning">
+                    Your report is not sent until you send the
+                    prepared email.
+                </div>
+
+
+                <button
+                    type="button"
+                    id="nexSupportSendReport"
+                    class="nex-support-primary"
+                >
+                    Prepare support email
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+
+            </div>
+
+
+            <!-- =================================
+                 SCREEN 4 — CONFIRMATION
+            ================================== -->
+
+            <div
+                class="nex-support-view"
+                data-support-view="confirmation"
+            >
+
+                <div class="nex-support-success-icon">
+                    <i class="fa-solid fa-envelope-circle-check"></i>
+                </div>
+
+                <span class="nex-support-eyebrow">
+                    REPORT PREPARED
+                </span>
+
+                <h2>Your support email is ready</h2>
+
+                <p class="nex-support-description">
+                    Your email application should open with
+                    the report details filled in.
+                    Review and send the message to contact Nexodra.
+                </p>
+
+
+                <div class="nex-support-confirmation-card">
+
+                    <strong>Support destination</strong>
+
+                    <span>support@nexodra.com</span>
+
+                    <small>
+                        Your report is only submitted after you send
+                        the email.
+                    </small>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="nexSupportBackHome"
+                    class="nex-support-primary"
+                >
+                    Return to Support Center
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+
+                <button
+                    type="button"
+                    class="nex-support-return"
+                    id="nexSupportFinish"
+                >
+                    Return to login
+                </button>
+
+            </div>
+
+        </main>
+
+
+        <footer class="nex-support-footer">
+            <i class="fa-solid fa-shield-halved"></i>
+            Nexodra Seller Support
+        </footer>
+
+    </div>
+
+</section>
+
+      
 <!-- =====================================
      FEEDBACK-1 — FEEDBACK MODAL HTML
 ===================================== -->
@@ -12363,7 +13659,7 @@
                 </span>
                 <div>
                     <small>Total purchases</small>
-                    <strong id="p1PurchaseTotalValue">₦0.00</strong>
+                    <strong id="p1PurchaseTotalValue">0.00</strong>
                     <span>Recorded purchase value</span>
                 </div>
             </article>
@@ -12396,7 +13692,7 @@
                 </span>
                 <div>
                     <small>Outstanding</small>
-                    <strong id="p1PurchaseOutstanding">₦0.00</strong>
+                    <strong id="p1PurchaseOutstanding">0.00</strong>
                     <span>Unpaid purchase balances</span>
                 </div>
             </article>
@@ -12500,7 +13796,7 @@
                     <div class="p1-purchase-total-panel">
                         <div>
                             <span>Purchase subtotal</span>
-                            <strong id="p1PurchaseSubtotal">₦0.00</strong>
+                            <strong id="p1PurchaseSubtotal">0.00</strong>
                         </div>
 
                         <div>
@@ -12511,7 +13807,7 @@
 
                         <div class="p1-purchase-grand-total">
                             <span>Grand total</span>
-                            <strong id="p1PurchaseGrandTotal">₦0.00</strong>
+                            <strong id="p1PurchaseGrandTotal">0.00</strong>
                         </div>
                     </div>
                 </div>
@@ -12544,6 +13840,16 @@
                             </select>
                         </label>
 
+                    
+<label>
+    <span>Account paid from</span>
+    <select id="p1PurchasePaidFromAccount">
+        <option value="">Select cashbook account</option>
+    </select>
+</label>
+
+
+                      
                         <label>
                             <span>Payment reference</span>
                             <input type="text" id="p1PurchasePaymentReference"
@@ -12561,7 +13867,7 @@
 
                     <div class="p1-purchase-balance-preview">
                         <span>Remaining supplier balance</span>
-                        <strong id="p1PurchaseRemainingBalance">₦0.00</strong>
+                        <strong id="p1PurchaseRemainingBalance">0.00</strong>
                     </div>
                 </div>
 

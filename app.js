@@ -30346,6 +30346,117 @@ async function nexodraSubscribeToPush() {
 
 
 // =========================================
+// NEXODRA PUSH — CHECK THIS DEVICE'S SUBSCRIPTION
+// =========================================
+
+async function nexodraCheckDeviceSubscription() {
+    const button = document.getElementById(
+        'nexodra-check-device-subscription'
+    );
+
+    const output = document.getElementById(
+        'nexodra-push-permission-result'
+    );
+
+    if (!button || !output) {
+        console.error('Push diagnostic button or output not found.');
+        return;
+    }
+
+    button.disabled = true;
+    output.textContent = 'Checking this device subscription...';
+
+    try {
+        if (!('serviceWorker' in navigator)) {
+            throw new Error('Service workers are not supported.');
+        }
+
+        if (!('PushManager' in window)) {
+            throw new Error('Push API is not supported.');
+        }
+
+        const registration = await navigator.serviceWorker.ready;
+        const subscription =
+            await registration.pushManager.getSubscription();
+
+        if (!subscription) {
+            output.textContent =
+                'NO SUBSCRIPTION FOUND ON THIS DEVICE.';
+            return;
+        }
+
+        const bytes = new TextEncoder().encode(
+            subscription.endpoint
+        );
+
+        const digest = await crypto.subtle.digest(
+            'SHA-256',
+            bytes
+        );
+
+        const fingerprint = Array.from(
+            new Uint8Array(digest)
+        ).map(byte =>
+            byte.toString(16).padStart(2, '0')
+        ).join('');
+
+        output.textContent =
+            'ANDROID SUBSCRIPTION FOUND\n' +
+            'Permission: ' + Notification.permission + '\n' +
+            'Worker scope: ' + registration.scope + '\n' +
+            'Endpoint fingerprint:\n' + fingerprint;
+
+        console.log(
+            'NEXODRA DEVICE SUBSCRIPTION FINGERPRINT:',
+            fingerprint
+        );
+
+    } catch (error) {
+        output.textContent =
+            'DIAGNOSTIC FAILED\n' +
+            error.name + ': ' + error.message;
+
+        console.error('NEXODRA PUSH DIAGNOSTIC:', error);
+
+    } finally {
+        button.disabled = false;
+    }
+}
+
+
+// =========================================
+// CONNECT DEVICE SUBSCRIPTION CHECK BUTTON
+// =========================================
+
+function nexodraAttachDeviceSubscriptionButton() {
+    const button = document.getElementById(
+        'nexodra-check-device-subscription'
+    );
+
+    if (!button || button.dataset.pushCheckAttached === 'true') {
+        return;
+    }
+
+    button.addEventListener(
+        'click',
+        nexodraCheckDeviceSubscription
+    );
+
+    button.dataset.pushCheckAttached = 'true';
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener(
+        'DOMContentLoaded',
+        nexodraAttachDeviceSubscriptionButton,
+        { once: true }
+    );
+} else {
+    nexodraAttachDeviceSubscriptionButton();
+}
+
+
+// =========================================
 // NEXODRA PUSH — RECEIVE SERVICE WORKER DIAGNOSTICS
 // =========================================
 

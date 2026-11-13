@@ -30335,6 +30335,57 @@ async function nexodraSubscribeToPush() {
     }
 }
 
+
+// =========================================
+// NEXODRA PUSH — RECEIVE SERVICE WORKER DIAGNOSTICS
+// =========================================
+
+if (
+    'serviceWorker' in navigator &&
+    !window.nexodraPushDiagnosticListenerAdded
+) {
+    window.nexodraPushDiagnosticListenerAdded = true;
+
+    navigator.serviceWorker.addEventListener(
+        'message',
+        event => {
+
+            const data = event.data;
+
+            if (
+                !data ||
+                data.type !== 'NEXODRA_PUSH_DIAGNOSTIC'
+            ) {
+                return;
+            }
+
+            const diagnosticsPanel =
+                document.getElementById(
+                    'nexodra-push-diagnostics'
+                );
+
+            if (!diagnosticsPanel) {
+                return;
+            }
+
+            const timestamp =
+                data.timestamp || new Date().toLocaleTimeString();
+
+            diagnosticsPanel.textContent +=
+                '\n[' + timestamp + '] ' +
+                (data.level || 'info').toUpperCase() +
+                ': ' +
+                (data.message || 'No diagnostic message.');
+
+            console.log(
+                'NEXODRA PUSH DIAGNOSTIC:',
+                data
+            );
+        }
+    );
+}
+
+
 /* =========================================
    BRICK 3B — SEND BACKEND TEST PUSH
 ========================================= */

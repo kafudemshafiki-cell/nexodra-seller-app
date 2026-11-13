@@ -313,9 +313,29 @@ self.addEventListener(
 // BRICK PUSH 1 — DISPLAY PUSH NOTIFICATION
 // =========================================
 
+function nexodraPushDiagnostic(message, level = 'info') {
+    console.log('NEXODRA PUSH:', message);
+
+    self.clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true
+    }).then(windowClients => {
+        windowClients.forEach(client => {
+            client.postMessage({
+                type: 'NEXODRA_PUSH_DIAGNOSTIC',
+                message,
+                level,
+                timestamp: new Date().toLocaleTimeString()
+            });
+        });
+    });
+}
+
 self.addEventListener(
     'push',
     event => {
+
+          nexodraPushDiagnostic('Push event received by the service worker.');
 
         console.log(
             'BRICK PUSH 1 — Push event received.'
@@ -348,6 +368,11 @@ self.addEventListener(
 
         }
 
+          nexodraPushDiagnostic(
+        'Push payload processed. Title: ' + (pushData.title || 'Nexodra') +
+        '. Body: ' + (pushData.body || 'No body received.')
+    );
+      
         const notificationTitle = 'Nexodra';
 
         const notificationOptions = {
@@ -379,11 +404,22 @@ self.addEventListener(
             'BRICK PUSH 1 — Notification displayed successfully.'
         );
 
-    }).catch(error => {
+          nexodraPushDiagnostic(
+        'SUCCESS: Android notification display was accepted by the browser.',
+        'success'
+    );
+
+        }).catch(error => {
 
         console.error(
             'BRICK PUSH 1 — NOTIFICATION DISPLAY FAILED:',
             error
+        );
+
+        nexodraPushDiagnostic(
+            'ERROR: Notification display failed: ' +
+            (error.message || String(error)),
+            'error'
         );
 
         throw error;

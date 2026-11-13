@@ -3,7 +3,7 @@
 // =========================================
 
 const NEXODRA_CACHE =
-    'nexodra-app-v4';
+    'nexodra-app-v5';
 
 
 const NEXODRA_APP_FILES = [

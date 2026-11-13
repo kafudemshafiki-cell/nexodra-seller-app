@@ -21390,11 +21390,20 @@ const ODROP_REMEMBER_EMAIL_KEY =
                         nexodraShowServiceWorkerStatus(
                             'SERVICE WORKER READY\n' +
                             'Scope: ' + readyRegistration.scope + '\n' +
-                            'Active worker: ' +
-                            (activeWorker
-                                ? activeWorker.state
-                                : 'Not available') + '\n' +
-                            'Notification API: ' +
+                         
+                          
+                          'Active worker: ' +
+(activeWorker
+    ? activeWorker.state
+    : 'Not available') + '\n' +
+'Worker script: ' +
+(activeWorker
+    ? activeWorker.scriptURL
+    : 'Not available') + '\n' +
+                          
+                        
+                          
+                          'Notification API: ' +
                             (('Notification' in window)
                                 ? 'Available'
                                 : 'Unavailable') + '\n' +

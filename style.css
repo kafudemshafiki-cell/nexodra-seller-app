@@ -8764,6 +8764,54 @@ body {
     border-color: #e2e8f0;
 }
 
+/* NEXODRA PUSH TEST BUTTON */
+
+.notification-push-permission {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin: 18px 0 22px;
+}
+
+#nexodra-request-push-permission {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 18px;
+    background: var(--primary-color, #2563eb);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#nexodra-request-push-permission:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+#nexodra-push-permission-result {
+    display: none;
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#nexodra-push-permission-result:not(:empty) {
+    display: block;
+    background: var(--card-background, #f3f4f6);
+    color: var(--text-color, #374151);
+}
 
 /* =========================================
    NOTIFICATION ICON
@@ -29032,6 +29080,38 @@ body,
     cursor: pointer;
 }
 
+
+/* =====================================================
+   NEXODRA BRICK — CUSTOMER STOREFRONT NAVIGATION ISOLATION
+
+   Hide seller sidebar only while the customer storefront
+   is active. Preserve all seller responsive behaviour.
+===================================================== */
+
+body.nexodra-public-store-active #nexodraSideNav {
+    display: none !important;
+    visibility: hidden !important;
+    transform: translateX(-105%) !important;
+    pointer-events: none !important;
+}
+
+/* Hide the seller sidebar backdrop too */
+body.nexodra-public-store-active .nexodra-sidebar-backdrop {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Do not reserve space for the seller sidebar */
+body.nexodra-public-store-active .app-container {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* END CUSTOMER STOREFRONT NAVIGATION ISOLATION */
+
+
 /* -----------------------------------------------------
    1. BRAND HEADER
    ----------------------------------------------------- */
@@ -34396,6 +34476,81 @@ body {
         box-sizing: border-box !important;
     }
 }
+
+
+/* =========================================
+   NEXODRA — NOTIFICATION PUSH PERMISSION BUTTON
+========================================= */
+
+.notification-push-permission {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin: 18px 0 22px;
+}
+
+#nexodra-request-push-permission {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 18px;
+
+    background: var(--primary-color, #2563eb);
+    color: #ffffff;
+
+    border: none;
+    border-radius: 10px;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background 0.2s ease,
+                transform 0.2s ease,
+                opacity 0.2s ease;
+}
+
+#nexodra-request-push-permission:hover {
+    filter: brightness(1.08);
+}
+
+#nexodra-request-push-permission:active {
+    transform: scale(0.98);
+}
+
+#nexodra-request-push-permission:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#nexodra-request-push-permission i {
+    font-size: 16px;
+}
+
+#nexodra-push-permission-result {
+    display: none;
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#nexodra-push-permission-result:not(:empty) {
+    display: block;
+    background: var(--card-background, #f3f4f6);
+    color: var(--text-color, #374151);
+}
+
+/* END NOTIFICATION PUSH BUTTON STYLING */
+
 
 /* =========================================================
    NEXODRA — CUSTOMER MANAGEMENT FULL-WIDTH CORRECTION

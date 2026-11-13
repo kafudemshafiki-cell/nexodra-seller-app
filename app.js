@@ -16429,6 +16429,9 @@ async function showPublicStore() {
 
     sellerDashboard.style.display = 'none';
 
+  // Keep seller navigation out of the customer storefront.
+document.body.classList.add('nexodra-public-store-active');
+
 // Hide seller navigation while the public storefront is open.
 document.querySelectorAll('.bottom-nav').forEach(nav => {
     nav.style.display = 'none';
@@ -16644,6 +16647,7 @@ if (publicBackBtn) {
         publicBackBtn.addEventListener('click', () => {
 
             publicStore.style.display = 'none';
+            document.body.classList.remove('nexodra-public-store-active');
             sellerDashboard.style.display = '';
 
             document.querySelectorAll('.bottom-nav').forEach(nav => {
@@ -17164,6 +17168,8 @@ if (exitStorePreviewBtn) {
 
             publicStore.style.display =
                 'none';
+
+            document.body.classList.remove('nexodra-public-store-active');
 
             sellerDashboard.style.display =
                 '';
@@ -21792,6 +21798,96 @@ async function requestNexodraNotificationPermission() {
         };
     }
 }
+
+
+/*************************************************
+ NEXODRA — NOTIFICATION SETTINGS PUSH TEST
+**************************************************/
+
+(function nexodraConnectPushPermissionButton() {
+
+    const button = document.getElementById(
+        'nexodra-request-push-permission'
+    );
+
+    const output = document.getElementById(
+        'nexodra-push-permission-result'
+    );
+
+    if (!button || !output) {
+        console.warn('Notification Settings push test button not found.');
+        return;
+    }
+
+    button.addEventListener('click', async function () {
+
+        button.disabled = true;
+        button.textContent = 'Registering this device...';
+
+        output.textContent =
+            'Step 1 of 2: Registering this browser for push notifications...';
+
+        try {
+
+            if (typeof nexodraSubscribeToPush !== 'function') {
+                throw new Error('Push subscription function is unavailable.');
+            }
+
+            const subscriptionResult = await nexodraSubscribeToPush();
+
+            if (!subscriptionResult || subscriptionResult.success !== true) {
+                throw new Error(
+                    subscriptionResult?.message ||
+                    'Device registration failed.'
+                );
+            }
+
+            output.textContent =
+                'Device registered. Step 2 of 2: Sending test notification...';
+
+            button.textContent = 'Sending Test Notification...';
+
+            if (typeof nexodraSendBackendPushTest !== 'function') {
+                throw new Error('Backend push test function is unavailable.');
+            }
+
+            const testResult = await nexodraSendBackendPushTest();
+
+            if (!testResult || testResult.success !== true) {
+                throw new Error(
+                    testResult?.message ||
+                    'Backend test request failed.'
+                );
+            }
+
+            output.textContent =
+                'BACKEND TEST ACCEPTED. Check your Android notification shade. ' +
+                (testResult.message || '');
+
+            button.textContent = 'Test Sent — Try Again';
+
+        } catch (error) {
+
+            output.textContent =
+                'TEST FAILED: ' +
+                (error.message || 'Unknown error');
+
+            button.textContent = 'Retry Push Test';
+
+            console.error('Nexodra push test failed:', error);
+
+        } finally {
+
+            button.disabled = false;
+
+        }
+
+    });
+
+})();
+
+
+
 
 
 /* =========================================
@@ -30096,26 +30192,49 @@ function nexodraDecodeVapidPublicKey(base64String) {
     return Uint8Array.from(raw, char => char.charCodeAt(0));
 }
 
+
 async function nexodraSubscribeToPush() {
+
+    const output = document.getElementById(
+        'nexodra-push-permission-result'
+    );
+
+    function report(message) {
+        if (output) output.textContent = message;
+        console.log('PUSH REGISTRATION:', message);
+    }
+
     try {
-        if (!("serviceWorker" in navigator) ||
-            !("PushManager" in window)) {
-            throw new Error("Push notifications are not supported.");
+
+        report('CHECK 1: Checking browser push support...');
+
+        if (
+            !('serviceWorker' in navigator) ||
+            !('PushManager' in window) ||
+            !('Notification' in window)
+        ) {
+            throw new Error('Required browser notification features are unavailable.');
         }
 
-        if (typeof NEXODRA_API_URL === "undefined" ||
-            typeof NEXODRA_VAPID_PUBLIC_KEY === "undefined" ||
-            typeof supabaseClient === "undefined") {
-            throw new Error("Nexodra configuration is missing.");
+        if (
+            typeof NEXODRA_API_URL === 'undefined' ||
+            typeof NEXODRA_VAPID_PUBLIC_KEY === 'undefined' ||
+            typeof supabaseClient === 'undefined'
+        ) {
+            throw new Error('Nexodra configuration is missing.');
         }
 
-        if (Notification.permission !== "granted") {
+        report('CHECK 2: Checking notification permission...');
+
+        if (Notification.permission !== 'granted') {
             const permission = await Notification.requestPermission();
 
-            if (permission !== "granted") {
-                throw new Error("Notification permission was not granted.");
+            if (permission !== 'granted') {
+                throw new Error('Notification permission was not granted.');
             }
         }
+
+        report('CHECK 3: Retrieving signed-in seller session...');
 
         const { data, error } =
             await supabaseClient.auth.getSession();
@@ -30125,15 +30244,36 @@ async function nexodraSubscribeToPush() {
         const session = data.session;
 
         if (!session?.access_token) {
-            throw new Error("Please sign in before enabling push notifications.");
+            throw new Error('Please sign in again.');
         }
 
-        const registration = await navigator.serviceWorker.ready;
+        report('CHECK 4: Waiting for active service worker...');
+
+        const registration = await Promise.race([
+            navigator.serviceWorker.ready,
+            new Promise((_, reject) =>
+                setTimeout(
+                    () => reject(new Error(
+                        'Timed out waiting for the service worker to become active.'
+                    )),
+                    15000
+                )
+            )
+        ]);
+
+        if (!registration.active) {
+            throw new Error('Service worker has no active worker.');
+        }
+
+        report('CHECK 5: Checking existing browser subscription...');
 
         let subscription =
             await registration.pushManager.getSubscription();
 
         if (!subscription) {
+
+            report('CHECK 6: Creating a new browser subscription...');
+
             subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
                 applicationServerKey:
@@ -30146,16 +30286,18 @@ async function nexodraSubscribeToPush() {
         const json = subscription.toJSON();
 
         if (!json.endpoint || !json.keys?.p256dh || !json.keys?.auth) {
-            throw new Error("The browser returned an incomplete subscription.");
+            throw new Error('Browser returned an incomplete subscription.');
         }
+
+        report('CHECK 7: Sending subscription to Nexodra backend...');
 
         const response = await fetch(
             `${NEXODRA_API_URL}/push/subscribe`,
             {
-                method: "POST",
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${session.access_token}`
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
                 },
                 body: JSON.stringify({
                     endpoint: json.endpoint,
@@ -30169,23 +30311,26 @@ async function nexodraSubscribeToPush() {
 
         if (!response.ok) {
             throw new Error(
-                result.detail || `Subscription save failed (${response.status}).`
+                result.detail || `Backend returned HTTP ${response.status}.`
             );
         }
 
-        console.info("BRICK 3A — Push subscription saved.", result);
+        report('SUCCESS: Backend saved the browser subscription.');
 
         return {
             success: true,
-            message: "Push notifications enabled and saved."
+            message: 'Push subscription saved.'
         };
 
     } catch (error) {
-        console.error("BRICK 3A — Subscription failed:", error);
+
+        report('REGISTRATION FAILED: ' + error.message);
+
+        console.error('PUSH REGISTRATION ERROR:', error);
 
         return {
             success: false,
-            message: error.message || "Could not enable push notifications."
+            message: error.message || 'Push registration failed.'
         };
     }
 }
